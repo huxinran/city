@@ -1,0 +1,13 @@
+.grid {
+    display: grid;
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+}
+
+.map_box {
+    height: 90vh;
+    width: 9hg0vw;
+    padding: 20px;
+    border: 1px black
+}
+  

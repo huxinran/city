@@ -1,0 +1,28 @@
+<mat-grid-list cols="12" rowHeight="1.5:1">
+  <mat-grid-tile [colspan]="3" [rowspan]="1">
+    <app-tile-detail [tile]="state.state.focus_tile"></app-tile-detail>
+  </mat-grid-tile>
+  <mat-grid-tile [colspan]="3" [rowspan]="1">
+  </mat-grid-tile>
+  <mat-grid-tile [colspan]="3" [rowspan]="1">
+    <app-status-summary [state]="state"></app-status-summary>
+  </mat-grid-tile>
+  <mat-grid-tile [colspan]="3" [rowspan]="1">
+      <button mat-stroked-button color="success" (click)="Save()">Save</button>
+      <button mat-stroked-button color="success" (click)="Load()">Load</button>
+      <button mat-stroked-button color="success" (click)="Reset()">Reset</button>
+      <button mat-stroked-button color="success">Time : {{state.state.time}}</button>
+  </mat-grid-tile>
+  <mat-grid-tile [colspan]="10" [rowspan]="8">
+    <app-city [city]="state.state.city" [state]="state"></app-city>
+  </mat-grid-tile>
+  <mat-grid-tile [colspan]="2" [rowspan]="1">
+    <app-building-menu [state]="state"></app-building-menu>
+  </mat-grid-tile>
+  <mat-grid-tile [colspan]="2" [rowspan]="4">
+    <app-resource-summary [state]="state"></app-resource-summary>
+  </mat-grid-tile>
+</mat-grid-list>
+
+
+<router-outlet/>

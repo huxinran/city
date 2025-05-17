@@ -1,0 +1,9 @@
+<mat-card *ngIf="tile" appearance="outlined">
+    <mat-card-header>
+        <mat-card-subtitle> {{tile.type}} | {{tile.building?.type}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content *ngIf="tile.building">
+        <app-building [building]="tile.building!"></app-building>
+    </mat-card-content>
+</mat-card>
+

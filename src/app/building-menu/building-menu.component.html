@@ -1,0 +1,36 @@
+
+
+
+<mat-menu #main="matMenu">
+  <button mat-menu-item [matMenuTriggerFor]="house">House</button>
+  <button mat-menu-item [matMenuTriggerFor]="food">Food</button>
+  <button mat-menu-item [matMenuTriggerFor]="material">Material</button>
+  <button mat-menu-item [matMenuTriggerFor]="workshop">Workshop</button>
+</mat-menu>
+
+<mat-menu #house="matMenu">
+  <button mat-menu-item (click)="state.SetBuildType('House')">House</button>
+</mat-menu>
+
+<mat-menu #food="matMenu">
+  <button mat-menu-item (click)="state.SetBuildType('WheatFarm')">WheatFarm</button>
+  <button mat-menu-item (click)="state.SetBuildType('PigFarm')">PigFarm</button>
+</mat-menu>
+
+<mat-menu #material="matMenu">
+  <button mat-menu-item (click)="state.SetBuildType('LumberJack')">Lumber Hut</button>
+</mat-menu>
+
+<mat-menu #workshop="matMenu">
+  <button mat-menu-item>Flour</button>
+  <button mat-menu-item>Bread</button>
+  <button mat-menu-item>Sausage</button>
+</mat-menu>
+
+<mat-card>
+    <mat-card-header>Selected Type : {{state.state.buildType}}</mat-card-header> 
+    <mat-card-content>
+        <button mat-stroked-button color="success" [matMenuTriggerFor]="main">Buildings</button>
+        <button mat-stroked-button color="success" (click)="state.ClearBuildType()"> Clear Selction </button>
+    </mat-card-content>
+</mat-card>

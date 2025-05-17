@@ -1,0 +1,14 @@
+mat-grid-tile {
+    background: lightcyan
+}
+
+.mat-grid-tile {
+    display: flex !important; /* Override default display: block */
+    justify-content: flex-start !important; /* Align horizontally to the left */
+    align-items: flex-start !important; /* Align vertically to the top */
+}
+
+.mat-success {
+    background-color: white;
+    color: #fff;
+}

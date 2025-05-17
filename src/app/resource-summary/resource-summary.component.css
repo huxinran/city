@@ -1,0 +1,4 @@
+table.align-right-2rd-column td:nth-child(2)
+{
+  text-align: right;
+}
