@@ -21,6 +21,10 @@ export class TileComponent {
 
   HandleClick() {
     this.state.state.focus_tile = this.tile
+    if (this.tile.building) {
+      return
+    }
+    
     let building_type = this.state.state.buildType
     if (building_type == undefined) {
       return

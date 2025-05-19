@@ -1,1 +1,4 @@
 <div>Resident: {{house.occupant}} / {{house.max_occupant}}</div>
+<mat-chip class="need" *ngFor="let e of house.needs">{{e.type}}</mat-chip>
+<button>Upgrade</button>
+<button>Downgrade</button>

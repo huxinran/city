@@ -1,6 +1,5 @@
-<table>
-  <tr *ngFor="let name of state.GetResourceName()">
-    <td>{{name}}</td>
-    <td>{{state.GetResource(name)}}</td>
-  </tr>
-</table>
+<div class="item" *ngFor="let items of state.state.storage.items!">
+  <a>{{items.type}}</a>
+  <hr class="solid">
+  <a class="cnt" text-align: center>{{items.num}}</a>
+<div>

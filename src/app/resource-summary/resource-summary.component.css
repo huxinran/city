@@ -1,4 +1,9 @@
-table.align-right-2rd-column td:nth-child(2)
-{
-  text-align: right;
+.item{
+  display: inline-block;
+  width: 86px;
+  border-radius: 5px;
+  padding: 5px;
+  margin: 1px;
+  border: 1px solid rgb(0, 0, 0);
+  background-color: white;
 }

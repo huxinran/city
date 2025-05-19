@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
-import { City } from './city'
-import { Tile } from './tile';
 import { State } from './state';
 import { Storage, Items, ResourceName } from './storage';
-import { N } from '@angular/cdk/keycodes';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +13,7 @@ export class StateService {
     this.state = new State()
     setInterval(() => {
       this.Tick(); 
-    }, 1000)
+    }, 500)
   }
 
   public Tick() {
@@ -99,13 +96,13 @@ export class StateService {
     return total
   }
 
-  public GetResource(type: string): number {
-      if (type == "Wood") {
-        return this.state.storage.wood
-      } else if (type == "Wheat") {
-        return this.state.storage.wheat
+  public GetResource(storage: Storage, type: string): number {
+    for (let item of storage.items) {
+      if (item.type == type) {
+        return item.num
       }
-      return 0
+    }
+    return 0
   }
 
 
@@ -114,22 +111,38 @@ export class StateService {
   }
 
   public AddItem(storage: Storage, items: Items) {
-    if (items.type == "Wood") {
-      storage.wood += items.num
-    } else if (items.type == "Wheat") {
-      storage.wheat += items.num
+    for (let item of storage.items) {
+      if (item.type == items.type) {
+        item.num += items.num
+        return
+      }
     }
+    storage.items.push(items)
   }
 
-  public TryTakeItem(storage: Storage, items: Items) {
-    return this.GetResource(items.type) >= items.num
+  public TryTakeItem(storage: Storage, items: Items): boolean {
+    return this.GetResource(storage, items.type) >= items.num
   }
 
   public TakeItem(storage: Storage, items: Items) {
-    if (items.type == "Wood") {
-      storage.wood -= items.num
+    for (let item of storage.items) {
+      if (item.type == items.type) {
+          item.num -= items.num
+      }
+    }
+  }
+
+  public TakeItems(storage: Storage, items: Items[]): boolean {
+    for (let item of items) {
+      if (!this.TryTakeItem(storage, item)) {
+        return false
+      }
     }
 
+    for (let item of items) {
+      this.TakeItem(storage, item)
+    }
+    return true  
   }
 
   public UpdateProduction() {
@@ -137,14 +150,23 @@ export class StateService {
       if (t.building == undefined || t.building.production == undefined) {
         continue
       }
+   
       let production = t.building.production 
-      production.current_progress = Math.min(production.current_progress + production.full_efficiency, 100.0)
-      
-      if (production.current_progress == 100.0) {
-        production.current_progress = 0.0
+      if (production.status == "Waiting") {
+        if (this.TakeItems(this.state.storage, production.ingredient)) {
+          production.status = "In Progress";
+        }
+      } else if (production.status == "In Progress") {
+        production.current_progress = Math.min(production.current_progress + production.full_efficiency, 100.0)
+        if (production.current_progress == 100.0) {
+          production.status = "Finished Production"
+        }
+      } else if (production.status == "Finished Production") {
         for (let i of production.product) {
           this.AddItem(this.state.storage, i)
         }
+        production.current_progress = 0.0
+        production.status = "Waiting"
       }
     }
   }
@@ -163,8 +185,9 @@ export class StateService {
 
   public UpdateEmployment() {
 
+
     // set worker to base_ratio 
-    let base_ratio = this.state.population / this.state.worker_employed
+    let base_ratio = Math.min(1.0, this.state.population / this.state.worker_needed)
     let new_employed = 0 
     for (let p of this.state.productions) {
       let new_employee = Math.floor(p.production!.max_worker * base_ratio)

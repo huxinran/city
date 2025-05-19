@@ -13,18 +13,18 @@
 </mat-menu>
 
 <mat-menu #food="matMenu">
-  <button mat-menu-item (click)="state.SetBuildType('WheatFarm')">WheatFarm</button>
-  <button mat-menu-item (click)="state.SetBuildType('PigFarm')">PigFarm</button>
+  <button mat-menu-item (click)="state.SetBuildType('WheatFarm')">Wheat Farm</button>
+  <button mat-menu-item (click)="state.SetBuildType('PigFarm')">Pig Farm</button>
 </mat-menu>
 
 <mat-menu #material="matMenu">
-  <button mat-menu-item (click)="state.SetBuildType('LumberJack')">Lumber Hut</button>
+  <button mat-menu-item (click)="state.SetBuildType('LumberHut')">Lumber Hut</button>
 </mat-menu>
 
 <mat-menu #workshop="matMenu">
-  <button mat-menu-item>Flour</button>
-  <button mat-menu-item>Bread</button>
-  <button mat-menu-item>Sausage</button>
+  <button mat-menu-item (click)="state.SetBuildType('WindMill')">WindMill</button>
+  <button mat-menu-item (click)="state.SetBuildType('Bakery')">Bakery</button>
+  <button mat-menu-item (click)="state.SetBuildType('SausageShop')">Sausage Shop</button>
 </mat-menu>
 
 <mat-card>

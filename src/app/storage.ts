@@ -1,10 +1,11 @@
 export class Storage {
-    wood: number = 0
-    wheat: number = 0
-    flour: number = 0
-    bread: number = 0
-    pork: number = 0
-    sausage: number = 0
+    items: Items[] = []
+
+    constructor() {
+        for (let type of ResourceName) {
+            this.items.push(new Items(type, 0))
+        }
+    }
 }
 
 
@@ -19,3 +20,4 @@ export class Items {
 }
 
 export var ResourceName = ["Wood", "Wheat", "Flour", "Bread", "Pork", "Sausage"]
+
