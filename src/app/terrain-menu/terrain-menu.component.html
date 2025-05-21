@@ -1,0 +1,18 @@
+<mat-menu #main="matMenu">
+    <button mat-menu-item [matMenuTriggerFor]="terrain">Terrain</button>
+</mat-menu>
+
+<mat-menu #terrain="matMenu">
+    <button mat-menu-item (click)="state.SetTerrainType('Grass')">Grass</button>
+    <button mat-menu-item (click)="state.SetTerrainType('Forest')">Forest</button>
+    <button mat-menu-item (click)="state.SetTerrainType('Sand')">Sand</button>
+    <button mat-menu-item (click)="state.SetTerrainType('Mountain')">Mountain</button>
+    <button mat-menu-item (click)="state.SetTerrainType('Sea')">Sea</button>
+</mat-menu>
+
+<mat-card>
+    <mat-card-content>
+        <button mat-stroked-button color="success" [matMenuTriggerFor]="main">Terra</button>
+        <button mat-stroked-button color="success" (click)="state.ClearTerrainType()"> Clear: {{state.state.terrain_type}} </button>
+    </mat-card-content>
+</mat-card>
