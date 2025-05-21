@@ -1,7 +1,7 @@
-<div *ngIf="building.production">
-    <app-production [production]="building.production!"></app-production>
+<div *ngIf="tile.building?.production">
+    <app-production [tile]="tile"></app-production>
 </div>
-<div *ngIf="building.house">
-    <app-house [house]="building.house!"></app-house>
+<div *ngIf="tile.building?.house">
+    <app-house [tile]="tile"></app-house>
 </div>
 

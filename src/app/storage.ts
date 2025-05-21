@@ -1,15 +1,15 @@
 export class Storage {
-    items: Items[] = []
+    items: Item[] = []
 
     constructor() {
         for (let type of ResourceName) {
-            this.items.push(new Items(type, 0))
+            this.items.push(new Item(type, 0))
         }
     }
 }
 
 
-export class Items {
+export class Item {
     type: string
     num : number
 
@@ -19,5 +19,5 @@ export class Items {
     }
 }
 
-export var ResourceName = ["Wood", "Wheat", "Flour", "Bread", "Pork", "Sausage"]
+export var ResourceName = ["Wood", "Wheat", "Flour", "Bread", "Pork", "Sausage", "Vegetable", "Fruit", "Cow", "Fish"]
 

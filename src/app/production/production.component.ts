@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { ProductionBuilding } from '../building';
+import { Production } from '../building';
 import { PercentPipe } from '@angular/common';
+import { Tile } from '../tile';
 
 @Component({
   selector: 'app-production',
@@ -9,5 +10,5 @@ import { PercentPipe } from '@angular/common';
   styleUrl: './production.component.css'
 })
 export class ProductionComponent {
-  @Input() production!: ProductionBuilding
+  @Input() tile!: Tile
 }

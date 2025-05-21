@@ -12,3 +12,27 @@ mat-grid-tile {
     background-color: white;
     color: #fff;
 }
+
+.first {
+    height: 100%;
+    width: 100%;
+}
+
+.sxs {
+    display: inline-block;
+}
+
+.main {
+    width: 80%;
+    vertical-align:top;
+    display: inline-block;
+    overflow: scroll;
+    overflow-x: scroll;
+    overflow-y: scroll;
+}
+
+.side {
+    width: 20%;
+    vertical-align:top;
+    display: inline-block;
+}

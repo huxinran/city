@@ -1,3 +1,8 @@
 .detail {
-    width: 300px
+    width: 100%;
+    background-color: white;
+    padding: 5px;
+    border: 1px solid rgb(0, 0, 0);
+    border-radius: 5px;
 }
+

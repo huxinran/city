@@ -1,9 +1,5 @@
-<mat-card class="detail" *ngIf="tile" appearance="outlined">
-    <mat-card-header>
-        <mat-card-subtitle> {{tile.building ? tile.building!.type : tile.type}}</mat-card-subtitle> 
-    </mat-card-header>
-    <mat-card-content *ngIf="tile.building">
-        <app-building [building]="tile.building!"></app-building>
-    </mat-card-content>
-</mat-card>
-
+<div class="detail" *ngIf="tile" appearance="outlined">
+{{tile.building ? tile.building!.type : tile.type}}
+<hr class="solid">
+<app-building *ngIf="tile.building" [tile]="tile"></app-building>
+</div>

@@ -1,13 +1,13 @@
 .box {
+    box-sizing: border-box;
     height: 50px;
     width: 50px;
     justify-content: center;
     align-items: center;
-    border: 1px dotted rgb(0, 0, 0);
-    aspect-ratio: 1 / 1;
-    background-color: #5ee398;
     color: #000000;
+    margin: 0.5px;
     text-align: center;
     overflow-wrap: break-word;
-    font-size: 12px
+    font-size: 12px;
+    padding: 2px;
 }

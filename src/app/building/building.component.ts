@@ -3,6 +3,7 @@ import { Building } from '../building';
 import { ProductionComponent } from "../production/production.component";
 import { HouseComponent } from '../house/house.component';
 import { NgIf } from '@angular/common';
+import { Tile } from '../tile';
 
 @Component({
   selector: 'app-building',
@@ -11,5 +12,5 @@ import { NgIf } from '@angular/common';
   styleUrl: './building.component.css'
 })
 export class BuildingComponent {
-  @Input() building!: Building
+  @Input() tile!: Tile
 }

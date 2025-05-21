@@ -1,80 +1,77 @@
-import { N } from "@angular/cdk/keycodes"
-import { Items } from "./storage"
+import { Storage, Item } from "./storage"
+import { TakeItems } from "./utils"
 
-export class ProductionBuilding {
-    max_worker: number
-    worker: number
-    full_efficiency: number
-    current_progress: number
-    ingredient : Items[]
-    product: Items[]
-    status: string
-
-    constructor(max_worker: number, full_efficiency: number, ingredient: Items[], product: Items[]) {
-        this.max_worker = max_worker
-        this.worker = 0
-        this.full_efficiency = full_efficiency
-        this.current_progress = 0
-        this.ingredient = ingredient
-        this.product = product
-        this.status = "Waiting"
-    }
-}
-
-export class Need {
-    type: string
-    satisfied: boolean
-
-    constructor(type: string) {
-        this.type = type
-        this.satisfied = false
-    }
+export class Building {
+    constructor(
+        public type: string,
+        public material: Item[] = [],
+        public house?: House,
+        public production?: Production,
+        public service?: Service,
+        public needs: Need[] = [],
+    ) {}
 }
 
 export class House {
-    type: string
-    max_occupant: number
-    occupant: number
-    needs : Need[] 
-
-    constructor(type: string, max_occupant: number, needs: Need[]) {
-        this.type = type
-        this.max_occupant = max_occupant
-        this.occupant = 0
-        this.needs = needs
-    }
+    constructor(
+        public max_occupant: number,
+        public occupant: number = 0,
+    ) {}
 }
 
-export class Building {
-    type: string
-    build_cost: Items[]
-    production? : ProductionBuilding
-    house?: House
+export class Production {
+    constructor(
+        public worker_needed: number, 
+        public full_efficiency: number, 
+        public ingredient: Item[], 
+        public product: Item[],
+        public worker: number = 0,
+        public progress: number = 0,
+        public status: string = "Waiting",
+    ) {}
+}
 
-    constructor(type: string, build_cost: Items[], production?: ProductionBuilding, house?: House) {
-        this.type = type
-        this.build_cost = build_cost
-        this.production = production
-        this.house = house
-    }
+export class Service {
+    constructor(
+        public need_provided : string,
+        public radius: number 
+    ) {}
+
+}
+
+export class Need {
+    constructor(
+        public type: string,
+        public satisfied : boolean = false
+    ) {}
 }
 
 
-export function CreateBuilding(type: string) {
+
+export function CreateBuilding(type: string, storage: Storage) {
+    let new_building = undefined
     if (type == "House") {
-        return new Building(type, [new Items("Wood", 1)], undefined, new House("House", 10, [new Need("water"), new Need("fish")]))
-    } else if (type == "LumberJack") {
-        return new Building(type, [new Items("Wood", 1)], new ProductionBuilding(10, 10.0, [], [new Items("Wood", 1)]), undefined)    
+        new_building = new Building(type, [new Item("Wood", 1)], new House(10), undefined, undefined, [new Need("Water"), new Need("Fish")])
+    } else if (type == "LumberHut") {
+        new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [], [new Item("Wood", 1)]))    
     } else if (type == "WheatFarm") {
-        return new Building(type, [new Items("Wood", 1)], new ProductionBuilding(10, 10.0, [], [new Items("Wheat", 1)]), undefined)    
+        new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [], [new Item("Wheat", 1)]))   
     } else if (type == "WindMill") {
-        return new Building(type, [new Items("Wood", 1)], new ProductionBuilding(10, 10.0, [new Items("Wheat", 1)], [new Items("Flour", 1)]), undefined)    
+        new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [new Item("Wheat", 1)], [new Item("Flour", 1)]))   
     } else if (type == "Bakery") {
-        return new Building(type, [new Items("Wood", 1)], new ProductionBuilding(10, 10.0, [new Items("Flour", 1)], [new Items("Bread", 1)]), undefined)    
+        new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [new Item("Flour", 1)], [new Item("Bread", 1)]))    
     } else if (type == "PigFarm") {
-        return new Building(type, [new Items("Wood", 1)], new ProductionBuilding(10, 10.0, [], [new Items("Pork", 1)]), undefined)    
+        new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [], [new Item("Pork", 1)]))     
     } else if (type == "SausageShop") {
-        return new Building(type, [new Items("Wood", 1)], new ProductionBuilding(10, 10.0, [new Items("Pork", 1)], [new Items("Sausage", 1)]), undefined)    
+        new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [new Item("Pork", 1)], [new Item("Sausage", 1)]))     
+    } else if (type == "Well") {
+        new_building = new Building(type, [new Item("Wood", 1)], undefined, undefined, new Service("Water", 5))    
+    } else if (type == "FishPier") {
+        new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [], [new Item("Fish", 1)])) 
+    } 
+
+    if (TakeItems(storage, new_building!.material)) {
+        return new_building
     }
     return undefined
 }

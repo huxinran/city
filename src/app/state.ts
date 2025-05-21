@@ -1,19 +1,21 @@
 import { Tile } from "./tile"
 import { City } from "./city"
 import { Storage } from "./storage"
-import { Building } from "./building"
+import { Building, House, Production } from "./building"
 
 export class State {
       public city : City
       public storage : Storage
       public time : number
       public gold : number
-      public houses : Building[]
-      public productions : Building[]
+      public houses : Tile[]
+      public productions : Tile[]
+      public services: Tile[]
       public population : number
       public worker_needed : number
       public worker_employed: number
-      public buildType? : string
+      public build_type? : string
+      public terrain_type? : string
       public focus_tile?: Tile
 
       constructor() {
@@ -23,6 +25,7 @@ export class State {
         this.gold = 0
         this.houses = []
         this.productions = []
+        this.services = []
         this.population = 0
         this.worker_needed = 0
         this.worker_employed = 0
