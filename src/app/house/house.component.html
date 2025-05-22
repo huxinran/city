@@ -1,9 +1,14 @@
 <div>Resident: {{tile.building!.house!.occupant}} / {{tile.building!.house!.max_occupant}}<div>
+<div>Happiness: {{tile.building!.house!.happiness | percent}}<div></div>
 <div>
-    <mat-chip class="need" *ngFor="let e of tile.building?.needs" [ngStyle]="GetStyle(e)">{{e.type}}</mat-chip>
+    <mat-chip class="need" *ngFor="let e of tile.building!.house!.needs" [ngStyle]="GetStyle(e)">{{e.type}}</mat-chip>
 </div>
 <hr>
 <div>
-    <button mat-stroked-button>Upgrade</button>
-    <button mat-stroked-button>Downgrade</button>
+    <button class="btn">      
+        <i class="material-icons">arrow_circle_up</i>
+    </button>
+    <button class="btn">      
+        <i class="material-icons">arrow_circle_down</i>
+    </button>
 </div>

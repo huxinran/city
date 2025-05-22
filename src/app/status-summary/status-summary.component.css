@@ -1,4 +1,6 @@
 .mat-success {
     background-color: white;
-    color: purple;
+    color: blue;
+    border-radius: 5px;
+    margin: 2px;
 }

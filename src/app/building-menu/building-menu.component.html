@@ -1,7 +1,4 @@
-
-
-
-<mat-menu #main="matMenu">
+<mat-menu #building="matMenu">
   <button mat-menu-item [matMenuTriggerFor]="house">House</button>
   <button mat-menu-item [matMenuTriggerFor]="food">Food</button>
   <button mat-menu-item [matMenuTriggerFor]="material">Material</button>
@@ -32,11 +29,31 @@
 <mat-menu #service="matMenu">
     <button mat-menu-item (click)="state.SetBuildType('Well')">Well</button>
 </mat-menu>
-  
 
-<mat-card>
-    <mat-card-content>
-        <button mat-stroked-button color="success" [matMenuTriggerFor]="main">Buildings</button>
-        <button mat-stroked-button color="success" (click)="state.ClearBuildType()"> Clear: {{state.state.build_type}} </button>
-    </mat-card-content>
-</mat-card>
+<mat-menu #main="matMenu">
+  <button mat-menu-item [matMenuTriggerFor]="terrain">Terrain</button>
+</mat-menu>
+
+<mat-menu #terrain="matMenu">
+  <button mat-menu-item (click)="state.SetTerrainType('Grass')">Grass</button>
+  <button mat-menu-item (click)="state.SetTerrainType('Forest')">Forest</button>
+  <button mat-menu-item (click)="state.SetTerrainType('Sand')">Sand</button>
+  <button mat-menu-item (click)="state.SetTerrainType('Mountain')">Mountain</button>
+  <button mat-menu-item (click)="state.SetTerrainType('Sea')">Sea</button>
+</mat-menu>
+
+<mat-menu #game="matMenu">
+  <button mat-menu-item  (click)="this.state.Save()">Save</button>
+  <button mat-menu-item  (click)="this.state.Load()">Load</button>
+  <button mat-menu-item  (click)="this.state.Reset()">Reset</button>
+</mat-menu>
+
+
+
+
+
+        <button class="top_button" mat-stroked-button color="success" [matMenuTriggerFor]="building">Buildings</button>
+        <button class="top_button" mat-stroked-button color="success" [matMenuTriggerFor]="terrain">Terra</button>
+        <button class="top_button" mat-stroked-button color="success" (click)="state.ClearSelection()"> Clear {{state.state.build_type}} </button>
+        <button class="top_button" mat-stroked-button color="success" (click)="state.ClearSelection()"> Delete {{state.state.terrain_type}} </button>
+        <button class="top_button" mat-stroked-button color="success"  [matMenuTriggerFor]="game"> Game  </button>

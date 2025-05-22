@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { State } from './state';
 import { Storage, Item, ResourceName } from './storage';
-import { AddItem, FindNeighbours, TakeItems, ProvideService} from './utils';
+import { AddItem, FindNeighbours, TakeItems, ProvideService, CountItem, Transfer, shuffle} from './utils';
 import { Building, House, Production } from './building'
 
 @Injectable({
@@ -13,11 +13,28 @@ export class StateService {
 
   constructor() { 
     this.state = new State()
-    AddItem(this.state.storage, new Item("Wood", 50))
+    this.Load()
     setInterval(() => {
       this.Tick(); 
     }, 500)
   }
+
+  public Save() {
+    localStorage.setItem("state", JSON.stringify(this.state))
+  }
+
+  public Load() {
+    let saved_state = localStorage.getItem("state")
+    if (saved_state) {
+      this.state = JSON.parse(saved_state)
+    }
+  }
+
+  public Reset() {
+    this.state = new State()
+    this.Save()
+  }
+
 
   public Tick() {
     this.state.time += 1
@@ -29,11 +46,17 @@ export class StateService {
     this.state.worker_employed = this.CountWorkerEmployed()
     this.UpdateEmployment()
     this.UpdateProduction()
+    this.UpdateHouses()
     this.UpdatePopulation()
     this.UpdateService()
     this.UpdateGold()
   }
 
+  public ClearSelection() {
+    this.ClearBuildType()
+    this.ClearTerrainType()
+  }
+  
   public SetBuildType(type: string) {
     this.state.build_type = type
   }
@@ -56,7 +79,7 @@ export class StateService {
         houses.push(t)
       }
     }
-    return houses
+    return shuffle(houses)
   }
 
   public GetProductions() {
@@ -66,7 +89,7 @@ export class StateService {
         productions.push(t)
       }
     }
-    return productions
+    return shuffle(productions)
   }
 
   public GetServices() {
@@ -76,7 +99,7 @@ export class StateService {
         services.push(t)
       }
     }
-    return services
+    return shuffle(services)
   }
 
   public CountBuildings(type: string) {
@@ -146,15 +169,35 @@ export class StateService {
     }
   }
 
-  public UpdatePopulation() {
-    for (let t of this.state.city.tiles) {
-      if (t.building == undefined || t.building.house == undefined) {
-        continue
+  public UpdateHouses() {
+    for (let t of this.state.houses) {
+      let house = t.building!.house!
+      for (let n of house.needs) {
+        let cnt = CountItem(house.storage, n.type)
+        if (cnt == undefined) {
+          continue      
+        }
+        if (cnt <= 1.0) {
+          Transfer(this.state.storage, house.storage, [new Item(n.type, 1)])
+        }
+        n.satisfied = TakeItems(house.storage, [new Item(n.type, 0.01)])
       }
-      let house = t.building.house 
+    }
+  }
+
+  public UpdatePopulation() {
+    for (let t of this.state.houses) {
+      let house = t.building!.house! 
       if (house.occupant < house.max_occupant) {
         house.occupant += 1
       }
+      let needs_satified = 0
+      for (let e of house.needs) {
+        if (e.satisfied) {
+          needs_satified += 1
+        }
+      }
+      house.happiness = house.needs.length == 0 ? 1.0 : needs_satified / house.needs.length
     }
   }
 

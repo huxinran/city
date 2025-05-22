@@ -1,7 +1,7 @@
 import { Tile } from "./tile"
 import { City } from "./city"
-import { Storage } from "./storage"
-import { Building, House, Production } from "./building"
+import { Item, Storage } from "./storage"
+import { AddItem } from "./utils"
 
 export class State {
       public city : City
@@ -29,6 +29,7 @@ export class State {
         this.population = 0
         this.worker_needed = 0
         this.worker_employed = 0
+        AddItem(this.storage, new Item("Wood", 50))
       }
 
 }

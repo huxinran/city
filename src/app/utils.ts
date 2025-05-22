@@ -10,7 +10,16 @@ export function  GetResource(storage: Storage, type: string): number {
       }
     }
     return 0
+}
+
+export function CountItem(storage: Storage, type: string) {
+  for (let item of storage.items) {
+    if (item.type == type) {
+      return item.num
+    }
   }
+  return undefined
+}
 
 export function AddItem(storage: Storage, item: Item) {
     for (let i of storage.items) {
@@ -20,6 +29,12 @@ export function AddItem(storage: Storage, item: Item) {
       }
     }
 }
+export function AddItems(storage: Storage, items: Item[]) {
+  for (let i of items) {
+    AddItem(storage, i)
+  }
+}
+
 
 export function TryTakeItem(storage: Storage, item: Item): boolean {
     return GetResource(storage, item.type) >= item.num
@@ -31,6 +46,23 @@ export function TakeItem(storage: Storage, item: Item) {
             i.num -= item.num
         }
     }
+}
+
+export function shuffle(array: any[]) {
+  let currentIndex = array.length;
+
+  // While there remain elements to shuffle...
+  while (currentIndex != 0) {
+
+    // Pick a remaining element...
+    let randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+  return array
 }
 
 export function TakeItems(storage: Storage, items: Item[]): boolean {
@@ -46,12 +78,21 @@ export function TakeItems(storage: Storage, items: Item[]): boolean {
     return true  
 }
 
+export function Transfer(src: Storage, dst: Storage, items: Item[]) {
+  if (TakeItems(src, items)) {
+    AddItems(dst, items)
+    return true
+  }
+  return false
+}
+
+
 export function ProvideService(tile: Tile, need: string) {
-  if (tile.building == undefined) {
+  if (tile.building?.house == undefined) {
     return
   }
-
-  for (let e of tile.building!.needs) {
+  let house = tile.building!.house!
+  for (let e of house.needs) {
     if (e.type == need) {
       e.satisfied = true
     }

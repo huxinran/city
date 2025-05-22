@@ -1,4 +1,5 @@
 import { Storage, Item } from "./storage"
+import { Tile } from "./tile"
 import { TakeItems } from "./utils"
 
 export class Building {
@@ -8,14 +9,16 @@ export class Building {
         public house?: House,
         public production?: Production,
         public service?: Service,
-        public needs: Need[] = [],
     ) {}
 }
 
 export class House {
     constructor(
         public max_occupant: number,
+        public needs: Need[] = [],
         public occupant: number = 0,
+        public happiness: number = 0,
+        public storage: Storage = new Storage()
     ) {}
 }
 
@@ -27,6 +30,7 @@ export class Production {
         public product: Item[],
         public worker: number = 0,
         public progress: number = 0,
+        public storage: Storage = new Storage(),
         public status: string = "Waiting",
     ) {}
 }
@@ -46,12 +50,35 @@ export class Need {
     ) {}
 }
 
+export class Cart {
+    constructor(
+        public status: string = "Idle",
+        public src?: Tile,
+        public dst?: Tile,
+        public cargo: Item[] = [],
+        public progress: number = 0,
+        public distance: number = 0,
+    ) {}
+
+}
+
+export class Warehouse {
+    constructor(
+        public num: number,
+        public carts : Cart[]
+    ) {
+        for (let i = 0; i < num; ++i) {
+            carts.push(new Cart())
+        }
+    }
+}
+
 
 
 export function CreateBuilding(type: string, storage: Storage) {
     let new_building = undefined
     if (type == "House") {
-        new_building = new Building(type, [new Item("Wood", 1)], new House(10), undefined, undefined, [new Need("Water"), new Need("Fish")])
+        new_building = new Building(type, [new Item("Wood", 1)], new House(10, [new Need("Water"), new Need("Fish")]), undefined, undefined,)
     } else if (type == "LumberHut") {
         new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [], [new Item("Wood", 1)]))    
     } else if (type == "WheatFarm") {

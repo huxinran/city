@@ -4,3 +4,13 @@
     margin: 1px;
     font-size: 6px
 }
+
+.btn{
+    background-color: white;
+    text-align: center;
+    aspect-ratio: 1;
+    margin: 1px;
+    color: blue;
+    border: 1px solid black;
+    border-radius: 5px;
+}

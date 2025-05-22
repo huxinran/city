@@ -1,5 +1,5 @@
 <div class="detail" *ngIf="tile" appearance="outlined">
-{{tile.building ? tile.building!.type : tile.type}}
+    <b>{{tile.building ? tile.building!.type : tile.type}}</b>
 <hr class="solid">
 <app-building *ngIf="tile.building" [tile]="tile"></app-building>
 </div>

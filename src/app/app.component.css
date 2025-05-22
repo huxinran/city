@@ -17,6 +17,13 @@ mat-grid-tile {
     height: 100%;
     width: 100%;
 }
+.menu {
+    background-color: rgb(73, 73, 250);
+}
+
+.right {
+    float: right;
+}
 
 .sxs {
     display: inline-block;
@@ -26,13 +33,14 @@ mat-grid-tile {
     width: 80%;
     vertical-align:top;
     display: inline-block;
-    overflow: scroll;
-    overflow-x: scroll;
-    overflow-y: scroll;
+    overflow-x: auto;
+    overflow-y: auto;
 }
 
 .side {
     width: 20%;
+    height: max-content;
     vertical-align:top;
     display: inline-block;
+    padding-top: 5px;
 }

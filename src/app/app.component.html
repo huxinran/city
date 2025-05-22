@@ -1,11 +1,7 @@
 <div class="first">
   <div class="menu">
     <app-building-menu class="sxs" [state]="state"></app-building-menu>
-    <app-terrain-menu class="sxs" [state]="state"></app-terrain-menu>
-    <app-status-summary class="sxs" [state]="state"></app-status-summary>
-    <button mat-stroked-button color="success" (click)="Save()">Save</button>
-    <button mat-stroked-button color="success" (click)="Load()">Load</button>
-    <button mat-stroked-button color="success" (click)="Reset()">Reset</button>
+    <app-status-summary class="sxs right" [state]="state"></app-status-summary>
   </div>
   <div class="main">
     <app-city [city]="state.state.city" [state]="state"></app-city>
