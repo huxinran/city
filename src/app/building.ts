@@ -9,6 +9,7 @@ export class Building {
         public house?: House,
         public production?: Production,
         public service?: Service,
+        public warehouse?: Warehouse,
     ) {}
 }
 
@@ -52,6 +53,7 @@ export class Need {
 
 export class Cart {
     constructor(
+        public speed: number = 1,
         public status: string = "Idle",
         public src?: Tile,
         public dst?: Tile,
@@ -65,7 +67,7 @@ export class Cart {
 export class Warehouse {
     constructor(
         public num: number,
-        public carts : Cart[]
+        public carts : Cart[] = []
     ) {
         for (let i = 0; i < num; ++i) {
             carts.push(new Cart())
@@ -91,12 +93,13 @@ export function CreateBuilding(type: string, storage: Storage) {
         new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [], [new Item("Pork", 1)]))     
     } else if (type == "SausageShop") {
         new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [new Item("Pork", 1)], [new Item("Sausage", 1)]))     
-    } else if (type == "Well") {
-        new_building = new Building(type, [new Item("Wood", 1)], undefined, undefined, new Service("Water", 5))    
     } else if (type == "FishPier") {
         new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [], [new Item("Fish", 1)])) 
-    } 
-
+    } else if (type == "Well") {
+        new_building = new Building(type, [new Item("Wood", 1)], undefined, undefined, new Service("Water", 5))    
+    } else if (type == "Warehouse") {
+        new_building = new Building(type, [new Item("Wood", 1)], undefined, undefined, undefined, new Warehouse(4))
+    }
     if (TakeItems(storage, new_building!.material)) {
         return new_building
     }

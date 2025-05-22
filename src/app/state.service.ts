@@ -38,12 +38,7 @@ export class StateService {
 
   public Tick() {
     this.state.time += 1
-    this.state.houses = this.GetHouses()
-    this.state.productions = this.GetProductions()
-    this.state.services = this.GetServices()
-    this.state.population = this.CountPopulation()
-    this.state.worker_needed = this.CountWorkerNeeded()
-    this.state.worker_employed = this.CountWorkerEmployed()
+    this.SortTiles()
     this.UpdateEmployment()
     this.UpdateProduction()
     this.UpdateHouses()
@@ -71,69 +66,31 @@ export class StateService {
     this.state.terrain_type = undefined
   }
 
-
-  public GetHouses() {
+  public SortTiles() {
     let houses = []
-    for (let t of this.state.city.tiles) {
-      if (t.building?.house) {
-        houses.push(t)
-      }
-    }
-    return shuffle(houses)
-  }
-
-  public GetProductions() {
     let productions = []
-    for (let t of this.state.city.tiles) {
-      if (t.building?.production) {
-        productions.push(t)
-      }
-    }
-    return shuffle(productions)
-  }
-
-  public GetServices() {
     let services = []
+    let warehouses = []
     for (let t of this.state.city.tiles) {
-      if (t.building?.service) {
+      if (t.building == undefined) {
+        continue
+      }
+
+      if (t.building.house) {
+        houses.push(t)
+      } else if (t.building.production) {
+        productions.push(t)
+      } else if (t.building.service) {
         services.push(t)
+      } else if (t.building.warehouse) {
+        warehouses.push(t)
       }
     }
-    return shuffle(services)
-  }
 
-  public CountBuildings(type: string) {
-    let total = 0
-    for (let t of this.state.city.tiles) {
-      if (t.building?.type == type) {
-        total += 1
-      }
-    }
-    return total
-  }
-
-  public CountPopulation() {
-    let total = 0
-    for (let t of this.state.houses) {
-      total += t.building!.house!.occupant
-    }
-    return total
-  }
-
-  public CountWorkerNeeded() {
-    let total = 0
-    for (let t of this.state.productions) {
-      total += t.building!.production!.worker_needed
-    }
-    return total
-  }
-
-  public CountWorkerEmployed() {
-    let total = 0
-    for (let t of this.state.productions) {
-      total += t.building!.production!.worker
-    }
-    return total
+    this.state.houses = shuffle(houses)
+    this.state.productions = shuffle(productions)
+    this.state.services = shuffle(services)
+    this.state.warehouses = shuffle(warehouses)
   }
 
   public UpdateService() {
@@ -186,11 +143,10 @@ export class StateService {
   }
 
   public UpdatePopulation() {
+    let population = 0
     for (let t of this.state.houses) {
       let house = t.building!.house! 
-      if (house.occupant < house.max_occupant) {
-        house.occupant += 1
-      }
+
       let needs_satified = 0
       for (let e of house.needs) {
         if (e.satisfied) {
@@ -198,11 +154,22 @@ export class StateService {
         }
       }
       house.happiness = house.needs.length == 0 ? 1.0 : needs_satified / house.needs.length
+      if (house.occupant < house.max_occupant) {
+        house.occupant += 1
+      }
+      population += house.occupant
     }
+    this.state.population = population
   }
 
   public UpdateEmployment() {
+    let worker_needed = 0
+    for (let t of this.state.productions) {
 
+      let production = t.building!.production!
+      worker_needed += production.worker_needed
+    }
+    this.state.worker_needed = worker_needed
 
     // set worker to base_ratio 
     let base_ratio = Math.min(1.0, this.state.population / this.state.worker_needed)

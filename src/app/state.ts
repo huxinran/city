@@ -2,34 +2,22 @@ import { Tile } from "./tile"
 import { City } from "./city"
 import { Item, Storage } from "./storage"
 import { AddItem } from "./utils"
-
 export class State {
-      public city : City
-      public storage : Storage
-      public time : number
-      public gold : number
-      public houses : Tile[]
-      public productions : Tile[]
-      public services: Tile[]
-      public population : number
-      public worker_needed : number
-      public worker_employed: number
-      public build_type? : string
-      public terrain_type? : string
-      public focus_tile?: Tile
-
-      constructor() {
-        this.city = new City(20, 20)
-        this.storage = new Storage
-        this.time = 0
-        this.gold = 0
-        this.houses = []
-        this.productions = []
-        this.services = []
-        this.population = 0
-        this.worker_needed = 0
-        this.worker_employed = 0
-        AddItem(this.storage, new Item("Wood", 50))
+       constructor(
+        public city : City = new City(20, 20),
+        public storage : Storage = new Storage(),
+        public time : number = 0,
+        public gold : number = 0,
+        public houses : Tile[] = [],
+        public productions : Tile[] = [],
+        public services: Tile[] = [],
+        public warehouses: Tile[] = [],
+        public population : number = 0,
+        public worker_needed : number = 0,
+        public worker_employed: number = 0,
+        public build_type? : string, 
+        public terrain_type? : string,
+        public focus_tile?: Tile) {
+          AddItem(this.storage, new Item("Wood", 50))
       }
-
 }

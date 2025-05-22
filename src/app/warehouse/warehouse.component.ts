@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Tile } from '../tile';
 
 @Component({
   selector: 'app-warehouse',
@@ -7,5 +8,5 @@ import { Component } from '@angular/core';
   styleUrl: './warehouse.component.css'
 })
 export class WarehouseComponent {
-
+  @Input() tile!: Tile;
 }

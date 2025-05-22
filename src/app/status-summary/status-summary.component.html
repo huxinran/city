@@ -1,2 +1,25 @@
-<button mat-stroked-button color="success">Population : {{state.state.population}} / {{state.state.worker_needed}}</button>
-<button mat-stroked-button color="success">Gold  : {{state.state.gold | number: '1.0-0'}}</button>
+<div class="box">
+    <div> 
+        <div class="sxs"> <b> Population </b> </div>  
+        <div class="sxs right">{{state.state.population}}  / {{state.state.worker_needed}} </div> 
+    </div>
+
+    <hr>
+    <div> 
+        <div class="sxs"> <b>House</b></div>  
+        <div class="sxs right">{{state.state.houses.length}}</div> 
+    </div>
+    <div> 
+        <div class="sxs"> <b>Production</b></div>  
+        <div class="sxs right">{{state.state.productions.length}}</div> 
+    </div>
+    <div> 
+        <div class="sxs"> <b>Warehouse</b></div>  
+        <div class="sxs right">{{state.state.warehouses.length}}</div> 
+    </div>
+    <hr>
+    <div> 
+        <div class="sxs"> <b> Gold</b></div>  
+        <div class="sxs right">{{state.state.gold | number: '1.0-0'}} </div> 
+    </div>
+</div>

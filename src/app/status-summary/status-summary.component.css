@@ -1,6 +1,15 @@
-.mat-success {
-    background-color: white;
-    color: blue;
+.box {
+    background-color: lightblue;
     border-radius: 5px;
+    border: 1px solid black;
     margin: 2px;
+    padding: 2px;
+}
+
+.sxs {
+    display: inline-block;
+}
+
+.right {
+    float: right;
 }

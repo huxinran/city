@@ -1,9 +1,9 @@
-.detail {
-    width: 100%;
+.box {
     height: 40%;
     background-color:lightcyan;
     padding: 5px;
     border: 1px solid rgb(0, 0, 0);
     border-radius: 5px;
+    margin: 2px;
 }
 

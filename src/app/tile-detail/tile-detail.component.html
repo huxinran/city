@@ -1,5 +1,10 @@
-<div class="detail" *ngIf="tile" appearance="outlined">
-    <b>{{tile.building ? tile.building!.type : tile.type}}</b>
-<hr class="solid">
-<app-building *ngIf="tile.building" [tile]="tile"></app-building>
+<div class="box">
+    <div> <b>Current Tile </b> : <b>{{tile? tile.building ? tile.building!.type : tile.type : undefined}}</b>
+    </div>
+    <hr class="solid">
+    @if (tile) {
+        @if (tile.building) {
+            <app-building *ngIf="tile.building" [tile]="tile"></app-building>
+        }
+    }
 </div>

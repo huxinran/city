@@ -1,1 +1,5 @@
-<p>warehouse works!</p>
+@for (cart of this.tile.building!.warehouse!.carts; track cart) {    
+    <div>
+        Cart {{cart.status}}
+    </div>
+}

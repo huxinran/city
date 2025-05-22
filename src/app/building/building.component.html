@@ -1,7 +1,13 @@
-<div *ngIf="tile.building?.production">
+@if (tile.building?.production) {
     <app-production [tile]="tile"></app-production>
-</div>
-<div *ngIf="tile.building?.house">
+}
+@else if (tile.building?.house) {
     <app-house [tile]="tile"></app-house>
-</div>
+}
+@else if (tile.building?.service) {
+    <app-service [tile]="tile"></app-service>
+}
+@else if (tile.building?.warehouse) {
+    <app-warehouse [tile]="tile"></app-warehouse>
+}
 
