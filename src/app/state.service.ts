@@ -17,7 +17,7 @@ export class StateService {
     this.Load()
     setInterval(() => {
       this.Tick(); 
-    }, 500)
+    }, 200)
   }
 
   public Save() {
@@ -85,7 +85,7 @@ export class StateService {
       } else if (t.building.production) {
         productions.push(t)
         let status = t.building!.production!.status 
-        if (status == "Waiting") {
+        if (status == "Ready") {
           productions_pending.push(t)
         } else if (status == "Finished") {
           productions_done.push(t)
@@ -119,9 +119,9 @@ export class StateService {
   public UpdateProduction(city: City) {
     for (let t of city.productions) {
       let production = t.building!.production!
-      if (production.status == "Waiting") {
-        if (TakeItems(city.storage, production.ingredient)) {
-          production.status = "In Progress";
+      if (production.status == "Ready") {
+        if (production.ingredient.length == 0) {
+          production.status = "In Progress"
         }
       } else if (production.status == "In Progress") {
         production.progress = Math.min(production.progress + production.full_efficiency * production.worker / production.worker_needed, 100.0)
@@ -129,12 +129,6 @@ export class StateService {
           production.status = "Finished"
           return
         }
-      } else if (production.status == "Finished") {
-        //for (let i of production.product) {
-        //  AddItem(city.storage, i)
-        //}
-        //production.progress = 0.0
-        //production.status = "Waiting"
       }
     }
   }
@@ -167,10 +161,9 @@ export class StateService {
             c.status = "Returning"
             c.progress = 0
             c.destination!.building!.production!.progress = 0
-            c.destination!.building!.production!.status = "Waiting"
+            c.destination!.building!.production!.status = "Ready"
           }
-          return 
-        } if (c.status == "Returning") {
+        } else if (c.status == "Returning") {
           c.progress = Math.min(c.progress + c.speed, c.distance)
           if (c.progress == c.distance) {
             AddItems(city.storage, c.cargo)
@@ -179,7 +172,15 @@ export class StateService {
             c.distance = 0
             c.cargo = []
           }
-        } 
+        } else if (c.status == "Deliverying") {
+          c.progress = Math.min(c.progress + c.speed, c.distance)
+          if (c.progress == c.distance) {
+            c.destination!.building!.production!.progress = 0
+            c.destination!.building!.production!.status = "In Progress"
+            c.status = "Returning"
+            c.cargo = []
+          }
+        }
         else {
           idle_carts.push(c)
           idle_warehouses.push(t)
@@ -187,6 +188,7 @@ export class StateService {
       }
     }
     for (let i = 0; i < Math.min(city.productions_done.length); ++i) {
+      console.log("idle_cats", idle_carts.length)
       if (idle_carts.length == 0) {
         break
       } 
@@ -210,6 +212,39 @@ export class StateService {
       idle_carts = [...idle_carts.slice(0, min_dist), ...idle_carts.slice(min_dist + 1)]
       idle_warehouses = [...idle_warehouses.slice(0, min_dist), ...idle_warehouses.slice(min_dist + 1)]
     }
+
+    for (let i = 0; i < Math.min(city.productions_pending.length); ++i) {
+      if (idle_carts.length == 0) {
+        break
+      } 
+
+      let production = city.productions_pending[i]
+      let cargo = production.building!.production!.ingredient
+      if (!TakeItems(city.storage, cargo)) {
+        continue
+      }
+      
+      let min_dist = 100000
+      let min_dist_idx = 0
+      for (let j = 0; j < idle_carts.length; ++j) {
+        let d = Distance(production, idle_warehouses[j])
+        if (d < min_dist) {
+          min_dist = d
+          min_dist_idx = j
+        }
+      }
+      let choosen_cart = idle_carts[min_dist_idx]
+      choosen_cart.cargo = production.building!.production!.ingredient
+      choosen_cart.destination = production
+      choosen_cart.progress = 0
+      choosen_cart.distance = min_dist
+      choosen_cart.status = "Deliverying"
+      production.building!.production!.status = "Waiting for Ingredient"
+      idle_carts = [...idle_carts.slice(0, min_dist), ...idle_carts.slice(min_dist + 1)]
+      idle_warehouses = [...idle_warehouses.slice(0, min_dist), ...idle_warehouses.slice(min_dist + 1)]
+    }
+
+
   }
 
   public UpdatePopulation(city: City) {

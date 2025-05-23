@@ -38,7 +38,7 @@ export class Production {
         public worker: number = 0,
         public progress: number = 0,
         public storage: Storage = new Storage(),
-        public status: string = "Waiting",
+        public status: string = "Ready",
     ) {}
 }
 
