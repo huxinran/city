@@ -3,11 +3,11 @@
     <app-building-menu class="sxs" [state]="state"></app-building-menu>
   </div>
   <div class="main">
-    <app-city [city]="state.state.city" [state]="state"></app-city>
+    <app-city [city]="state.state.current_city!" [state]="state"></app-city>
   </div>
   <div class="side">
     <app-status-summary  [state]="state"></app-status-summary>
-    <app-tile-detail [tile]="state.state.focus_tile"></app-tile-detail>
+    <app-tile-detail [tile]="state.state.current_city?.focus_tile"></app-tile-detail>
     <app-resource-summary [state]="state"></app-resource-summary>
   </div>
 </div>

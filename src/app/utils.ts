@@ -1,9 +1,8 @@
-import { Need } from './building'
 import { City } from './city'
 import {Storage, Item} from './storage'
 import { Tile } from './tile'
 
-export function  GetResource(storage: Storage, type: string): number {
+export function GetResource(storage: Storage, type: string): number {
     for (let item of storage.items) {
       if (item.type == type) {
         return item.num
@@ -97,6 +96,10 @@ export function ProvideService(tile: Tile, need: string) {
       e.satisfied = true
     }
   }
+}
+
+export function Distance(a: Tile, b: Tile) {
+  return Math.abs(a.i - b.i) + Math.abs(a.j - b.j)
 }
 
 export function FindNeighbours(city: City, tile: Tile, l: number) {

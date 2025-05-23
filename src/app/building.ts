@@ -23,6 +23,12 @@ export class House {
     ) {}
 }
 
+export enum ProductionStatus {
+    WAITING = "WAITING",
+    IN_PROGRESS = "IN_PROGRESS",
+    FINISHED = "FINISHED",
+}
+
 export class Production {
     constructor(
         public worker_needed: number, 
@@ -55,8 +61,7 @@ export class Cart {
     constructor(
         public speed: number = 1,
         public status: string = "Idle",
-        public src?: Tile,
-        public dst?: Tile,
+        public destination?: Tile,
         public cargo: Item[] = [],
         public progress: number = 0,
         public distance: number = 0,
@@ -78,7 +83,7 @@ export class Warehouse {
 
 
 export function CreateBuilding(type: string, storage: Storage) {
-    let new_building = undefined
+    let new_building
     if (type == "House") {
         new_building = new Building(type, [new Item("Wood", 1)], new House(10, [new Need("Water"), new Need("Fish")]), undefined, undefined,)
     } else if (type == "LumberHut") {
@@ -99,7 +104,7 @@ export function CreateBuilding(type: string, storage: Storage) {
         new_building = new Building(type, [new Item("Wood", 1)], undefined, undefined, new Service("Water", 5))    
     } else if (type == "Warehouse") {
         new_building = new Building(type, [new Item("Wood", 1)], undefined, undefined, undefined, new Warehouse(4))
-    }
+    } 
     if (TakeItems(storage, new_building!.material)) {
         return new_building
     }

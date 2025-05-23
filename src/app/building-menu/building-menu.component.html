@@ -1,7 +1,3 @@
-<mat-menu #house="matMenu">
-  <button mat-menu-item (click)="state.SetBuildType('House')">House</button>
-</mat-menu>
-
 <mat-menu #food="matMenu">
   <button mat-menu-item (click)="state.SetBuildType('WheatFarm')">Wheat Farm</button>
   <button mat-menu-item (click)="state.SetBuildType('PigFarm')">Pig Farm</button>
@@ -38,12 +34,12 @@
 </mat-menu>
 
 
-<button class="top_button" mat-stroked-button color="success" [matMenuTriggerFor]="house">House</button>
+<button class="top_button" mat-stroked-button color="success" (click)="state.SetBuildType('House')">House</button>
 <button class="top_button" mat-stroked-button color="success" [matMenuTriggerFor]="food">Food</button>
 <button class="top_button" mat-stroked-button color="success" [matMenuTriggerFor]="material">Material</button>
 <button class="top_button" mat-stroked-button color="success" [matMenuTriggerFor]="workshop">Workshop</button>
 <button class="top_button" mat-stroked-button color="success" [matMenuTriggerFor]="service">Service</button>
 <button class="top_button" mat-stroked-button color="success" [matMenuTriggerFor]="terrain">Terra</button>
 <button class="top_button" mat-stroked-button color="success" (click)="state.ClearSelection()"> Clear {{state.state.build_type}} </button>
-<button class="top_button" mat-stroked-button color="success" (click)="state.ClearSelection()"> Delete {{state.state.terrain_type}} </button>
-<button class="top_button" mat-stroked-button color="success"  [matMenuTriggerFor]="game"> Game  </button>
+<button class="top_button" mat-stroked-button color="success" (click)="state.SetBuildType('Delete')">Delete</button>
+<button class="top_button" mat-stroked-button color="success" [matMenuTriggerFor]="game"> Game  </button>
