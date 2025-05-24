@@ -2,6 +2,21 @@ import { Storage, Item } from "./storage"
 import { Tile } from "./tile"
 import { TakeItems } from "./utils"
 
+
+export enum ProductionStatus {
+    READY = "Ready",
+    WAITING_DELIVERY="Waiting Delivery",
+    IN_PROGRESS = "In Progress",
+    FINISHED = "Finished",
+    WAITING_PICK_UP="Waiting Pick Up"
+}
+
+export enum ShippingTaskType {
+    PICKING_UP="Picking Up",
+    DELIVERYING="Deliverying",
+    RETURNING="Returning",
+}
+
 export class Building {
     constructor(
         public type: string,
@@ -13,6 +28,8 @@ export class Building {
     ) {}
 }
 
+
+
 export class House {
     constructor(
         public max_occupant: number,
@@ -23,11 +40,8 @@ export class House {
     ) {}
 }
 
-export enum ProductionStatus {
-    WAITING = "WAITING",
-    IN_PROGRESS = "IN_PROGRESS",
-    FINISHED = "FINISHED",
-}
+
+
 
 export class Production {
     constructor(
@@ -38,7 +52,7 @@ export class Production {
         public worker: number = 0,
         public progress: number = 0,
         public storage: Storage = new Storage(),
-        public status: string = "Ready",
+        public status: ProductionStatus = ProductionStatus.READY,
     ) {}
 }
 
@@ -59,12 +73,18 @@ export class Need {
 
 export class Cart {
     constructor(
-        public speed: number = 1,
-        public status: string = "Idle",
-        public destination?: Tile,
-        public cargo: Item[] = [],
-        public progress: number = 0,
+        public speed: number,
+        public task?: ShippingTask,
+    ) {}
+}
+
+export class ShippingTask {
+    constructor(
+        public type: ShippingTaskType,
+        public dst: Tile,
+        public cargo: Item[],
         public distance: number = 0,
+        public progress: number = 0,
     ) {}
 
 }
@@ -75,7 +95,7 @@ export class Warehouse {
         public carts : Cart[] = []
     ) {
         for (let i = 0; i < num; ++i) {
-            carts.push(new Cart())
+            carts.push(new Cart(1))
         }
     }
 }

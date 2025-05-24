@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { State } from './state';
 import { Storage, Item, ResourceName } from './storage';
 import { AddItem, FindNeighbours, TakeItems, ProvideService, CountItem, Transfer, shuffle, AddItems, Distance} from './utils';
-import { Building, House, Production } from './building'
+import { Building, House, Production, ProductionStatus, ShippingTask, ShippingTaskType } from './building'
 import { City } from './city';
 
 @Injectable({
@@ -17,7 +17,7 @@ export class StateService {
     this.Load()
     setInterval(() => {
       this.Tick(); 
-    }, 200)
+    }, 100)
   }
 
   public Save() {
@@ -45,6 +45,7 @@ export class StateService {
     this.UpdateWarehouses(this.state.current_city!)
     this.UpdateHouses(this.state.current_city!)
     this.UpdatePopulation(this.state.current_city!)
+    this.HandleShipTasks(this.state.current_city!)
     this.UpdateService(this.state.current_city!)
     this.UpdateGold(this.state.current_city!)
   }
@@ -119,16 +120,23 @@ export class StateService {
   public UpdateProduction(city: City) {
     for (let t of city.productions) {
       let production = t.building!.production!
-      if (production.status == "Ready") {
+      if (production.status == ProductionStatus.READY) {
         if (production.ingredient.length == 0) {
-          production.status = "In Progress"
+          production.status = ProductionStatus.IN_PROGRESS
+        } else {
+          let shipping_task = new ShippingTask(ShippingTaskType.DELIVERYING, t, production.ingredient)
+          city.shipping_tasks.push(shipping_task)
+          production.status = ProductionStatus.WAITING_DELIVERY
         }
-      } else if (production.status == "In Progress") {
+      } else if (production.status == ProductionStatus.IN_PROGRESS) {
         production.progress = Math.min(production.progress + production.full_efficiency * production.worker / production.worker_needed, 100.0)
         if (production.progress == 100.0) {
-          production.status = "Finished"
-          return
+          production.status = ProductionStatus.FINISHED
         }
+      } else if (production.status == ProductionStatus.FINISHED) {
+        let shipping_task = new ShippingTask(ShippingTaskType.PICKING_UP, t, production.product)
+        city.shipping_tasks.push(shipping_task)
+        production.status = ProductionStatus.WAITING_PICK_UP
       }
     }
   }
@@ -151,100 +159,73 @@ export class StateService {
   
   public UpdateWarehouses(city: City) {
     let idle_carts = []
-    let idle_warehouses = []
     for (let t of city.warehouses) {
-      let warehouse = t.building!.warehouse!
-      for (let c of warehouse.carts) {
-        if (c.status == "Picking Up") {
-          c.progress = Math.min(c.progress + c.speed, c.distance)
-          if (c.progress == c.distance) {
-            c.status = "Returning"
-            c.progress = 0
-            c.destination!.building!.production!.progress = 0
-            c.destination!.building!.production!.status = "Ready"
-          }
-        } else if (c.status == "Returning") {
-          c.progress = Math.min(c.progress + c.speed, c.distance)
-          if (c.progress == c.distance) {
-            AddItems(city.storage, c.cargo)
-            c.status = "Idle"
-            c.progress = 0
-            c.distance = 0
-            c.cargo = []
-          }
-        } else if (c.status == "Deliverying") {
-          c.progress = Math.min(c.progress + c.speed, c.distance)
-          if (c.progress == c.distance) {
-            c.destination!.building!.production!.progress = 0
-            c.destination!.building!.production!.status = "In Progress"
-            c.status = "Returning"
-            c.cargo = []
-          }
+      for (let c of t.building!.warehouse!.carts) {
+        if (c.task == undefined) {
+          idle_carts.push(t)
+          continue
         }
-        else {
-          idle_carts.push(c)
-          idle_warehouses.push(t)
+        c.task.progress = Math.min(c.task.progress + c.speed, c.task.distance)
+        if (c.task.progress == c.task.distance) {
+          if (c.task.type == ShippingTaskType.DELIVERYING) {
+            c.task.type = ShippingTaskType.RETURNING
+            c.task.progress = 0
+            c.task.cargo = []
+            c.task.dst.building!.production!.status = ProductionStatus.IN_PROGRESS
+          } else if (c.task.type == ShippingTaskType.PICKING_UP) {
+            c.task.type = ShippingTaskType.RETURNING
+            c.task.progress = 0
+            c.task.dst.building!.production!.status = ProductionStatus.READY
+          } else {
+            AddItems(city.storage, c.task.cargo)
+            console.log("finished")
+            c.task = undefined
+          }
         }
       }
     }
-    for (let i = 0; i < Math.min(city.productions_done.length); ++i) {
-      console.log("idle_cats", idle_carts.length)
-      if (idle_carts.length == 0) {
+    city.carts = idle_carts     
+  }
+
+  public HandleShipTasks(city: City) {
+    let i = 0
+    while (i < city.shipping_tasks.length) {
+      if (city.carts.length == 0) {
         break
-      } 
-      let production = city.productions_done[i]
-      let min_dist = 100000
-      let min_dist_idx = 0
-      for (let j = 0; j < idle_carts.length; ++j) {
-        let d = Distance(production, idle_warehouses[j])
-        if (d < min_dist) {
-          min_dist = d
-          min_dist_idx = j
+      }
+
+      let task = city.shipping_tasks[i]
+      if (task.type == ShippingTaskType.DELIVERYING) {
+        if (!TakeItems(city.storage, task.cargo)) {
+          ++i
+          continue
         }
       }
-      let choosen_cart = idle_carts[min_dist_idx]
-      choosen_cart.cargo = production.building!.production!.product
-      choosen_cart.destination = production
-      choosen_cart.progress = 0
-      choosen_cart.distance = min_dist
-      choosen_cart.status = "Picking Up"
-      production.building!.production!.status = "Waiting for Pick Up"
-      idle_carts = [...idle_carts.slice(0, min_dist), ...idle_carts.slice(min_dist + 1)]
-      idle_warehouses = [...idle_warehouses.slice(0, min_dist), ...idle_warehouses.slice(min_dist + 1)]
-    }
 
-    for (let i = 0; i < Math.min(city.productions_pending.length); ++i) {
-      if (idle_carts.length == 0) {
+      let min_dist = Infinity
+      let min_idx = undefined
+      for (let j = 0; j < city.carts.length; ++j) {
+        let cart = city.carts[j]
+        let dist = Distance(task.dst, cart)
+        if (dist < min_dist) {
+          min_dist = dist
+          min_idx = j
+        }
+      }
+
+      let cart = city.carts[min_idx!]
+      task.distance = min_dist
+      task.progress = 0
+      for (let c of cart.building!.warehouse!.carts) {
+        if (c.task != undefined) {
+          continue
+        }
+        c.task = task
         break
-      } 
-
-      let production = city.productions_pending[i]
-      let cargo = production.building!.production!.ingredient
-      if (!TakeItems(city.storage, cargo)) {
-        continue
       }
-      
-      let min_dist = 100000
-      let min_dist_idx = 0
-      for (let j = 0; j < idle_carts.length; ++j) {
-        let d = Distance(production, idle_warehouses[j])
-        if (d < min_dist) {
-          min_dist = d
-          min_dist_idx = j
-        }
-      }
-      let choosen_cart = idle_carts[min_dist_idx]
-      choosen_cart.cargo = production.building!.production!.ingredient
-      choosen_cart.destination = production
-      choosen_cart.progress = 0
-      choosen_cart.distance = min_dist
-      choosen_cart.status = "Deliverying"
-      production.building!.production!.status = "Waiting for Ingredient"
-      idle_carts = [...idle_carts.slice(0, min_dist), ...idle_carts.slice(min_dist + 1)]
-      idle_warehouses = [...idle_warehouses.slice(0, min_dist), ...idle_warehouses.slice(min_dist + 1)]
+      city.shipping_tasks = [...city.shipping_tasks.slice(0, i), ...city.shipping_tasks.slice(i + 1)]
+      city.carts = [...city.carts.slice(0, min_dist), ...city.carts.slice(min_dist + 1)]
     }
-
-
   }
 
   public UpdatePopulation(city: City) {

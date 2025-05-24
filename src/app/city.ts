@@ -1,3 +1,4 @@
+import { ShippingTask, Cart } from "./building"
 import { Storage, Item } from "./storage"
 import {Tile} from "./tile"
 import { AddItem } from "./utils"
@@ -15,6 +16,8 @@ export class City {
         public productions_pending: Tile[] = [],
         public services: Tile[] = [],
         public warehouses: Tile[] = [],
+        public shipping_tasks: ShippingTask[] = [],
+        public carts: Tile[] = [],
         public population : number = 0,
         public worker_needed : number = 0,
         public worker_employed: number = 0,

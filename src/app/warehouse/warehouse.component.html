@@ -1,5 +1,5 @@
 @for (cart of this.tile.building!.warehouse!.carts; track cart) {    
     <div>
-        Cart : {{cart.status}} {{cart.progress / cart.distance | percent}}
+        Cart : {{cart.task ? cart.task!.type : "Idle"}} {{cart.task?.distance}}
     </div>
 }

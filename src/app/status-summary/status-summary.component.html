@@ -23,3 +23,17 @@
         <div class="sxs right">{{state.state.gold | number: '1.0-0'}} </div> 
     </div>
 </div>
+
+task
+@for (task of state.state.current_city?.shipping_tasks; track task) {    
+    <div>
+        {{task.type}}
+    </div>
+}
+
+cart
+@for (cart of state.state.current_city?.carts; track cart) {    
+    <div>
+        {{cart.building?.warehouse?.num}}    
+    </div>
+}
