@@ -1,5 +1,10 @@
-@for (cart of this.tile.building!.warehouse!.carts; track cart) {    
+@for (cart of this.tile.building!.warehouse!.carts; track $index) {    
     <div>
-        Cart : {{cart.task ? cart.task!.type : "Idle"}} {{cart.task?.distance}}
+        Cart {{$index + 1}}: 
+        @if (cart.task) {
+            {{cart.task.type}} - {{cart.task.progress / cart.task.distance | percent}}
+        } @else {
+            Ready
+        }
     </div>
 }

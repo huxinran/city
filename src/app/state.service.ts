@@ -3,7 +3,8 @@ import { State } from './state';
 import { Storage, Item, ResourceName } from './storage';
 import { AddItem, FindNeighbours, TakeItems, ProvideService, CountItem, Transfer, shuffle, AddItems, Distance} from './utils';
 import { Building, House, Production, ProductionStatus, ShippingTask, ShippingTaskType } from './building'
-import { City } from './city';
+import { City, Map } from './city';
+import { S } from '@angular/cdk/keycodes';
 
 @Injectable({
   providedIn: 'root'
@@ -15,13 +16,20 @@ export class StateService {
   constructor() { 
     this.state = new State()
     this.Load()
+    this.LoadMap()
     setInterval(() => {
       this.Tick(); 
-    }, 100)
+    }, 1000)
   }
 
   public Save() {
     localStorage.setItem("state", JSON.stringify(this.state))
+  }
+
+  public SaveMap() {
+    for (let city of this.state.cities) {
+      localStorage.setItem("map" + city.name, JSON.stringify(new Map(city.h, city.w, city.tiles))) 
+    }
   }
 
   public Load() {
@@ -31,11 +39,34 @@ export class StateService {
     }
   }
 
+  public LoadMap() {
+    for (let city of this.state.cities) {
+      localStorage.setItem("map" + city.name, JSON.stringify(new Map(city.h, city.w, city.tiles))) 
+      let saved_map = localStorage.getItem("map" + city.name)
+      if (saved_map) {
+        let saved_map_obj = JSON.parse(saved_map)
+        city.h = saved_map_obj.h
+        city.w = saved_map_obj.w
+        for (let i = 0; i < city.tiles.length; ++i) {
+          city.tiles[i].type = saved_map_obj.tiles[i].type
+        }
+      }
+    }
+  }
+
   public Reset() {
     this.state = new State()
     this.Save()
   }
-
+  
+  public ChangeCity(name: string) {
+    for (let city of this.state.cities) {
+      if (city.name == name) {
+        this.state.current_city = city
+        return
+      }
+    }
+  }
 
   public Tick() {
     this.state.time += 1
@@ -72,8 +103,6 @@ export class StateService {
   public SortTiles(city: City) {
     let houses = []
     let productions = []
-    let productions_done = []
-    let productions_pending = []
     let services = []
     let warehouses = []
     for (let t of city.tiles) {
@@ -85,12 +114,6 @@ export class StateService {
         houses.push(t)
       } else if (t.building.production) {
         productions.push(t)
-        let status = t.building!.production!.status 
-        if (status == "Ready") {
-          productions_pending.push(t)
-        } else if (status == "Finished") {
-          productions_done.push(t)
-        }
       } else if (t.building.service) {
         services.push(t)
       } else if (t.building.warehouse) {
@@ -100,8 +123,6 @@ export class StateService {
 
     city.houses = shuffle(houses)
     city.productions = shuffle(productions)
-    city.productions_done = shuffle(productions_done)
-    city.productions_pending = shuffle(productions_pending)
     city.services = shuffle(services)
     city.warehouses = shuffle(warehouses)
   }
@@ -176,9 +197,9 @@ export class StateService {
             c.task.type = ShippingTaskType.RETURNING
             c.task.progress = 0
             c.task.dst.building!.production!.status = ProductionStatus.READY
+            c.task.dst.building!.production!.progress = 0
           } else {
             AddItems(city.storage, c.task.cargo)
-            console.log("finished")
             c.task = undefined
           }
         }
@@ -201,7 +222,6 @@ export class StateService {
           continue
         }
       }
-
       let min_dist = Infinity
       let min_idx = undefined
       for (let j = 0; j < city.carts.length; ++j) {
@@ -212,16 +232,14 @@ export class StateService {
           min_idx = j
         }
       }
-
       let cart = city.carts[min_idx!]
       task.distance = min_dist
       task.progress = 0
       for (let c of cart.building!.warehouse!.carts) {
-        if (c.task != undefined) {
-          continue
+        if (c.task == undefined) {
+          c.task = task
+          break
         }
-        c.task = task
-        break
       }
       city.shipping_tasks = [...city.shipping_tasks.slice(0, i), ...city.shipping_tasks.slice(i + 1)]
       city.carts = [...city.carts.slice(0, min_dist), ...city.carts.slice(min_dist + 1)]

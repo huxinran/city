@@ -1,7 +1,9 @@
 <div>Resident: {{tile.building!.house!.occupant}} / {{tile.building!.house!.max_occupant}}<div>
 <div>Happiness: {{tile.building!.house!.happiness | percent}}<div></div>
 <div>
-    <mat-chip class="need" *ngFor="let e of tile.building!.house!.needs" [ngStyle]="GetStyle(e)">{{e.type}}</mat-chip>
+    @for (need of tile.building!.house!.needs; track $index) {
+        <mat-chip class="need" [ngStyle]="GetStyle(need)">{{need.type}}</mat-chip>
+    }
 </div>
 <hr>
 <div>

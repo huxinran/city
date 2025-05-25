@@ -1,6 +1,5 @@
-
-<div class="map_box">
-    <div class="grid" [ngStyle]="getStyle()">
-        <app-tile *ngFor="let t of city.tiles" [tile]="t" [state]="state"></app-tile> 
-    </div>
+<div class="grid" [ngStyle]="getStyle()">
+    @for (tile of city.tiles; track $index) {
+        <app-tile [tile]="tile" [state]="state"></app-tile> 
+    }
 </div>

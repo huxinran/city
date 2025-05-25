@@ -1,46 +1,37 @@
-mat-grid-tile {
-    background: lightcyan
-}
-
-.mat-grid-tile {
-    display: flex !important; /* Override default display: block */
-    justify-content: flex-start !important; /* Align horizontally to the left */
-    align-items: flex-start !important; /* Align vertically to the top */
-}
-
-.mat-success {
-    background-color: white;
-    color: #fff;
-}
-
-.first {
-    height: 100%;
-    width: 100%;
-}
-.menu {
-    background-color: rgb(73, 73, 250);
-}
-
-.right {
-    float: right;
-}
 
 .sxs {
     display: inline-block;
 }
 
-.main {
-    width: 80%;
-    vertical-align:top;
-    display: inline-block;
-    overflow-x: auto;
-    overflow-y: auto;
+.container {
+    display: grid;
+    grid-template-rows: min-content 1fr; /* Top bar height, then 1 fraction for remaining height */
+    grid-template-columns: 1fr 320px; /* Map takes 1 fraction, sidebar 250px */
+    height: 100vh; /* Ensures the grid occupies the entire viewport height */
+    width: 100vw;  /* Ensures the grid occupies the entire viewport width */
+    overflow: hidden; /* Prevent body scroll */
 }
 
-.side {
-    width: 20%;
-    height: max-content;
-    vertical-align:top;
-    display: inline-block;
-    padding-top: 5px;
+.top-menu {
+    grid-row: 1;
+    grid-column: 1/-1;
+    background: blue;
+    z-index: 10; /* Ensures it stays on top */
+}
+
+.map-container {
+    grid-row: 2;
+    grid-column: 1;
+    overflow: auto; /* Allows map content to scroll */
+    background-color: white;
+    padding: 2px;
+    box-sizing: border-box;
+}
+
+.right-menu {
+    grid-row: 2;
+    grid-column: 2;
+    padding: 2px;
+    box-sizing: border-box;
+    overflow-y: auto; /* Allows sidebar content to scroll */
 }

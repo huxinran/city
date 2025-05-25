@@ -1,5 +1,8 @@
-<div class="item" *ngFor="let items of state.state.current_city!.storage.items">
-  <a class="name"><b>{{items.type}}</b></a>
-  <br>
-  <a class="cnt">{{items.num}}</a>
-<div>
+
+@for (item of state.state.current_city!.storage.items; track $index) {
+  <div class="item">
+    <a class="name"><b>{{item.type}}</b></a>
+    <br>
+    <a class="cnt">{{item.num}}</a>
+  </div>
+}

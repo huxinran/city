@@ -1,14 +1,16 @@
-<div class="first">
-  <div class="menu">
+<div class="container">
+  <div class="top-menu">
     <app-building-menu class="sxs" [state]="state"></app-building-menu>
   </div>
-  <div class="main">
+  <div class="map-container">
     <app-city [city]="state.state.current_city!" [state]="state"></app-city>
   </div>
-  <div class="side">
+  <div class="right-menu">
     <app-status-summary  [state]="state"></app-status-summary>
     <app-tile-detail [tile]="state.state.current_city?.focus_tile"></app-tile-detail>
     <app-resource-summary [state]="state"></app-resource-summary>
   </div>
 </div>
+
+
 

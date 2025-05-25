@@ -3,9 +3,17 @@ import { Storage, Item } from "./storage"
 import {Tile} from "./tile"
 import { AddItem } from "./utils"
 
-export class City {
+export class Map {
+    constructor (
+        public h: number,
+        public w: number,
+        public tiles : Tile[],
+    ) {}
+}
 
+export class City {
     constructor(
+        public name: string,
         public h: number, 
         public w: number,
         public tiles : Tile[] = [],
@@ -31,3 +39,5 @@ export class City {
         AddItem(this.storage, new Item("Wood", 50))
     }
 }
+
+

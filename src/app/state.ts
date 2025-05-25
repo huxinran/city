@@ -7,7 +7,10 @@ export class State {
         public gold : number = 0,
         public build_type? : string, 
         public terrain_type? : string,) {
-          this.cities.push(new City(20, 20))
+          this.cities.push(new City("Anrelia", 50, 50))
+          this.cities.push(new City("EagleFall", 50, 50))
+          this.cities.push(new City("JadeWind", 50, 50))
+          this.cities.push(new City("Matugar", 50, 50))
           this.current_city = cities[0]
       }
 }
