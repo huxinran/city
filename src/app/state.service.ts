@@ -16,7 +16,6 @@ export class StateService {
   constructor() { 
     this.state = new State()
     this.Load()
-    this.LoadMap()
     setInterval(() => {
       this.Tick(); 
     }, 1000)
@@ -24,6 +23,16 @@ export class StateService {
 
   public Save() {
     localStorage.setItem("state", JSON.stringify(this.state))
+    this.SaveMap()
+  }
+
+
+  public Load() {
+    let saved_state = localStorage.getItem("state")
+    if (saved_state) {
+      this.state = JSON.parse(saved_state)
+    }
+    this.LoadMap()
   }
 
   public SaveMap() {
@@ -31,32 +40,31 @@ export class StateService {
       localStorage.setItem("map" + city.name, JSON.stringify(new Map(city.h, city.w, city.tiles))) 
     }
   }
-
-  public Load() {
-    let saved_state = localStorage.getItem("state")
-    if (saved_state) {
-      this.state = JSON.parse(saved_state)
-    }
-  }
-
   public LoadMap() {
     for (let city of this.state.cities) {
-      localStorage.setItem("map" + city.name, JSON.stringify(new Map(city.h, city.w, city.tiles))) 
       let saved_map = localStorage.getItem("map" + city.name)
+      console.log(city.name)
       if (saved_map) {
+        console.log("HAS MAP")
         let saved_map_obj = JSON.parse(saved_map)
         city.h = saved_map_obj.h
         city.w = saved_map_obj.w
         for (let i = 0; i < city.tiles.length; ++i) {
           city.tiles[i].type = saved_map_obj.tiles[i].type
+          if (city.tiles[i].type != "Land") {
+            console.log(city.tiles[i].i, city.tiles[i].j)
+          }
         }
       }
     }
   }
-
+  public Restart() {
+    this.state = new State()
+    this.LoadMap()
+  }
+  
   public Reset() {
     this.state = new State()
-    this.Save()
   }
   
   public ChangeCity(name: string) {
