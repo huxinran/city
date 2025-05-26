@@ -35,6 +35,7 @@ export class House {
         public max_occupant: number,
         public service_needs: ServiceNeed[] = [],
         public resource_needs: ResourceNeed[] = [],
+        public tier: number = 1,
         public occupant: number = 0,
         public happiness: number = 0,
         public storage: Storage = new Storage()

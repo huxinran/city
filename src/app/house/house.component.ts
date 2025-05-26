@@ -12,4 +12,13 @@ import { Tile } from '../tile';
 })
 export class HouseComponent {
   @Input() tile!: Tile
+
+  public Upgrade() {
+    this.tile.building!.house!.tier += 1
+    this.tile.building!.house!.max_occupant = this.tile.building!.house!.tier * 10
+  }
+  public Downgrade() {
+    this.tile.building!.house!.tier -= 1
+    this.tile.building!.house!.max_occupant = this.tile.building!.house!.tier * 10
+  }
 }

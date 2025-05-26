@@ -102,6 +102,7 @@ export class StateService {
     this.state.terrain_type = undefined
   }
 
+
   public SortTiles(city: City) {
     let houses = []
     let productions = []
