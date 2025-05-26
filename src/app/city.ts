@@ -1,5 +1,5 @@
-import { ShippingTask, Cart } from "./building"
-import { Storage, Item } from "./storage"
+import { ShippingTask } from "./building"
+import { Storage, Item, ResourceType } from "./storage"
 import {Tile} from "./tile"
 import { AddItem } from "./utils"
 
@@ -36,7 +36,7 @@ export class City {
                 this.tiles.push(new Tile(i, j, "Land"))
             }
         }
-        AddItem(this.storage, new Item("Wood", 50))
+        AddItem(this.storage, new Item(ResourceType.WOOD, 50))
     }
 }
 

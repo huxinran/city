@@ -1,4 +1,4 @@
-import { Storage, Item } from "./storage"
+import { Storage, Item, ResourceType } from "./storage"
 import { Tile } from "./tile"
 import { TakeItems } from "./utils"
 
@@ -33,7 +33,8 @@ export class Building {
 export class House {
     constructor(
         public max_occupant: number,
-        public needs: Need[] = [],
+        public service_needs: ServiceNeed[] = [],
+        public resource_needs: ResourceNeed[] = [],
         public occupant: number = 0,
         public happiness: number = 0,
         public storage: Storage = new Storage()
@@ -58,15 +59,26 @@ export class Production {
 
 export class Service {
     constructor(
-        public need_provided : string,
+        public need_provided : ServiceType,
         public radius: number 
     ) {}
 
 }
 
-export class Need {
+export enum ServiceType {
+    WATER = "Water",
+}
+
+export class ServiceNeed {
     constructor(
-        public type: string,
+        public type: ServiceType,
+        public satisfied : boolean = false
+    ) {}
+}
+
+export class ResourceNeed {
+    constructor(
+        public type: ResourceType,
         public satisfied : boolean = false
     ) {}
 }
@@ -105,25 +117,25 @@ export class Warehouse {
 export function CreateBuilding(type: string, storage: Storage) {
     let new_building
     if (type == "House") {
-        new_building = new Building(type, [new Item("Wood", 1)], new House(10, [new Need("Water"), new Need("Fish")]), undefined, undefined,)
+        new_building = new Building(type, [new Item(ResourceType.WOOD, 1)], new House(10, [new ServiceNeed(ServiceType.WATER)], [new ResourceNeed(ResourceType.FISH)]), undefined, undefined,)
     } else if (type == "LumberHut") {
-        new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [], [new Item("Wood", 1)]))    
+        new_building = new Building(type, [new Item(ResourceType.WOOD, 1)], undefined, new Production(10, 10.0, [], [new Item(ResourceType.WOOD, 1)]))    
     } else if (type == "WheatFarm") {
-        new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [], [new Item("Wheat", 1)]))   
+        new_building = new Building(type, [new Item(ResourceType.WOOD, 1)], undefined, new Production(10, 10.0, [], [new Item(ResourceType.WHEAT, 1)]))   
     } else if (type == "WindMill") {
-        new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [new Item("Wheat", 1)], [new Item("Flour", 1)]))   
+        new_building = new Building(type, [new Item(ResourceType.WOOD, 1)], undefined, new Production(10, 10.0, [new Item(ResourceType.WHEAT, 1)], [new Item(ResourceType.FLOUR, 1)]))   
     } else if (type == "Bakery") {
-        new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [new Item("Flour", 1)], [new Item("Bread", 1)]))    
+        new_building = new Building(type, [new Item(ResourceType.WOOD, 1)], undefined, new Production(10, 10.0, [new Item(ResourceType.FLOUR, 1)], [new Item(ResourceType.BREAD, 1)]))    
     } else if (type == "PigFarm") {
-        new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [], [new Item("Pork", 1)]))     
+        new_building = new Building(type, [new Item(ResourceType.WOOD, 1)], undefined, new Production(10, 10.0, [], [new Item(ResourceType.PORK, 1)]))     
     } else if (type == "SausageShop") {
-        new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [new Item("Pork", 1)], [new Item("Sausage", 1)]))     
+        new_building = new Building(type, [new Item(ResourceType.WOOD, 1)], undefined, new Production(10, 10.0, [new Item(ResourceType.PORK, 1)], [new Item(ResourceType.SAUSAGE, 1)]))     
     } else if (type == "FishPier") {
-        new_building = new Building(type, [new Item("Wood", 1)], undefined, new Production(10, 10.0, [], [new Item("Fish", 1)])) 
+        new_building = new Building(type, [new Item(ResourceType.WOOD, 1)], undefined, new Production(10, 10.0, [], [new Item(ResourceType.FISH, 1)])) 
     } else if (type == "Well") {
-        new_building = new Building(type, [new Item("Wood", 1)], undefined, undefined, new Service("Water", 5))    
+        new_building = new Building(type, [new Item(ResourceType.WOOD, 1)], undefined, undefined, new Service(ServiceType.WATER, 5))    
     } else if (type == "Warehouse") {
-        new_building = new Building(type, [new Item("Wood", 1)], undefined, undefined, undefined, new Warehouse(4))
+        new_building = new Building(type, [new Item(ResourceType.WOOD, 1)], undefined, undefined, undefined, new Warehouse(4))
     } 
     if (TakeItems(storage, new_building!.material)) {
         return new_building

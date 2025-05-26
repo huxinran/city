@@ -91,7 +91,7 @@ export function ProvideService(tile: Tile, need: string) {
     return
   }
   let house = tile.building!.house!
-  for (let e of house.needs) {
+  for (let e of house.service_needs) {
     if (e.type == need) {
       e.satisfied = true
     }

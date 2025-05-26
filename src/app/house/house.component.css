@@ -2,7 +2,9 @@
     text-align: center;
     width: 60px;
     margin: 1px;
-    font-size: 6px
+    font-size: 6px;
+    background-color: lightgreen;
+    display: inline-block;
 }
 
 .btn{

@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { State } from './state';
-import { Storage, Item, ResourceName } from './storage';
-import { AddItem, FindNeighbours, TakeItems, ProvideService, CountItem, Transfer, shuffle, AddItems, Distance} from './utils';
-import { Building, House, Production, ProductionStatus, ShippingTask, ShippingTaskType } from './building'
+import { Item } from './storage';
+import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, Distance, CountItem} from './utils';
+import { ProductionStatus, ShippingTask, ShippingTaskType } from './building'
 import { City, Map } from './city';
-import { S } from '@angular/cdk/keycodes';
 
 @Injectable({
   providedIn: 'root'
@@ -43,17 +42,12 @@ export class StateService {
   public LoadMap() {
     for (let city of this.state.cities) {
       let saved_map = localStorage.getItem("map" + city.name)
-      console.log(city.name)
       if (saved_map) {
-        console.log("HAS MAP")
         let saved_map_obj = JSON.parse(saved_map)
         city.h = saved_map_obj.h
         city.w = saved_map_obj.w
         for (let i = 0; i < city.tiles.length; ++i) {
           city.tiles[i].type = saved_map_obj.tiles[i].type
-          if (city.tiles[i].type != "Land") {
-            console.log(city.tiles[i].i, city.tiles[i].j)
-          }
         }
       }
     }
@@ -173,15 +167,12 @@ export class StateService {
   public UpdateHouses(city: City) {
     for (let t of city.houses) {
       let house = t.building!.house!
-      for (let n of house.needs) {
+      for (let n of house.resource_needs!) {
         let cnt = CountItem(house.storage, n.type)
-        if (cnt == undefined) {
-          continue      
-        }
-        if (cnt <= 1.0) {
-          Transfer(city.storage, house.storage, [new Item(n.type, 1)])
-        }
-        n.satisfied = TakeItems(house.storage, [new Item(n.type, 0.01)])
+        if (cnt! <= 1.0) {
+          n.satisfied = Transfer(city.storage, house.storage, [new Item(n.type, 1)])
+        }   
+        n.satisfied = TakeItems(house.storage, [new Item(n.type, 0.01)])  
       }
     }
   }
@@ -260,12 +251,18 @@ export class StateService {
       let house = t.building!.house! 
 
       let needs_satified = 0
-      for (let e of house.needs) {
+      for (let e of house.service_needs) {
         if (e.satisfied) {
           needs_satified += 1
         }
       }
-      house.happiness = house.needs.length == 0 ? 1.0 : needs_satified / house.needs.length
+      for (let e of house.resource_needs) {
+        if (e.satisfied) {
+          needs_satified += 1
+        }
+      }
+      let total_needs = house.service_needs.length + house.resource_needs.length
+      house.happiness = total_needs == 0 ? 1.0 : needs_satified / total_needs
       if (house.occupant < house.max_occupant) {
         house.occupant += 1
       }
