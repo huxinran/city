@@ -1,12 +1,18 @@
-<div>Tier: {{tile.building!.house!.tier}} </div>
-<div>Resident: {{tile.building!.house!.occupant}} / {{tile.building!.house!.max_occupant}}<div>
-<div>Happiness: {{tile.building!.house!.happiness | percent}}<div></div>
+<div> 
+    <div class="sxs"><b>{{tile.building!.house!.resident_type}}</b></div>
+    <div class="sxs right">{{tile.building!.house!.occupant}} / {{tile.building!.house!.max_occupant}}</div>
+<div>
+<div> 
+    <div class="sxs"><b>Happiness</b></div>
+    <div class="sxs right">{{tile.building!.house!.happiness | percent}}</div>
+<div>
+    
 <div>
     @for (need of tile.building!.house!.service_needs; track $index) {
         @if (need.satisfied) {
             <mat-chip class="need" style="background-color:lightgreen">{{need.type}}</mat-chip>
         } @else {
-            <mat-chip class="need" style="background-color:grey">{{need.type}}</mat-chip>
+            <mat-chip class="need" style="background-color:lightgrey">{{need.type}}</mat-chip>
         }
     }
     @for (need of tile.building!.house!.resource_needs; track $index) {

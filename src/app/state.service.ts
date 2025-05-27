@@ -17,7 +17,7 @@ export class StateService {
     this.Load()
     setInterval(() => {
       this.Tick(); 
-    }, 1000)
+    }, 200)
   }
 
   public Save() {
@@ -242,7 +242,7 @@ export class StateService {
         }
       }
       city.shipping_tasks = [...city.shipping_tasks.slice(0, i), ...city.shipping_tasks.slice(i + 1)]
-      city.carts = [...city.carts.slice(0, min_dist), ...city.carts.slice(min_dist + 1)]
+      city.carts = [...city.carts.slice(0, min_idx!), ...city.carts.slice(min_idx! + 1)]
     }
   }
 

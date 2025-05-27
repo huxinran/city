@@ -2,24 +2,28 @@
     <span style="font-size: 20px;"><b> {{state.state.current_city!.name}} </b></span>
     <hr>
     <div> 
-        <div class="sxs"> <b> Population </b> </div>  
+        <div class="sxs key"> Population </div>  
         <div class="sxs right">{{state.state.current_city!.population}}  / {{state.state.current_city!.worker_needed}} </div> 
     </div>
     <div> 
-        <div class="sxs"> <b> Gold</b></div>  
+        <div class="sxs key">Gold</div>  
         <div class="sxs right">{{state.state.gold | number: '1.0-0'}} </div> 
     </div>
     <hr>
     <div> 
-        <div class="sxs"> <b>House</b></div>  
+        <div class="sxs key"> House</div>  
         <div class="sxs right">{{state.state.current_city!.houses.length}}</div> 
     </div>
     <div> 
-        <div class="sxs"> <b>Production</b></div>  
+        <div class="sxs key"> Production</div>  
         <div class="sxs right">{{state.state.current_city!.productions.length}}</div> 
     </div>
     <div> 
-        <div class="sxs"> <b>Warehouse</b></div>  
+        <div class="sxs key"> Service</div>  
+        <div class="sxs right">{{state.state.current_city!.services.length}}</div> 
+    </div>
+    <div> 
+        <div class="sxs key"> Warehouse</div>  
         <div class="sxs right">{{state.state.current_city!.warehouses.length}}</div> 
     </div>
 </div>

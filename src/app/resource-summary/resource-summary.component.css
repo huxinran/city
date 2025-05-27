@@ -14,3 +14,11 @@
 .cnt{
   font-size: 10px;
 }
+
+.resources {
+  border-radius: 4px;
+  padding: 1px;
+  margin: 0.5px;
+  border: 0.5px solid rgb(0, 0, 0);
+  background-color: bisque;
+}

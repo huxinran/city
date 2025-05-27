@@ -1,3 +1,12 @@
-<div>Worker: {{tile.building!.production!.worker}} / {{tile.building!.production!.worker_needed}}</div>
-<div>Progress: {{tile.building!.production!.progress / 100 | percent}} </div>
-<div>Status: {{tile.building!.production!.status}} </div>
+<div>
+    <div class="sxs key">{{tile.building!.production!.worker_type}}</div>
+    <div class="sxs right">{{tile.building!.production!.worker}} / {{tile.building!.production!.worker_needed}}</div>
+</div>
+<div>
+    <div class="sxs key">Progress</div>
+    <div class="sxs right">{{tile.building!.production!.progress / 100 | percent}}</div>
+</div>
+<div>
+    <div class="sxs key">Status</div>
+    <div class="sxs right"> {{tile.building!.production!.status}}</div>
+</div>

@@ -1,17 +1,23 @@
 <mat-menu #food="matMenu">
   <button mat-menu-item (click)="state.SetBuildType('WheatFarm')">Wheat Farm</button>
+  <button mat-menu-item (click)="state.SetBuildType('CabbageFarm')">Cabbage Farm</button>
+  <button mat-menu-item (click)="state.SetBuildType('AppleFarm')">Apple Farm</button>
   <button mat-menu-item (click)="state.SetBuildType('PigFarm')">Pig Farm</button>
+  <button mat-menu-item (click)="state.SetBuildType('CowFarm')">Cow Farm</button>
   <button mat-menu-item (click)="state.SetBuildType('FishPier')">Fish Pier</button>
 </mat-menu>
 
 <mat-menu #material="matMenu">
   <button mat-menu-item (click)="state.SetBuildType('LumberHut')">Lumber Hut</button>
+  <button mat-menu-item (click)="state.SetBuildType('ClayPit')">Clay Pit</button>
 </mat-menu>
 
 <mat-menu #workshop="matMenu">
-  <button mat-menu-item (click)="state.SetBuildType('WindMill')">WindMill</button>
+  <button mat-menu-item (click)="state.SetBuildType('WindMill')">Wind Mill</button>
   <button mat-menu-item (click)="state.SetBuildType('Bakery')">Bakery</button>
   <button mat-menu-item (click)="state.SetBuildType('SausageShop')">Sausage Shop</button>
+  <button mat-menu-item (click)="state.SetBuildType('CheeseFactory')">Cheese Factory</button>
+  <button mat-menu-item (click)="state.SetBuildType('PotteryFactory')">Pottery Factory</button>
 </mat-menu>
 
 <mat-menu #service="matMenu">

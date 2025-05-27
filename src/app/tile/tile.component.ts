@@ -15,9 +15,7 @@ export class TileComponent {
   @Input() tile!: Tile
   @Input() state!: StateService
 
-  constructor() {
-
-  }
+  constructor() {}
 
   public HandleClick() {
     this.state.state.current_city!.focus_tile = this.tile

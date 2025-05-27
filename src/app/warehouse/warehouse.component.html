@@ -1,10 +1,12 @@
 @for (cart of this.tile.building!.warehouse!.carts; track $index) {    
     <div>
-        Cart {{$index + 1}}: 
-        @if (cart.task) {
-            {{cart.task.type}} - {{cart.task.progress / cart.task.distance | percent}}
-        } @else {
-            Ready
-        }
+        <div class="sxs key">Cart {{$index + 1}}</div>
+        <div class="sxs right">
+            @if (cart.task) {
+                {{cart.task.type}} - {{cart.task.progress / cart.task.distance | percent}}
+            } @else {
+                Ready
+            }
+        </div>
     </div>
 }

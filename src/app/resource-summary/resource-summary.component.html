@@ -1,8 +1,14 @@
 
+<div class="resources">
+Resources
+<hr>
 @for (item of state.state.current_city!.storage.items; track $index) {
-  <div class="item">
-    <a class="name"><b>{{item.type}}</b></a>
-    <br>
-    <a class="cnt">{{item.num}}</a>
-  </div>
+  @if (item.num > 0) {
+    <div class="item">
+      <a class="name"><b>{{item.type}}</b></a>
+      <br>
+      <a class="cnt">{{item.num}}</a>
+    </div>
+  }
 }
+<div>

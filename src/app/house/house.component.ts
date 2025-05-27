@@ -4,6 +4,7 @@ import { MatChip } from '@angular/material/chips';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Tile } from '../tile';
+import { GetResidentType, House } from '../building';
 @Component({
   selector: 'app-house',
   imports: [MatChip, MatButtonModule, PercentPipe, MatIconModule],
@@ -14,11 +15,12 @@ export class HouseComponent {
   @Input() tile!: Tile
 
   public Upgrade() {
-    this.tile.building!.house!.tier += 1
-    this.tile.building!.house!.max_occupant = this.tile.building!.house!.tier * 10
+    let house: House = this.tile.building!.house!
+    house.Upgrade()
+
   }
   public Downgrade() {
-    this.tile.building!.house!.tier -= 1
-    this.tile.building!.house!.max_occupant = this.tile.building!.house!.tier * 10
+    let house: House = this.tile.building!.house!
+    house.Downgrade()
   }
 }
