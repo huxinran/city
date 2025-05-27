@@ -1,6 +1,7 @@
 import { ShippingTask } from "./building"
 import { Storage, Item, ResourceType } from "./storage"
-import {Tile} from "./tile"
+import { Tile} from "./tile"
+import { Population } from "./population"
 import { AddItem } from "./utils"
 
 export class Map {
@@ -26,9 +27,7 @@ export class City {
         public warehouses: Tile[] = [],
         public shipping_tasks: ShippingTask[] = [],
         public carts: Tile[] = [],
-        public population : number = 0,
-        public worker_needed : number = 0,
-        public worker_employed: number = 0,
+        public population : Population = new Population(),
         public focus_tile?: Tile
     ) {
         for (let i = 0; i < h; ++i) {
@@ -39,5 +38,3 @@ export class City {
         AddItem(this.storage, new Item(ResourceType.WOOD, 50))
     }
 }
-
-

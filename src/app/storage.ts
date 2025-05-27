@@ -30,6 +30,7 @@ export enum ResourceType {
     OLIVE = "Olive",
     ORANGE = "Orange",
     ONION = "Onio",
+    OVERALL = "Overall",
     PLANK = "Plank",
     PORK = "Pork",
     POTATO = "Potato",

@@ -1,14 +1,8 @@
 import { Storage, Item, ResourceType } from "./storage"
 import { Tile } from "./tile"
 import { TakeItems } from "./utils"
+import { ResidentTier } from "./population"
 
-export enum ResidentTier {
-    FARMER = "Farmer",
-    WORKER = "Worker",
-    CLERK = "Clerk",
-    SCHOLAR = "Scholar",
-    NOBEL = "Nobel",
-}
 
 export enum ProductionStatus {
     READY = "Ready",
@@ -160,15 +154,15 @@ export function GetResidentType(tier: number) {
 
 export function GetResourceNeed(tier: number) {
     if (tier == 1) {
-        return [new ResourceNeed(ResourceType.FISH)]
+        return [new ResourceNeed(ResourceType.FISH), new ResourceNeed(ResourceType.OVERALL)]
     } else if (tier == 2) {
-        return [new ResourceNeed(ResourceType.FISH), new ResourceNeed(ResourceType.SAUSAGE), new ResourceNeed(ResourceType.CABBAGE)]
+        return [new ResourceNeed(ResourceType.SAUSAGE), new ResourceNeed(ResourceType.OVERALL), new ResourceNeed(ResourceType.CABBAGE), new ResourceNeed(ResourceType.CHEESE)]
     } else if  (tier == 3) {
-        return [new ResourceNeed(ResourceType.SAUSAGE), new ResourceNeed(ResourceType.CABBAGE), new ResourceNeed(ResourceType.BREAD), new ResourceNeed(ResourceType.CHEESE)]
+        return [new ResourceNeed(ResourceType.SAUSAGE), new ResourceNeed(ResourceType.CABBAGE), new ResourceNeed(ResourceType.BREAD), new ResourceNeed(ResourceType.CHEESE), new ResourceNeed(ResourceType.FUR)]
     } else if (tier == 4) {
         return [new ResourceNeed(ResourceType.SAUSAGE), new ResourceNeed(ResourceType.CABBAGE), new ResourceNeed(ResourceType.BREAD), new ResourceNeed(ResourceType.CHEESE), new ResourceNeed(ResourceType.APPLE), new ResourceNeed(ResourceType.POTTERY)]
     } else {
-        return [new ResourceNeed(ResourceType.SAUSAGE), new ResourceNeed(ResourceType.CABBAGE), new ResourceNeed(ResourceType.BREAD), new ResourceNeed(ResourceType.CHEESE), new ResourceNeed(ResourceType.APPLE), new ResourceNeed(ResourceType.POTTERY), new ResourceNeed(ResourceType.TOBACCO)]
+        return [new ResourceNeed(ResourceType.SAUSAGE), new ResourceNeed(ResourceType.CABBAGE), new ResourceNeed(ResourceType.BREAD), new ResourceNeed(ResourceType.CHEESE), new ResourceNeed(ResourceType.APPLE), new ResourceNeed(ResourceType.POTTERY), new ResourceNeed(ResourceType.CIGAR)]
     }
 }
 
@@ -232,7 +226,9 @@ export function CreateBuilding(type: string, storage: Storage) {
         new_building = new Building(type, [new Item(ResourceType.WOOD, 1)], undefined, new Production(10, ResidentTier.FARMER, 10.0, [new Item(ResourceType.MILK, 1)], [new Item(ResourceType.CHEESE, 1)])) 
     } else if (type == "PotteryFactory") {
         new_building = new Building(type, [new Item(ResourceType.WOOD, 1)], undefined, new Production(10, ResidentTier.FARMER, 10.0, [new Item(ResourceType.CLAY, 1)], [new Item(ResourceType.POTTERY, 1)])) 
-    }else if (type == "Well") {
+    } else if (type == "ClothingFactory") {
+        new_building = new Building(type, [new Item(ResourceType.WOOD, 1)], undefined, new Production(10, ResidentTier.FARMER, 10.0, [new Item(ResourceType.WOOL, 1)], [new Item(ResourceType.OVERALL, 1)])) 
+    } else if (type == "Well") {
         new_building = new Building(type, [new Item(ResourceType.WOOD, 1)], undefined, undefined, new Service(ServiceType.WATER, 5))    
     } else if (type == "Warehouse") {
         new_building = new Building(type, [new Item(ResourceType.WOOD, 1)], undefined, undefined, undefined, new Warehouse(4))

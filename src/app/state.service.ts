@@ -3,7 +3,8 @@ import { State } from './state';
 import { Item } from './storage';
 import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, Distance, CountItem} from './utils';
 import { ProductionStatus, ShippingTask, ShippingTaskType } from './building'
-import { City, Map } from './city';
+import { City, Map,  } from './city';
+import { AddPopulation, AddWorkerNeeded, Population, ResetPopulation } from './population';
 
 @Injectable({
   providedIn: 'root'
@@ -247,7 +248,7 @@ export class StateService {
   }
 
   public UpdatePopulation(city: City) {
-    let population = 0
+    ResetPopulation(city.population)
     for (let t of city.houses) {
       let house = t.building!.house! 
 
@@ -267,22 +268,18 @@ export class StateService {
       if (house.occupant < house.max_occupant) {
         house.occupant += 1
       }
-      population += house.occupant
+      AddPopulation(city.population, house.resident_type, house.occupant)
     }
-    city.population = population
   }
 
   public UpdateEmployment(city: City) {
-    let worker_needed = 0
     for (let t of city.productions) {
-
       let production = t.building!.production!
-      worker_needed += production.worker_needed
+      AddWorkerNeeded(city.population, production.worker_type, production.worker_needed)
     }
-    city.worker_needed = worker_needed
 
     // set worker to base_ratio 
-    let base_ratio = Math.min(1.0, city.population / city.worker_needed)
+    let base_ratio = Math.min(1.0, city.population.has / city.population.needed)
     let new_employed = 0 
     for (let t of city.productions) {
       let production = t.building!.production!
@@ -294,9 +291,8 @@ export class StateService {
       return
     }
 
-    city.worker_employed = new_employed
-    let employee_needed = city.worker_needed - city.worker_employed
-    let unemployed = city.population - city.worker_employed
+    let employee_needed = city.population.needed - new_employed
+    let unemployed = city.population.has - new_employed
     if (unemployed > city.productions.length) {
       for (let t of city.productions) {
         t.building!.production!.worker += 1
@@ -317,6 +313,6 @@ export class StateService {
 
 
   public UpdateGold(city: City) {
-    this.state.gold += city.population * 0.1
+    this.state.gold += city.population.has * 0.1
   }
 }

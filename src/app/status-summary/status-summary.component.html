@@ -3,8 +3,14 @@
     <hr>
     <div> 
         <div class="sxs key"> Population </div>  
-        <div class="sxs right">{{state.state.current_city!.population}}  / {{state.state.current_city!.worker_needed}} </div> 
+        <div class="sxs right">{{state.state.current_city!.population.has}}  / {{state.state.current_city!.population.needed}} </div> 
     </div>
+    @for (tier of state.state.current_city!.population.tiers; track $index) {
+        <div> 
+            <div class="sxs">  - {{tier.tier}} </div>  
+            <div class="sxs right">{{tier.has}}  / {{tier.needed}} </div> 
+        </div>
+    }
     <div> 
         <div class="sxs key">Gold</div>  
         <div class="sxs right">{{state.state.gold | number: '1.0-0'}} </div> 
