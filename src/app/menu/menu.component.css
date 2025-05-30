@@ -1,0 +1,14 @@
+.mat-success {
+    background-color: white;
+    color: white;
+}
+
+
+.top_button { 
+    margin: 2px;
+    width: 100px;
+    border: 1px solid white;
+    border-radius: 5px;
+    color: blue;
+    background: white;
+}

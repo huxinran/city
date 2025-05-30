@@ -1,0 +1,7 @@
+<p>dock works!</p>
+
+@for (ship of state.state.current_city!.ships; track $index) {
+    <div>{{ship.type}}</div>
+}
+
+{{state.state.current_city!.ships.length}}
