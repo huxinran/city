@@ -1,16 +1,14 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { StateService } from '../state.service';
 import { MatCardModule } from '@angular/material/card';
+import {MatExpansionModule} from '@angular/material/expansion';
+
 @Component({
   selector: 'app-resource-summary',
-  imports: [MatCardModule],
+  imports: [MatCardModule, MatExpansionModule],
   templateUrl: './resource-summary.component.html',
   styleUrl: './resource-summary.component.css'
 })
 export class ResourceSummaryComponent {
-  @Input() state!: StateService;
-  
-  constructor() {
-  }
-
+  state  =  inject(StateService)
 }

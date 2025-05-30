@@ -9,5 +9,12 @@
 }
 @else if (tile.building?.warehouse) {
     <app-warehouse [tile]="tile"></app-warehouse>
+} 
+@else if (tile.building?.shipyard) {
+    <app-shipyard [tile]="tile" [state]="state"></app-shipyard>
 }
+@else if (tile.building?.dock) {
+    <app-dock [tile]="tile" [state]="state"></app-dock>
+}
+
 

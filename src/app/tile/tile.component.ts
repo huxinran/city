@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Tile } from '../tile';
 import { StateService } from '../state.service';
 import { Building, CreateBuilding } from '../building';
 import { Item } from '../storage'
+import { BuildingType, Terrain } from '../types'
 
 @Component({
   selector: 'app-tile',
@@ -13,10 +14,8 @@ import { Item } from '../storage'
 })
 export class TileComponent {
   @Input() tile!: Tile
-  @Input() state!: StateService
-
-  constructor() {}
-
+  state  =  inject(StateService)
+  
   public HandleClick() {
     this.state.state.current_city!.focus_tile = this.tile
     let building_type = this.state.state.build_type
@@ -26,7 +25,7 @@ export class TileComponent {
     }
 
     if (building_type) {
-      if (building_type == "Delete") {
+      if (building_type == BuildingType.DELETE) {
         this.tile.building = undefined
         return
       }
@@ -39,19 +38,26 @@ export class TileComponent {
     }
 
   }
+  public GetType() {
+    if (this.tile.building?.house != undefined) {
+      return this.tile.building?.house?.type
+    }
+    return this.tile.building?.type
+  }
+
 
   public GetStyle() {
     let color = undefined
     let type = this.tile.type
-    if (type == "Land") {
+    if (type == Terrain.GRASS) {
       color = 'lightgreen'
-    } else if (type == "Sea") {
+    } else if (type == Terrain.SEA) {
       color = 'lightblue'
-    } else if (type == "Mountain") {
+    } else if (type == Terrain.MOUNTAIN) {
       color = 'lightgrey'
-    } else if (type == "Sand") {
+    } else if (type == Terrain.LAND) {
       color = 'lightyellow'
-    } else if (type == "Forest") {
+    } else if (type == Terrain.FOREST) {
       color = 'green'
     }
     let border = undefined

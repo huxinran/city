@@ -1,3 +1,7 @@
+<div>
+    <div class="sxs key">Cart Speed</div>
+    <div class="sxs right"> {{this.tile.building!.warehouse!.cart_speed}}</div>
+</div>
 @for (cart of this.tile.building!.warehouse!.carts; track $index) {    
     <div>
         <div class="sxs key">Cart {{$index + 1}}</div>
@@ -10,3 +14,7 @@
         </div>
     </div>
 }
+<hr>
+<div>
+    <button class="btn" [disabled]="this.tile.building?.warehouse?.tier == 3" (click)="this.Upgrade()">Upgrade</button> 
+</div>

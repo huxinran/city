@@ -6,25 +6,25 @@
     <div class="sxs"><b>Happiness</b></div>
     <div class="sxs right">{{tile.building!.house!.happiness | percent}}</div>
 <div>
-    
+<hr>
 <div>
     @for (need of tile.building!.house!.service_needs; track $index) {
         @if (need.satisfied) {
-            <mat-chip class="need" style="background-color:lightgreen">{{need.type}}</mat-chip>
+            <span class="need" style="background-color:lightgreen">{{need.type}}</span>
         } @else {
-            <mat-chip class="need" style="background-color:lightgrey">{{need.type}}</mat-chip>
+            <span class="need" style="background-color:lightgrey">{{need.type}}</span>
         }
     }
     @for (need of tile.building!.house!.resource_needs; track $index) {
         @if (need.satisfied) {
-            <mat-chip class="need" style="background:lightgreen">{{need.type}}</mat-chip>
+            <span class="need" style="background-color:lightgreen">{{need.type}}</span>
         } @else {
-            <mat-chip class="need" style="background:lightgrey">{{need.type}}</mat-chip>
+            <span  class="need" style="background-color:lightgrey">{{need.type}}</span>
         }
     }
 </div>
 <hr>
 <div>
-    <button class="btn" mat-stroked-button [disabled]="this.tile.building!.house!.happiness < 1.0 || this.tile.building!.house!.tier >= 5" (click)="this.Upgrade()">Upgrade</button> 
-    <button class="btn" mat-stroked-button [disabled]="this.tile.building!.house!.tier == 1" (click)="this.Downgrade()">Downgrade</button> 
+    <button class="btn" [disabled]="this.tile.building!.house!.happiness < 1.0 || this.tile.building!.house!.tier >= 6" (click)="this.Upgrade()">Upgrade</button> 
+    <button class="btn" [disabled]="this.tile.building!.house!.tier == 1" (click)="this.Downgrade()">Downgrade</button> 
 </div>

@@ -1,14 +1,14 @@
 <div class="container">
   <div class="top-menu">
-    <app-building-menu class="sxs" [state]="state"></app-building-menu>
+    <app-menu class="sxs"></app-menu>
   </div>
   <div class="map-container">
-    <app-city [city]="state.state.current_city!" [state]="state"></app-city>
+    <app-city [city]="state.state.current_city!"></app-city>
   </div>
   <div class="right-menu">
-    <app-status-summary  [state]="state"></app-status-summary>
-    <app-tile-detail [tile]="state.state.current_city?.focus_tile"></app-tile-detail>
-    <app-resource-summary [state]="state"></app-resource-summary>
+    <app-status-summary></app-status-summary>
+    <app-tile-detail [tile]="state.state.current_city!.focus_tile"></app-tile-detail>
+    <app-resource-summary></app-resource-summary>
   </div>
 </div>
 

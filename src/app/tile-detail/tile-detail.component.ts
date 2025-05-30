@@ -1,8 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { Tile } from '../tile';
 import { MatCardModule} from '@angular/material/card';
 import { NgIf } from '@angular/common';
 import { BuildingComponent } from '../building/building.component';
+import { StateService } from '../state.service';
 
 @Component({
   selector: 'app-tile-detail',
@@ -12,8 +13,6 @@ import { BuildingComponent } from '../building/building.component';
 })
 export class TileDetailComponent {
   @Input() tile?: Tile
-
-  constructor() {
-
-  }
+  state = inject(StateService)
 }
+

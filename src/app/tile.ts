@@ -1,18 +1,15 @@
 import { Building } from "./building"
+import { Terrain } from "./types"
 
 export class Tile {
     i = 0
     j = 0
-    type? : string
+    type? : Terrain
     building? : Building
     
-    constructor(i: number, j: number, type: string) {
+    constructor(i: number, j: number, type: Terrain) {
         this.i = i;
         this.j = j;
         this.type = type
-    }
-
-    public tick() {
-
     }
 }

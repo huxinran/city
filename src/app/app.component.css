@@ -6,7 +6,7 @@
 .container {
     display: grid;
     grid-template-rows: min-content 1fr; /* Top bar height, then 1 fraction for remaining height */
-    grid-template-columns: 1fr 320px; /* Map takes 1 fraction, sidebar 250px */
+    grid-template-columns: 4fr 1fr; /* Map takes 1 fraction, sidebar 250px */
     height: 100vh; /* Ensures the grid occupies the entire viewport height */
     width: 100vw;  /* Ensures the grid occupies the entire viewport width */
     overflow: hidden; /* Prevent body scroll */
@@ -15,7 +15,7 @@
 .top-menu {
     grid-row: 1;
     grid-column: 1/-1;
-    background: blue;
+    background: lightseagreen;
     z-index: 10; /* Ensures it stays on top */
 }
 

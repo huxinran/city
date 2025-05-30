@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { StateService } from '../state.service';
 import { MatButtonModule } from '@angular/material/button';
 import { DecimalPipe } from '@angular/common';
@@ -9,9 +9,5 @@ import { DecimalPipe } from '@angular/common';
   styleUrl: './status-summary.component.css'
 })
 export class StatusSummaryComponent {
-  @Input() state!: StateService;
-  
-  constructor() {
-  }
-
+  state  =  inject(StateService)
 }

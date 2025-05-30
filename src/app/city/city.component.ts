@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TileComponent } from '../tile/tile.component';
 import { City } from '../city';
@@ -13,8 +13,9 @@ import { StateService } from '../state.service';
 })
 export class CityComponent {
   @Input() city!: City;
-  @Input() state!: StateService
 
+  state = inject(StateService)
+  
   public getStyle() {
     return {
       display: 'grid',

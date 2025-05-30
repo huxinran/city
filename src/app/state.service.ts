@@ -2,9 +2,11 @@ import { Injectable } from '@angular/core';
 import { State } from './state';
 import { Item } from './storage';
 import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, Distance, CountItem} from './utils';
-import { ProductionStatus, ShippingTask, ShippingTaskType } from './building'
+import { GetCurrentMaxOccupant, Ship, ShippingTask } from './building'
 import { City, Map,  } from './city';
-import { AddPopulation, AddWorkerNeeded, Population, ResetPopulation } from './population';
+import { Population,  } from './population';
+import { Resident, ProductionStatus, ShippingTaskType, BuildingType, Terrain } from './types'
+import { Tile } from './tile';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +15,7 @@ export class StateService {
 
   public state: State
 
-  constructor() { 
+  constructor() {
     this.state = new State()
     this.Load()
     setInterval(() => {
@@ -43,7 +45,7 @@ export class StateService {
   public LoadMap() {
     for (let city of this.state.cities) {
       let saved_map = localStorage.getItem("map" + city.name)
-      if (saved_map) {
+      if (saved_map && city.name == "Anrelia") {
         let saved_map_obj = JSON.parse(saved_map)
         city.h = saved_map_obj.h
         city.w = saved_map_obj.w
@@ -74,11 +76,12 @@ export class StateService {
   public Tick() {
     this.state.time += 1
     this.SortTiles(this.state.current_city!)
-    this.UpdateEmployment(this.state.current_city!)
+    this.UpdatePopulation(this.state.current_city!)
     this.UpdateProduction(this.state.current_city!)
     this.UpdateWarehouses(this.state.current_city!)
     this.UpdateHouses(this.state.current_city!)
-    this.UpdatePopulation(this.state.current_city!)
+    this.UpdateShipyard(this.state.current_city!)
+    this.UpdateEmployment(this.state.current_city!)
     this.HandleShipTasks(this.state.current_city!)
     this.UpdateService(this.state.current_city!)
     this.UpdateGold(this.state.current_city!)
@@ -89,14 +92,14 @@ export class StateService {
     this.ClearTerrainType()
   }
   
-  public SetBuildType(type: string) {
+  public SetBuildType(type: BuildingType) {
     this.state.build_type = type
   }
   public ClearBuildType() {
     this.state.build_type = undefined
   }
 
-  public SetTerrainType(type: string) {
+  public SetTerrainType(type: Terrain) {
     this.state.terrain_type = type
   }
   public ClearTerrainType() {
@@ -109,6 +112,8 @@ export class StateService {
     let productions = []
     let services = []
     let warehouses = []
+    let shipyards = []
+    let docks = []
     for (let t of city.tiles) {
       if (t.building == undefined) {
         continue
@@ -122,6 +127,10 @@ export class StateService {
         services.push(t)
       } else if (t.building.warehouse) {
         warehouses.push(t)
+      } else if (t.building.shipyard) {
+        shipyards.push(t)
+      } else if (t.building.dock) {
+        docks.push(t)
       }
     }
 
@@ -129,6 +138,9 @@ export class StateService {
     city.productions = shuffle(productions)
     city.services = shuffle(services)
     city.warehouses = shuffle(warehouses)
+    city.shipyards = shuffle(shipyards)
+    city.docks = shuffle(shipyards)
+    
   }
 
   public UpdateService(city: City) {
@@ -174,7 +186,7 @@ export class StateService {
         if (cnt! <= 1.0) {
           n.satisfied = Transfer(city.storage, house.storage, [new Item(n.type, 1)])
         }   
-        n.satisfied = TakeItems(house.storage, [new Item(n.type, 0.01)])  
+        n.satisfied = TakeItems(house.storage, [new Item(n.type, 0.002)])  
       }
     }
   }
@@ -207,6 +219,23 @@ export class StateService {
       }
     }
     city.carts = idle_carts     
+  }
+
+  public UpdateShipyard(city: City) {
+    for (let t of city.shipyards) {
+      let shipyard = t.building!.shipyard!
+      let blueprint = shipyard.selected
+      if (shipyard.status == ProductionStatus.IN_PROGRESS) {
+        shipyard.progress = Math.min(1.0, shipyard.progress += 1.0 / blueprint!.build_time)
+      }
+
+      if (shipyard.progress == 1.0) {
+        shipyard.progress = 0
+        shipyard.status = ProductionStatus.READY
+        let ship = new Ship(blueprint!.type, blueprint!.max_cargo, blueprint!.speed)
+        city.ships.push(ship)
+      }
+    }
   }
 
   public HandleShipTasks(city: City) {
@@ -248,10 +277,8 @@ export class StateService {
   }
 
   public UpdatePopulation(city: City) {
-    ResetPopulation(city.population)
     for (let t of city.houses) {
       let house = t.building!.house! 
-
       let needs_satified = 0
       for (let e of house.service_needs) {
         if (e.satisfied) {
@@ -265,23 +292,18 @@ export class StateService {
       }
       let total_needs = house.service_needs.length + house.resource_needs.length
       house.happiness = total_needs == 0 ? 1.0 : needs_satified / total_needs
-      if (house.occupant < house.max_occupant) {
+
+      house.current_max_occupant = GetCurrentMaxOccupant(house.tier, house.happiness)
+      if (house.occupant < house.current_max_occupant) {
         house.occupant += 1
       }
-      AddPopulation(city.population, house.resident_type, house.occupant)
     }
   }
 
-  public UpdateEmployment(city: City) {
-    for (let t of city.productions) {
-      let production = t.building!.production!
-      AddWorkerNeeded(city.population, production.worker_type, production.worker_needed)
-    }
-
-    // set worker to base_ratio 
-    let base_ratio = Math.min(1.0, city.population.has / city.population.needed)
+  public UpdateEmploymentPerTier(has: number, needed: number, productions: Tile[]) {
+    let base_ratio = Math.min(1.0, has / needed)
     let new_employed = 0 
-    for (let t of city.productions) {
+    for (let t of productions) {
       let production = t.building!.production!
       let new_employee = Math.floor(production.worker_needed * base_ratio)
       production.worker = new_employee 
@@ -290,29 +312,83 @@ export class StateService {
     if (base_ratio == 1.0) {
       return
     }
-
-    let employee_needed = city.population.needed - new_employed
-    let unemployed = city.population.has - new_employed
-    if (unemployed > city.productions.length) {
-      for (let t of city.productions) {
-        t.building!.production!.worker += 1
-      } 
-    } else {
-      let chance = unemployed / city.productions.length
-      for (let t of city.productions) {
-        if (Math.random() < chance) {
-          t.building!.production!.worker += 1
-          unemployed -= 1
-        }
+    let unemployed = has - new_employed
+    while (unemployed > 0) {
+      for (let t of productions) {
+        let production = t.building!.production!
+        production.worker += 1
+        unemployed -= 1
         if (unemployed == 0) {
           break
-        } 
-      }
+        }
+      }      
     }
+  }
+
+public ResetPopulation(population: Population) {
+    for (let t of population.tiers) {
+        t.has = 0
+        t.needed = 0
+        t.houses = []
+        t.productions = []
+    }
+  }
+
+ public AddProduction(population: Population, production: Tile) {
+    let tier = production.building!.production!.worker_type
+    let needed = production.building!.production!.worker_needed
+    for (let t of population.tiers) {
+        if (t.tier == tier) {
+            t.needed += needed
+            t.productions.push(production)
+        }
+    }
+}
+
+public AddHouse(population: Population, house: Tile) {
+    let tier = house.building!.house!.resident_type
+    let has = house.building!.house!.occupant
+    for (let t of population.tiers) {
+        if (t.tier == tier) {
+            t.has += has
+            t.houses.push(house)
+        }
+    }
+}
+
+
+
+public GetWorkerNeeded(population: Population, tier: Resident, num: number) {
+    for (let t of population.tiers) {
+        if (t.tier == tier) {
+           return t.needed
+        }
+    }
+    return 0
+}
+
+  public UpdateEmployment(city: City) {
+    let population = new Population()
+    for (let t of city.productions) {
+      this.AddProduction(population, t)
+    }
+
+    for (let t of city.houses) {
+      this.AddHouse(population, t)
+    }
+
+    for (let tier of population.tiers) {
+      this.UpdateEmploymentPerTier(tier.has, tier.needed, tier.productions)
+    }
+    city.population = population
   }
 
 
   public UpdateGold(city: City) {
-    this.state.gold += city.population.has * 0.1
+    for (let t of city.population.tiers) {
+      this.state.gold += t.has * 0.001 
+    } 
   }
 }
+
+
