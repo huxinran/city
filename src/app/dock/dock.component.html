@@ -1,7 +1,70 @@
-<p>dock works!</p>
+Ships
+<div class="list">
+    @for (ship of state.state.current_city!.ships; track $index) {
+        <div class="item">
+            <div class="sxs key">{{ship.type}}</div>
+            <div class="sxs right">{{ship.status}}</div>
+        </div>
+    }
+</div>
+<hr>
+Routes
+<div class="list">
+    @for (ship of state.state.current_city!.ships; track $index) {
+        <div class="item">
+            <div class="sxs key">{{ship.type}}</div>
+            <div class="sxs right">{{ship.status}}</div>
+        </div>
+    }
+</div>
+<hr>
 
-@for (ship of state.state.current_city!.ships; track $index) {
-    <div>{{ship.type}}</div>
-}
-
-{{state.state.current_city!.ships.length}}
+<mat-expansion-panel hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title> Create Route </mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-form-field class="sxs dropdown">
+      <mat-label>From</mat-label>
+        <mat-select [(value)]="from">
+            @for (city of state.state.cities; track $index) {
+                <mat-option [value]="city.name">{{city.name}}</mat-option>
+              }
+        </mat-select>
+    </mat-form-field>
+    
+    <mat-form-field class="sxs dropdown">
+      <mat-label>To</mat-label>
+        <mat-select [(value)]="to">
+            @for (city of state.state.cities; track $index) {
+                <mat-option [value]="city.name">{{city.name}}</mat-option>
+              }
+        </mat-select>
+    </mat-form-field>
+    
+    <mat-form-field class="sxs dropdown">
+      <mat-label>Resource</mat-label>
+        <mat-select [(value)]="resource">
+            @for (item of state.state.current_city!.storage.items; track $index) {
+                <mat-option [value]="item.type">{{item.type}}</mat-option>
+              }
+        </mat-select>
+    </mat-form-field>
+    
+    
+    <mat-form-field class="sxs dropdown"> 
+        <mat-label>Amount</mat-label>
+        <input matInput placeholder="" value="">
+    </mat-form-field>
+    
+    
+    <mat-form-field class="sxs dropdown">
+      <mat-label>Ship</mat-label>
+        <mat-select >
+            @for (ship of state.state.current_city!.ships; track $index) {
+                <mat-option [value]="ship">{{ship.type}}</mat-option>
+              }
+        </mat-select>
+    </mat-form-field>
+    <hr>
+    <button [disabled]="" (click)="this.CreateRoute()">Create</button> 
+</mat-expansion-panel>

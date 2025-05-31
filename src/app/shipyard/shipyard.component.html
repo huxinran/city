@@ -2,9 +2,9 @@
 <div>
     <div> {{tile.building!.shipyard!.status}} </div>
     <div> {{tile.building!.shipyard!.progress | percent}} </div>
-    <div>Available Blueprints</div>
+    <div>Blueprints</div>
     <mat-form-field>
-        <mat-select [(value)]="tile.building!.shipyard!.selected">
+        <mat-select [(value)]="tile.building!.shipyard!.selected!">
             @for (blueprint of tile.building!.shipyard!.blueprints; track $index) {
                 <mat-option [value]="blueprint">{{blueprint.type}}</mat-option>
               }
@@ -12,5 +12,5 @@
     </mat-form-field>
 </div>
 <div>
-    <button class="btn" [disabled]="tile.building!.shipyard!.status != ProductionStatus.READY" (click)="Build(tile.building!.shipyard.selected)">Build</button> 
+    <button class="btn" [disabled]="tile.building!.shipyard!.status != ProductionStatus.READY" (click)="Build(tile.building!.shipyard!.selected)">Build</button> 
 </div>

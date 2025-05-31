@@ -17,7 +17,7 @@ export class StateService {
 
   constructor() {
     this.state = new State()
-    this.Load()
+    //this.Load()
     setInterval(() => {
       this.Tick(); 
     }, 200)
@@ -50,7 +50,7 @@ export class StateService {
         city.h = saved_map_obj.h
         city.w = saved_map_obj.w
         for (let i = 0; i < city.tiles.length; ++i) {
-          city.tiles[i].type = saved_map_obj.tiles[i].type
+          city.tiles[i].terrain = saved_map_obj.tiles[i].terrain
         }
       }
     }

@@ -1,7 +1,7 @@
 import { Storage, Item } from "./storage"
 import { Tile } from "./tile"
 import { TakeItems } from "./utils"
-import { Resource, HouseType, Resident, ProductionStatus, ServiceType, ShippingTaskType, BuildingType, ShipType } from "./types"
+import { Resource, HouseType, Resident, ProductionStatus, ServiceType, ShippingTaskType, BuildingType, ShipType, CityName } from "./types"
 
 
 export class Building {
@@ -51,6 +51,7 @@ export class Ship {
         public max_cargo: number,
         public speed: number,
         public cargo: Storage = new Storage, 
+        public status: ShippingTaskType = ShippingTaskType.READY,
     ) {}
 }
 
@@ -81,7 +82,10 @@ export class Shipyard {
 export class Dock {
     constructor(
         public tier: number = 1,
-        public ships: Ship[] = [],
+        public from?: CityName,
+        public to?: CityName,
+        public resource?: Resource,
+        public num : number = 0,
     ) {}
 }
 

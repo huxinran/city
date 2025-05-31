@@ -1,0 +1,25 @@
+.list {
+    overflow-y: auto;
+    height: 100px;
+    padding: 2px;
+    margin: 1px;
+    border-radius: 5px;
+    border: solid black 1px;
+    background-color: white;
+}
+
+.item {
+    border-radius: 5px;
+    padding: 2px;
+    margin: 1px;
+    border: solid black 1px;
+    background-color: honeydew;
+}
+
+.dropdown {
+    width: 30%;
+    margin-left: 5px;
+}
+
+::ng-deep .mat-input-element { height: 30px; }
+::ng-deep .mat-select { height: 30px; }

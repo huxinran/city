@@ -2,9 +2,8 @@ import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Tile } from '../tile';
 import { StateService } from '../state.service';
-import { Building, CreateBuilding } from '../building';
-import { Item } from '../storage'
 import { BuildingType, Terrain } from '../types'
+import { CreateBuilding } from '../building'
 
 @Component({
   selector: 'app-tile',
@@ -34,7 +33,7 @@ export class TileComponent {
       }
       this.tile.building = CreateBuilding(building_type!, this.state.state.current_city!.storage)
     } else if (terrain_type) {
-      this.tile.type = terrain_type
+      this.tile.terrain = terrain_type
     }
 
   }
@@ -48,16 +47,16 @@ export class TileComponent {
 
   public GetStyle() {
     let color = undefined
-    let type = this.tile.type
-    if (type == Terrain.GRASS) {
+    let terrain = this.tile.terrain
+    if (terrain == Terrain.GRASS) {
       color = 'lightgreen'
-    } else if (type == Terrain.SEA) {
+    } else if (terrain == Terrain.SEA) {
       color = 'lightblue'
-    } else if (type == Terrain.MOUNTAIN) {
+    } else if (terrain == Terrain.MOUNTAIN) {
       color = 'lightgrey'
-    } else if (type == Terrain.LAND) {
+    } else if (terrain == Terrain.LAND) {
       color = 'lightyellow'
-    } else if (type == Terrain.FOREST) {
+    } else if (terrain == Terrain.FOREST) {
       color = 'green'
     }
     let border = undefined

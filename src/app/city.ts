@@ -3,7 +3,7 @@ import { Storage, Item } from "./storage"
 import { Tile} from "./tile"
 import { Population } from "./population"
 import { AddItem } from "./utils"
-import { Resource, Terrain } from "./types"
+import { CityName, Resource, Terrain } from "./types"
 import { BuildingType } from "./types"
 
 export class Map {
@@ -16,7 +16,7 @@ export class Map {
 
 export class City {
     constructor(
-        public name: string,
+        public name: CityName,
         public h: number, 
         public w: number,
         public farms: BuildingType[],
@@ -42,7 +42,7 @@ export class City {
                 this.tiles.push(new Tile(i, j, Terrain.GRASS))
             }
         }
-        AddItem(this.storage, new Item(Resource.WOOD, 50))
+        AddItem(this.storage, new Item(Resource.WOOD, 500))
         this.infrastructure  = [...this.infrastructure, BuildingType.WELL, BuildingType.FIRE_STATION, BuildingType.POLICE_STATION, BuildingType.SCHOOL, BuildingType.SHIPYARD, BuildingType.DOCK]
     }
 }

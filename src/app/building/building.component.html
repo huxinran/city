@@ -11,10 +11,10 @@
     <app-warehouse [tile]="tile"></app-warehouse>
 } 
 @else if (tile.building?.shipyard) {
-    <app-shipyard [tile]="tile" [state]="state"></app-shipyard>
+    <app-shipyard [tile]="tile"></app-shipyard>
 }
 @else if (tile.building?.dock) {
-    <app-dock [tile]="tile" [state]="state"></app-dock>
+    <app-dock [tile]="tile"></app-dock>
 }
 
 

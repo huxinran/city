@@ -1,4 +1,3 @@
-
 export enum Resident {
     FARMER = "Farmer",
     WORKER = "Worker",
@@ -6,6 +5,13 @@ export enum Resident {
     SCHOLAR = "Scholar",
     ENTREPRENEUR = "Entrepreneur",
     MAGNATE = "Magnate",
+}
+
+export enum CityName {
+    ANRELIA = "Anrelia",
+    MINTAKA = "Mintaka",
+    JINLIN = "Jinlin",
+    DAKAR = "Dakar",
 }
 
 export enum HouseType {
@@ -80,20 +86,19 @@ export enum ServiceType {
     SCHOOL = "School",
 }
 
-
-
 export enum ProductionStatus {
     READY = "Ready",
-    WAITING_DELIVERY="Waiting Delivery",
+    WAITING_DELIVERY = "Waiting Delivery",
     IN_PROGRESS = "In Progress",
     FINISHED = "Finished",
-    WAITING_PICK_UP="Waiting Pick Up"
+    WAITING_PICK_UP = "Waiting Pick Up"
 }
 
 export enum ShippingTaskType {
-    PICKING_UP="Picking Up",
-    DELIVERYING="Deliverying",
-    RETURNING="Returning",
+    READY = "Ready",
+    PICKING_UP = "Picking Up",
+    DELIVERYING = "Deliverying",
+    RETURNING = "Returning",
 }
 
 export enum BuildingType {
@@ -141,7 +146,7 @@ export enum BuildingType {
     BUTCHERY = "Butchery",
     MASON_SHOP = "Mason Shop",
     SOYBEAN_FARM = "Soybean Farm",
-    STEELWORK = "Steelworks",
+    STEELWORK = "Steelwork",
     STONE_QUARRY = "Stone Quarry",
     SUGAR_CANE_PLANTATION = "Sugar Cane Plantation",
     RICE_PADDY = "Rice Paddy",
