@@ -1,5 +1,5 @@
 <div class="box">
-    <div> <b>{{tile? tile.building ? tile.building!.type : tile.type : undefined}}</b></div>
+    <div> <b>{{tile? tile.building ? tile.building!.type : tile.terrain : undefined}}</b></div>
     @if (tile != undefined && tile.building != undefined) {
         <hr>
         <app-building *ngIf="tile.building" [tile]="tile"></app-building>

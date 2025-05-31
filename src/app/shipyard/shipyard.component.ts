@@ -3,14 +3,19 @@ import { Ship, ShipBlueprint, Shipyard } from '../building';
 import { Tile } from '../tile';
 import { StateService } from '../state.service';
 import { PercentPipe } from '@angular/common';
-import { MatSelectModule} from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
+
+
 import { TakeItems } from '../utils';
 import { ProductionStatus } from '../types';
 
+import { FormsModule } from '@angular/forms';
+import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { PanelModule } from 'primeng/panel';
+import { ButtonModule } from 'primeng/button';
+import { SelectModule } from 'primeng/select';
 @Component({
   selector: 'app-shipyard',
-  imports: [MatFormFieldModule, MatSelectModule, PercentPipe],
+  imports: [PercentPipe, FormsModule, SelectModule, ButtonModule, PanelModule],
   templateUrl: './shipyard.component.html',
   styleUrl: './shipyard.component.css'
 })
@@ -18,15 +23,16 @@ export class ShipyardComponent {
   @Input() tile!: Tile
   
   state  =  inject(StateService)
-  
 
-  public Build(blueprint?: ShipBlueprint) {
-    if (!blueprint) {
+  public BuildShip() {
+    console.log("a")
+    if (!this.tile?.building?.shipyard?.selected) {
+      console.log("exit")
       return 
     }
     
     let shipyard = this.tile!.building!.shipyard!
-    if (TakeItems(this.state.state.current_city!.storage, blueprint.cost)) {
+    if (TakeItems(this.state.state.current_city!.storage, shipyard.selected!.cost)) {
       shipyard.status = ProductionStatus.IN_PROGRESS
       ProductionStatus.READY
     }

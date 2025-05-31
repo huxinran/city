@@ -1,4 +1,4 @@
-import { Ship, ShippingTask } from "./building"
+import { Ship, ShippingTask, Route } from "./building"
 import { Storage, Item } from "./storage"
 import { Tile} from "./tile"
 import { Population } from "./population"
@@ -34,6 +34,7 @@ export class City {
         public shipping_tasks: ShippingTask[] = [],
         public carts: Tile[] = [],
         public ships: Ship[] = [],
+        public routes: Route[] = [],
         public population : Population = new Population(),
         public focus_tile?: Tile
     ) {

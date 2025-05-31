@@ -1,70 +1,54 @@
-Ships
-<div class="list">
-    @for (ship of state.state.current_city!.ships; track $index) {
-        <div class="item">
-            <div class="sxs key">{{ship.type}}</div>
-            <div class="sxs right">{{ship.status}}</div>
-        </div>
-    }
-</div>
+<p-table [value]="state.state.current_city!.ships" size="small" [paginator]="true" [rows]="5">
+  <ng-template #header>
+      <tr>
+          <th>Type</th>
+          <th>Status</th>
+      </tr>
+  </ng-template>
+  <ng-template #body let-ship>
+      <tr>
+          <td>{{ ship.type }}</td>
+          <td>{{ ship.status }}</td>
+      </tr>
+  </ng-template>
+</p-table>
 <hr>
-Routes
-<div class="list">
-    @for (ship of state.state.current_city!.ships; track $index) {
-        <div class="item">
-            <div class="sxs key">{{ship.type}}</div>
-            <div class="sxs right">{{ship.status}}</div>
-        </div>
-    }
-</div>
+<p-table [value]="state.state.current_city!.routes" size="small" [paginator]="true" [rows]="5">
+  <ng-template #header>
+      <tr>
+          <th>From</th>
+          <th>To</th>
+          <th>Resource</th>
+          <th>Amount</th>
+      </tr>
+  </ng-template>
+  <ng-template #body let-route>
+      <tr>
+          <td>{{ route.from }}</td>
+          <td>{{ route.to }}</td>
+          <td>{{ route.resource }}</td>
+          <td>{{ route.amount }}</td>
+      </tr>
+  </ng-template>
+</p-table>
 <hr>
-
-<mat-expansion-panel hideToggle>
-    <mat-expansion-panel-header>
-      <mat-panel-title> Create Route </mat-panel-title>
-    </mat-expansion-panel-header>
-    <mat-form-field class="sxs dropdown">
-      <mat-label>From</mat-label>
-        <mat-select [(value)]="from">
-            @for (city of state.state.cities; track $index) {
-                <mat-option [value]="city.name">{{city.name}}</mat-option>
-              }
-        </mat-select>
-    </mat-form-field>
-    
-    <mat-form-field class="sxs dropdown">
-      <mat-label>To</mat-label>
-        <mat-select [(value)]="to">
-            @for (city of state.state.cities; track $index) {
-                <mat-option [value]="city.name">{{city.name}}</mat-option>
-              }
-        </mat-select>
-    </mat-form-field>
-    
-    <mat-form-field class="sxs dropdown">
-      <mat-label>Resource</mat-label>
-        <mat-select [(value)]="resource">
-            @for (item of state.state.current_city!.storage.items; track $index) {
-                <mat-option [value]="item.type">{{item.type}}</mat-option>
-              }
-        </mat-select>
-    </mat-form-field>
-    
-    
-    <mat-form-field class="sxs dropdown"> 
-        <mat-label>Amount</mat-label>
-        <input matInput placeholder="" value="">
-    </mat-form-field>
-    
-    
-    <mat-form-field class="sxs dropdown">
-      <mat-label>Ship</mat-label>
-        <mat-select >
-            @for (ship of state.state.current_city!.ships; track $index) {
-                <mat-option [value]="ship">{{ship.type}}</mat-option>
-              }
-        </mat-select>
-    </mat-form-field>
-    <hr>
-    <button [disabled]="" (click)="this.CreateRoute()">Create</button> 
-</mat-expansion-panel>
+<p-accordion size="small">
+    <p-accordion-panel value="0" size="small">
+        <p-accordion-header>Create Route</p-accordion-header>
+        <p-accordion-content>
+          <p-select [options]="state.state.cities" [(ngModel)]="from" optionLabel="name" placeholder="From" class="w-full md:w-56" />
+          <p-select [options]="state.state.cities" [(ngModel)]="to" optionLabel="name" placeholder="To" class="w-full md:w-56" />
+          <p-select [options]="state.state.current_city!.storage.items" [(ngModel)]="resource" optionLabel="type" placeholder="Resource" class="w-full md:w-56"/>
+          <p-inputnumber [(ngModel)]="amount" [showButtons]="true" buttonLayout="horizontal" inputId="horizontal" spinnerMode="horizontal" [step]="1">
+            <ng-template #incrementbuttonicon>
+                <span class="pi pi-plus"></span>
+            </ng-template>
+            <ng-template #decrementbuttonicon>
+                <span class="pi pi-minus"></span>
+            </ng-template>
+        </p-inputnumber>
+          <p-select [options]="state.state.current_city!.ships" [(ngModel)]="ship" optionLabel="type" placeholder="Select a Ship" class="w-full md:w-56" />
+          <p-button label="Create" (click)="this.CreateRoute()"/>
+        </p-accordion-content>
+    </p-accordion-panel>
+</p-accordion>

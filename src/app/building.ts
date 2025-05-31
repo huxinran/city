@@ -79,6 +79,16 @@ export class Shipyard {
     }
 }
 
+export class Route {
+    constructor(
+        public from: CityName,
+        public to: CityName,
+        public resource: Resource,
+        public amount: number,
+        public ship?: Ship,
+    ){}
+}
+
 export class Dock {
     constructor(
         public tier: number = 1,

@@ -17,7 +17,7 @@ export class StateService {
 
   constructor() {
     this.state = new State()
-    //this.Load()
+    this.Load()
     setInterval(() => {
       this.Tick(); 
     }, 200)

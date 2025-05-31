@@ -2,15 +2,8 @@
 <div>
     <div> {{tile.building!.shipyard!.status}} </div>
     <div> {{tile.building!.shipyard!.progress | percent}} </div>
-    <div>Blueprints</div>
-    <mat-form-field>
-        <mat-select [(value)]="tile.building!.shipyard!.selected!">
-            @for (blueprint of tile.building!.shipyard!.blueprints; track $index) {
-                <mat-option [value]="blueprint">{{blueprint.type}}</mat-option>
-              }
-        </mat-select>
-    </mat-form-field>
+    <p-select [options]="tile.building!.shipyard!.blueprints" [(ngModel)]="tile.building!.shipyard!.selected" optionLabel="type" placeholder="Blueprints" class="w-full md:w-56" />
 </div>
 <div>
-    <button class="btn" [disabled]="tile.building!.shipyard!.status != ProductionStatus.READY" (click)="Build(tile.building!.shipyard!.selected)">Build</button> 
+    <p-button class="btn" [disabled]="tile.building!.shipyard!.status != ProductionStatus.READY" (click)="BuildShip()">Build</p-button> 
 </div>
