@@ -1,8 +1,8 @@
 import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { TileComponent } from '../tile/tile.component';
 import { City } from '../city';
-import { repeat } from 'rxjs';
 import { StateService } from '../state.service';
 
 @Component({

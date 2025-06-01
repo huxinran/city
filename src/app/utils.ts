@@ -64,17 +64,34 @@ export function shuffle(array: any[]) {
   return array
 }
 
-export function TakeItems(storage: Storage, items: Item[]): boolean {
-    for (let item of items) {
-        if (!TryTakeItem(storage, item)) {
-        return false
-        }
+export function TakeItemsAsPossible(storage: Storage, items: Item[]): Item[] {
+  let taken: Item[] = []  
+  for (let item of items) {
+    for (let storage_item of storage.items) {
+      if (storage_item.type == item.type) {
+        let taken_amount = Math.min(item.num, storage_item.num)
+        if (taken_amount > 0) {
+          storage_item.num -= taken_amount
+          taken.push(new Item(item.type, taken_amount))
+        } 
+        break
+      }
     }
+  }
+  return taken  
+}
 
-    for (let item of items) {
-        TakeItem(storage, item)
-    }
-    return true  
+export function TakeItems(storage: Storage, items: Item[]): boolean {
+  for (let item of items) {
+      if (!TryTakeItem(storage, item)) {
+        return false
+      }
+  }
+
+  for (let item of items) {
+      TakeItem(storage, item)
+  }
+  return true  
 }
 
 export function Transfer(src: Storage, dst: Storage, items: Item[]) {

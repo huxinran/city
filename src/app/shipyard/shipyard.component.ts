@@ -1,18 +1,16 @@
 import { Component, inject, Input } from '@angular/core';
-import { Ship, ShipBlueprint, Shipyard } from '../building';
+import { PercentPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
 import { Tile } from '../tile';
 import { StateService } from '../state.service';
-import { PercentPipe } from '@angular/common';
-
-
 import { TakeItems } from '../utils';
 import { ProductionStatus } from '../types';
 
-import { FormsModule } from '@angular/forms';
-import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { PanelModule } from 'primeng/panel';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
+
 @Component({
   selector: 'app-shipyard',
   imports: [PercentPipe, FormsModule, SelectModule, ButtonModule, PanelModule],

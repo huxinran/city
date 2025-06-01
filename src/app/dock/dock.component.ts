@@ -1,4 +1,5 @@
 import { Component, inject, Input,  } from '@angular/core';
+
 import { Tile } from '../tile';
 import { StateService } from '../state.service';
 import { CityName, Resource } from '../types'

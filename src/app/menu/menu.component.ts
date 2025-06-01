@@ -1,12 +1,13 @@
 import { Component, inject } from '@angular/core';
+
 import { StateService } from '../state.service';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { BuildingType, Terrain } from '../types'
+
+import { MatMenuModule } from '@angular/material/menu';
+
 @Component({
   selector: 'app-menu',
-  imports: [MatButtonModule, MatMenuModule, MatCardModule],
+  imports: [MatMenuModule],
   templateUrl: './menu.component.html',
   styleUrl: './menu.component.css'
 })

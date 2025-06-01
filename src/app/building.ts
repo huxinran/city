@@ -86,6 +86,7 @@ export class Route {
         public resource: Resource,
         public amount: number,
         public ship?: Ship,
+        public progress: number = 0.0
     ){}
 }
 

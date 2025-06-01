@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { Production } from '../building';
 import { PercentPipe } from '@angular/common';
+
 import { Tile } from '../tile';
 
 @Component({

@@ -2,6 +2,8 @@
     <div> <b>{{tile? tile.building ? tile.building!.type : tile.terrain : undefined}}</b></div>
     @if (tile != undefined && tile.building != undefined) {
         <hr>
-        <app-building *ngIf="tile.building" [tile]="tile"></app-building>
+        @if (tile.building) {
+            <app-building [tile]="tile"></app-building>
+        }
     }
 </div>

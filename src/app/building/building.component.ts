@@ -1,4 +1,5 @@
 import { Component, inject, Input } from '@angular/core';
+
 import { ProductionComponent } from "../production/production.component";
 import { HouseComponent } from '../house/house.component';
 import { ServiceComponent } from '../service/service.component';

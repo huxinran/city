@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { State } from './state';
-import { Item } from './storage';
-import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, Distance, CountItem} from './utils';
+import { Item, Storage } from './storage';
+import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, Distance, CountItem, TakeItemsAsPossible} from './utils';
 import { GetCurrentMaxOccupant, Ship, ShippingTask } from './building'
 import { City, Map,  } from './city';
 import { Population,  } from './population';
-import { Resident, ProductionStatus, ShippingTaskType, BuildingType, Terrain } from './types'
+import { Resident, ProductionStatus, ShippingTaskType, BuildingType, Terrain, CityName } from './types'
 import { Tile } from './tile';
 
 @Injectable({
@@ -356,6 +356,15 @@ public AddHouse(population: Population, house: Tile) {
     }
 }
 
+public GetCity(cities: City[], city_name: CityName) {
+  for (let c of cities) {
+    if (c.name == city_name) {
+      return c
+    }
+  }
+  return undefined
+}
+
 
 
 public GetWorkerNeeded(population: Population, tier: Resident, num: number) {
@@ -387,6 +396,39 @@ public GetWorkerNeeded(population: Population, tier: Resident, num: number) {
   public UpdateGold(city: City) {
     for (let t of city.population.tiers) {
       this.state.gold += t.has * 0.001 
+    } 
+  }
+
+  public UpdateRoute(city: City, other_cities: City[]) {
+    for (let r of city.routes) {
+      if (!r.ship) {
+        continue
+      }
+
+      if (r.from != city.name) {
+        continue
+      }
+
+      let ship = r.ship
+      if (ship.status == ShippingTaskType.READY) {
+        let cargo = TakeItemsAsPossible(city.storage, [new Item(r.resource, r.amount)])
+        AddItems(ship.cargo, cargo)
+      } else if (ship.status == ShippingTaskType.DELIVERYING) {
+        r.progress = Math.min(1.0, r.progress + ship.speed / 100.0)
+        if (r.progress == 1.0) {
+          r.progress = 0.0
+          ship.status = ShippingTaskType.RETURNING
+          let dst_city = this.GetCity(other_cities, r.to)
+          AddItems(dst_city!.storage, ship.cargo.items)
+          ship.cargo = new Storage() 
+        }
+      } else if (ship.status == ShippingTaskType.RETURNING) {
+        r.progress = Math.min(1.0, r.progress + ship.speed / 100.0)
+        if (r.progress == 1.0) {
+          r.progress = 0.0
+          ship.status = ShippingTaskType.READY
+        }
+      }
     } 
   }
 }
