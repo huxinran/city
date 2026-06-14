@@ -1,15 +1,18 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { PercentPipe } from '@angular/common';
 import { Tile } from '../tile';
 import { House, RefreshHouse } from '../building';
+import { repaintOn } from '../live';
 @Component({
   selector: 'app-house',
   imports: [PercentPipe],
   templateUrl: './house.component.html',
-  styleUrl: './house.component.css'
+  styleUrl: './house.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HouseComponent {
   @Input() tile!: Tile
+  constructor() { repaintOn(s => [s.frame]) }
 
   public Upgrade() {
     let house = this.tile.building!.house!

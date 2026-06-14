@@ -163,15 +163,16 @@ export enum BuildingType {
     WAREHOUSE = "Warehouse",
     SHIPYARD = "Shipyard",
     DOCK = "Dock",
+    ROAD = "Road",
     DELETE = "Delete",
 }
 
 export enum Terrain {
     LAND = "Land",
     GRASS = "Grass",
-    FOREST = "Forest",
+    TREE = "Tree",
     SEA = "Sea",
-    MOUNTAIN = "Mountain",
+    ROCK = "Rock",
 }
 
 export enum ShipType {

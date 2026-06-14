@@ -3,30 +3,15 @@ import {Storage, Item} from './storage'
 import { Tile } from './tile'
 
 export function GetResource(storage: Storage, type: string): number {
-    for (let item of storage.items) {
-      if (item.type == type) {
-        return item.num
-      }
-    }
-    return 0
+    return storage.amounts[type] ?? 0
 }
 
-export function CountItem(storage: Storage, type: string) {
-  for (let item of storage.items) {
-    if (item.type == type) {
-      return item.num
-    }
-  }
-  return undefined
+export function CountItem(storage: Storage, type: string): number {
+    return storage.amounts[type] ?? 0
 }
 
 export function AddItem(storage: Storage, item: Item) {
-    for (let i of storage.items) {
-      if (i.type == item.type) {
-        i.num += item.num
-        return
-      }
-    }
+    storage.amounts[item.type] = (storage.amounts[item.type] ?? 0) + item.num
 }
 export function AddItems(storage: Storage, items: Item[]) {
   for (let i of items) {
@@ -40,11 +25,17 @@ export function TryTakeItem(storage: Storage, item: Item): boolean {
 }
 
 export function TakeItem(storage: Storage, item: Item) {
-    for (let i of storage.items) {
-        if (i.type == item.type) {
-            i.num -= item.num
-        }
+    storage.amounts[item.type] = (storage.amounts[item.type] ?? 0) - item.num
+}
+
+// A list view of a storage's non-empty-or-all entries as Items, for templates
+// and for code that needs to iterate (e.g. shipping a ship's whole cargo).
+export function StorageItems(storage: Storage): Item[] {
+    let items: Item[] = []
+    for (let type in storage.amounts) {
+        items.push(new Item(type as any, storage.amounts[type]))
     }
+    return items
 }
 
 export function shuffle(array: any[]) {
@@ -65,20 +56,16 @@ export function shuffle(array: any[]) {
 }
 
 export function TakeItemsAsPossible(storage: Storage, items: Item[]): Item[] {
-  let taken: Item[] = []  
+  let taken: Item[] = []
   for (let item of items) {
-    for (let storage_item of storage.items) {
-      if (storage_item.type == item.type) {
-        let taken_amount = Math.min(item.num, storage_item.num)
-        if (taken_amount > 0) {
-          storage_item.num -= taken_amount
-          taken.push(new Item(item.type, taken_amount))
-        } 
-        break
-      }
+    let available = storage.amounts[item.type] ?? 0
+    let taken_amount = Math.min(item.num, available)
+    if (taken_amount > 0) {
+      storage.amounts[item.type] = available - taken_amount
+      taken.push(new Item(item.type, taken_amount))
     }
   }
-  return taken  
+  return taken
 }
 
 export function TakeItems(storage: Storage, items: Item[]): boolean {
@@ -134,7 +121,7 @@ export function FindNeighbours(city: City, tile: Tile, l: number) {
       if (distance > l) {
         continue
       }
-      let index = x * m + y
+      let index = x * n + y
       neighbours.push(city.tiles[index])
     }
   }

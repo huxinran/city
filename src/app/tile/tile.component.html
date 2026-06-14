@@ -1,3 +1,29 @@
-<div class="box" (click)="HandleClick()" [ngStyle]="GetStyle()">
-    <div class="name">{{GetType()}}</div>
+<div class="box" [class.focused]="isFocused" [attr.data-i]="tile.i" [attr.data-j]="tile.j" (click)="HandleClick()" [ngStyle]="GetTerrainStyle()">
+    @if (terrainIcon) {
+        <span class="terrain-icon">{{terrainIcon}}</span>
+    }
+    @if (tile.building) {
+        <div class="building" [class.cobble]="isRoad" [ngStyle]="GetBuildingStyle()"
+             [attr.draggable]="isRoad ? null : 'true'"
+             (dragstart)="onBuildingDragStart($event)"
+             (dragend)="onBuildingDragEnd()">
+            @if (isRoad) {
+                <!-- cobblestone texture only, no content -->
+            } @else if (isFarm) {
+                <div class="farm-layout">
+                    <div class="farm-house">🏡</div>
+                    <span class="farm-produce">{{GetIcon()}}</span>
+                    <span class="farm-produce">{{GetIcon()}}</span>
+                    <span class="farm-produce">{{GetIcon()}}</span>
+                    <span class="farm-produce">{{GetIcon()}}</span>
+                    <span class="farm-produce">{{GetIcon()}}</span>
+                </div>
+            } @else {
+                <span class="icon" [style.font-size.px]="iconSize">{{GetIcon()}}</span>
+                @if (size > 1) {
+                    <span class="name">{{GetType()}}</span>
+                }
+            }
+        </div>
+    }
 </div>

@@ -1,0 +1,36 @@
+<div class="palette">
+  <div class="palette-title">Build</div>
+  <div class="hint">Drag onto the map, or click then tap a tile.</div>
+
+  @for (group of groups; track group.name) {
+    <div class="group">
+      <div class="group-title">{{group.name}}</div>
+      <div class="icons">
+        @for (type of group.items; track $index) {
+          <button class="pal-icon" [class.sel]="isSelected(type)"
+                  draggable="true"
+                  (dragstart)="onDragStart(type)" (dragend)="onDragEnd()"
+                  (click)="select(type)" [title]="type">
+            @if (isRoad(type)) {
+              <span class="cobble swatch"></span>
+            } @else {
+              <span class="emoji">{{icon(type)}}</span>
+            }
+          </button>
+        }
+      </div>
+    </div>
+  }
+
+  <div class="group">
+    <div class="group-title">Tools</div>
+    <div class="icons">
+      <button class="pal-icon danger" [class.sel]="isSelected(Delete)"
+              draggable="true"
+              (dragstart)="onDragStart(Delete)" (dragend)="onDragEnd()"
+              (click)="select(Delete)" title="Delete">
+        <span class="emoji">🗑️</span>
+      </button>
+    </div>
+  </div>
+</div>

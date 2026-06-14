@@ -1,14 +1,13 @@
-
-<div class="resources">
-<b>Resources</b>
-<hr>
-@for (item of state.state.current_city!.storage.items; track $index) {
-  @if (item.num > 0) {
-    <div class="item">
-      <a class="name"><b>{{item.type}}</b></a>
-      <br>
-      <a class="cnt">{{item.num}}</a>
-    </div>
-  }
-}
-<div>
+<div class="panel">
+  <div class="panel-title">Resources</div>
+  <div class="res-grid">
+    @for (item of items(); track item.type) {
+      @if (item.num > 0) {
+        <div class="res">
+          <span class="res-name">{{item.type}}</span>
+          <span class="res-cnt">{{item.num | number: '1.0-0'}}</span>
+        </div>
+      }
+    }
+  </div>
+</div>

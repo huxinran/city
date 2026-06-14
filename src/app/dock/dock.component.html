@@ -1,54 +1,61 @@
-<p-table [value]="state.state.current_city!.ships" size="small" [paginator]="true" [rows]="5">
-  <ng-template #header>
-      <tr>
-          <th>Type</th>
-          <th>Status</th>
-      </tr>
-  </ng-template>
-  <ng-template #body let-ship>
-      <tr>
-          <td>{{ ship.type }}</td>
-          <td>{{ ship.status }}</td>
-      </tr>
-  </ng-template>
-</p-table>
-<hr>
-<p-table [value]="state.state.current_city!.routes" size="small" [paginator]="true" [rows]="5">
-  <ng-template #header>
-      <tr>
-          <th>From</th>
-          <th>To</th>
-          <th>Resource</th>
-          <th>Amount</th>
-      </tr>
-  </ng-template>
-  <ng-template #body let-route>
-      <tr>
-          <td>{{ route.from }}</td>
-          <td>{{ route.to }}</td>
-          <td>{{ route.resource }}</td>
-          <td>{{ route.amount }}</td>
-      </tr>
-  </ng-template>
-</p-table>
-<hr>
-<p-accordion size="small">
-    <p-accordion-panel value="0" size="small">
-        <p-accordion-header>Create Route</p-accordion-header>
-        <p-accordion-content>
-          <p-select [options]="state.state.cities" [(ngModel)]="from" optionLabel="name" placeholder="From" class="w-full md:w-56" />
-          <p-select [options]="state.state.cities" [(ngModel)]="to" optionLabel="name" placeholder="To" class="w-full md:w-56" />
-          <p-select [options]="state.state.current_city!.storage.items" [(ngModel)]="resource" optionLabel="type" placeholder="Resource" class="w-full md:w-56"/>
-          <p-inputnumber [(ngModel)]="amount" [showButtons]="true" buttonLayout="horizontal" inputId="horizontal" spinnerMode="horizontal" [step]="1">
-            <ng-template #incrementbuttonicon>
-                <span class="pi pi-plus"></span>
-            </ng-template>
-            <ng-template #decrementbuttonicon>
-                <span class="pi pi-minus"></span>
-            </ng-template>
-        </p-inputnumber>
-          <p-select [options]="state.state.current_city!.ships" [(ngModel)]="ship" optionLabel="type" placeholder="Select a Ship" class="w-full md:w-56" />
-          <p-button label="Create" (click)="this.CreateRoute()"/>
-        </p-accordion-content>
-    </p-accordion-panel>
-</p-accordion>
+<div class="panel-title">Ships</div>
+<table class="table">
+  <thead><tr><th>Type</th><th>Status</th></tr></thead>
+  <tbody>
+    @for (ship of state.state.current_city!.ships; track $index) {
+      <tr><td>{{ship.type}}</td><td>{{ship.status}}</td></tr>
+    } @empty {
+      <tr><td class="empty" colspan="2">No ships yet</td></tr>
+    }
+  </tbody>
+</table>
+
+<hr class="divider">
+<div class="panel-title">Routes</div>
+<table class="table">
+  <thead><tr><th>From</th><th>To</th><th>Resource</th><th>Amt</th></tr></thead>
+  <tbody>
+    @for (route of state.state.current_city!.routes; track $index) {
+      <tr><td>{{route.from}}</td><td>{{route.to}}</td><td>{{route.resource}}</td><td>{{route.amount}}</td></tr>
+    } @empty {
+      <tr><td class="empty" colspan="4">No routes yet</td></tr>
+    }
+  </tbody>
+</table>
+
+<details class="collapsible">
+  <summary>Create Route</summary>
+  <div class="field">
+    <label>From</label>
+    <select class="input" [(ngModel)]="from">
+      <option [ngValue]="undefined" disabled>Select city…</option>
+      @for (c of state.state.cities; track $index) { <option [ngValue]="c">{{c.name}}</option> }
+    </select>
+  </div>
+  <div class="field">
+    <label>To</label>
+    <select class="input" [(ngModel)]="to">
+      <option [ngValue]="undefined" disabled>Select city…</option>
+      @for (c of state.state.cities; track $index) { <option [ngValue]="c">{{c.name}}</option> }
+    </select>
+  </div>
+  <div class="field">
+    <label>Resource</label>
+    <select class="input" [(ngModel)]="resource">
+      <option [ngValue]="undefined" disabled>Select resource…</option>
+      @for (item of items(); track item.type) { <option [ngValue]="item">{{item.type}}</option> }
+    </select>
+  </div>
+  <div class="field">
+    <label>Amount</label>
+    <input class="input" type="number" min="0" step="1" [(ngModel)]="amount">
+  </div>
+  <div class="field">
+    <label>Ship</label>
+    <select class="input" [(ngModel)]="ship">
+      <option [ngValue]="undefined" disabled>Select a ship…</option>
+      @for (s of state.state.current_city!.ships; track $index) { <option [ngValue]="s">{{s.type}}</option> }
+    </select>
+  </div>
+  <button class="btn btn-sm btn-primary btn-block" [disabled]="!from || !to || !resource" (click)="CreateRoute()">Create Route</button>
+</details>

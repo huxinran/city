@@ -1,9 +1,12 @@
-<div class="box">
-    <div> <b>{{tile? tile.building ? tile.building!.type : tile.terrain : undefined}}</b></div>
-    @if (tile != undefined && tile.building != undefined) {
-        <hr>
+<div class="panel">
+    <div class="panel-title">Selection</div>
+    @if (tile) {
+        <div class="panel-heading">{{tile.building ? tile.building.type : tile.terrain}}</div>
         @if (tile.building) {
+            <hr class="divider">
             <app-building [tile]="tile"></app-building>
         }
+    } @else {
+        <div class="empty-hint">Click a tile to inspect it.</div>
     }
 </div>

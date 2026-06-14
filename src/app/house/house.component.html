@@ -1,30 +1,27 @@
-<div> 
-    <div class="sxs"><b>{{tile.building!.house!.resident_type}}</b></div>
-    <div class="sxs right">{{tile.building!.house!.occupant}} / {{tile.building!.house!.max_occupant}}</div>
-<div>
-<div> 
-    <div class="sxs"><b>Happiness</b></div>
-    <div class="sxs right">{{tile.building!.house!.happiness | percent}}</div>
-<div>
-<hr>
-<div>
+<div class="row">
+    <span class="key">{{tile.building!.house!.resident_type}}</span>
+    <span class="val">{{tile.building!.house!.occupant}} / {{tile.building!.house!.max_occupant}}</span>
+</div>
+<div class="row">
+    <span class="key">Happiness</span>
+    <span class="val">{{tile.building!.house!.happiness | percent}}</span>
+</div>
+<div class="bar" [class.warn]="tile.building!.house!.happiness < 0.5">
+    <span [style.width.%]="tile.building!.house!.happiness * 100"></span>
+</div>
+
+<hr class="divider">
+<div class="chip-grid">
     @for (need of tile.building!.house!.service_needs; track $index) {
-        @if (need.satisfied) {
-            <span class="need" style="background-color:lightgreen">{{need.type}}</span>
-        } @else {
-            <span class="need" style="background-color:lightgrey">{{need.type}}</span>
-        }
+        <span class="badge" [class.on]="need.satisfied" [class.off]="!need.satisfied">{{need.type}}</span>
     }
     @for (need of tile.building!.house!.resource_needs; track $index) {
-        @if (need.satisfied) {
-            <span class="need" style="background-color:lightgreen">{{need.type}}</span>
-        } @else {
-            <span  class="need" style="background-color:lightgrey">{{need.type}}</span>
-        }
+        <span class="badge" [class.on]="need.satisfied" [class.off]="!need.satisfied">{{need.type}}</span>
     }
 </div>
-<hr>
-<div>
-    <button class="btn" [disabled]="this.tile.building!.house!.happiness < 1.0 || this.tile.building!.house!.tier >= 6" (click)="this.Upgrade()">Upgrade</button> 
-    <button class="btn" [disabled]="this.tile.building!.house!.tier == 1" (click)="this.Downgrade()">Downgrade</button> 
+
+<hr class="divider">
+<div class="btn-row">
+    <button class="btn btn-sm btn-primary" [disabled]="tile.building!.house!.happiness < 1.0 || tile.building!.house!.tier >= 6" (click)="Upgrade()">Upgrade</button>
+    <button class="btn btn-sm" [disabled]="tile.building!.house!.tier == 1" (click)="Downgrade()">Downgrade</button>
 </div>

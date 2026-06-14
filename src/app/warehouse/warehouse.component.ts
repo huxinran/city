@@ -1,16 +1,19 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Tile } from '../tile';
 import { PercentPipe } from '@angular/common';
 import { RefreshWarehouse } from '../building';
+import { repaintOn } from '../live';
 @Component({
   selector: 'app-warehouse',
   imports: [PercentPipe],
   templateUrl: './warehouse.component.html',
-  styleUrl: './warehouse.component.css'
+  styleUrl: './warehouse.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WarehouseComponent {
   @Input() tile!: Tile;
-  
+  constructor() { repaintOn(s => [s.frame]) }
+
   public Upgrade() {
     let warehouse = this.tile!.building!.warehouse!
     warehouse.tier += 1

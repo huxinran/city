@@ -1,12 +1,12 @@
-<div>
-    <div class="sxs key">{{tile.building!.production!.worker_type}}</div>
-    <div class="sxs right">{{tile.building!.production!.worker}} / {{tile.building!.production!.worker_needed}}</div>
+<div class="row">
+    <span class="key">{{tile.building!.production!.worker_type}}</span>
+    <span class="val">{{tile.building!.production!.worker}} / {{tile.building!.production!.worker_needed}}</span>
 </div>
-<div>
-    <div class="sxs key">Progress</div>
-    <div class="sxs right">{{tile.building!.production!.progress / 100 | percent}}</div>
+<div class="row">
+    <span class="key">Status</span>
+    <span class="badge on">{{tile.building!.production!.status}}</span>
 </div>
-<div>
-    <div class="sxs key">Status</div>
-    <div class="sxs right"> {{tile.building!.production!.status}}</div>
+<div class="row"><span class="key">Progress</span>
+    <span class="val">{{tile.building!.production!.progress / 100 | percent}}</span>
 </div>
+<div class="bar"><span [style.width.%]="tile.building!.production!.progress"></span></div>

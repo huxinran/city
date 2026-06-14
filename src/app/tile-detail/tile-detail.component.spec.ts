@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TileDetailComponent } from './tile-detail.component';
-import { MatCardModule } from '@angular/material/card';
 describe('TileDetailComponent', () => {
   let component: TileDetailComponent;
   let fixture: ComponentFixture<TileDetailComponent>;

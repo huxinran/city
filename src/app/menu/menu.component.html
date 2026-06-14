@@ -1,61 +1,53 @@
-<mat-menu #farm="matMenu">
-  @for (type of state.state.current_city!.farms; track $index) {
-    <button mat-menu-item (click)="state.SetBuildType(type)">{{type}}</button>
+<span class="brand">🏙️ City</span>
+
+<div class="menu-wrap">
+  <button class="btn btn-sm" (click)="toggle()">Menu ▾</button>
+
+  @if (open()) {
+    <div class="menu-backdrop" (click)="close()"></div>
+    <div class="menu-panel">
+
+      <button class="menu-item" [class.active]="submenu() === 'terrain'" (click)="showSub('terrain')">Terrain ▸</button>
+      @if (submenu() === 'terrain') {
+        <div class="menu-sub">
+          <button class="menu-item" (click)="setTerrain(Terrain.GRASS)">Grass</button>
+          <button class="menu-item" (click)="setTerrain(Terrain.LAND)">Land</button>
+          <button class="menu-item" (click)="setTerrain(Terrain.TREE)">Tree</button>
+          <button class="menu-item" (click)="setTerrain(Terrain.ROCK)">Rock</button>
+          <button class="menu-item" (click)="setTerrain(Terrain.SEA)">Sea</button>
+        </div>
+      }
+
+      <button class="menu-item" [class.active]="submenu() === 'cities'" (click)="showSub('cities')">Cities ▸</button>
+      @if (submenu() === 'cities') {
+        <div class="menu-sub">
+          @for (city of state.state.cities; track $index) {
+            <button class="menu-item" (click)="changeCity(city.name)">{{city.name}}</button>
+          }
+        </div>
+      }
+
+      <button class="menu-item" (click)="save()">Save</button>
+      <button class="menu-item" (click)="load()">Load</button>
+      <button class="menu-item" (click)="restart()">Restart</button>
+
+      <button class="menu-item danger" [class.active]="submenu() === 'reset'" (click)="showSub('reset')">Reset ▸</button>
+      @if (submenu() === 'reset') {
+        <div class="menu-sub">
+          <button class="menu-item" (click)="close()">Cancel</button>
+          <button class="menu-item danger" (click)="reset()">Confirm</button>
+        </div>
+      }
+
+    </div>
   }
-</mat-menu>
+</div>
 
-<mat-menu #material="matMenu">
-  @for (type of state.state.current_city!.materials; track $index) {
-    <button mat-menu-item (click)="state.SetBuildType(type)">{{type}}</button>
-  }
-</mat-menu>
+<span class="spacer"></span>
 
-<mat-menu #workshop="matMenu">
-  @for (type of state.state.current_city!.workshops; track $index) {
-    <button mat-menu-item (click)="state.SetBuildType(type)">{{type}}</button>
-  }
-</mat-menu>
-
-<mat-menu #infrastructure="matMenu">
-  @for (type of state.state.current_city!.infrastructure; track $index) {
-    <button mat-menu-item (click)="state.SetBuildType(type)">{{type}}</button>
-  }
-</mat-menu>
-
-<mat-menu #terrain="matMenu">
-  <button mat-menu-item (click)="state.SetTerrainType(Terrain.GRASS)">Grass</button>
-  <button mat-menu-item (click)="state.SetTerrainType(Terrain.LAND)">Land</button>
-  <button mat-menu-item (click)="state.SetTerrainType(Terrain.FOREST)">Forest</button>
-  <button mat-menu-item (click)="state.SetTerrainType(Terrain.MOUNTAIN)">Mountain</button>
-  <button mat-menu-item (click)="state.SetTerrainType(Terrain.SEA)">Sea</button>
-</mat-menu>
-
-<mat-menu #game="matMenu">
-  <button mat-menu-item color="success" [matMenuTriggerFor]="terrain">Terra</button>
-  <button mat-menu-item color="success" [matMenuTriggerFor]="city">Cities</button>
-  <button mat-menu-item  (click)="this.state.Save()">Save</button>
-  <button mat-menu-item  (click)="this.state.Load()">Load</button>
-  <button mat-menu-item  (click)="this.state.Restart()">Restart</button>
-  <button mat-menu-item  color="success" [matMenuTriggerFor]="reset">Reset</button>
-</mat-menu>
-
-<mat-menu #city="matMenu">
-  @for (city of this.state.state.cities;track $index) {
-    <button mat-menu-item  (click)="this.state.ChangeCity(city.name)">{{city.name}}</button>
-  }
-</mat-menu>
-
-<mat-menu #reset="matMenu">
-  <button mat-menu-item>Cancel</button>
-  <button mat-menu-item  (click)="this.state.Reset()">Confirm</button>
-</mat-menu>
-
-<button class="top_button" mat-stroked-button color="success" (click)="state.SetBuildType(BuildingType.HOUSE)">House</button>
-<button class="top_button" mat-stroked-button color="success" (click)="state.SetBuildType(BuildingType.WAREHOUSE)">Warehouse</button>
-<button class="top_button" mat-stroked-button color="success" [matMenuTriggerFor]="farm">Farm</button>
-<button class="top_button" mat-stroked-button color="success" [matMenuTriggerFor]="material">Material</button>
-<button class="top_button" mat-stroked-button color="success" [matMenuTriggerFor]="workshop">Workshop</button>
-<button class="top_button" mat-stroked-button color="success" [matMenuTriggerFor]="infrastructure">Infrastructure</button>
-<button class="top_button" mat-stroked-button color="success" (click)="state.ClearSelection()"> Clear {{state.state.build_type}} </button>
-<button class="top_button" mat-stroked-button color="success" (click)="state.SetBuildType(BuildingType.DELETE)">Delete</button>
-<button class="top_button" mat-stroked-button color="success" [matMenuTriggerFor]="game">Menu</button>
+@if (state.state.build_type || state.state.terrain_type) {
+  <span class="selection">
+    Selected: <b>{{state.state.build_type || state.state.terrain_type}}</b>
+  </span>
+  <button class="btn btn-sm btn-accent" (click)="state.ClearSelection()">Clear</button>
+}

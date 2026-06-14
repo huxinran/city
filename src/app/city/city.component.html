@@ -1,5 +1,24 @@
-<div class="grid" [ngStyle]="getStyle()">
+<div class="grid" [ngStyle]="getStyle()" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
     @for (tile of city.tiles; track $index) {
-        <app-tile [tile]="tile"></app-tile> 
+        <app-tile [tile]="tile"></app-tile>
     }
+    @if (state.dragging && dropHi) {
+        <div class="drop-highlight" [ngStyle]="dropHiStyle()"></div>
+    }
+    @if (isRoadArmed()) {
+        <div class="road-start" [ngStyle]="roadStartStyle()"></div>
+    }
+    <div class="cart-layer">
+        @for (cart of getActiveCarts(); track cart) {
+            <div class="cart" [ngStyle]="cartStyle(cart)">
+                <svg class="cart-svg" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="5" y1="1" x2="5" y2="9" stroke="#3a2208" stroke-width="2" stroke-linecap="round"/>
+                    <rect x="4" y="7" width="13" height="9" fill="#c8872a" stroke="#5a3200" stroke-width="1.5" rx="1"/>
+                    <line x1="7" y1="16" x2="15" y2="16" stroke="#3a2208" stroke-width="1.5"/>
+                    <circle cx="7" cy="19" r="2.5" fill="#3a2208"/>
+                    <circle cx="15" cy="19" r="2.5" fill="#3a2208"/>
+                </svg>
+            </div>
+        }
+    </div>
 </div>

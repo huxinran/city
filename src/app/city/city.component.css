@@ -1,7 +1,64 @@
+:host {
+    display: inline-block;
+    padding: 16px;
+}
+
 .grid {
+    position: relative;
     display: grid;
     grid-column-gap: 0px;
     grid-row-gap: 0px;
+    border: 3px solid #5a4a32;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.cart-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.drop-highlight {
+    position: absolute;
+    z-index: 4;
+    pointer-events: none;
+    box-sizing: border-box;
+    border: 2px dashed #22c55e;
+    border-radius: 4px;
+    background: rgba(34, 197, 94, 0.18);
+}
+
+.road-start {
+    position: absolute;
+    z-index: 4;
+    pointer-events: none;
+    box-sizing: border-box;
+    border: 2px solid #f59e0b;
+    border-radius: 4px;
+    background: rgba(245, 158, 11, 0.25);
+    animation: road-pulse 1s ease-in-out infinite;
+}
+
+@keyframes road-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+.cart {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.65));
+    transition: left 0.2s linear, top 0.2s linear;
+    will-change: left, top;
+}
+
+.cart-svg {
+    width: 22px;
+    height: 22px;
+    display: block;
 }
 
 .map_box {
@@ -11,4 +68,3 @@
     border-radius: 5px;
     margin: 5px
 }
-  

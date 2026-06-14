@@ -1,15 +1,15 @@
-<div class="box">
-    <span style="font-size: 20px;"><b> {{state.state.current_city!.name}} </b></span>
-    <hr>
+<div class="panel">
+    <div class="panel-heading">{{state.state.current_city!.name}}</div>
+    <hr class="divider">
     @for (tier of state.state.current_city!.population.tiers; track $index) {
-        <div> 
-            <div class="sxs key">{{tier.tier}} </div>  
-            <div class="sxs right">{{tier.has}}  / {{tier.needed}} </div> 
+        <div class="row">
+            <span class="key">{{tier.tier}}</span>
+            <span class="val">{{tier.has}} <span style="color:var(--text-mut)">/ {{tier.needed}}</span></span>
         </div>
     }
-    <hr>
-    <div> 
-        <div class="sxs key">Gold</div>  
-        <div class="sxs right">{{state.state.gold | number: '1.0-0'}} </div> 
+    <hr class="divider">
+    <div class="row">
+        <span class="key">💰 Gold</span>
+        <span class="val val-gold">{{state.state.gold | number: '1.0-0'}}</span>
     </div>
 </div>

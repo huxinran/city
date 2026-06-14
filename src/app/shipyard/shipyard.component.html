@@ -1,9 +1,23 @@
+<div class="row">
+    <span class="key">Status</span>
+    <span class="badge on">{{tile.building!.shipyard!.status}}</span>
+</div>
+<div class="row">
+    <span class="key">Progress</span>
+    <span class="val">{{tile.building!.shipyard!.progress | percent}}</span>
+</div>
+<div class="bar"><span [style.width.%]="tile.building!.shipyard!.progress * 100"></span></div>
 
-<div>
-    <div> {{tile.building!.shipyard!.status}} </div>
-    <div> {{tile.building!.shipyard!.progress | percent}} </div>
-    <p-select [options]="tile.building!.shipyard!.blueprints" [(ngModel)]="tile.building!.shipyard!.selected" optionLabel="type" placeholder="Blueprints" class="w-full md:w-56" />
+<hr class="divider">
+<div class="field">
+    <label>Blueprint</label>
+    <select class="input" [(ngModel)]="tile.building!.shipyard!.selected">
+        <option [ngValue]="undefined" disabled>Choose a blueprint…</option>
+        @for (bp of tile.building!.shipyard!.blueprints; track $index) {
+            <option [ngValue]="bp">{{bp.type}} — cargo {{bp.max_cargo}}, {{bp.build_time}}s</option>
+        }
+    </select>
 </div>
-<div>
-    <p-button class="btn" [disabled]="tile.building!.shipyard!.status != ProductionStatus.READY" (click)="BuildShip()">Build</p-button> 
-</div>
+<button class="btn btn-sm btn-primary btn-block"
+        [disabled]="tile.building!.shipyard!.status != ProductionStatus.READY || !tile.building!.shipyard!.selected"
+        (click)="BuildShip()">Build Ship</button>

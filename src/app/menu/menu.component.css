@@ -1,14 +1,83 @@
-.mat-success {
-    background-color: white;
-    color: white;
+:host {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    flex-wrap: wrap;
 }
 
+.brand {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    margin-right: 10px;
+}
 
-.top_button { 
-    margin: 2px;
-    width: 100px;
-    border: 1px solid white;
-    border-radius: 5px;
-    color: blue;
-    background: white;
+.spacer { flex: 1; }
+
+.selection {
+    font-size: 12px;
+    color: var(--text-dim);
+}
+.selection b { color: var(--accent); }
+
+/* Custom dropdown menu (replaces Angular Material mat-menu) */
+.menu-wrap {
+    position: relative;
+    display: inline-block;
+}
+
+.menu-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+}
+
+.menu-panel {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 51;
+    min-width: 160px;
+    padding: 4px;
+    background: var(--panel-2);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.menu-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 7px 10px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.menu-item:hover,
+.menu-item.active {
+    background: var(--elevated);
+}
+
+.menu-item.danger {
+    color: var(--danger);
+}
+
+.menu-sub {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0 0 2px 10px;
+    padding-left: 6px;
+    border-left: 1px solid var(--border);
 }

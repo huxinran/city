@@ -1,7 +1,147 @@
 import { Storage, Item } from "./storage"
 import { Tile } from "./tile"
 import { TakeItems } from "./utils"
-import { Resource, HouseType, Resident, ProductionStatus, ServiceType, ShippingTaskType, BuildingType, ShipType, CityName } from "./types"
+import { Resource, HouseType, Resident, ProductionStatus, ServiceType, ShippingTaskType, BuildingType, ShipType, CityName, Terrain } from "./types"
+
+
+// --- Building footprints (how many tiles a building occupies, size x size) ---
+const SMALL_BUILDINGS = new Set<BuildingType>([BuildingType.ROAD, BuildingType.HOUSE])
+const MEDIUM_BUILDINGS = new Set<BuildingType>([
+    BuildingType.WELL,
+    BuildingType.FIRE_STATION,
+    BuildingType.POLICE_STATION,
+    BuildingType.WAREHOUSE,
+    BuildingType.DOCK,
+    BuildingType.FISHERY,
+])
+
+// Roads/houses are 1x1, services/warehouse are 2x2, farms/factories are 3x3.
+export function GetBuildingSize(type: BuildingType): number {
+    if (SMALL_BUILDINGS.has(type)) return 1
+    if (MEDIUM_BUILDINGS.has(type)) return 2
+    return 3
+}
+
+// Farm-type buildings get a special "farmhouse + produce" map rendering.
+export const FARM_BUILDINGS = new Set<BuildingType>([
+    BuildingType.WHEAT_FARM, BuildingType.RICE_PADDY,
+    BuildingType.APPLE_ORCHARD, BuildingType.ORANGE_ORCHARD,
+    BuildingType.CABBAGE_PATCH, BuildingType.PIG_FARM,
+    BuildingType.DIARY_FARM, BuildingType.SHEEP_FARM,
+    BuildingType.POTATO_FARM, BuildingType.MELON_GARDEN,
+    BuildingType.TOMATO_FIELD, BuildingType.CHICKEN_COOP,
+    BuildingType.CORN_FIELD, BuildingType.BANANA_PLANTATION,
+    BuildingType.ONION_FIELD, BuildingType.VINEYARD,
+    BuildingType.OLIVE_GROVE, BuildingType.PUMPKIN_PATCH,
+    BuildingType.SOYBEAN_FARM, BuildingType.COCOA_PLANT,
+    BuildingType.SUGAR_CANE_PLANTATION, BuildingType.TOBACCO_PLANTATION,
+    BuildingType.COTTON_FIELD, BuildingType.RUBBER_PLANTATION,
+    BuildingType.BERRY_GROVE, BuildingType.APIARY,
+    BuildingType.TRAPLINE,
+])
+
+export function IsFarmBuilding(type: BuildingType): boolean {
+    return FARM_BUILDINGS.has(type)
+}
+
+// --- Terrain requirements: where each building may be placed ---
+const SEA_BUILDINGS = new Set<BuildingType>([
+    BuildingType.FISHERY,
+    BuildingType.DOCK,
+    BuildingType.SHIPYARD,
+    BuildingType.SALTERN,
+])
+const ROCK_BUILDINGS = new Set<BuildingType>([
+    BuildingType.STONE_QUARRY,
+    BuildingType.CLAY_PIT,
+    BuildingType.COAL_KILN,
+    BuildingType.GEM_MINE,
+    BuildingType.GOLD_MINE,
+    BuildingType.IRON_MINE,
+    BuildingType.SAND_PIT,
+])
+const TREE_BUILDINGS = new Set<BuildingType>([
+    BuildingType.LUMBER_HUT,
+    BuildingType.TRAPLINE,
+    BuildingType.BERRY_GROVE,
+    BuildingType.APIARY,
+])
+
+// Roads and houses can be built on any terrain; mines need rocks,
+// fisheries/docks need sea, lumber needs trees; everything else
+// (farms, workshops, services) goes on open ground.
+const ANY_TERRAIN = [Terrain.GRASS, Terrain.LAND, Terrain.TREE, Terrain.ROCK, Terrain.SEA]
+
+export function GetRequiredTerrains(type: BuildingType): Terrain[] {
+    if (type == BuildingType.ROAD || type == BuildingType.HOUSE) return ANY_TERRAIN
+    if (SEA_BUILDINGS.has(type)) return [Terrain.SEA]
+    if (ROCK_BUILDINGS.has(type)) return [Terrain.ROCK]
+    if (TREE_BUILDINGS.has(type)) return [Terrain.TREE]
+    return [Terrain.GRASS, Terrain.LAND]
+}
+
+// Houses and production buildings must be built touching a road (carts only
+// travel on roads). Roads, services and port buildings have no such need.
+const NO_ROAD_BUILDINGS = new Set<BuildingType>([
+    BuildingType.ROAD,
+    BuildingType.WELL,
+    BuildingType.FIRE_STATION,
+    BuildingType.POLICE_STATION,
+    BuildingType.SCHOOL,
+    BuildingType.WAREHOUSE,
+    BuildingType.SHIPYARD,
+    BuildingType.DOCK,
+    BuildingType.DELETE,
+])
+
+export function RequiresRoad(type: BuildingType): boolean {
+    return !NO_ROAD_BUILDINGS.has(type)
+}
+
+// Emoji shown for each building on the map and in the build palette.
+export const BUILDING_ICONS: { [key: string]: string } = {
+    // Farms & food
+    [BuildingType.WHEAT_FARM]: '🌾', [BuildingType.RICE_PADDY]: '🌾',
+    [BuildingType.APPLE_ORCHARD]: '🍎', [BuildingType.ORANGE_ORCHARD]: '🍊',
+    [BuildingType.CABBAGE_PATCH]: '🥬', [BuildingType.PIG_FARM]: '🐖',
+    [BuildingType.DIARY_FARM]: '🐄', [BuildingType.SHEEP_FARM]: '🐑',
+    [BuildingType.FISHERY]: '🐟', [BuildingType.POTATO_FARM]: '🥔',
+    [BuildingType.MELON_GARDEN]: '🍈', [BuildingType.TOMATO_FIELD]: '🍅',
+    [BuildingType.CHICKEN_COOP]: '🐔', [BuildingType.CORN_FIELD]: '🌽',
+    [BuildingType.BANANA_PLANTATION]: '🍌', [BuildingType.ONION_FIELD]: '🧅',
+    [BuildingType.BERRY_GROVE]: '🫐', [BuildingType.VINEYARD]: '🍇',
+    [BuildingType.OLIVE_GROVE]: '🫒', [BuildingType.PUMPKIN_PATCH]: '🎃',
+    [BuildingType.SOYBEAN_FARM]: '🫘', [BuildingType.COCOA_PLANT]: '🍫',
+    [BuildingType.SUGAR_CANE_PLANTATION]: '🎋', [BuildingType.TOBACCO_PLANTATION]: '🍂',
+    [BuildingType.COTTON_FIELD]: '🧶', [BuildingType.RUBBER_PLANTATION]: '🌳',
+    [BuildingType.TRAPLINE]: '🦊', [BuildingType.APIARY]: '🐝',
+    // Raw materials
+    [BuildingType.LUMBER_HUT]: '🪵', [BuildingType.STONE_QUARRY]: '🪨',
+    [BuildingType.CLAY_PIT]: '🧱', [BuildingType.SAND_PIT]: '⏳',
+    [BuildingType.COAL_KILN]: '⚫', [BuildingType.IRON_MINE]: '⛏️',
+    [BuildingType.GOLD_MINE]: '🪙', [BuildingType.GEM_MINE]: '💎',
+    [BuildingType.SALTERN]: '🧂',
+    // Workshops
+    [BuildingType.WIND_MILL]: '🌬️', [BuildingType.BAKERY]: '🍞',
+    [BuildingType.BUTCHERY]: '🥩', [BuildingType.CIDERY]: '🍺',
+    [BuildingType.OVERALL_FACTORY]: '👖', [BuildingType.CIGAR_FACTORY]: '🚬',
+    [BuildingType.CREAMERY]: '🧀', [BuildingType.POTTERY_SHOP]: '🏺',
+    [BuildingType.BRANDY_DISTILLERY]: '🥃', [BuildingType.CANDLE_Manufactory]: '🕯️',
+    [BuildingType.GLASSWORK]: '🔷', [BuildingType.STEELWORK]: '⚙️',
+    [BuildingType.SAWMILL]: '🪚', [BuildingType.BRICKYARY]: '🧱',
+    [BuildingType.MASON_SHOP]: '🗿', [BuildingType.CANNERY]: '🥫',
+    // Infrastructure
+    [BuildingType.HOUSE]: '🏠', [BuildingType.WELL]: '💧',
+    [BuildingType.FIRE_STATION]: '🚒', [BuildingType.POLICE_STATION]: '🚓',
+    [BuildingType.SCHOOL]: '🏫', [BuildingType.WAREHOUSE]: '📦',
+    [BuildingType.SHIPYARD]: '⚓', [BuildingType.DOCK]: '🚢',
+    [BuildingType.ROAD]: '',
+    [BuildingType.DELETE]: '🗑️',
+}
+
+export function GetBuildingIcon(type: BuildingType): string {
+    return BUILDING_ICONS[type] ?? '🏗️'
+}
 
 
 export class Building {
@@ -152,6 +292,9 @@ export class ShippingTask {
         public cargo: Item[],
         public distance: number = 0,
         public progress: number = 0,
+        // The road path the assigned cart follows, warehouse -> destination,
+        // as tile coordinates (used to draw the cart moving along the road).
+        public path: { i: number, j: number }[] = [],
     ) {}
 
 }
@@ -327,7 +470,9 @@ export function CreateBuilding(type: BuildingType, storage: Storage) {
         new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, undefined, undefined, undefined, new Shipyard())
     } else if (type == BuildingType.DOCK) {
         new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, undefined, undefined, undefined, undefined, new Dock())
-    } 
+    } else if (type == BuildingType.ROAD) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 1)])
+    }
     if (new_building == undefined) {
         return undefined
     }
