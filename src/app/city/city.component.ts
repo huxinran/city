@@ -2,17 +2,18 @@ import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core
 import { CommonModule } from '@angular/common';
 
 import { TileComponent } from '../tile/tile.component';
+import { CartLayerComponent } from './cart-layer.component';
 import { City } from '../city';
-import { Cart, GetBuildingSize } from '../building';
+import { GetBuildingSize } from '../building';
 import { StateService } from '../state.service';
-import { ShippingTaskType, BuildingType } from '../types';
+import { BuildingType } from '../types';
 import { repaintOn } from '../live';
 
 const TILE = 30;
 
 @Component({
   selector: 'app-city',
-  imports: [TileComponent, CommonModule],
+  imports: [TileComponent, CartLayerComponent, CommonModule],
   templateUrl: './city.component.html',
   styleUrl: './city.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,7 +22,7 @@ export class CityComponent {
   @Input() city!: City;
 
   state = inject(StateService)
-  constructor() { repaintOn(s => [s.frame, s.mapVersion]) }
+  constructor() { repaintOn(s => [s.mapVersion]) }
 
   // Footprint preview shown under the cursor while dragging a building.
   public dropHi?: { i: number, j: number, size: number }
@@ -97,44 +98,4 @@ export class CityComponent {
     };
   }
 
-  // All carts currently carrying out a task (and therefore on the road).
-  public getActiveCarts(): Cart[] {
-    let carts: Cart[] = []
-    for (let t of this.city.warehouses) {
-      let warehouse = t.building?.warehouse
-      if (!warehouse) {
-        continue
-      }
-      for (let c of warehouse.carts) {
-        if (c.task && c.task.path && c.task.path.length > 1) {
-          carts.push(c)
-        }
-      }
-    }
-    return carts
-  }
-
-  // Interpolate the cart's pixel position along its road path.
-  public cartStyle(cart: Cart) {
-    let task = cart.task!
-    let path = task.path
-    let f = task.distance > 0 ? task.progress / task.distance : 0
-    if (task.type == ShippingTaskType.RETURNING) {
-      f = 1 - f
-    }
-    f = Math.max(0, Math.min(1, f))
-
-    let pos = (path.length - 1) * f
-    let idx = Math.floor(pos)
-    let frac = pos - idx
-    let a = path[idx]
-    let b = path[Math.min(idx + 1, path.length - 1)]
-    let i = a.i + (b.i - a.i) * frac
-    let j = a.j + (b.j - a.j) * frac
-
-    return {
-      left: (j + 0.5) * TILE + 'px',
-      top: (i + 0.5) * TILE + 'px',
-    }
-  }
 }

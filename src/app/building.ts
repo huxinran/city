@@ -10,12 +10,45 @@ const MEDIUM_BUILDINGS = new Set<BuildingType>([
     BuildingType.WELL,
     BuildingType.FIRE_STATION,
     BuildingType.POLICE_STATION,
+    BuildingType.SCHOOL,
     BuildingType.WAREHOUSE,
     BuildingType.DOCK,
+    // Extraction / production (2x2 factories)
     BuildingType.FISHERY,
+    BuildingType.LUMBER_HUT, BuildingType.STONE_QUARRY, BuildingType.CLAY_PIT,
+    BuildingType.SAND_PIT, BuildingType.COAL_KILN, BuildingType.IRON_MINE,
+    BuildingType.GOLD_MINE, BuildingType.GEM_MINE, BuildingType.SALTERN,
+    // Workshops are 2x2
+    BuildingType.WIND_MILL, BuildingType.BAKERY, BuildingType.BUTCHERY,
+    BuildingType.CIDERY, BuildingType.OVERALL_FACTORY, BuildingType.CIGAR_FACTORY,
+    BuildingType.CREAMERY, BuildingType.POTTERY_SHOP, BuildingType.BRANDY_DISTILLERY,
+    BuildingType.CANDLE_Manufactory, BuildingType.GLASSWORK, BuildingType.STEELWORK,
+    BuildingType.SAWMILL, BuildingType.BRICKYARY, BuildingType.MASON_SHOP,
+    BuildingType.CANNERY, BuildingType.FORGE, BuildingType.GOLDSMITH,
+    BuildingType.TOOLSMITH, BuildingType.JEWELER, BuildingType.CARPENTER_SHOP,
 ])
 
-// Roads/houses are 1x1, services/warehouse are 2x2, farms/factories are 3x3.
+export const WORKSHOP_BUILDINGS = new Set<BuildingType>([
+    // Extraction factories
+    BuildingType.FISHERY,
+    BuildingType.LUMBER_HUT, BuildingType.STONE_QUARRY, BuildingType.CLAY_PIT,
+    BuildingType.SAND_PIT, BuildingType.COAL_KILN, BuildingType.IRON_MINE,
+    BuildingType.GOLD_MINE, BuildingType.GEM_MINE, BuildingType.SALTERN,
+    // Processing workshops
+    BuildingType.WIND_MILL, BuildingType.BAKERY, BuildingType.BUTCHERY,
+    BuildingType.CIDERY, BuildingType.OVERALL_FACTORY, BuildingType.CIGAR_FACTORY,
+    BuildingType.CREAMERY, BuildingType.POTTERY_SHOP, BuildingType.BRANDY_DISTILLERY,
+    BuildingType.CANDLE_Manufactory, BuildingType.GLASSWORK, BuildingType.STEELWORK,
+    BuildingType.SAWMILL, BuildingType.BRICKYARY, BuildingType.MASON_SHOP,
+    BuildingType.CANNERY, BuildingType.FORGE, BuildingType.GOLDSMITH,
+    BuildingType.TOOLSMITH, BuildingType.JEWELER, BuildingType.CARPENTER_SHOP,
+])
+
+export function IsWorkshopBuilding(type: BuildingType): boolean {
+    return WORKSHOP_BUILDINGS.has(type)
+}
+
+// Roads/houses are 1x1, services/workshops are 2x2, farms are 3x3.
 export function GetBuildingSize(type: BuildingType): number {
     if (SMALL_BUILDINGS.has(type)) return 1
     if (MEDIUM_BUILDINGS.has(type)) return 2
@@ -100,47 +133,79 @@ export function RequiresRoad(type: BuildingType): boolean {
 
 // Emoji shown for each building on the map and in the build palette.
 export const BUILDING_ICONS: { [key: string]: string } = {
-    // Farms & food
-    [BuildingType.WHEAT_FARM]: '🌾', [BuildingType.RICE_PADDY]: '🌾',
+    // Farms — use the crop/animal so you know at a glance what it produces
+    [BuildingType.WHEAT_FARM]: '🌾',  [BuildingType.RICE_PADDY]: '🍚',
     [BuildingType.APPLE_ORCHARD]: '🍎', [BuildingType.ORANGE_ORCHARD]: '🍊',
-    [BuildingType.CABBAGE_PATCH]: '🥬', [BuildingType.PIG_FARM]: '🐖',
-    [BuildingType.DIARY_FARM]: '🐄', [BuildingType.SHEEP_FARM]: '🐑',
-    [BuildingType.FISHERY]: '🐟', [BuildingType.POTATO_FARM]: '🥔',
-    [BuildingType.MELON_GARDEN]: '🍈', [BuildingType.TOMATO_FIELD]: '🍅',
-    [BuildingType.CHICKEN_COOP]: '🐔', [BuildingType.CORN_FIELD]: '🌽',
+    [BuildingType.CABBAGE_PATCH]: '🥬', [BuildingType.PIG_FARM]: '🐷',
+    [BuildingType.DIARY_FARM]: '🐄',  [BuildingType.SHEEP_FARM]: '🐑',
+    [BuildingType.FISHERY]: '🎣',     [BuildingType.POTATO_FARM]: '🥔',
+    [BuildingType.MELON_GARDEN]: '🍉', [BuildingType.TOMATO_FIELD]: '🍅',
+    [BuildingType.CHICKEN_COOP]: '🐓', [BuildingType.CORN_FIELD]: '🌽',
     [BuildingType.BANANA_PLANTATION]: '🍌', [BuildingType.ONION_FIELD]: '🧅',
-    [BuildingType.BERRY_GROVE]: '🫐', [BuildingType.VINEYARD]: '🍇',
+    [BuildingType.BERRY_GROVE]: '🍓', [BuildingType.VINEYARD]: '🍇',
     [BuildingType.OLIVE_GROVE]: '🫒', [BuildingType.PUMPKIN_PATCH]: '🎃',
     [BuildingType.SOYBEAN_FARM]: '🫘', [BuildingType.COCOA_PLANT]: '🍫',
-    [BuildingType.SUGAR_CANE_PLANTATION]: '🎋', [BuildingType.TOBACCO_PLANTATION]: '🍂',
-    [BuildingType.COTTON_FIELD]: '🧶', [BuildingType.RUBBER_PLANTATION]: '🌳',
-    [BuildingType.TRAPLINE]: '🦊', [BuildingType.APIARY]: '🐝',
-    // Raw materials
-    [BuildingType.LUMBER_HUT]: '🪵', [BuildingType.STONE_QUARRY]: '🪨',
-    [BuildingType.CLAY_PIT]: '🧱', [BuildingType.SAND_PIT]: '⏳',
-    [BuildingType.COAL_KILN]: '⚫', [BuildingType.IRON_MINE]: '⛏️',
-    [BuildingType.GOLD_MINE]: '🪙', [BuildingType.GEM_MINE]: '💎',
+    [BuildingType.SUGAR_CANE_PLANTATION]: '🍬', [BuildingType.TOBACCO_PLANTATION]: '🌿',
+    [BuildingType.COTTON_FIELD]: '🪡', [BuildingType.RUBBER_PLANTATION]: '🌴',
+    [BuildingType.TRAPLINE]: '🦊',    [BuildingType.APIARY]: '🍯',
+    // Raw extraction — each material gets its own distinct icon
+    [BuildingType.LUMBER_HUT]: '🪵',  [BuildingType.STONE_QUARRY]: '🪨',
+    [BuildingType.CLAY_PIT]: '🟤',   [BuildingType.SAND_PIT]: '🏜️',
+    [BuildingType.COAL_KILN]: '🏭',  [BuildingType.IRON_MINE]: '⛏️',
+    [BuildingType.GOLD_MINE]: '🪙',  [BuildingType.GEM_MINE]: '💎',
     [BuildingType.SALTERN]: '🧂',
-    // Workshops
-    [BuildingType.WIND_MILL]: '🌬️', [BuildingType.BAKERY]: '🍞',
-    [BuildingType.BUTCHERY]: '🥩', [BuildingType.CIDERY]: '🍺',
-    [BuildingType.OVERALL_FACTORY]: '👖', [BuildingType.CIGAR_FACTORY]: '🚬',
-    [BuildingType.CREAMERY]: '🧀', [BuildingType.POTTERY_SHOP]: '🏺',
-    [BuildingType.BRANDY_DISTILLERY]: '🥃', [BuildingType.CANDLE_Manufactory]: '🕯️',
-    [BuildingType.GLASSWORK]: '🔷', [BuildingType.STEELWORK]: '⚙️',
-    [BuildingType.SAWMILL]: '🪚', [BuildingType.BRICKYARY]: '🧱',
-    [BuildingType.MASON_SHOP]: '🗿', [BuildingType.CANNERY]: '🥫',
-    // Infrastructure
-    [BuildingType.HOUSE]: '🏠', [BuildingType.WELL]: '💧',
-    [BuildingType.FIRE_STATION]: '🚒', [BuildingType.POLICE_STATION]: '🚓',
-    [BuildingType.SCHOOL]: '🏫', [BuildingType.WAREHOUSE]: '📦',
-    [BuildingType.SHIPYARD]: '⚓', [BuildingType.DOCK]: '🚢',
+    // Workshops — process/tool icon (what happens inside); product shown separately
+    [BuildingType.WIND_MILL]: '🌀',   [BuildingType.BAKERY]: '🫕',
+    [BuildingType.BUTCHERY]: '🔪',   [BuildingType.CIDERY]: '🍶',
+    [BuildingType.OVERALL_FACTORY]: '🧵', [BuildingType.CIGAR_FACTORY]: '🍃',
+    [BuildingType.CREAMERY]: '🥛',   [BuildingType.POTTERY_SHOP]: '🤲',
+    [BuildingType.BRANDY_DISTILLERY]: '🧪', [BuildingType.CANDLE_Manufactory]: '🪔',
+    [BuildingType.GLASSWORK]: '🫧',  [BuildingType.STEELWORK]: '⚒️',
+    [BuildingType.SAWMILL]: '🪚',    [BuildingType.BRICKYARY]: '🏭',
+    [BuildingType.MASON_SHOP]: '🏛️', [BuildingType.CANNERY]: '🍎',
+    [BuildingType.FORGE]: '🔥',      [BuildingType.GOLDSMITH]: '🔆',
+    [BuildingType.TOOLSMITH]: '🔧',  [BuildingType.JEWELER]: '💎',
+    [BuildingType.CARPENTER_SHOP]: '🪓',
+    // Infrastructure — old-era flavored
+    [BuildingType.HOUSE]: '🏠',      [BuildingType.WELL]: '🪣',
+    [BuildingType.FIRE_STATION]: '🔔', [BuildingType.POLICE_STATION]: '⚖️',
+    [BuildingType.SCHOOL]: '📜',     [BuildingType.WAREHOUSE]: '📦',
+    [BuildingType.SHIPYARD]: '⚓',   [BuildingType.DOCK]: '⛵',
     [BuildingType.ROAD]: '',
     [BuildingType.DELETE]: '🗑️',
 }
 
 export function GetBuildingIcon(type: BuildingType): string {
     return BUILDING_ICONS[type] ?? '🏗️'
+}
+
+// Output-product icon for each workshop building, shown alongside the process icon.
+const WORKSHOP_PRODUCT_ICONS: { [key: string]: string } = {
+    [BuildingType.WIND_MILL]: '🥣',
+    [BuildingType.BAKERY]: '🥖',
+    [BuildingType.BUTCHERY]: '🌭',
+    [BuildingType.CIDERY]: '🍺',
+    [BuildingType.OVERALL_FACTORY]: '👖',
+    [BuildingType.CIGAR_FACTORY]: '🚬',
+    [BuildingType.CREAMERY]: '🧀',
+    [BuildingType.POTTERY_SHOP]: '🏺',
+    [BuildingType.BRANDY_DISTILLERY]: '🍾',
+    [BuildingType.CANDLE_Manufactory]: '🕯️',
+    [BuildingType.GLASSWORK]: '🪟',
+    [BuildingType.STEELWORK]: '⚙️',
+    [BuildingType.SAWMILL]: '🪵',
+    [BuildingType.BRICKYARY]: '🧱',
+    [BuildingType.MASON_SHOP]: '🪨',
+    [BuildingType.CANNERY]: '🫙',
+    [BuildingType.FORGE]: '🔩',
+    [BuildingType.GOLDSMITH]: '🪙',
+    [BuildingType.TOOLSMITH]: '⚒️',
+    [BuildingType.JEWELER]: '💍',
+    [BuildingType.CARPENTER_SHOP]: '🪑',
+}
+
+export function GetWorkshopProductIcon(type: BuildingType): string {
+    return WORKSHOP_PRODUCT_ICONS[type] ?? ''
 }
 
 
@@ -384,9 +449,9 @@ export function GetCurrentMaxOccupant(tier: number, happiness:number) {
 
 export function GetResourceNeed(tier: number) {
     if (tier == 1) {
-        return [new ResourceNeed(Resource.FISH), new ResourceNeed(Resource.OVERALL)]
+        return [new ResourceNeed(Resource.FISH), new ResourceNeed(Resource.PANT)]
     } else if (tier == 2) {
-        return [new ResourceNeed(Resource.OVERALL), new ResourceNeed(Resource.SAUSAGE), new ResourceNeed(Resource.CABBAGE), new ResourceNeed(Resource.CHEESE)]
+        return [new ResourceNeed(Resource.PANT), new ResourceNeed(Resource.SAUSAGE), new ResourceNeed(Resource.CABBAGE), new ResourceNeed(Resource.CHEESE)]
     } else if  (tier == 3) {
         return [new ResourceNeed(Resource.CHEESE), new ResourceNeed(Resource.BREAD), new ResourceNeed(Resource.CIDER), new ResourceNeed(Resource.POTTERY)]
     } else if (tier == 4) {
@@ -453,7 +518,7 @@ export function CreateBuilding(type: BuildingType, storage: Storage) {
     } else if (type == BuildingType.POTTERY_SHOP) {
         new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.CLAY, 1)], [new Item(Resource.POTTERY, 1)])) 
     } else if (type == BuildingType.OVERALL_FACTORY) {
-        new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, new Production(10, Resident.FARMER, 10.0, [new Item(Resource.WOOL, 1)], [new Item(Resource.OVERALL, 1)])) 
+        new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.WOOL, 1)], [new Item(Resource.PANT, 1)]))
     } else if (type == BuildingType.CIGAR_FACTORY) {
         new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.TOBACCO, 1)], [new Item(Resource.CIGAR, 1)])) 
     } else if (type == BuildingType.WELL) {
@@ -472,6 +537,87 @@ export function CreateBuilding(type: BuildingType, storage: Storage) {
         new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, undefined, undefined, undefined, undefined, new Dock())
     } else if (type == BuildingType.ROAD) {
         new_building = new Building(type, [new Item(Resource.WOOD, 1)])
+    // Raw material farms & gathering (Farmer)
+    } else if (type == BuildingType.BANANA_PLANTATION) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.BANANA, 1)]))
+    } else if (type == BuildingType.BERRY_GROVE) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.BERRY, 1)]))
+    } else if (type == BuildingType.CORN_FIELD) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.CORN, 1)]))
+    } else if (type == BuildingType.COTTON_FIELD) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.COTTON, 1)]))
+    } else if (type == BuildingType.CHICKEN_COOP) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.EGG, 1)]))
+    } else if (type == BuildingType.TRAPLINE) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.FUR, 1)]))
+    } else if (type == BuildingType.VINEYARD) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.GRAPE, 1)]))
+    } else if (type == BuildingType.MELON_GARDEN) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.MELON, 1)]))
+    } else if (type == BuildingType.OLIVE_GROVE) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.OLIVE, 1)]))
+    } else if (type == BuildingType.ORANGE_ORCHARD) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.ORANGE, 1)]))
+    } else if (type == BuildingType.ONION_FIELD) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.ONION, 1)]))
+    } else if (type == BuildingType.POTATO_FARM) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.POTATO, 1)]))
+    } else if (type == BuildingType.PUMPKIN_PATCH) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.PUMPKIN, 1)]))
+    } else if (type == BuildingType.SALTERN) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.SALT, 1)]))
+    } else if (type == BuildingType.SAND_PIT) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.SAND, 1)]))
+    } else if (type == BuildingType.SOYBEAN_FARM) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.SOYBEAN, 1)]))
+    } else if (type == BuildingType.SUGAR_CANE_PLANTATION) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.SUGAR_CANE, 1)]))
+    } else if (type == BuildingType.RICE_PADDY) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.RICE, 1)]))
+    } else if (type == BuildingType.RUBBER_PLANTATION) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.RUBBER, 1)]))
+    } else if (type == BuildingType.TOMATO_FIELD) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.TOMATO, 1)]))
+    } else if (type == BuildingType.APIARY) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.WAX, 1)]))
+    } else if (type == BuildingType.COCOA_PLANT) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.COCOA, 1)]))
+    // Mining (Worker)
+    } else if (type == BuildingType.GEM_MINE) {
+        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 8.0, [], [new Item(Resource.GEM, 1)]))
+    } else if (type == BuildingType.GOLD_MINE) {
+        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 8.0, [], [new Item(Resource.GOLD_ORE, 1)]))
+    } else if (type == BuildingType.IRON_MINE) {
+        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 8.0, [], [new Item(Resource.IRON_ORE, 1)]))
+    // Processing — Worker tier
+    } else if (type == BuildingType.SAWMILL) {
+        new_building = new Building(type, [new Item(Resource.STONE, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.WOOD, 1)], [new Item(Resource.TIMBER, 1)]))
+    } else if (type == BuildingType.BRICKYARY) {
+        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.CLAY, 1), new Item(Resource.COAL, 1)], [new Item(Resource.BRICK, 1)]))
+    } else if (type == BuildingType.CANDLE_Manufactory) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.WAX, 1)], [new Item(Resource.CANDLE, 1)]))
+    } else if (type == BuildingType.GLASSWORK) {
+        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.SAND, 1)], [new Item(Resource.GLASS, 1)]))
+    } else if (type == BuildingType.MASON_SHOP) {
+        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.STONE, 1)], [new Item(Resource.SLATE, 1)]))
+    } else if (type == BuildingType.CANNERY) {
+        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.APPLE, 1)], [new Item(Resource.JAM, 1)]))
+    // Processing — Artisan tier
+    } else if (type == BuildingType.BRANDY_DISTILLERY) {
+        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.GRAPE, 1)], [new Item(Resource.BRANDY, 1)]))
+    } else if (type == BuildingType.STEELWORK) {
+        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.IRON, 1), new Item(Resource.COAL, 1)], [new Item(Resource.STEEL, 1)]))
+    // Metal & craft chains
+    } else if (type == BuildingType.FORGE) {
+        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.IRON_ORE, 1), new Item(Resource.COAL, 1)], [new Item(Resource.IRON, 1)]))
+    } else if (type == BuildingType.TOOLSMITH) {
+        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.IRON, 1)], [new Item(Resource.TOOL, 1)]))
+    } else if (type == BuildingType.GOLDSMITH) {
+        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.GOLD_ORE, 1)], [new Item(Resource.GOLD, 1)]))
+    } else if (type == BuildingType.JEWELER) {
+        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.GOLD, 1)], [new Item(Resource.JEWELRY, 1)]))
+    } else if (type == BuildingType.CARPENTER_SHOP) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.TIMBER, 1)], [new Item(Resource.FURNITURE, 1)]))
     }
     if (new_building == undefined) {
         return undefined

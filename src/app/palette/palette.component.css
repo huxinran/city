@@ -70,16 +70,18 @@
   box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
 }
 
-.emoji {
-  font-size: 20px;
-  line-height: 1;
-  pointer-events: none;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
+.pal-icon-slot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
 }
 
-.swatch {
-  width: 26px;
-  height: 26px;
-  border-radius: 5px;
+.pal-svg {
+  display: block;
+  color: var(--text);
   pointer-events: none;
 }
+

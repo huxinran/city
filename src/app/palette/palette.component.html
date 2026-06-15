@@ -11,11 +11,9 @@
                   draggable="true"
                   (dragstart)="onDragStart(type)" (dragend)="onDragEnd()"
                   (click)="select(type)" [title]="type">
-            @if (isRoad(type)) {
-              <span class="cobble swatch"></span>
-            } @else {
-              <span class="emoji">{{icon(type)}}</span>
-            }
+              <div class="pal-icon-slot">
+                <ng-icon [name]="iconName(type)" class="pal-svg" size="20"></ng-icon>
+              </div>
           </button>
         }
       </div>
@@ -29,7 +27,7 @@
               draggable="true"
               (dragstart)="onDragStart(Delete)" (dragend)="onDragEnd()"
               (click)="select(Delete)" title="Delete">
-        <span class="emoji">🗑️</span>
+        <ng-icon name="lucideTrash2" class="pal-svg" size="20"></ng-icon>
       </button>
     </div>
   </div>

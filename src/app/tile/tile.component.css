@@ -51,6 +51,10 @@
     border-radius: 0;
     border: none;
     box-shadow: none;
+    background:
+        repeating-linear-gradient(0deg,   rgba(0,0,0,0.07) 0, rgba(0,0,0,0.07) 1px, transparent 1px, transparent 7px),
+        repeating-linear-gradient(90deg,  rgba(0,0,0,0.07) 0, rgba(0,0,0,0.07) 1px, transparent 1px, transparent 7px),
+        #b5b0a6;
 }
 
 .box:hover .building.cobble {
@@ -58,9 +62,19 @@
     box-shadow: none;
 }
 
+/* Wrapper so the SVG and optional image share the same footprint */
+.icon-slot {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
 .icon {
-    line-height: 1;
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+    display: block;
+    color: #3a2210;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
 }
 
 /* Tree / rock decoration sitting on a bare terrain tile (removable). */
@@ -70,9 +84,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    color: rgba(0, 0, 0, 0.45);
     pointer-events: none;
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
 }
 
 .name {
@@ -101,20 +115,47 @@
 .farm-house {
     grid-row: 1 / 3;
     grid-column: 1 / 3;
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    color: #3a2210;
     background: rgba(255, 255, 255, 0.22);
     border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.3);
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
 }
 
 .farm-produce {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+    color: #3a2210;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+}
+
+/* Workshop buildings: 2x2 tile — left = process icon, right = output product */
+.workshop-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-items: center;
+    padding: 4px;
+    box-sizing: border-box;
+    gap: 2px;
+}
+
+.workshop-icon {
+    display: block;
+    color: #3a2210;
+    opacity: 0.55;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.15));
+}
+
+.workshop-product {
+    display: block;
+    color: #3a2210;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
 }

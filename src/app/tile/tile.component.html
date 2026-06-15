@@ -1,6 +1,8 @@
 <div class="box" [class.focused]="isFocused" [attr.data-i]="tile.i" [attr.data-j]="tile.j" (click)="HandleClick()" [ngStyle]="GetTerrainStyle()">
-    @if (terrainIcon) {
-        <span class="terrain-icon">{{terrainIcon}}</span>
+    @if (isTerrainTree) {
+        <ng-icon name="lucideTreeDeciduous" class="terrain-icon" size="18"></ng-icon>
+    } @else if (isTerrainRock) {
+        <ng-icon name="lucideMountain" class="terrain-icon" size="18"></ng-icon>
     }
     @if (tile.building) {
         <div class="building" [class.cobble]="isRoad" [ngStyle]="GetBuildingStyle()"
@@ -11,15 +13,24 @@
                 <!-- cobblestone texture only, no content -->
             } @else if (isFarm) {
                 <div class="farm-layout">
-                    <div class="farm-house">🏡</div>
-                    <span class="farm-produce">{{GetIcon()}}</span>
-                    <span class="farm-produce">{{GetIcon()}}</span>
-                    <span class="farm-produce">{{GetIcon()}}</span>
-                    <span class="farm-produce">{{GetIcon()}}</span>
-                    <span class="farm-produce">{{GetIcon()}}</span>
+                    <div class="farm-house">
+                        <ng-icon name="lucideHouse" size="22"></ng-icon>
+                    </div>
+                    <ng-icon [name]="GetIconName()" class="farm-produce" size="13"></ng-icon>
+                    <ng-icon [name]="GetIconName()" class="farm-produce" size="13"></ng-icon>
+                    <ng-icon [name]="GetIconName()" class="farm-produce" size="13"></ng-icon>
+                    <ng-icon [name]="GetIconName()" class="farm-produce" size="13"></ng-icon>
+                    <ng-icon [name]="GetIconName()" class="farm-produce" size="13"></ng-icon>
+                </div>
+            } @else if (isWorkshop) {
+                <div class="workshop-layout">
+                    <ng-icon [name]="GetIconName()" class="workshop-icon" size="16"></ng-icon>
+                    <ng-icon [name]="GetProductIconName()" class="workshop-product" size="16"></ng-icon>
                 </div>
             } @else {
-                <span class="icon" [style.font-size.px]="iconSize">{{GetIcon()}}</span>
+                <div class="icon-slot">
+                    <ng-icon [name]="GetIconName()" class="icon" [size]="iconSize"></ng-icon>
+                </div>
                 @if (size > 1) {
                     <span class="name">{{GetType()}}</span>
                 }

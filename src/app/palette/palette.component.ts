@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgIconComponent } from '@ng-icons/core';
 import { StateService } from '../state.service';
 import { BuildingType } from '../types';
-import { GetBuildingIcon } from '../building';
+import { GetBuildingIconName } from '../building-icons';
 import { repaintOn } from '../live';
 
 interface PaletteGroup {
@@ -12,7 +13,7 @@ interface PaletteGroup {
 
 @Component({
   selector: 'app-palette',
-  imports: [CommonModule],
+  imports: [CommonModule, NgIconComponent],
   templateUrl: './palette.component.html',
   styleUrl: './palette.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,10 +23,6 @@ export class PaletteComponent {
   constructor() { repaintOn(s => [s.mapVersion]) }
 
   get Delete(): BuildingType { return BuildingType.DELETE }
-
-  public isRoad(type: BuildingType): boolean {
-    return type == BuildingType.ROAD
-  }
 
   // Cached so the getter (called on every change-detection pass) only rebuilds
   // the group arrays when the current city actually changes.
@@ -46,8 +43,8 @@ export class PaletteComponent {
     return this._groups
   }
 
-  public icon(type: BuildingType): string {
-    return GetBuildingIcon(type)
+  public iconName(type: BuildingType): string {
+    return GetBuildingIconName(type)
   }
 
   public isSelected(type: BuildingType): boolean {

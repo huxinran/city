@@ -1,13 +1,15 @@
 import { ChangeDetectionStrategy, Component, inject, Input, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgIconComponent } from '@ng-icons/core';
 import { Tile } from '../tile';
 import { StateService } from '../state.service';
 import { BuildingType, Terrain } from '../types'
-import { GetBuildingSize, GetBuildingIcon, IsFarmBuilding } from '../building'
+import { GetBuildingSize, IsFarmBuilding, IsWorkshopBuilding } from '../building'
+import { GetBuildingIconName, GetWorkshopProductIconName } from '../building-icons'
 
 @Component({
   selector: 'app-tile',
-  imports: [CommonModule],
+  imports: [CommonModule, NgIconComponent],
   templateUrl: './tile.component.html',
   styleUrl: './tile.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,6 +30,12 @@ export class TileComponent {
     let type = this.tile.building?.type
     return type != undefined && IsFarmBuilding(type)
   }
+
+  get isWorkshop(): boolean {
+    let type = this.tile.building?.type
+    return type != undefined && IsWorkshopBuilding(type)
+  }
+
 
   // Place every tile explicitly on the grid so multi-tile buildings can span
   // their footprint. Covered tiles are hidden; the anchor spans over them.
@@ -79,24 +87,29 @@ export class TileComponent {
     return this.tile.building?.type
   }
 
-  public GetIcon(): string {
+  public GetIconName(): string {
     let type = this.tile.building?.type
     if (type == undefined) return ''
-    return GetBuildingIcon(type)
+    return GetBuildingIconName(type)
   }
 
-  // Emoji for removable terrain objects (trees / rocks). Only shown on bare
-  // tiles — once a building covers the tile the building icon takes over.
-  public get terrainIcon(): string {
-    if (this.tile.building || this.tile.covered) return ''
-    if (this.tile.terrain == Terrain.TREE) return '🌲'
-    if (this.tile.terrain == Terrain.ROCK) return '🪨'
-    return ''
+  public GetProductIconName(): string {
+    let type = this.tile.building?.type
+    if (type == undefined) return ''
+    return GetWorkshopProductIconName(type)
   }
 
-  // Big icon for big buildings, small for small ones.
-  public get iconSize(): number {
-    return Math.round(this.size * 16 + 6)
+  get isTerrainTree(): boolean {
+    return !this.tile.building && !this.tile.covered && this.tile.terrain == Terrain.TREE
+  }
+
+  get isTerrainRock(): boolean {
+    return !this.tile.building && !this.tile.covered && this.tile.terrain == Terrain.ROCK
+  }
+
+  // Scales the icon with building footprint size.
+  public get iconSize(): string {
+    return `${this.size * 14 + 8}px`
   }
 
   public get isFocused(): boolean {
