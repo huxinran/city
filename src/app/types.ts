@@ -11,7 +11,8 @@ export enum CityName {
     ANRELIA = "Anrelia",
     MINTAKA = "Mintaka",
     JINLIN = "Jinlin",
-    DAKAR = "Dakar",
+    COLUMBIA = "Columbia",
+    SOLARA = "Solara",
 }
 
 export enum HouseType {
@@ -52,6 +53,7 @@ export enum Resource {
     JAM = "Jam",
     MELON = "Melon",
     MILK = "Milk",
+    OIL = "Oil",
     OLIVE = "Olive",
     ORANGE = "Orange",
     ONION = "Onion",
@@ -76,10 +78,12 @@ export enum Resource {
     SUGAR_CANE = "Sugar Cane",
     RICE = "Rice",
     RUBBER= "Rubber",
+    RUM = "Rum",
     TOBACCO = "Tobacco",
     TOMATO = "Tomato",
     WAX = "Wax",
     WHEAT = "Wheat",
+    WINE = "Wine",
     WOOD = "Wood",
     WOOL = "Wool",
 }
@@ -113,7 +117,7 @@ export enum BuildingType {
     BRANDY_DISTILLERY = "Brandy Distillery",
     BAKERY = "Bakery",
     BRICKYARY = "Brickyard",
-    CABBAGE_PATCH = "Cabbage Patch",
+    CABBAGE_PATCH = "Lettuce Field",
     CANDLE_Manufactory = "Candle Manufactory",
     CREAMERY = "Creamery",
     CIDERY = "Cidery",
@@ -147,6 +151,9 @@ export enum BuildingType {
     TOOLSMITH = "Toolsmith",
     JEWELER = "Jeweler",
     CARPENTER_SHOP = "Carpenter Shop",
+    WINERY = "Winery",
+    OIL_PRESS = "Oil Press",
+    RUM_DISTILLERY = "Rum Distillery",
     SAWMILL = "Sawmill",
     POTATO_FARM = "Potato Farm",
     POTTERY_SHOP = "Pottery Shop",
@@ -177,11 +184,19 @@ export enum BuildingType {
     DELETE = "Delete",
 }
 
+// "Land" is the general term for the buildable ground types (grass, dirt, sand);
+// water is the non-buildable terrain. Trees and rocks are Features, not terrain.
 export enum Terrain {
-    LAND = "Land",
     GRASS = "Grass",
+    SAND = "Sand",
+    WATER = "Water",
+}
+
+// Natural features that sit on top of a land tile, like a building does: trees
+// (for lumber / foraging) and rock outcrops (for mining). They coexist with the
+// terrain underneath and are removable with the Delete tool.
+export enum Feature {
     TREE = "Tree",
-    SEA = "Sea",
     ROCK = "Rock",
 }
 

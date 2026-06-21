@@ -1,18 +1,17 @@
 import { Storage, Item } from "./storage"
 import { Tile } from "./tile"
 import { TakeItems } from "./utils"
-import { Resource, HouseType, Resident, ProductionStatus, ServiceType, ShippingTaskType, BuildingType, ShipType, CityName, Terrain } from "./types"
+import { Resource, HouseType, Resident, ProductionStatus, ServiceType, ShippingTaskType, BuildingType, ShipType, CityName, Terrain, Feature } from "./types"
 
 
 // --- Building footprints (how many tiles a building occupies, size x size) ---
-const SMALL_BUILDINGS = new Set<BuildingType>([BuildingType.ROAD, BuildingType.HOUSE])
+// Roads, houses and service buildings are 1x1.
+const SMALL_BUILDINGS = new Set<BuildingType>([
+    BuildingType.ROAD, BuildingType.HOUSE,
+    BuildingType.WELL, BuildingType.FIRE_STATION, BuildingType.POLICE_STATION,
+    BuildingType.SCHOOL, BuildingType.WAREHOUSE, BuildingType.SHIPYARD, BuildingType.DOCK,
+])
 const MEDIUM_BUILDINGS = new Set<BuildingType>([
-    BuildingType.WELL,
-    BuildingType.FIRE_STATION,
-    BuildingType.POLICE_STATION,
-    BuildingType.SCHOOL,
-    BuildingType.WAREHOUSE,
-    BuildingType.DOCK,
     // Extraction / production (2x2 factories)
     BuildingType.FISHERY,
     BuildingType.LUMBER_HUT, BuildingType.STONE_QUARRY, BuildingType.CLAY_PIT,
@@ -26,6 +25,7 @@ const MEDIUM_BUILDINGS = new Set<BuildingType>([
     BuildingType.SAWMILL, BuildingType.BRICKYARY, BuildingType.MASON_SHOP,
     BuildingType.CANNERY, BuildingType.FORGE, BuildingType.GOLDSMITH,
     BuildingType.TOOLSMITH, BuildingType.JEWELER, BuildingType.CARPENTER_SHOP,
+    BuildingType.WINERY, BuildingType.OIL_PRESS, BuildingType.RUM_DISTILLERY,
 ])
 
 export const WORKSHOP_BUILDINGS = new Set<BuildingType>([
@@ -42,13 +42,14 @@ export const WORKSHOP_BUILDINGS = new Set<BuildingType>([
     BuildingType.SAWMILL, BuildingType.BRICKYARY, BuildingType.MASON_SHOP,
     BuildingType.CANNERY, BuildingType.FORGE, BuildingType.GOLDSMITH,
     BuildingType.TOOLSMITH, BuildingType.JEWELER, BuildingType.CARPENTER_SHOP,
+    BuildingType.WINERY, BuildingType.OIL_PRESS, BuildingType.RUM_DISTILLERY,
 ])
 
 export function IsWorkshopBuilding(type: BuildingType): boolean {
     return WORKSHOP_BUILDINGS.has(type)
 }
 
-// Roads/houses are 1x1, services/workshops are 2x2, farms are 3x3.
+// Roads/houses/services are 1x1, workshops are 2x2, farms are 3x3.
 export function GetBuildingSize(type: BuildingType): number {
     if (SMALL_BUILDINGS.has(type)) return 1
     if (MEDIUM_BUILDINGS.has(type)) return 2
@@ -78,6 +79,10 @@ export function IsFarmBuilding(type: BuildingType): boolean {
 }
 
 // --- Terrain requirements: where each building may be placed ---
+// Water buildings need water. Mines need a rock outcrop nearby, lumber/foraging
+// need trees nearby, and the sand pit needs a sand tile nearby — see
+// GetRequiredNearbyFeature / GetRequiredNearbyTerrain. All of those still sit on
+// open land themselves.
 const SEA_BUILDINGS = new Set<BuildingType>([
     BuildingType.FISHERY,
     BuildingType.DOCK,
@@ -91,7 +96,6 @@ const ROCK_BUILDINGS = new Set<BuildingType>([
     BuildingType.GEM_MINE,
     BuildingType.GOLD_MINE,
     BuildingType.IRON_MINE,
-    BuildingType.SAND_PIT,
 ])
 const TREE_BUILDINGS = new Set<BuildingType>([
     BuildingType.LUMBER_HUT,
@@ -100,17 +104,39 @@ const TREE_BUILDINGS = new Set<BuildingType>([
     BuildingType.APIARY,
 ])
 
-// Roads and houses can be built on any terrain; mines need rocks,
-// fisheries/docks need sea, lumber needs trees; everything else
-// (farms, workshops, services) goes on open ground.
-const ANY_TERRAIN = [Terrain.GRASS, Terrain.LAND, Terrain.TREE, Terrain.ROCK, Terrain.SEA]
+// Roads and houses can be built on any terrain; water buildings need water;
+// everything else goes on any open land (grass, dirt or sand).
+const LAND_TERRAINS = [Terrain.GRASS, Terrain.SAND]
+const ANY_TERRAIN = [...LAND_TERRAINS, Terrain.WATER]
 
 export function GetRequiredTerrains(type: BuildingType): Terrain[] {
     if (type == BuildingType.ROAD || type == BuildingType.HOUSE) return ANY_TERRAIN
-    if (SEA_BUILDINGS.has(type)) return [Terrain.SEA]
-    if (ROCK_BUILDINGS.has(type)) return [Terrain.ROCK]
-    if (TREE_BUILDINGS.has(type)) return [Terrain.TREE]
-    return [Terrain.GRASS, Terrain.LAND]
+    if (SEA_BUILDINGS.has(type)) return [Terrain.WATER]
+    return LAND_TERRAINS
+}
+
+// Whether a tile's natural feature allows this building to sit on it. Every
+// building must be placed on open land (no tree/rock on the tile itself);
+// only roads and houses ignore features. Resource buildings additionally need
+// a feature *nearby* — see GetRequiredNearbyFeature.
+export function FeatureMatches(type: BuildingType, feature?: Feature): boolean {
+    if (type == BuildingType.ROAD || type == BuildingType.HOUSE) return true
+    return feature == undefined
+}
+
+// The feature that must exist on a tile near (not under) this building: rock for
+// mines, trees for lumber/foraging. Undefined for buildings with no such need.
+export function GetRequiredNearbyFeature(type: BuildingType): Feature | undefined {
+    if (ROCK_BUILDINGS.has(type)) return Feature.ROCK
+    if (TREE_BUILDINGS.has(type)) return Feature.TREE
+    return undefined
+}
+
+// The terrain that must exist on a tile near this building: the sand pit digs
+// from a nearby sand deposit while sitting on solid ground.
+export function GetRequiredNearbyTerrain(type: BuildingType): Terrain | undefined {
+    if (type == BuildingType.SAND_PIT) return Terrain.SAND
+    return undefined
 }
 
 // Houses and production buildings must be built touching a road (carts only
@@ -166,12 +192,14 @@ export const BUILDING_ICONS: { [key: string]: string } = {
     [BuildingType.FORGE]: '🔥',      [BuildingType.GOLDSMITH]: '🔆',
     [BuildingType.TOOLSMITH]: '🔧',  [BuildingType.JEWELER]: '💎',
     [BuildingType.CARPENTER_SHOP]: '🪓',
+    [BuildingType.WINERY]: '🍇',     [BuildingType.OIL_PRESS]: '🫒',
+    [BuildingType.RUM_DISTILLERY]: '🍬',
     // Infrastructure — old-era flavored
     [BuildingType.HOUSE]: '🏠',      [BuildingType.WELL]: '🪣',
     [BuildingType.FIRE_STATION]: '🔔', [BuildingType.POLICE_STATION]: '⚖️',
     [BuildingType.SCHOOL]: '📜',     [BuildingType.WAREHOUSE]: '📦',
     [BuildingType.SHIPYARD]: '⚓',   [BuildingType.DOCK]: '⛵',
-    [BuildingType.ROAD]: '',
+    [BuildingType.ROAD]: '🛣️',
     [BuildingType.DELETE]: '🗑️',
 }
 
@@ -202,6 +230,9 @@ const WORKSHOP_PRODUCT_ICONS: { [key: string]: string } = {
     [BuildingType.TOOLSMITH]: '⚒️',
     [BuildingType.JEWELER]: '💍',
     [BuildingType.CARPENTER_SHOP]: '🪑',
+    [BuildingType.WINERY]: '🍷',
+    [BuildingType.OIL_PRESS]: '🫗',
+    [BuildingType.RUM_DISTILLERY]: '🥃',
 }
 
 export function GetWorkshopProductIcon(type: BuildingType): string {
@@ -405,6 +436,34 @@ export class Warehouse {
     ) {
         RefreshWarehouse(this)
     }
+}
+
+// Gold collected from one resident per tick at full (100%) tax, by tier.
+// Wealthier residents are taxed more heavily than farmers.
+export function GetTaxPerResident(tier: Resident): number {
+    switch (tier) {
+        case Resident.FARMER:       return 0.002
+        case Resident.WORKER:       return 0.004
+        case Resident.ARTISAN:      return 0.007
+        case Resident.SCHOLAR:      return 0.011
+        case Resident.ENTREPRENEUR: return 0.016
+        case Resident.MAGNATE:      return 0.022
+        default:                    return 0.002
+    }
+}
+
+// Emoji shown for each resident tier (in place of the tier name).
+const RESIDENT_ICONS: { [key: string]: string } = {
+    [Resident.FARMER]:       '🧑‍🌾',
+    [Resident.WORKER]:       '👷',
+    [Resident.ARTISAN]:      '🧑‍🎨',
+    [Resident.SCHOLAR]:      '🧑‍🎓',
+    [Resident.ENTREPRENEUR]: '🧑‍💼',
+    [Resident.MAGNATE]:      '🫅',
+}
+
+export function GetResidentIcon(tier: Resident): string {
+    return RESIDENT_ICONS[tier] ?? '🧑'
 }
 
 export function GetResidentType(tier: number) {
@@ -618,6 +677,12 @@ export function CreateBuilding(type: BuildingType, storage: Storage) {
         new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.GOLD, 1)], [new Item(Resource.JEWELRY, 1)]))
     } else if (type == BuildingType.CARPENTER_SHOP) {
         new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.TIMBER, 1)], [new Item(Resource.FURNITURE, 1)]))
+    } else if (type == BuildingType.WINERY) {
+        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.GRAPE, 1)], [new Item(Resource.WINE, 1)]))
+    } else if (type == BuildingType.OIL_PRESS) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.OLIVE, 1)], [new Item(Resource.OIL, 1)]))
+    } else if (type == BuildingType.RUM_DISTILLERY) {
+        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.SUGAR_CANE, 1)], [new Item(Resource.RUM, 1)]))
     }
     if (new_building == undefined) {
         return undefined

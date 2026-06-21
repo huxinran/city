@@ -12,13 +12,17 @@
     grid-column: 1/-1;
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 8px 12px;
+    gap: 16px;
+    padding: 14px 20px;
+    font-size: 14px;
     background: linear-gradient(90deg, #0e1a2b, #15233b);
     border-bottom: 1px solid var(--border);
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
     z-index: 10;
 }
+
+/* Pushes the status summary to the right edge of the top bar. */
+.top-spacer { flex: 1; }
 
 .left-menu {
     grid-row: 2;
@@ -35,6 +39,7 @@
     background: radial-gradient(circle at 30% 20%, #2c6588, #0e2233 70%);
     padding: 2px;
     box-sizing: border-box;
+    cursor: grab;
 }
 
 .right-menu {

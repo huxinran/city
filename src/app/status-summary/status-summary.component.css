@@ -1,1 +1,27 @@
-/* styling provided by global design system (.panel, .row, etc.) */
+/* Horizontal status strip for the top bar: city, population tiers, gold, tax. */
+.statusbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    font-size: 14px;
+}
+
+.city {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text);
+    margin-right: 4px;
+}
+
+.stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.stat .k { color: var(--text-dim); }
+.stat .v { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.stat .v.gold { color: #fbbf24; }
+.stat .mut { color: var(--text-mut); }

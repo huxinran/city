@@ -1,15 +1,16 @@
 import { ChangeDetectionStrategy, Component, inject, Input, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgIconComponent } from '@ng-icons/core';
+
 import { Tile } from '../tile';
 import { StateService } from '../state.service';
-import { BuildingType, Terrain } from '../types'
-import { GetBuildingSize, IsFarmBuilding, IsWorkshopBuilding } from '../building'
-import { GetBuildingIconName, GetWorkshopProductIconName } from '../building-icons'
+import { BuildingType, Terrain, Feature } from '../types'
+import { GetBuildingSize, IsFarmBuilding, IsWorkshopBuilding, GetBuildingIcon, GetWorkshopProductIcon } from '../building'
+import { GetBuildingIconSrc } from '../building-icons'
+import { IconComponent } from '../icon/icon.component'
 
 @Component({
   selector: 'app-tile',
-  imports: [CommonModule, NgIconComponent],
+  imports: [CommonModule, IconComponent],
   templateUrl: './tile.component.html',
   styleUrl: './tile.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,13 +63,27 @@ export class TileComponent {
     let city = this.state.state.current_city!
     let building_type = this.state.state.build_type
     let terrain_type = this.state.state.terrain_type
+    let feature_type = this.state.state.feature_type
 
     if (building_type) {
       this.state.ApplyBuild(this.tile)
       return
     }
+    if (feature_type) {
+      // Features paint onto bare land only — not water, not occupied tiles.
+      if (this.tile.terrain != Terrain.WATER && !this.tile.building && !this.tile.covered) {
+        this.tile.feature = feature_type
+        city.focus_tile = this.tile
+        this.state.bumpMap()
+      }
+      return
+    }
     if (terrain_type) {
       this.tile.terrain = terrain_type
+      // Water can't hold a tree/rock feature.
+      if (terrain_type == Terrain.WATER) {
+        this.tile.feature = undefined
+      }
       city.focus_tile = this.tile
       this.state.bumpMap()
       return
@@ -87,24 +102,30 @@ export class TileComponent {
     return this.tile.building?.type
   }
 
-  public GetIconName(): string {
+  public GetIcon(): string {
     let type = this.tile.building?.type
     if (type == undefined) return ''
-    return GetBuildingIconName(type)
+    return GetBuildingIcon(type)
   }
 
-  public GetProductIconName(): string {
+  // Image URL for the building icon, or undefined to fall back to the emoji.
+  public get buildingIconSrc(): string | undefined {
+    let type = this.tile.building?.type
+    return type ? GetBuildingIconSrc(type) : undefined
+  }
+
+  public GetProductIcon(): string {
     let type = this.tile.building?.type
     if (type == undefined) return ''
-    return GetWorkshopProductIconName(type)
+    return GetWorkshopProductIcon(type)
   }
 
-  get isTerrainTree(): boolean {
-    return !this.tile.building && !this.tile.covered && this.tile.terrain == Terrain.TREE
+  get isFeatureTree(): boolean {
+    return !this.tile.building && !this.tile.covered && this.tile.feature == Feature.TREE
   }
 
-  get isTerrainRock(): boolean {
-    return !this.tile.building && !this.tile.covered && this.tile.terrain == Terrain.ROCK
+  get isFeatureRock(): boolean {
+    return !this.tile.building && !this.tile.covered && this.tile.feature == Feature.ROCK
   }
 
   // Scales the icon with building footprint size.
@@ -134,12 +155,9 @@ export class TileComponent {
   private _buildingStyle: any
 
   private TerrainBackground(terrain: Terrain): string {
-    if (terrain == Terrain.GRASS) return 'linear-gradient(135deg, #b6e08a, #8ec96a)'
-    if (terrain == Terrain.SEA) return 'linear-gradient(135deg, #8fd3f0, #56a9d6)'
-    if (terrain == Terrain.ROCK) return 'linear-gradient(135deg, #c4c2bd, #97948d)'
-    if (terrain == Terrain.LAND) return 'linear-gradient(135deg, #efe6b8, #ddcf8c)'
-    if (terrain == Terrain.TREE) return 'linear-gradient(135deg, #5aa05a, #3c7a3c)'
-    return 'lightgreen'
+    if (terrain == Terrain.WATER) return 'linear-gradient(135deg, #8fd3f0, #56a9d6)'
+    if (terrain == Terrain.SAND) return 'linear-gradient(135deg, #faf0c8, #f0dd99)' // light yellow
+    return 'linear-gradient(135deg, #b6e08a, #8ec96a)' // GRASS (green)
   }
 
   // Cache styles so a stable object reference is returned when nothing changed,

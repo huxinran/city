@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 
 import { StateService } from '../state.service';
-import { BuildingType, Terrain } from '../types'
+import { BuildingType, Terrain, Feature } from '../types'
 import { repaintOn } from '../live';
 
 @Component({
@@ -23,6 +23,8 @@ export class MenuComponent {
 
   get Terrain() : typeof Terrain { return Terrain}
 
+  get Feature() : typeof Feature { return Feature}
+
   toggle() {
     this.open.update(o => !o)
     this.submenu.set(null)
@@ -38,6 +40,7 @@ export class MenuComponent {
   }
 
   setTerrain(t: Terrain) { this.state.SetTerrainType(t); this.close() }
+  setFeature(f: Feature) { this.state.SetFeatureType(f); this.close() }
   changeCity(name: string) { this.state.ChangeCity(name); this.close() }
   save() { this.state.Save(); this.close() }
   load() { this.state.Load(); this.close() }

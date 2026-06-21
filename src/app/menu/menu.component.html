@@ -11,10 +11,16 @@
       @if (submenu() === 'terrain') {
         <div class="menu-sub">
           <button class="menu-item" (click)="setTerrain(Terrain.GRASS)">Grass</button>
-          <button class="menu-item" (click)="setTerrain(Terrain.LAND)">Land</button>
-          <button class="menu-item" (click)="setTerrain(Terrain.TREE)">Tree</button>
-          <button class="menu-item" (click)="setTerrain(Terrain.ROCK)">Rock</button>
-          <button class="menu-item" (click)="setTerrain(Terrain.SEA)">Sea</button>
+          <button class="menu-item" (click)="setTerrain(Terrain.SAND)">Sand</button>
+          <button class="menu-item" (click)="setTerrain(Terrain.WATER)">Water</button>
+        </div>
+      }
+
+      <button class="menu-item" [class.active]="submenu() === 'features'" (click)="showSub('features')">Features ▸</button>
+      @if (submenu() === 'features') {
+        <div class="menu-sub">
+          <button class="menu-item" (click)="setFeature(Feature.TREE)">🌳 Tree</button>
+          <button class="menu-item" (click)="setFeature(Feature.ROCK)">🪨 Rock</button>
         </div>
       }
 
@@ -42,12 +48,3 @@
     </div>
   }
 </div>
-
-<span class="spacer"></span>
-
-@if (state.state.build_type || state.state.terrain_type) {
-  <span class="selection">
-    Selected: <b>{{state.state.build_type || state.state.terrain_type}}</b>
-  </span>
-  <button class="btn btn-sm btn-accent" (click)="state.ClearSelection()">Clear</button>
-}

@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgIconComponent } from '@ng-icons/core';
 import { StateService } from '../state.service';
 import { BuildingType } from '../types';
-import { GetBuildingIconName } from '../building-icons';
+import { GetBuildingIcon } from '../building';
+import { GetBuildingIconSrc } from '../building-icons';
+import { IconComponent } from '../icon/icon.component';
 import { repaintOn } from '../live';
 
 interface PaletteGroup {
@@ -13,7 +14,7 @@ interface PaletteGroup {
 
 @Component({
   selector: 'app-palette',
-  imports: [CommonModule, NgIconComponent],
+  imports: [CommonModule, IconComponent],
   templateUrl: './palette.component.html',
   styleUrl: './palette.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,7 +45,11 @@ export class PaletteComponent {
   }
 
   public iconName(type: BuildingType): string {
-    return GetBuildingIconName(type)
+    return GetBuildingIcon(type)
+  }
+
+  public iconSrc(type: BuildingType): string | undefined {
+    return GetBuildingIconSrc(type)
   }
 
   public isSelected(type: BuildingType): boolean {

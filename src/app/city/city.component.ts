@@ -35,6 +35,23 @@ export class CityComponent {
     return { i: +el.getAttribute('data-i')!, j: +el.getAttribute('data-j')! }
   }
 
+  // Size of the building currently being dragged (placed from palette or moved).
+  private draggedSize(): number {
+    let type = this.state.move_source
+      ? this.state.move_source.building!.type
+      : this.state.state.build_type
+    return type ? GetBuildingSize(type) : 1
+  }
+
+  // Anchor (top-left) so the cursor tile sits at the footprint's center, clamped
+  // to stay on the grid. For 1x1 this is a no-op (so road drawing is unaffected).
+  private centeredAnchor(pos: { i: number, j: number }, size: number): { i: number, j: number } {
+    let off = Math.round((size - 1) / 2)
+    let i = Math.max(0, Math.min(pos.i - off, this.city.h - size))
+    let j = Math.max(0, Math.min(pos.j - off, this.city.w - size))
+    return { i, j }
+  }
+
   public onDragOver(event: DragEvent) {
     event.preventDefault()
     let pos = this.tileFromEvent(event)
@@ -42,9 +59,9 @@ export class CityComponent {
       this.dropHi = undefined
       return
     }
-    let type = this.state.state.build_type
-    let size = type ? GetBuildingSize(type) : 1
-    this.dropHi = { i: pos.i, j: pos.j, size }
+    let size = this.draggedSize()
+    let anchor = this.centeredAnchor(pos, size)
+    this.dropHi = { i: anchor.i, j: anchor.j, size }
   }
 
   public onDrop(event: DragEvent) {
@@ -56,7 +73,8 @@ export class CityComponent {
       this.state.move_source = undefined
       return
     }
-    let tile = this.state.GetTile(this.city, pos.i, pos.j)
+    let anchor = this.centeredAnchor(pos, this.draggedSize())
+    let tile = this.state.GetTile(this.city, anchor.i, anchor.j)
     if (this.state.move_source) {
       this.state.MoveBuildingTo(this.state.move_source, tile)
       this.state.move_source = undefined

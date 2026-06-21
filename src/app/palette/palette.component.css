@@ -79,9 +79,9 @@
   height: 24px;
 }
 
-.pal-svg {
-  display: block;
-  color: var(--text);
+.pal-emoji {
+  font-size: 20px;
+  line-height: 1;
   pointer-events: none;
 }
 

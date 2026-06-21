@@ -1,15 +1,20 @@
 <div class="container">
   <div class="top-menu">
+    <app-status-summary></app-status-summary>
+    <span class="top-spacer"></span>
     <app-menu class="sxs"></app-menu>
   </div>
   <div class="left-menu">
     <app-palette></app-palette>
   </div>
-  <div class="map-container">
+  <div class="map-container"
+       (pointerdown)="onMapPointerDown($event)"
+       (pointermove)="onMapPointerMove($event)"
+       (pointerup)="onMapPointerUp()"
+       (pointercancel)="onMapPointerUp()">
     <app-city [city]="state.state.current_city!"></app-city>
   </div>
   <div class="right-menu">
-    <app-status-summary></app-status-summary>
     <app-tile-detail [tile]="state.state.current_city!.focus_tile"></app-tile-detail>
     <app-resource-summary></app-resource-summary>
   </div>

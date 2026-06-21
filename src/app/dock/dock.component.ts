@@ -10,11 +10,12 @@ import { City } from '../city';
 import { repaintOn } from '../live';
 
 import { FormsModule } from '@angular/forms';
+import { DecimalPipe } from '@angular/common';
 
 
 @Component({
   selector: 'app-dock',
-  imports: [FormsModule],
+  imports: [FormsModule, DecimalPipe],
   templateUrl: './dock.component.html',
   styleUrl: './dock.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

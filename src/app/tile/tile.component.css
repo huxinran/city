@@ -73,8 +73,7 @@
 
 .icon {
     display: block;
-    color: #3a2210;
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+    line-height: 1;
 }
 
 /* Tree / rock decoration sitting on a bare terrain tile (removable). */
@@ -84,9 +83,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: rgba(0, 0, 0, 0.45);
+    font-size: 18px;
+    line-height: 1;
     pointer-events: none;
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
 }
 
 .name {
@@ -100,7 +99,7 @@
     line-height: 1.05;
 }
 
-/* Farm buildings: 3x3 inner grid — top-left 2x2 = farmhouse, rest = produce */
+/* Farm buildings: 3x3 inner grid — top-left 1x1 = farmhouse, rest = produce */
 .farm-layout {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -113,25 +112,28 @@
 }
 
 .farm-house {
-    grid-row: 1 / 3;
-    grid-column: 1 / 3;
+    grid-row: 1 / 2;
+    grid-column: 1 / 2;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #3a2210;
     background: rgba(255, 255, 255, 0.22);
     border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.3);
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
+}
+
+.farm-house span {
+    font-size: 13px;
+    line-height: 1;
 }
 
 .farm-produce {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #3a2210;
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+    font-size: 13px;
+    line-height: 1;
 }
 
 /* Workshop buildings: 2x2 tile — left = process icon, right = output product */
@@ -148,14 +150,18 @@
 }
 
 .workshop-icon {
-    display: block;
-    color: #3a2210;
-    opacity: 0.55;
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.15));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 1;
+    opacity: 0.7;
 }
 
 .workshop-product {
-    display: block;
-    color: #3a2210;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 1;
 }

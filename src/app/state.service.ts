@@ -2,11 +2,19 @@ import { Injectable, NgZone, inject, signal } from '@angular/core';
 import { State } from './state';
 import { Item, Storage } from './storage';
 import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, CountItem, TakeItemsAsPossible, StorageItems} from './utils';
-import { GetCurrentMaxOccupant, Ship, ShippingTask, CreateBuilding, GetBuildingSize, GetRequiredTerrains } from './building'
-import { City, Map,  } from './city';
+import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, CreateBuilding, GetBuildingSize, GetRequiredTerrains, FeatureMatches, GetRequiredNearbyFeature, GetRequiredNearbyTerrain } from './building'
+import { City } from './city';
 import { Population,  } from './population';
-import { Resident, ProductionStatus, ShippingTaskType, BuildingType, Terrain, CityName } from './types'
+import { Resident, ProductionStatus, ShippingTaskType, BuildingType, Terrain, Feature, CityName } from './types'
 import { Tile } from './tile';
+import { SaveState, LoadState, SaveMaps, LoadMaps } from './persistence';
+import { RoadDistanceField, BuildRoadPath, WarehouseRoadDistance } from './pathfinding';
+
+// How much a full (100%) tax rate subtracts from a household's happiness.
+const TAX_UNHAPPINESS = 0.4
+
+// How far (in tiles) a resource building may sit from the rock/tree it works.
+const FEATURE_RADIUS = 3
 
 @Injectable({
   providedIn: 'root'
@@ -46,44 +54,30 @@ export class StateService {
   }
 
   public Save() {
-    localStorage.setItem("state", JSON.stringify(this.state))
-    this.SaveMap()
+    SaveState(this.state)
   }
 
-
   public Load() {
-    let saved_state = localStorage.getItem("state")
-    if (saved_state) {
-      this.state = JSON.parse(saved_state)
-      // JSON round-trips current_city into a separate object from the one in
-      // cities[]; re-link it so mutations and ChangeCity stay consistent.
-      let name = this.state.current_city?.name
-      this.state.current_city = this.state.cities.find(c => c.name === name) ?? this.state.cities[0]
+    let loaded = LoadState()
+    if (loaded) {
+      this.state = loaded
     }
     this.LoadMap()
+    // Seed building lists from the grid: a save restores buildings onto tiles,
+    // but its serialized lists hold stale (post-JSON) tile references. From here
+    // the lists are maintained incrementally on place/delete/move.
+    for (let city of this.state.cities) {
+      this.RebuildBuildingLists(city)
+    }
     this.bumpMap()
   }
 
   public SaveMap() {
-    for (let city of this.state.cities) {
-      localStorage.setItem("map" + city.name, JSON.stringify(new Map(city.h, city.w, city.tiles))) 
-    }
+    SaveMaps(this.state.cities)
   }
+
   public LoadMap() {
-    for (let city of this.state.cities) {
-      let saved_map = localStorage.getItem("map" + city.name)
-      if (saved_map && city.name == "Anrelia") {
-        let saved_map_obj = JSON.parse(saved_map)
-        // Only restore if the saved map matches the current grid dimensions.
-        if (saved_map_obj.tiles && saved_map_obj.tiles.length == city.tiles.length) {
-          city.h = saved_map_obj.h
-          city.w = saved_map_obj.w
-          for (let i = 0; i < city.tiles.length; ++i) {
-            city.tiles[i].terrain = saved_map_obj.tiles[i].terrain
-          }
-        }
-      }
-    }
+    LoadMaps(this.state.cities)
   }
   public Restart() {
     this.state = new State()
@@ -108,7 +102,7 @@ export class StateService {
 
   public Tick() {
     this.state.time += 1
-    this.SortTiles(this.state.current_city!)
+    this.ShuffleBuildingLists(this.state.current_city!)
     this.UpdatePopulation(this.state.current_city!)
     this.UpdateProduction(this.state.current_city!)
     this.UpdateWarehouses(this.state.current_city!)
@@ -117,6 +111,7 @@ export class StateService {
     this.UpdateEmployment(this.state.current_city!)
     this.HandleShipTasks(this.state.current_city!)
     this.UpdateService(this.state.current_city!)
+    this.UpdateRoutes()
     this.UpdateGold(this.state.current_city!)
     // Drive OnPush rendering of live data. Bump inside the zone so change
     // detection runs (the tick itself ran outside Angular).
@@ -126,10 +121,15 @@ export class StateService {
   public ClearSelection() {
     this.ClearBuildType()
     this.ClearTerrainType()
+    this.ClearFeatureType()
   }
-  
+
+  // The three paint modes (build / terrain / feature) are mutually exclusive:
+  // selecting one clears the others so a click is never ambiguous.
   public SetBuildType(type: BuildingType) {
     this.state.build_type = type
+    this.state.terrain_type = undefined
+    this.state.feature_type = undefined
     this.road_start = undefined
     this.move_source = undefined
     this.bumpMap()
@@ -142,6 +142,8 @@ export class StateService {
 
   public SetTerrainType(type: Terrain) {
     this.state.terrain_type = type
+    this.state.build_type = undefined
+    this.state.feature_type = undefined
     this.bumpMap()
   }
   public ClearTerrainType() {
@@ -149,8 +151,49 @@ export class StateService {
     this.bumpMap()
   }
 
+  public SetFeatureType(feature: Feature) {
+    this.state.feature_type = feature
+    this.state.build_type = undefined
+    this.state.terrain_type = undefined
+    this.bumpMap()
+  }
+  public ClearFeatureType() {
+    this.state.feature_type = undefined
+    this.bumpMap()
+  }
+
   public GetTile(city: City, i: number, j: number): Tile {
     return city.tiles[i * city.w + j]
+  }
+
+  // True if any tile within FEATURE_RADIUS of a size x size footprint anchored
+  // at (i, j) satisfies `pred`. Used to place resource buildings on open land
+  // next to (rather than on top of) the rock/tree/sand they harvest.
+  public HasNearby(city: City, i: number, j: number, size: number, pred: (t: Tile) => boolean): boolean {
+    let i0 = Math.max(0, i - FEATURE_RADIUS), i1 = Math.min(city.h - 1, i + size - 1 + FEATURE_RADIUS)
+    let j0 = Math.max(0, j - FEATURE_RADIUS), j1 = Math.min(city.w - 1, j + size - 1 + FEATURE_RADIUS)
+    for (let ii = i0; ii <= i1; ++ii) {
+      for (let jj = j0; jj <= j1; ++jj) {
+        if (pred(this.GetTile(city, ii, jj))) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
+  // Whether a resource building's required rock/tree feature and/or sand terrain
+  // is within reach of a size x size footprint anchored at (i, j).
+  public HasRequiredSurroundings(city: City, type: BuildingType, i: number, j: number, size: number): boolean {
+    let feature = GetRequiredNearbyFeature(type)
+    if (feature && !this.HasNearby(city, i, j, size, t => t.feature == feature)) {
+      return false
+    }
+    let terrain = GetRequiredNearbyTerrain(type)
+    if (terrain && !this.HasNearby(city, i, j, size, t => t.terrain == terrain)) {
+      return false
+    }
+    return true
   }
 
   // Apply the currently selected build_type at a tile (used by click and drop).
@@ -218,8 +261,14 @@ export class StateService {
         if (!required.includes(t.terrain)) {
           return false
         }
+        if (!FeatureMatches(type, t.feature)) {
+          return false
+        }
         footprint.push(t)
       }
+    }
+    if (!this.HasRequiredSurroundings(city, type, tile.i, tile.j, size)) {
+      return false
     }
     let building = CreateBuilding(type, city.storage)
     if (!building) {
@@ -234,6 +283,7 @@ export class StateService {
       t.anchor_i = tile.i
       t.anchor_j = tile.j
     }
+    this.AddBuildingToLists(city, tile)
     return true
   }
 
@@ -244,13 +294,12 @@ export class StateService {
     let anchor = tile.covered ? this.GetTile(city, tile.anchor_i, tile.anchor_j) : tile
     if (!anchor.building) {
       tile.covered = false
-      // Nothing built here: clear a removable tree/rock back to open grass.
-      if (tile.terrain == Terrain.TREE || tile.terrain == Terrain.ROCK) {
-        tile.terrain = Terrain.GRASS
-      }
+      // Nothing built here: clear a removable tree/rock feature off the land.
+      tile.feature = undefined
       return
     }
     let size = GetBuildingSize(anchor.building.type)
+    this.RemoveBuildingFromLists(city, anchor)
     for (let di = 0; di < size; ++di) {
       for (let dj = 0; dj < size; ++dj) {
         let t = this.GetTile(city, anchor.i + di, anchor.j + dj)
@@ -289,12 +338,15 @@ export class StateService {
         if (!srcKeys.has((to.i + di) * city.w + (to.j + dj))) {
           if (t.building || t.covered) return false
           if (!required.includes(t.terrain)) return false
+          if (!FeatureMatches(type, t.feature)) return false
         }
         destFootprint.push(t)
       }
     }
+    if (!this.HasRequiredSurroundings(city, type, to.i, to.j, size)) return false
 
-    // Clear source footprint.
+    // Clear source footprint (drop from lists first, while still categorisable).
+    this.RemoveBuildingFromLists(city, from)
     for (let di = 0; di < size; ++di) {
       for (let dj = 0; dj < size; ++dj) {
         let t = this.GetTile(city, from.i + di, from.j + dj)
@@ -313,46 +365,69 @@ export class StateService {
       t.anchor_i = to.i
       t.anchor_j = to.j
     }
+    this.AddBuildingToLists(city, to)
 
     city.focus_tile = to
     this.bumpMap()
     return true
   }
 
-  public SortTiles(city: City) {
-    let houses = []
-    let productions = []
-    let services = []
-    let warehouses = []
-    let shipyards = []
-    let docks = []
-    for (let t of city.tiles) {
-      if (t.building == undefined) {
-        continue
-      }
+  // Add a building's anchor tile to its matching per-city list. The category is
+  // fixed by which sub-object the building carries; roads (and anything with no
+  // sub-object) belong to no list. Covered tiles carry no building, so passing
+  // one is a safe no-op.
+  public AddBuildingToLists(city: City, tile: Tile) {
+    let b = tile.building
+    if (!b) return
+    if (b.house) city.houses.push(tile)
+    else if (b.production) city.productions.push(tile)
+    else if (b.service) city.services.push(tile)
+    else if (b.warehouse) city.warehouses.push(tile)
+    else if (b.shipyard) city.shipyards.push(tile)
+    else if (b.dock) city.docks.push(tile)
+  }
 
-      if (t.building.house) {
-        houses.push(t)
-      } else if (t.building.production) {
-        productions.push(t)
-      } else if (t.building.service) {
-        services.push(t)
-      } else if (t.building.warehouse) {
-        warehouses.push(t)
-      } else if (t.building.shipyard) {
-        shipyards.push(t)
-      } else if (t.building.dock) {
-        docks.push(t)
-      }
+  // Remove a building's anchor tile from its list. Call before clearing
+  // tile.building so the category is still known.
+  public RemoveBuildingFromLists(city: City, tile: Tile) {
+    let b = tile.building
+    if (!b) return
+    let drop = (arr: Tile[]) => {
+      let idx = arr.indexOf(tile)
+      if (idx >= 0) arr.splice(idx, 1)
     }
+    if (b.house) drop(city.houses)
+    else if (b.production) drop(city.productions)
+    else if (b.service) drop(city.services)
+    else if (b.warehouse) drop(city.warehouses)
+    else if (b.shipyard) drop(city.shipyards)
+    else if (b.dock) drop(city.docks)
+  }
 
-    city.houses = shuffle(houses)
-    city.productions = shuffle(productions)
-    city.services = shuffle(services)
-    city.warehouses = shuffle(warehouses)
-    city.shipyards = shuffle(shipyards)
-    city.docks = shuffle(docks)
-    
+  // Seed the per-city building lists from a full grid scan. Used on load, where
+  // buildings are restored onto tiles but the serialized lists hold stale tile
+  // references. The lists are then maintained incrementally on place/delete/move.
+  public RebuildBuildingLists(city: City) {
+    city.houses = []
+    city.productions = []
+    city.services = []
+    city.warehouses = []
+    city.shipyards = []
+    city.docks = []
+    for (let t of city.tiles) {
+      this.AddBuildingToLists(city, t)
+    }
+  }
+
+  // Re-randomise list order each tick so no building gets permanent priority in
+  // employment/logistics distribution (shuffle is in place).
+  public ShuffleBuildingLists(city: City) {
+    shuffle(city.houses)
+    shuffle(city.productions)
+    shuffle(city.services)
+    shuffle(city.warehouses)
+    shuffle(city.shipyards)
+    shuffle(city.docks)
   }
 
   public UpdateService(city: City) {
@@ -450,142 +525,6 @@ export class StateService {
     }
   }
 
-  // Road tiles orthogonally adjacent to the footprint of a size x size building
-  // anchored at (i, j).
-  private AdjacentRoadTiles(city: City, i: number, j: number, size: number): Tile[] {
-    let roads: Tile[] = []
-    let seen = new Set<number>()
-    let dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]]
-    for (let di = 0; di < size; ++di) {
-      for (let dj = 0; dj < size; ++dj) {
-        for (let d of dirs) {
-          let ni = i + di + d[0]
-          let nj = j + dj + d[1]
-          if (ni < 0 || nj < 0 || ni >= city.h || nj >= city.w) {
-            continue
-          }
-          let key = ni * city.w + nj
-          if (seen.has(key)) {
-            continue
-          }
-          let t = this.GetTile(city, ni, nj)
-          if (t.building?.type == BuildingType.ROAD) {
-            seen.add(key)
-            roads.push(t)
-          }
-        }
-      }
-    }
-    return roads
-  }
-
-  // BFS over the road network from the roads touching `building`, returning the
-  // road-step distance to every reachable road tile (keyed by tile index).
-  private RoadDistanceField(city: City, building: Tile): { [key: number]: number } {
-    let size = GetBuildingSize(building.building!.type)
-    let dist: { [key: number]: number } = {}
-    let queue: Tile[] = []
-    for (let r of this.AdjacentRoadTiles(city, building.i, building.j, size)) {
-      let key = r.i * city.w + r.j
-      if (dist[key] == undefined) {
-        dist[key] = 1
-        queue.push(r)
-      }
-    }
-    let dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]]
-    let head = 0
-    while (head < queue.length) {
-      let t = queue[head++]
-      let d = dist[t.i * city.w + t.j]
-      for (let dir of dirs) {
-        let ni = t.i + dir[0]
-        let nj = t.j + dir[1]
-        if (ni < 0 || nj < 0 || ni >= city.h || nj >= city.w) {
-          continue
-        }
-        let key = ni * city.w + nj
-        if (dist[key] != undefined) {
-          continue
-        }
-        let n = this.GetTile(city, ni, nj)
-        if (n.building?.type == BuildingType.ROAD) {
-          dist[key] = d + 1
-          queue.push(n)
-        }
-      }
-    }
-    return dist
-  }
-
-  private BuildingCenter(building: Tile): { i: number, j: number } {
-    let size = GetBuildingSize(building.building!.type)
-    return { i: building.i + (size - 1) / 2, j: building.j + (size - 1) / 2 }
-  }
-
-  // Reconstruct the shortest road path warehouse -> destination by descending
-  // the distance field one road step at a time. Returns tile centers to follow.
-  private BuildRoadPath(city: City, field: { [key: number]: number }, warehouse: Tile, dst: Tile): { i: number, j: number }[] {
-    let size = GetBuildingSize(warehouse.building!.type)
-    let entry: Tile | undefined = undefined
-    let entryVal = Infinity
-    for (let r of this.AdjacentRoadTiles(city, warehouse.i, warehouse.j, size)) {
-      let v = field[r.i * city.w + r.j]
-      if (v != undefined && v < entryVal) {
-        entryVal = v
-        entry = r
-      }
-    }
-    if (!entry) {
-      return []
-    }
-    let roads: Tile[] = [entry]
-    let current = entry
-    let dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]]
-    while (field[current.i * city.w + current.j] > 1) {
-      let cv = field[current.i * city.w + current.j]
-      let next: Tile | undefined = undefined
-      for (let dir of dirs) {
-        let ni = current.i + dir[0]
-        let nj = current.j + dir[1]
-        if (ni < 0 || nj < 0 || ni >= city.h || nj >= city.w) {
-          continue
-        }
-        let n = this.GetTile(city, ni, nj)
-        if (n.building?.type == BuildingType.ROAD && field[ni * city.w + nj] == cv - 1) {
-          next = n
-          break
-        }
-      }
-      if (!next) {
-        break
-      }
-      roads.push(next)
-      current = next
-    }
-    let path = [this.BuildingCenter(warehouse)]
-    for (let r of roads) {
-      path.push({ i: r.i, j: r.j })
-    }
-    path.push(this.BuildingCenter(dst))
-    return path
-  }
-
-  // Shortest road distance from a warehouse to the building described by `field`.
-  private WarehouseRoadDistance(city: City, field: { [key: number]: number }, warehouse: Tile): number {
-    if (!warehouse.building) {
-      return Infinity
-    }
-    let size = GetBuildingSize(warehouse.building.type)
-    let best = Infinity
-    for (let r of this.AdjacentRoadTiles(city, warehouse.i, warehouse.j, size)) {
-      let d = field[r.i * city.w + r.j]
-      if (d != undefined) {
-        best = Math.min(best, d + 1)
-      }
-    }
-    return best
-  }
-
   public HandleShipTasks(city: City) {
     let i = 0
     while (i < city.shipping_tasks.length) {
@@ -601,11 +540,11 @@ export class StateService {
       }
 
       // Find the closest warehouse reachable by road.
-      let field = this.RoadDistanceField(city, task.dst)
+      let field = RoadDistanceField(city, task.dst)
       let min_dist = Infinity
       let min_idx = undefined
       for (let j = 0; j < city.carts.length; ++j) {
-        let dist = this.WarehouseRoadDistance(city, field, city.carts[j])
+        let dist = WarehouseRoadDistance(city, field, city.carts[j])
         if (dist < min_dist) {
           min_dist = dist
           min_idx = j
@@ -626,7 +565,7 @@ export class StateService {
       let cart = city.carts[min_idx]
       task.distance = min_dist
       task.progress = 0
-      task.path = this.BuildRoadPath(city, field, cart, task.dst)
+      task.path = BuildRoadPath(city, field, cart, task.dst)
       for (let c of cart.building!.warehouse!.carts) {
         if (c.task == undefined) {
           c.task = task
@@ -653,7 +592,9 @@ export class StateService {
         }
       }
       let total_needs = house.service_needs.length + house.resource_needs.length
-      house.happiness = total_needs == 0 ? 1.0 : needs_satified / total_needs
+      let base_happiness = total_needs == 0 ? 1.0 : needs_satified / total_needs
+      // Taxes weigh on residents: the higher the rate, the unhappier they are.
+      house.happiness = Math.max(0, Math.min(1, base_happiness - this.state.tax_rate * TAX_UNHAPPINESS))
 
       house.current_max_occupant = GetCurrentMaxOccupant(house.tier, house.happiness)
       if (house.occupant < house.current_max_occupant) {
@@ -755,43 +696,78 @@ public GetWorkerNeeded(population: Population, tier: Resident, num: number) {
   }
 
 
+  // Collect residential tax. Each resident pays a tier-based amount scaled by
+  // the current tax rate; wealthier tiers contribute more.
   public UpdateGold(city: City) {
-    for (let t of city.population.tiers) {
-      this.state.gold += t.has * 0.001 
-    } 
+    this.state.gold += this.TaxIncome(city)
   }
 
-  public UpdateRoute(city: City, other_cities: City[]) {
-    for (let r of city.routes) {
-      if (!r.ship) {
-        continue
-      }
+  // Gold collected from all residents this tick at the current tax rate.
+  public TaxIncome(city: City): number {
+    let income = 0
+    for (let t of city.population.tiers) {
+      income += t.has * GetTaxPerResident(t.tier)
+    }
+    return income * this.state.tax_rate
+  }
 
-      if (r.from != city.name) {
-        continue
-      }
+  // Set the tax rate, clamped to [0, 1].
+  public SetTaxRate(rate: number) {
+    this.state.tax_rate = Math.min(1, Math.max(0, rate))
+    this.bumpMap()
+  }
 
-      let ship = r.ship
-      if (ship.status == ShippingTaskType.READY) {
-        let cargo = TakeItemsAsPossible(city.storage, [new Item(r.resource, r.amount)])
-        AddItems(ship.cargo, cargo)
-      } else if (ship.status == ShippingTaskType.DELIVERYING) {
-        r.progress = Math.min(1.0, r.progress + ship.speed / 100.0)
-        if (r.progress == 1.0) {
-          r.progress = 0.0
-          ship.status = ShippingTaskType.RETURNING
-          let dst_city = this.GetCity(other_cities, r.to)
-          AddItems(dst_city!.storage, StorageItems(ship.cargo))
-          ship.cargo = new Storage() 
+  // Sea trade. Each route owns a ship that cycles:
+  //   READY       -> load `resource` from the origin city until full, then depart
+  //   DELIVERYING -> sail to the destination; on arrival, unload into its storage
+  //   RETURNING   -> sail back empty; on arrival, become READY again
+  // Routes run for every city (not just the one on screen) so trade continues
+  // in the background while the player looks at another city.
+  public UpdateRoutes() {
+    for (let city of this.state.cities) {
+      for (let r of city.routes) {
+        if (!r.ship) {
+          continue
         }
-      } else if (ship.status == ShippingTaskType.RETURNING) {
-        r.progress = Math.min(1.0, r.progress + ship.speed / 100.0)
-        if (r.progress == 1.0) {
-          r.progress = 0.0
-          ship.status = ShippingTaskType.READY
+        let ship = r.ship
+        let from = this.GetCity(this.state.cities, r.from)
+        let to = this.GetCity(this.state.cities, r.to)
+        if (!from || !to) {
+          continue
+        }
+
+        // How much this trip carries: the route amount, capped by ship capacity.
+        let capacity = Math.min(r.amount, ship.max_cargo)
+
+        if (ship.status == ShippingTaskType.READY) {
+          let loaded = CountItem(ship.cargo, r.resource)
+          if (loaded < capacity) {
+            let taken = TakeItemsAsPossible(from.storage, [new Item(r.resource, capacity - loaded)])
+            AddItems(ship.cargo, taken)
+            loaded = CountItem(ship.cargo, r.resource)
+          }
+          // Depart only once fully loaded (waits for the origin to produce more).
+          if (capacity > 0 && loaded >= capacity) {
+            ship.status = ShippingTaskType.DELIVERYING
+            r.progress = 0.0
+          }
+        } else if (ship.status == ShippingTaskType.DELIVERYING) {
+          r.progress = Math.min(1.0, r.progress + ship.speed / 100.0)
+          if (r.progress >= 1.0) {
+            r.progress = 0.0
+            ship.status = ShippingTaskType.RETURNING
+            AddItems(to.storage, StorageItems(ship.cargo))
+            ship.cargo = new Storage()
+          }
+        } else if (ship.status == ShippingTaskType.RETURNING) {
+          r.progress = Math.min(1.0, r.progress + ship.speed / 100.0)
+          if (r.progress >= 1.0) {
+            r.progress = 0.0
+            ship.status = ShippingTaskType.READY
+          }
         }
       }
-    } 
+    }
   }
 }
 

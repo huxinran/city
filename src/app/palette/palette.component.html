@@ -12,7 +12,7 @@
                   (dragstart)="onDragStart(type)" (dragend)="onDragEnd()"
                   (click)="select(type)" [title]="type">
               <div class="pal-icon-slot">
-                <ng-icon [name]="iconName(type)" class="pal-svg" size="20"></ng-icon>
+                <app-icon [src]="iconSrc(type)" [fallback]="iconName(type)" [alt]="type" [size]="24"></app-icon>
               </div>
           </button>
         }
@@ -27,7 +27,7 @@
               draggable="true"
               (dragstart)="onDragStart(Delete)" (dragend)="onDragEnd()"
               (click)="select(Delete)" title="Delete">
-        <ng-icon name="lucideTrash2" class="pal-svg" size="20"></ng-icon>
+        <span class="pal-emoji">🗑️</span>
       </button>
     </div>
   </div>

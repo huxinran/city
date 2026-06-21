@@ -2,12 +2,11 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    width: 100%;
     flex-wrap: wrap;
 }
 
 .brand {
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 800;
     letter-spacing: 0.02em;
     color: var(--text);
@@ -17,7 +16,7 @@
 .spacer { flex: 1; }
 
 .selection {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--text-dim);
 }
 .selection b { color: var(--accent); }

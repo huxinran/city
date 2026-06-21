@@ -13,12 +13,15 @@
 <hr class="divider">
 <div class="panel-title">Routes</div>
 <table class="table">
-  <thead><tr><th>From</th><th>To</th><th>Resource</th><th>Amt</th></tr></thead>
+  <thead><tr><th>From</th><th>To</th><th>Resource</th><th>Amt</th><th>Status</th></tr></thead>
   <tbody>
     @for (route of state.state.current_city!.routes; track $index) {
-      <tr><td>{{route.from}}</td><td>{{route.to}}</td><td>{{route.resource}}</td><td>{{route.amount}}</td></tr>
+      <tr>
+        <td>{{route.from}}</td><td>{{route.to}}</td><td>{{route.resource}}</td><td>{{route.amount}}</td>
+        <td>{{route.ship?.status}}{{ route.ship && route.ship.status !== 'Ready' ? ' ' + (route.progress * 100 | number:'1.0-0') + '%' : '' }}</td>
+      </tr>
     } @empty {
-      <tr><td class="empty" colspan="4">No routes yet</td></tr>
+      <tr><td class="empty" colspan="5">No routes yet</td></tr>
     }
   </tbody>
 </table>
