@@ -1,0 +1,39 @@
+{
+  "tileSize": 64,
+  "style": "cute cartoon-ish detailed 64x64 pixel art, transparent background",
+  "icons": [
+    {
+      "name": "apple",
+      "file": "assets/resource-icons-cute-64/apple.png"
+    },
+    {
+      "name": "lettuce",
+      "file": "assets/resource-icons-cute-64/lettuce.png"
+    },
+    {
+      "name": "grape",
+      "file": "assets/resource-icons-cute-64/grape.png"
+    },
+    {
+      "name": "olive",
+      "file": "assets/resource-icons-cute-64/olive.png"
+    },
+    {
+      "name": "pig",
+      "file": "assets/resource-icons-cute-64/pig.png"
+    },
+    {
+      "name": "cow",
+      "file": "assets/resource-icons-cute-64/cow.png"
+    },
+    {
+      "name": "sheep",
+      "file": "assets/resource-icons-cute-64/sheep.png"
+    },
+    {
+      "name": "chicken",
+      "file": "assets/resource-icons-cute-64/chicken.png"
+    }
+  ],
+  "sheet": "assets/resource-icons-cute-64/cute-resources-sheet.png"
+}

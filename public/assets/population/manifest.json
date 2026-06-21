@@ -1,0 +1,31 @@
+{
+  "tileSize": 32,
+  "style": "front-facing pixel art, transparent background, crisp 1px outline",
+  "tiers": [
+    {
+      "name": "Farmer",
+      "file": "assets/population/farmer.png"
+    },
+    {
+      "name": "Worker",
+      "file": "assets/population/worker.png"
+    },
+    {
+      "name": "Artisan",
+      "file": "assets/population/artisan.png"
+    },
+    {
+      "name": "Scholar",
+      "file": "assets/population/scholar.png"
+    },
+    {
+      "name": "Entrepreneur",
+      "file": "assets/population/entrepreneur.png"
+    },
+    {
+      "name": "Magnate",
+      "file": "assets/population/magnate.png"
+    }
+  ],
+  "sheet": "assets/population/population-tiers-sheet.png"
+}

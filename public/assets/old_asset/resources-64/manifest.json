@@ -1,0 +1,15 @@
+{
+  "tileSize": 64,
+  "style": "64x64 detailed pixel art, transparent background, crisp dark outline",
+  "resources": [
+    {
+      "name": "Wheat",
+      "file": "assets/resources-64/wheat.png"
+    },
+    {
+      "name": "Rice",
+      "file": "assets/resources-64/rice.png"
+    }
+  ],
+  "sheet": "assets/resources-64/resources-64-sheet.png"
+}

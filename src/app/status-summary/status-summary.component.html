@@ -2,7 +2,7 @@
     <span class="city">{{state.state.current_city!.name}}</span>
     @for (tier of state.state.current_city!.population.tiers; track $index) {
         <span class="stat" [title]="tier.tier">
-            <span class="k">{{icon(tier.tier)}}</span>
+            <img class="resident-icon" [src]="icon(tier.tier)" [alt]="tier.tier">
             <span class="v">{{tier.has}}<span class="mut">/{{tier.needed}}</span></span>
         </span>
     }

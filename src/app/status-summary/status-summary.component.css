@@ -21,6 +21,13 @@
     white-space: nowrap;
 }
 
+.resident-icon {
+    width: 24px;
+    height: 24px;
+    image-rendering: pixelated;
+    object-fit: contain;
+}
+
 .stat .k { color: var(--text-dim); }
 .stat .v { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
 .stat .v.gold { color: #fbbf24; }

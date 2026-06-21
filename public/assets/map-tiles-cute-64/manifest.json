@@ -1,0 +1,27 @@
+{
+  "tileSize": 64,
+  "style": "cute cartoon-ish high-detail pixel art map terrain tiles",
+  "note": "Each tile has a generated source image under sources/ and an exported 64x64 PNG for direct map use.",
+  "tiles": [
+    {
+      "name": "sea",
+      "file": "assets/map-tiles-cute-64/sea.png",
+      "source": "assets/map-tiles-cute-64/sources/sea.png"
+    },
+    {
+      "name": "grass",
+      "file": "assets/map-tiles-cute-64/grass.png",
+      "source": "assets/map-tiles-cute-64/sources/grass.png"
+    },
+    {
+      "name": "sand",
+      "file": "assets/map-tiles-cute-64/sand.png",
+      "source": "assets/map-tiles-cute-64/sources/sand.png"
+    },
+    {
+      "name": "cobblestone-road",
+      "file": "assets/map-tiles-cute-64/cobblestone-road.png",
+      "source": "assets/map-tiles-cute-64/sources/cobblestone-road.png"
+    }
+  ]
+}

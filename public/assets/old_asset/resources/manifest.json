@@ -1,0 +1,251 @@
+{
+  "tileSize": 32,
+  "style": "32x32 pixel art, transparent background, crisp dark outline",
+  "resources": [
+    {
+      "name": "Apple",
+      "file": "assets/resources/apple.png"
+    },
+    {
+      "name": "Banana",
+      "file": "assets/resources/banana.png"
+    },
+    {
+      "name": "Berry",
+      "file": "assets/resources/berry.png"
+    },
+    {
+      "name": "Brandy",
+      "file": "assets/resources/brandy.png"
+    },
+    {
+      "name": "Bread",
+      "file": "assets/resources/bread.png"
+    },
+    {
+      "name": "Brick",
+      "file": "assets/resources/brick.png"
+    },
+    {
+      "name": "Cabbage",
+      "file": "assets/resources/cabbage.png"
+    },
+    {
+      "name": "Candle",
+      "file": "assets/resources/candle.png"
+    },
+    {
+      "name": "Cheese",
+      "file": "assets/resources/cheese.png"
+    },
+    {
+      "name": "Cider",
+      "file": "assets/resources/cider.png"
+    },
+    {
+      "name": "Cigar",
+      "file": "assets/resources/cigar.png"
+    },
+    {
+      "name": "Clay",
+      "file": "assets/resources/clay.png"
+    },
+    {
+      "name": "Coal",
+      "file": "assets/resources/coal.png"
+    },
+    {
+      "name": "Cocoa",
+      "file": "assets/resources/cocoa.png"
+    },
+    {
+      "name": "Corn",
+      "file": "assets/resources/corn.png"
+    },
+    {
+      "name": "Cotton",
+      "file": "assets/resources/cotton.png"
+    },
+    {
+      "name": "Egg",
+      "file": "assets/resources/egg.png"
+    },
+    {
+      "name": "Fish",
+      "file": "assets/resources/fish.png"
+    },
+    {
+      "name": "Flour",
+      "file": "assets/resources/flour.png"
+    },
+    {
+      "name": "Fur",
+      "file": "assets/resources/fur.png"
+    },
+    {
+      "name": "Gem",
+      "file": "assets/resources/gem.png"
+    },
+    {
+      "name": "Glass",
+      "file": "assets/resources/glass.png"
+    },
+    {
+      "name": "Gold",
+      "file": "assets/resources/gold.png"
+    },
+    {
+      "name": "Grape",
+      "file": "assets/resources/grape.png"
+    },
+    {
+      "name": "Iron",
+      "file": "assets/resources/iron.png"
+    },
+    {
+      "name": "Jam",
+      "file": "assets/resources/jam.png"
+    },
+    {
+      "name": "Melon",
+      "file": "assets/resources/melon.png"
+    },
+    {
+      "name": "Milk",
+      "file": "assets/resources/milk.png"
+    },
+    {
+      "name": "Oil",
+      "file": "assets/resources/oil.png"
+    },
+    {
+      "name": "Olive",
+      "file": "assets/resources/olive.png"
+    },
+    {
+      "name": "Orange",
+      "file": "assets/resources/orange.png"
+    },
+    {
+      "name": "Onion",
+      "file": "assets/resources/onion.png"
+    },
+    {
+      "name": "Furniture",
+      "file": "assets/resources/furniture.png"
+    },
+    {
+      "name": "Jewelry",
+      "file": "assets/resources/jewelry.png"
+    },
+    {
+      "name": "Iron Ore",
+      "file": "assets/resources/iron-ore.png"
+    },
+    {
+      "name": "Gold Ore",
+      "file": "assets/resources/gold-ore.png"
+    },
+    {
+      "name": "Pant",
+      "file": "assets/resources/pant.png"
+    },
+    {
+      "name": "Timber",
+      "file": "assets/resources/timber.png"
+    },
+    {
+      "name": "Tool",
+      "file": "assets/resources/tool.png"
+    },
+    {
+      "name": "Pork",
+      "file": "assets/resources/pork.png"
+    },
+    {
+      "name": "Potato",
+      "file": "assets/resources/potato.png"
+    },
+    {
+      "name": "Pottery",
+      "file": "assets/resources/pottery.png"
+    },
+    {
+      "name": "Pumpkin",
+      "file": "assets/resources/pumpkin.png"
+    },
+    {
+      "name": "Salt",
+      "file": "assets/resources/salt.png"
+    },
+    {
+      "name": "Sand",
+      "file": "assets/resources/sand.png"
+    },
+    {
+      "name": "Sausage",
+      "file": "assets/resources/sausage.png"
+    },
+    {
+      "name": "Slate",
+      "file": "assets/resources/slate.png"
+    },
+    {
+      "name": "Soybean",
+      "file": "assets/resources/soybean.png"
+    },
+    {
+      "name": "Steel",
+      "file": "assets/resources/steel.png"
+    },
+    {
+      "name": "Stone",
+      "file": "assets/resources/stone.png"
+    },
+    {
+      "name": "Sugar Cane",
+      "file": "assets/resources/sugar-cane.png"
+    },
+    {
+      "name": "Rice",
+      "file": "assets/resources/rice.png"
+    },
+    {
+      "name": "Rubber",
+      "file": "assets/resources/rubber.png"
+    },
+    {
+      "name": "Rum",
+      "file": "assets/resources/rum.png"
+    },
+    {
+      "name": "Tobacco",
+      "file": "assets/resources/tobacco.png"
+    },
+    {
+      "name": "Tomato",
+      "file": "assets/resources/tomato.png"
+    },
+    {
+      "name": "Wax",
+      "file": "assets/resources/wax.png"
+    },
+    {
+      "name": "Wheat",
+      "file": "assets/resources/wheat.png"
+    },
+    {
+      "name": "Wine",
+      "file": "assets/resources/wine.png"
+    },
+    {
+      "name": "Wood",
+      "file": "assets/resources/wood.png"
+    },
+    {
+      "name": "Wool",
+      "file": "assets/resources/wool.png"
+    }
+  ],
+  "sheet": "assets/resources/resources-sheet.png"
+}

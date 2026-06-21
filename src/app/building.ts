@@ -466,6 +466,19 @@ export function GetResidentIcon(tier: Resident): string {
     return RESIDENT_ICONS[tier] ?? '🧑'
 }
 
+const RESIDENT_ICON_ASSETS: { [key: string]: string } = {
+    [Resident.FARMER]:       'assets/population/farmer.png',
+    [Resident.WORKER]:       'assets/population/worker.png',
+    [Resident.ARTISAN]:      'assets/population/artisan.png',
+    [Resident.SCHOLAR]:      'assets/population/scholar.png',
+    [Resident.ENTREPRENEUR]: 'assets/population/entrepreneur.png',
+    [Resident.MAGNATE]:      'assets/population/magnate.png',
+}
+
+export function GetResidentIconAsset(tier: Resident): string {
+    return RESIDENT_ICON_ASSETS[tier] ?? 'assets/population/farmer.png'
+}
+
 export function GetResidentType(tier: number) {
     if (tier == 1) {
         return Resident.FARMER

@@ -209,12 +209,11 @@ details.collapsible[open] > summary::before { content: "▾ "; }
 
 /* Cobblestone texture for roads (used on the map and in the palette). */
 .cobble {
-  background-color: #6b685f;
-  background-image:
-    radial-gradient(circle, #aaa597 0 33%, transparent 35%),
-    radial-gradient(circle, rgba(54, 52, 46, 0.55) 0 33%, transparent 35%);
-  background-size: 9px 9px, 9px 9px;
-  background-position: 0 0, 4.5px 4.5px;
+  background-color: #8f897d;
+  background-image: url("/assets/map-tiles-cute-64/cobblestone-road.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
 }
 
 /* legacy helpers still referenced in a few templates */

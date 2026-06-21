@@ -8,6 +8,15 @@ import { GetBuildingSize, IsFarmBuilding, IsWorkshopBuilding, GetBuildingIcon, G
 import { GetBuildingIconSrc } from '../building-icons'
 import { IconComponent } from '../icon/icon.component'
 
+const MAP_TILE_ASSETS: { [key: string]: { file: string, color: string } } = {
+  [Terrain.WATER]: { file: 'sea.png', color: '#4ba6d4' },
+  [Terrain.GRASS]: { file: 'grass.png', color: '#8ec96a' },
+  [Terrain.SAND]:  { file: 'sand.png', color: '#f0dd99' },
+}
+
+const MAP_TILE_BASE = 'assets/map-tiles-cute-64/'
+const ROAD_TILE_ASSET = MAP_TILE_BASE + 'cobblestone-road.png'
+
 @Component({
   selector: 'app-tile',
   imports: [CommonModule, IconComponent],
@@ -154,10 +163,15 @@ export class TileComponent {
   private _buildingKey?: string
   private _buildingStyle: any
 
-  private TerrainBackground(terrain: Terrain): string {
-    if (terrain == Terrain.WATER) return 'linear-gradient(135deg, #8fd3f0, #56a9d6)'
-    if (terrain == Terrain.SAND) return 'linear-gradient(135deg, #faf0c8, #f0dd99)' // light yellow
-    return 'linear-gradient(135deg, #b6e08a, #8ec96a)' // GRASS (green)
+  private TerrainStyle(terrain: Terrain): any {
+    let asset = MAP_TILE_ASSETS[terrain] ?? MAP_TILE_ASSETS[Terrain.GRASS]
+    return {
+      'background-color': asset.color,
+      'background-image': `url("${MAP_TILE_BASE}${asset.file}")`,
+      'background-size': '100% 100%',
+      'background-repeat': 'no-repeat',
+      'image-rendering': 'pixelated',
+    }
   }
 
   // Cache styles so a stable object reference is returned when nothing changed,
@@ -166,7 +180,7 @@ export class TileComponent {
     this.state.mapVersion()  // repaint this tile on map edits (OnPush dependency)
     if (this._terrain !== this.tile.terrain) {
       this._terrain = this.tile.terrain
-      this._terrainStyle = { 'background': this.TerrainBackground(this.tile.terrain) }
+      this._terrainStyle = this.TerrainStyle(this.tile.terrain)
     }
     return this._terrainStyle
   }
@@ -175,8 +189,15 @@ export class TileComponent {
     let key = this.tile.building?.type ?? ''
     if (this._buildingKey !== key) {
       this._buildingKey = key
-      // Roads get their background from the .cobble class instead.
-      this._buildingStyle = key == BuildingType.ROAD ? {} : { 'background': this.GetBuildingColor() }
+      this._buildingStyle = key == BuildingType.ROAD
+        ? {
+            'background-color': '#8f897d',
+            'background-image': `url("${ROAD_TILE_ASSET}")`,
+            'background-size': '100% 100%',
+            'background-repeat': 'no-repeat',
+            'image-rendering': 'pixelated',
+          }
+        : { 'background': this.GetBuildingColor() }
     }
     return this._buildingStyle
   }
