@@ -8,10 +8,13 @@ import path from 'path';
 
 const args = process.argv.slice(2);
 const write = args.includes('--write');
+const thArg = args.find((a) => a.startsWith('--threshold='));
 const files = args.filter((a) => !a.startsWith('--'));
 
-const T_HARD = 240; // channel >= this AND connected to border => background
-const T_FRINGE = 224; // soften near-white pixels touching transparency up to here
+// channel >= T_HARD AND connected to border => background. Lower it for art on
+// an off-white/light-gray backdrop via --threshold=NNN.
+const T_HARD = thArg ? parseInt(thArg.split('=')[1], 10) : 240;
+const T_FRINGE = T_HARD - 16; // soften near-white pixels touching transparency up to here
 
 async function processFile(file) {
   const { data, info } = await sharp(file).ensureAlpha().raw().toBuffer({ resolveWithObject: true });

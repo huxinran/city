@@ -22,7 +22,7 @@ const MEDIUM_BUILDINGS = new Set<BuildingType>([
     BuildingType.GOLD_MINE, BuildingType.GEM_MINE, BuildingType.SALTERN,
     // Workshops are 2x2
     BuildingType.WIND_MILL, BuildingType.BAKERY, BuildingType.BUTCHERY,
-    BuildingType.CIDERY, BuildingType.PANT_SHOP, BuildingType.CIGAR_FACTORY,
+    BuildingType.CIDERY, BuildingType.PANT_SHOP, BuildingType.SHIRT_SHOP, BuildingType.BOOT_SHOP, BuildingType.CIGAR_FACTORY,
     BuildingType.CREAMERY, BuildingType.POTTERY_SHOP, BuildingType.BRANDY_DISTILLERY,
     BuildingType.CANDLE_Manufactory, BuildingType.GLASSWORK, BuildingType.STEELWORK,
     BuildingType.SAWMILL, BuildingType.BRICKYARY, BuildingType.MASON_SHOP,
@@ -40,7 +40,7 @@ export const WORKSHOP_BUILDINGS = new Set<BuildingType>([
     BuildingType.GOLD_MINE, BuildingType.GEM_MINE, BuildingType.SALTERN,
     // Processing workshops
     BuildingType.WIND_MILL, BuildingType.BAKERY, BuildingType.BUTCHERY,
-    BuildingType.CIDERY, BuildingType.PANT_SHOP, BuildingType.CIGAR_FACTORY,
+    BuildingType.CIDERY, BuildingType.PANT_SHOP, BuildingType.SHIRT_SHOP, BuildingType.BOOT_SHOP, BuildingType.CIGAR_FACTORY,
     BuildingType.CREAMERY, BuildingType.POTTERY_SHOP, BuildingType.BRANDY_DISTILLERY,
     BuildingType.CANDLE_Manufactory, BuildingType.GLASSWORK, BuildingType.STEELWORK,
     BuildingType.SAWMILL, BuildingType.BRICKYARY, BuildingType.MASON_SHOP,
@@ -163,6 +163,18 @@ const BUILDING_TIER_OVERRIDE: { [key: string]: number } = {
     [BuildingType.SAWMILL]:    1,   // timber (Farmer)
     [BuildingType.BRICKYARY]:  2,   // brick  (Worker; brick itself is a tier-3 build good)
     [BuildingType.FIRE_STATION]: 2, // fire service (Worker; default service-unlock tier is 3)
+    [BuildingType.MARKETPLACE]: 1,  // market service (Farmer; default service-unlock tier is 2)
+    [BuildingType.COTTON_FIELD]: 2, // cotton (Worker)
+    [BuildingType.SHIRT_SHOP]:  2,  // shirt  (Worker)
+    [BuildingType.CLINIC]:      2,  // health service (Worker; default service-unlock tier is 3)
+    [BuildingType.COAL_KILN]:   2,  // coal (Worker; coal feeds tier-3 build goods)
+    [BuildingType.SCHOOL]:      3,  // school service (Artisan; default service-unlock tier is 4)
+    [BuildingType.OLIVE_GROVE]: 3,  // olive (Artisan; oil is a tier-6 luxury good)
+    [BuildingType.OIL_PRESS]:   3,  // oil   (Artisan)
+    [BuildingType.TRAPLINE]:    3,  // fur  (Artisan)
+    [BuildingType.BOOT_SHOP]:   3,  // boot (Artisan)
+    [BuildingType.ENGINEER_STATION]: 3, // engineering service (Artisan; default service-unlock tier is 5)
+    [BuildingType.TOOLSMITH]:   3,  // tool (Artisan; refined iron goods, feeds the statue chain)
     [BuildingType.WHEAT_FARM]: 3,   // wheat  (Artisan; bread is a tier-2 upgrade good, which would pull the chain to Worker)
     [BuildingType.WIND_MILL]:  3,   // flour  (Artisan)
     [BuildingType.BAKERY]:     3,   // bread  (Artisan)
@@ -334,6 +346,7 @@ export const BUILDING_ICONS: { [key: string]: string } = {
     [BuildingType.MARKETPLACE]: '🏪', [BuildingType.TAVERN]: '🍺',
     [BuildingType.CHAPEL]: '⛪',
     [BuildingType.CLINIC]: '🏥', [BuildingType.COURTHOUSE]: '⚖️', [BuildingType.ENGINEER_STATION]: '🔧',
+    [BuildingType.SHIRT_SHOP]: '👕', [BuildingType.BOOT_SHOP]: '👢',
     [BuildingType.SHIPYARD]: '⚓',   [BuildingType.DOCK]: '⛵',
     [BuildingType.ROAD]: '🛣️',
     [BuildingType.DELETE]: '🗑️',
@@ -606,12 +619,12 @@ export function GetResidentIcon(tier: Resident): string {
 }
 
 const RESIDENT_ICON_ASSETS: { [key: string]: string } = {
-    [Resident.FARMER]:       'assets/population/farmer.png',
-    [Resident.WORKER]:       'assets/population/worker.png',
-    [Resident.ARTISAN]:      'assets/population/artisan.png',
-    [Resident.SCHOLAR]:      'assets/population/scholar.png',
-    [Resident.ENTREPRENEUR]: 'assets/population/entrepreneur.png',
-    [Resident.MAGNATE]:      'assets/population/magnate.png',
+    [Resident.FARMER]:       'assets/population/busts/farmer-bust.png',
+    [Resident.WORKER]:       'assets/population/busts/worker-bust.png',
+    [Resident.ARTISAN]:      'assets/population/busts/artisan-bust.png',
+    [Resident.SCHOLAR]:      'assets/population/busts/scholar-bust.png',
+    [Resident.ENTREPRENEUR]: 'assets/population/busts/entrepreneur-bust.png',
+    [Resident.MAGNATE]:      'assets/population/busts/magnate-bust.png',
 }
 
 export function GetResidentIconAsset(tier: Resident): string {
@@ -782,7 +795,7 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
     } else if (type == BuildingType.WHEAT_FARM) {
         new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.WHEAT, 1)]))   
     } else if (type == BuildingType.WIND_MILL) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.WHEAT, 1)], [new Item(Resource.FLOUR, 1)]))   
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.WHEAT, 1)], [new Item(Resource.FLOUR, 1)]))   
     } else if (type == BuildingType.BAKERY) {
         new_building = new Building(type, [new Item(Resource.STONE, 10)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.FLOUR, 1)], [new Item(Resource.BREAD, 1)]))    
     } else if (type == BuildingType.PIG_FARM) {
@@ -809,6 +822,10 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
         new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.CLAY, 1)], [new Item(Resource.POTTERY, 1)])) 
     } else if (type == BuildingType.PANT_SHOP) {
         new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, new Production(10, Resident.FARMER, 10.0, [new Item(Resource.WOOL, 1)], [new Item(Resource.PANT, 1)]))
+    } else if (type == BuildingType.SHIRT_SHOP) {
+        new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.COTTON, 1)], [new Item(Resource.SHIRT, 1)]))
+    } else if (type == BuildingType.BOOT_SHOP) {
+        new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.FUR, 1)], [new Item(Resource.BOOT, 1)]))
     } else if (type == BuildingType.CIGAR_FACTORY) {
         new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.TOBACCO, 1)], [new Item(Resource.CIGAR, 1)])) 
     } else if (type == BuildingType.WELL) {
@@ -826,7 +843,7 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
     } else if (type == BuildingType.CHAPEL) {
         new_building = new Building(type, [new Item(Resource.STONE, 40)], undefined, undefined, new Service(ServiceType.CHURCH, 14))
     } else if (type == BuildingType.CLINIC) {
-        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, undefined, new Service(ServiceType.HEALTH, 12))
+        new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, undefined, new Service(ServiceType.HEALTH, 12))
     } else if (type == BuildingType.COURTHOUSE) {
         new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, undefined, new Service(ServiceType.JUSTICE, 14))
     } else if (type == BuildingType.ENGINEER_STATION) {
@@ -890,7 +907,7 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
     } else if (type == BuildingType.GOLD_MINE) {
         new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 8.0, [], [new Item(Resource.GOLD_ORE, 1)]))
     } else if (type == BuildingType.IRON_MINE) {
-        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 8.0, [], [new Item(Resource.IRON_ORE, 1)]))
+        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.ARTISAN, 8.0, [], [new Item(Resource.IRON_ORE, 1)]))
     // Processing — Worker tier
     } else if (type == BuildingType.SAWMILL) {
         new_building = new Building(type, [new Item(Resource.STONE, 10)], undefined, new Production(4, Resident.FARMER, 10.0, [new Item(Resource.WOOD, 1)], [new Item(Resource.TIMBER, 1)]))
@@ -917,7 +934,7 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
         new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.IRON, 1), new Item(Resource.COAL, 1)], [new Item(Resource.STEEL, 1)]))
     // Metal & craft chains
     } else if (type == BuildingType.FORGE) {
-        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.IRON_ORE, 1), new Item(Resource.COAL, 1)], [new Item(Resource.IRON, 1)]))
+        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.IRON_ORE, 1), new Item(Resource.COAL, 1)], [new Item(Resource.IRON, 1)]))
     } else if (type == BuildingType.TOOLSMITH) {
         new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.IRON, 1)], [new Item(Resource.TOOL, 1)]))
     } else if (type == BuildingType.GOLDSMITH) {
@@ -929,7 +946,7 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
     } else if (type == BuildingType.WINERY) {
         new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.GRAPE, 1)], [new Item(Resource.WINE, 1)]))
     } else if (type == BuildingType.OIL_PRESS) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.OLIVE, 1)], [new Item(Resource.OIL, 1)]))
+        new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.OLIVE, 1)], [new Item(Resource.OIL, 1)]))
     } else if (type == BuildingType.RUM_DISTILLERY) {
         new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.SUGAR_CANE, 1)], [new Item(Resource.RUM, 1)]))
     }

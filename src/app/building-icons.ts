@@ -48,6 +48,8 @@ export const BUILDING_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.BUTCHERY]:              'lucideBone',
     [BuildingType.CIDERY]:                'lucideCupSoda',
     [BuildingType.PANT_SHOP]:       'lucideScissors',
+    [BuildingType.SHIRT_SHOP]:      'lucideShirt',
+    [BuildingType.BOOT_SHOP]:       'lucideFootprints',
     [BuildingType.CIGAR_FACTORY]:         'lucideLeaf',
     [BuildingType.CREAMERY]:              'lucideMilk',
     [BuildingType.POTTERY_SHOP]:          'lucideWeight',
@@ -106,6 +108,8 @@ export const WORKSHOP_PRODUCT_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.BUTCHERY]:           'lucideSandwich',      // sausage
     [BuildingType.CIDERY]:             'lucideBeer',          // cider
     [BuildingType.PANT_SHOP]:    'lucideSparkles',      // pants / cloth
+    [BuildingType.SHIRT_SHOP]:   'lucideShirt',         // shirt
+    [BuildingType.BOOT_SHOP]:    'lucideFootprints',    // boot
     [BuildingType.CIGAR_FACTORY]:      'lucideFlameKindling', // lit cigar
     [BuildingType.CREAMERY]:           'lucideEggFried',      // dairy product
     [BuildingType.POTTERY_SHOP]:       'lucideCookingPot',    // pottery vessel
@@ -191,6 +195,8 @@ const BUILDING_IMAGE_SLUGS: { [key: string]: string } = {
     [BuildingType.BUTCHERY]:              'butchery',
     [BuildingType.CIDERY]:                'cidery',
     [BuildingType.PANT_SHOP]:       'pant-shop',
+    [BuildingType.SHIRT_SHOP]:      'shirt-shop',
+    [BuildingType.BOOT_SHOP]:       'boot-shop',
     [BuildingType.CIGAR_FACTORY]:         'cigar-factory',
     [BuildingType.CREAMERY]:              'creamery',
     [BuildingType.POTTERY_SHOP]:          'pottery-shop',
@@ -249,7 +255,7 @@ const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
     [BuildingType.POTATO_FARM]: 'potato.png',
     [BuildingType.MELON_GARDEN]: 'melon.png',
     [BuildingType.TOMATO_FIELD]: 'tomato.png',
-    [BuildingType.CHICKEN_COOP]: 'egg.png',
+    [BuildingType.CHICKEN_COOP]: 'chicken.png',
     [BuildingType.CORN_FIELD]: 'corn.png',
     [BuildingType.BANANA_PLANTATION]: 'banana.png',
     [BuildingType.ONION_FIELD]: 'onion.png',

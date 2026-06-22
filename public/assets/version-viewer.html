@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Asset Version Viewer</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: sans-serif; background: #1a1a2e; color: #eee; padding: 24px; }
+  h1 { font-size: 1.4rem; margin-bottom: 24px; color: #a0c4ff; }
+  h2 { font-size: 1.1rem; margin: 32px 0 12px; color: #ffd6a5; border-bottom: 1px solid #333; padding-bottom: 6px; }
+  h3 { font-size: 0.85rem; margin: 20px 0 8px; color: #caffbf; }
+  .group { margin-bottom: 8px; }
+  .row { display: flex; flex-wrap: wrap; gap: 16px; }
+  .card {
+    background: #16213e;
+    border: 1px solid #2a2a4a;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 130px;
+  }
+  .card.active { border-color: #a0c4ff; box-shadow: 0 0 0 1px #a0c4ff44; }
+  .card img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    background: #2a2a4a;
+    border-radius: 4px;
+    padding: 4px;
+  }
+  .card .name { font-size: 0.7rem; text-align: center; color: #bbb; word-break: break-all; }
+  .card .badge {
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: #a0c4ff22;
+    color: #a0c4ff;
+  }
+  .card.active .badge { background: #a0c4ff33; color: #a0c4ff; content: "ACTIVE"; }
+  .badge.reserve { background: #ffd6a522; color: #ffd6a5; }
+  .badge.old { background: #ffadad22; color: #ffadad; }
+  .badge.source { background: #b9fbc022; color: #b9fbc0; }
+  .badge.unused { background: #44444422; color: #888; }
+  .badge.latest { background: #caffbf33; color: #caffbf; }
+  .card.latest { border-color: #caffbf; box-shadow: 0 0 0 1px #caffbf44; }
+  .section-note { font-size: 0.75rem; color: #888; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<h1>Asset Version Viewer — Items with Multiple Versions</h1>
+
+<!-- ═══════════════ BUILDING ICONS ═══════════════ -->
+<h2>Building Icons</h2>
+
+<h3>Clinic</h3>
+<div class="row">
+  <div class="card active">
+    <img src="icons/buildings/clinic.png" alt="clinic">
+    <div class="name">clinic.png</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card latest">
+    <img src="icons/buildings/reserve/clinic-v6-slight-bigger.png" alt="clinic-v6">
+    <div class="name">clinic-v6-slight-bigger</div>
+    <div class="badge latest">latest</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/reserve/clinic-v5-slight-bigger.png" alt="clinic-v5">
+    <div class="name">clinic-v5-slight-bigger</div>
+    <div class="badge reserve">reserve</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/reserve/clinic-v4.png" alt="clinic-v4">
+    <div class="name">clinic-v4</div>
+    <div class="badge reserve">reserve</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/reserve/clinic-v3.png" alt="clinic-v3">
+    <div class="name">clinic-v3</div>
+    <div class="badge reserve">reserve</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/reserve/clinic-v3-same-size.png" alt="clinic-v3-same-size">
+    <div class="name">clinic-v3-same-size</div>
+    <div class="badge reserve">reserve</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/reserve/clinic-v2.png" alt="clinic-v2">
+    <div class="name">clinic-v2</div>
+    <div class="badge reserve">reserve</div>
+  </div>
+</div>
+
+<h3>Dock</h3>
+<div class="row">
+  <div class="card active">
+    <img src="icons/buildings/dock.png" alt="dock">
+    <div class="name">dock.png (v4)</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/old_versions/dock-before-v4-swap-20260622.png" alt="dock-old">
+    <div class="name">dock (before v4)</div>
+    <div class="badge old">old version</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/reserve/dock-v3-large-real-ship.png" alt="dock-v3">
+    <div class="name">dock-v3-large-real-ship</div>
+    <div class="badge reserve">reserve</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/reserve/dock-v2-bigger-ship.png" alt="dock-v2">
+    <div class="name">dock-v2-bigger-ship</div>
+    <div class="badge reserve">reserve</div>
+  </div>
+</div>
+
+<h3>Shipyard</h3>
+<div class="row">
+  <div class="card active">
+    <img src="icons/buildings/shipyard.png" alt="shipyard">
+    <div class="name">shipyard.png (v2)</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/old_versions/shipyard-before-v2-swap-20260622.png" alt="shipyard-old">
+    <div class="name">shipyard (before v2)</div>
+    <div class="badge old">old version</div>
+  </div>
+</div>
+
+<h3>Engineer Station</h3>
+<div class="row">
+  <div class="card active">
+    <img src="icons/buildings/engineer-station.png" alt="engineer-station">
+    <div class="name">engineer-station.png</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card latest">
+    <img src="icons/buildings/reserve/engineer-station-v3-tools-same-size.png" alt="engineer-station-v3">
+    <div class="name">engineer-station-v3-tools</div>
+    <div class="badge latest">latest</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/reserve/engineer-station-v2.png" alt="engineer-station-v2">
+    <div class="name">engineer-station-v2</div>
+    <div class="badge reserve">reserve</div>
+  </div>
+</div>
+
+<h3>Police Station</h3>
+<div class="row">
+  <div class="card active">
+    <img src="icons/buildings/police-station.png" alt="police-station">
+    <div class="name">police-station.png</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/reserve/police-station-v1.png" alt="police-station-v1">
+    <div class="name">police-station-v1</div>
+    <div class="badge reserve">reserve</div>
+  </div>
+</div>
+
+<h3>Road</h3>
+<div class="row">
+  <div class="card active">
+    <img src="icons/buildings/road.png" alt="road">
+    <div class="name">road.png</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/old_versions/road-before-long-curb-20260621-210711.png" alt="road-long-curb">
+    <div class="name">before-long-curb</div>
+    <div class="badge old">old version</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/old_versions/road-before-cobble-20260621-213614.png" alt="road-cobble">
+    <div class="name">before-cobble</div>
+    <div class="badge old">old version</div>
+  </div>
+</div>
+
+<h3>Delete Tool</h3>
+<div class="row">
+  <div class="card active">
+    <img src="icons/buildings/delete.png" alt="delete">
+    <div class="name">delete.png</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/old_versions/delete-before-clean-shovel-20260621-210910.png" alt="delete-old">
+    <div class="name">before-clean-shovel</div>
+    <div class="badge old">old version</div>
+  </div>
+</div>
+
+<!-- ═══════════════ RESOURCE ICONS ═══════════════ -->
+<h2>Resource Icons</h2>
+
+<h3>Wine</h3>
+<div class="row">
+  <div class="card active">
+    <img src="resource-icons-cute-64/wine.png" alt="wine">
+    <div class="name">wine.png</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card">
+    <img src="resource-icons-cute-64/reserve/wine-v1.png" alt="wine-v1">
+    <div class="name">wine-v1</div>
+    <div class="badge reserve">reserve</div>
+  </div>
+  <div class="card">
+    <img src="resource-icons-cute-64/sources/wine-barrel-v2.png" alt="wine-barrel-v2">
+    <div class="name">wine-barrel-v2</div>
+    <div class="badge source">source</div>
+  </div>
+  <div class="card">
+    <img src="resource-icons-cute-64/sources/wine-barrel-v3.png" alt="wine-barrel-v3">
+    <div class="name">wine-barrel-v3</div>
+    <div class="badge source">source</div>
+  </div>
+</div>
+
+<h3>Oil</h3>
+<div class="row">
+  <div class="card active">
+    <img src="resource-icons-cute-64/oil.png" alt="oil">
+    <div class="name">oil.png</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card latest">
+    <img src="resource-icons-cute-64/reserve/oil-v1.png" alt="oil-v1">
+    <div class="name">oil-v1</div>
+    <div class="badge latest">latest</div>
+  </div>
+  <div class="card">
+    <img src="resource-icons-cute-64/reserve/oil-v2.png" alt="oil-v2">
+    <div class="name">oil-v2</div>
+    <div class="badge reserve">reserve</div>
+  </div>
+  <div class="card">
+    <img src="resource-icons-cute-64/sources/olive-oil-jug-v2.png" alt="olive-oil-jug-v2">
+    <div class="name">olive-oil-jug-v2</div>
+    <div class="badge source">source</div>
+  </div>
+  <div class="card">
+    <img src="resource-icons-cute-64/sources/olive-oil-jug-v3.png" alt="olive-oil-jug-v3">
+    <div class="name">olive-oil-jug-v3</div>
+    <div class="badge source">source</div>
+  </div>
+</div>
+
+<h3>Pottery</h3>
+<div class="row">
+  <div class="card active">
+    <img src="resource-icons-cute-64/pottery.png" alt="pottery">
+    <div class="name">pottery.png</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card">
+    <img src="resource-icons-cute-64/reserve/pottery-v1.png" alt="pottery-v1">
+    <div class="name">pottery-v1</div>
+    <div class="badge reserve">reserve</div>
+  </div>
+  <div class="card">
+    <img src="resource-icons-cute-64/sources/pottery-household-v2.png" alt="pottery-household-v2">
+    <div class="name">pottery-household-v2</div>
+    <div class="badge source">source</div>
+  </div>
+</div>
+
+<h3>Egg</h3>
+<div class="row">
+  <div class="card active">
+    <img src="resource-icons-cute-64/egg.png" alt="egg">
+    <div class="name">egg.png</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card">
+    <img src="resource-icons-cute-64/reserve/egg-v1.png" alt="egg-v1">
+    <div class="name">egg-v1</div>
+    <div class="badge reserve">reserve</div>
+  </div>
+  <div class="card">
+    <img src="resource-icons-cute-64/sources/egg-basket-v2.png" alt="egg-basket-v2">
+    <div class="name">egg-basket-v2</div>
+    <div class="badge source">source</div>
+  </div>
+</div>
+
+<h3>Fish</h3>
+<div class="row">
+  <div class="card active">
+    <img src="resource-icons-cute-64/fish.png" alt="fish">
+    <div class="name">fish.png</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card">
+    <img src="resource-icons-cute-64/sources/fish-caught-v2.png" alt="fish-caught-v2">
+    <div class="name">fish-caught-v2</div>
+    <div class="badge source">source</div>
+  </div>
+</div>
+
+<h3>Pant</h3>
+<div class="row">
+  <div class="card active">
+    <img src="resource-icons-cute-64/pant.png" alt="pant">
+    <div class="name">pant.png</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card">
+    <img src="resource-icons-cute-64/sources/pant-blue-v2.png" alt="pant-blue-v2">
+    <div class="name">pant-blue-v2</div>
+    <div class="badge source">source</div>
+  </div>
+</div>
+
+<h3>Clam <span style="font-size:0.7rem;color:#888">(reserve candidate, not active)</span></h3>
+<div class="row">
+  <div class="card">
+    <img src="resource-icons-cute-64/reserve/clam.png" alt="clam-reserve">
+    <div class="name">clam (reserve)</div>
+    <div class="badge reserve">reserve</div>
+  </div>
+  <div class="card">
+    <img src="resource-icons-cute-64/sources/clam.png" alt="clam-source">
+    <div class="name">clam (source)</div>
+    <div class="badge source">source</div>
+  </div>
+</div>
+
+<h3>Hand Push Cart <span style="font-size:0.7rem;color:#888">(reserve candidate, not active)</span></h3>
+<div class="row">
+  <div class="card">
+    <img src="resource-icons-cute-64/reserve/hand-push-cart.png" alt="hand-push-cart-reserve">
+    <div class="name">hand-push-cart (reserve)</div>
+    <div class="badge reserve">reserve</div>
+  </div>
+  <div class="card">
+    <img src="resource-icons-cute-64/sources/hand-push-cart.png" alt="hand-push-cart-source">
+    <div class="name">hand-push-cart (source)</div>
+    <div class="badge source">source</div>
+  </div>
+</div>
+
+<!-- ═══════════════ POPULATION ═══════════════ -->
+<h2>Population — Entrepreneur (only character with alternate)</h2>
+
+<h3>Full Body</h3>
+<div class="row">
+  <div class="card active">
+    <img src="population/entrepreneur.png" alt="entrepreneur">
+    <div class="name">entrepreneur.png</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card latest">
+    <img src="population/entrepreneur-older.png" alt="entrepreneur-older">
+    <div class="name">entrepreneur-older</div>
+    <div class="badge latest">latest</div>
+  </div>
+</div>
+
+<h3>Bust / Portrait</h3>
+<div class="row">
+  <div class="card active">
+    <img src="population/busts/entrepreneur-bust.png" alt="entrepreneur-bust">
+    <div class="name">entrepreneur-bust.png</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card latest">
+    <img src="population/busts/entrepreneur-bust-older.png" alt="entrepreneur-bust-older">
+    <div class="name">entrepreneur-bust-older</div>
+    <div class="badge latest">latest</div>
+  </div>
+</div>
+
+<!-- ═══════════════ MAP TILES ═══════════════ -->
+<h2>Map Tiles — 48px (active) vs 64px (legacy)</h2>
+<p class="section-note">Both sets have the same four tiles. 48px is used in-game; 64px was generated earlier.</p>
+
+<h3>Grass</h3>
+<div class="row">
+  <div class="card active">
+    <img src="map-tiles-cute-48/grass.png" alt="grass-48">
+    <div class="name">grass (48px)</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card">
+    <img src="map-tiles-cute-64/grass.png" alt="grass-64">
+    <div class="name">grass (64px)</div>
+    <div class="badge old">legacy</div>
+  </div>
+  <div class="card">
+    <img src="map-tiles-cute-48/old_versions/grass-before-less-saturated-20260621-204054.png" alt="grass-old">
+    <div class="name">before-less-saturated</div>
+    <div class="badge old">old version</div>
+  </div>
+</div>
+
+<h3>Sand</h3>
+<div class="row">
+  <div class="card active">
+    <img src="map-tiles-cute-48/sand.png" alt="sand-48">
+    <div class="name">sand (48px)</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card">
+    <img src="map-tiles-cute-64/sand.png" alt="sand-64">
+    <div class="name">sand (64px)</div>
+    <div class="badge old">legacy</div>
+  </div>
+</div>
+
+<h3>Sea</h3>
+<div class="row">
+  <div class="card active">
+    <img src="map-tiles-cute-48/sea.png" alt="sea-48">
+    <div class="name">sea (48px)</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card">
+    <img src="map-tiles-cute-64/sea.png" alt="sea-64">
+    <div class="name">sea (64px)</div>
+    <div class="badge old">legacy</div>
+  </div>
+</div>
+
+<h3>Cobblestone Road</h3>
+<div class="row">
+  <div class="card active">
+    <img src="map-tiles-cute-48/cobblestone-road.png" alt="cobblestone-48">
+    <div class="name">cobblestone-road (48px)</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card">
+    <img src="map-tiles-cute-64/cobblestone-road.png" alt="cobblestone-64">
+    <div class="name">cobblestone-road (64px)</div>
+    <div class="badge old">legacy</div>
+  </div>
+</div>
+
+<!-- ═══════════════ TERRAIN OBJECTS ═══════════════ -->
+<h2>Terrain Objects</h2>
+
+<h3>Rock</h3>
+<div class="row">
+  <div class="card active">
+    <img src="terrain-objects-cute-48/rock.png" alt="rock">
+    <div class="name">rock.png</div>
+    <div class="badge">ACTIVE</div>
+  </div>
+  <div class="card">
+    <img src="terrain-objects-cute-48/old_versions/rock-before-bigger-20260621-205036.png" alt="rock-old">
+    <div class="name">before-bigger</div>
+    <div class="badge old">old version</div>
+  </div>
+</div>
+
+</body>
+</html>

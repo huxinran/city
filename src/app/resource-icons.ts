@@ -88,6 +88,7 @@ const RESOURCE_EMOJI: { [key: string]: string } = {
   [Resource.POTATO]:     '🥔', [Resource.POTTERY]:    '🏺', [Resource.PUMPKIN]:    '🎃',
   [Resource.RICE]:       '🍚', [Resource.RUBBER]:     '🌴', [Resource.RUM]:        '🥃',
   [Resource.SALT]:       '🧂', [Resource.SAND]:       '🏜️', [Resource.SAUSAGE]:    '🌭',
+  [Resource.SHIRT]:      '👕', [Resource.BOOT]:       '👢',
   [Resource.SLATE]:      '🪨', [Resource.SOYBEAN]:    '🫘', [Resource.STATUE]:     '🗿',
   [Resource.STEEL]:      '⚒️', [Resource.STONE]:      '🪨', [Resource.SUGAR_CANE]: '🍬',
   [Resource.TIMBER]:     '🪵', [Resource.TOBACCO]:    '🌿', [Resource.TOMATO]:     '🍅',

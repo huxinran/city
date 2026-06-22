@@ -80,3 +80,9 @@
   - Saved path: `public/assets/icons/buildings/dock-v4-with-3-mast-ship.png`
   - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019eed85-ad70-76f0-b90e-7f2011969d0c/ig_0cc251f1d0ad4dcb016a39566651b08197823ca36a5502a78b.png`
   - Notes: saved as generated; dock site with dock house, cargo platform, crane hook, crates/barrels, and a prominent three-mast wooden merchant ship matching `ship-3-mast.png`. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `farm-3x3-fields-v1.png`
+  - Request: create a farm icon imagined as a 3x3 footprint, with the top-left 2x2 as farmhouse and the rest as crop fields, with side fences.
+  - Saved path: `public/assets/icons/buildings/farm-3x3-fields-v1.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019eed85-ad70-76f0-b90e-7f2011969d0c/ig_055b6d67d795d512016a399c85f78c819093436e239bc96f61.png`
+  - Notes: saved as generated; farmhouse, wheat/cabbage/root crop fields, and surrounding fence. No background cleanup, app mapping, runtime manifest wiring, or code integration.
