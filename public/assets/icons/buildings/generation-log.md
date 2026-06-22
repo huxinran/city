@@ -86,3 +86,75 @@
   - Saved path: `public/assets/icons/buildings/farm-3x3-fields-v1.png`
   - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019eed85-ad70-76f0-b90e-7f2011969d0c/ig_055b6d67d795d512016a399c85f78c819093436e239bc96f61.png`
   - Notes: saved as generated; farmhouse, wheat/cabbage/root crop fields, and surrounding fence. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `farm-3x3-empty-fields-v2.png`
+  - Request: make farm read as 3x3 with a larger house area, and remove crops so fields are empty for later overlay.
+  - Saved path: `public/assets/icons/buildings/farm-3x3-empty-fields-v2.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019eed85-ad70-76f0-b90e-7f2011969d0c/ig_09bd3515b295e76f016a399f0242d08193b91e975fa2d534c8.png`
+  - Notes: saved as generated; empty tilled fields and fences. House is larger than v1 but may still need a stricter top-left 2x2 footprint. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `farm-3x3-plain-field-v3.png`
+  - Request: make the field take the entire space as much as possible, fill the edges, keep the house in the current top-left location, and remove grass divider lines.
+  - Saved path: `public/assets/icons/buildings/farm-3x3-plain-field-v3.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019eed85-ad70-76f0-b90e-7f2011969d0c/ig_051c3642d350a6f7016a39a16c1d308194800485ae57b34ad0.png`
+  - Notes: saved as generated; plain continuous tilled field to the plot edges, farmhouse top-left, perimeter fence, no crops, no internal grass divider lines. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `farm-3x3-large-field-v4.png`
+  - Request: keep v3 direction but make the field bigger for tile-map placement.
+  - Saved path: `public/assets/icons/buildings/farm-3x3-large-field-v4.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019eed85-ad70-76f0-b90e-7f2011969d0c/ig_00c29918068ff8e4016a39a4268c308195be69181cd6b4bc7b.png`
+  - Notes: saved as generated; larger plain tilled field footprint with farmhouse in top-left and perimeter fence. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `animal-farm-3x3-pasture-v1.png`
+  - Request: follow farm v4 proportions and create an animal farm variant with grassland base, distinct house design and roof color, and the same overall proportion.
+  - Saved path: `public/assets/icons/buildings/animal-farm-3x3-pasture-v1.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019eed85-ad70-76f0-b90e-7f2011969d0c/ig_06f30f9a48a118a3016a39a7d7d55081948eb5c1e6f8575d51.png`
+  - Notes: saved as generated; pasture/grassland footprint, fenced sides, and barn-like farmhouse with distinct muted red roof. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `animal-farm-3x3-pasture-v2.png`
+  - Request: revise animal farm to match farm v4 tile-map orientation, make the barn smaller, and remove the top structure.
+  - Saved path: `public/assets/icons/buildings/animal-farm-3x3-pasture-v2.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019eed85-ad70-76f0-b90e-7f2011969d0c/ig_07067198c4e8b085016a39a8a258788194add09e97ef3ebe49.png`
+  - Notes: saved as generated; grass pasture base, compact barn/farmhouse, same intended 3x3 tile-map orientation as farm v4, no tower/chimney/top structure. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `animal-farm-3x3-pasture-v3-square.png`
+  - Request: make the animal farm square for tile-map placement and remove the appearance of depth.
+  - Saved path: `public/assets/icons/buildings/animal-farm-3x3-pasture-v3-square.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019eed85-ad70-76f0-b90e-7f2011969d0c/ig_0d9ce2cceb0236d1016a39a9b9e9d881909c5d438ed772efbc.png`
+  - Notes: saved as generated; flatter square grass pasture footprint, compact barn/farmhouse, perimeter fence, and reduced/excluded platform depth. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `grassland-barn-farm-3x3-v1.png`
+  - Request: create a 3x3 farm with the top-left 2x2 as a barn, grassland fields surrounding it, and fences on the sides.
+  - Saved path: `public/assets/icons/buildings/grassland-barn-farm-3x3-v1.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019eed85-ad70-76f0-b90e-7f2011969d0c/ig_0e91277755006563016a39aa7aa33c81938a90413e085c605a.png`
+  - Notes: saved as generated; square grassland 3x3 farm plot, barn/farmhouse in top-left 2x2 area, and rustic side/perimeter fencing. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `grassland-barn-farm-3x3-v2.png`
+  - Request: revise the 3x3 barn farm by removing crops from the field, filling the field with grass, and improving the barn spacing.
+  - Saved path: `public/assets/icons/buildings/grassland-barn-farm-3x3-v2.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_02ec96a7848d7493016a39ac0f40d0819689c0827fe96a91ea.png`
+  - Notes: saved as generated; grass-only 3x3 pasture/field around a barn in the top-left footprint, with rustic side and bottom fencing. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `grassland-barn-farm-3x3-v3.png`
+  - Request: make the barn smaller, make the grass field bigger, and wrap the fence around the whole 3x3 farm.
+  - Saved path: `public/assets/icons/buildings/grassland-barn-farm-3x3-v3.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_09322a4bf019c4e4016a39aca1af8481948f3d01278e1d126f.png`
+  - Notes: saved as generated; compact barn tucked in the upper-left, large open grass field, and full perimeter wooden fence with a small bottom gate. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `plowed-barn-farm-3x3-reference-v1.png`
+  - Request: use `C:/Users/Xinran/Downloads/Generated image 4.png` as a reference for the barn farm composition.
+  - Saved path: `public/assets/icons/buildings/plowed-barn-farm-3x3-reference-v1.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_06a6711a94a4e649016a39aeddd3a88193913added1e6e0232.png`
+  - Notes: saved as generated; larger barn anchored in the upper-left, broad uninterrupted plowed field, full perimeter fence, and centered bottom gate inspired by the provided reference. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `workshop-2x2-stone-yard-v1.png`
+  - Request: create one 2x2 workshop footprint with the top-left 1x1 as the workshop, the other tiles as stone/concrete floor, and short side walls.
+  - Saved path: `public/assets/icons/buildings/workshop-2x2-stone-yard-v1.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_000cabda96aef1fe016a39b0328b88819684e2ce6296ed7891.png`
+  - Notes: saved as generated; rustic workshop anchored in the upper-left, open stone paver yard on the remaining 2x2 footprint, and short low stone/wood boundary walls on the sides. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `workshop-2x2-reference-v1.png`
+  - Request: use `C:/Users/Xinran/Downloads/Generated image 3.png` as a reference for a 2x2 workshop footprint.
+  - Saved path: `public/assets/icons/buildings/workshop-2x2-reference-v1.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_0a56c5e302cffd8d016a39b12905d081938d63e077738c39ba.png`
+  - Notes: saved as generated; golden-roof workshop anchored in the upper-left, open stone/concrete paver yard filling the remaining footprint, low perimeter stone/wood walls, and bottom gate inspired by the provided reference. No background cleanup, app mapping, runtime manifest wiring, or code integration.
