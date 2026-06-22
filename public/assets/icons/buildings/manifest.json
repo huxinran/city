@@ -1,22 +1,87 @@
 {
-    "tileSize":  64,
-    "style":  "cute cartoon-ish high-detail pixel art building menu icons on clean white background",
-    "note":  "Dedicated build-palette icons. Generated originals remain in Codex generated_images.",
-    "icons":  [
-                  {
-                      "name":  "road",
-                      "building":  "Road",
-                      "file":  "assets/icons/buildings/road.png"
-                  },
-                  {
-                      "name":  "warehouse",
-                      "building":  "Warehouse",
-                      "file":  "assets/icons/buildings/warehouse.png"
-                  },
-                  {
-                      "name":  "delete",
-                      "building":  "Delete",
-                      "file":  "assets/icons/buildings/delete.png"
-                  }
-              ]
+    "tileSize": 64,
+    "style": "cute cartoon-ish high-detail pixel art building menu icons on clean white background",
+    "note": "Dedicated build-palette icons. Generated originals remain in Codex generated_images.",
+    "icons": [
+        {
+            "name": "road",
+            "building": "Road",
+            "file": "assets/icons/buildings/road.png"
+        },
+        {
+            "name": "warehouse",
+            "building": "Warehouse",
+            "file": "assets/icons/buildings/warehouse.png"
+        },
+        {
+            "name": "delete",
+            "building": "Delete",
+            "file": "assets/icons/buildings/delete.png"
+        },
+        {
+            "name": "well",
+            "building": "Well",
+            "file": "assets/icons/buildings/well.png"
+        },
+        {
+            "name": "fire-station",
+            "building": "Fire Station",
+            "file": "assets/icons/buildings/fire-station.png"
+        },
+        {
+            "name": "police-station",
+            "building": "Police Station",
+            "file": "assets/icons/buildings/police-station.png"
+        },
+        {
+            "name": "school",
+            "building": "School",
+            "file": "assets/icons/buildings/school.png"
+        },
+        {
+            "name": "marketplace",
+            "building": "Marketplace",
+            "file": "assets/icons/buildings/marketplace.png"
+        },
+        {
+            "name": "tavern",
+            "building": "Tavern",
+            "file": "assets/icons/buildings/tavern.png"
+        },
+        {
+            "name": "chapel",
+            "building": "Chapel",
+            "file": "assets/icons/buildings/chapel.png"
+        },
+        {
+            "name": "police-station-v2",
+            "building": "Police Station",
+            "file": "assets/icons/buildings/police-station-v2.png"
+        },
+        {
+            "name": "courthouse",
+            "building": "Courthouse",
+            "file": "assets/icons/buildings/courthouse.png"
+        },
+        {
+            "name": "clinic",
+            "building": "Clinic",
+            "file": "assets/icons/buildings/clinic.png"
+        },
+        {
+            "name": "clinic-v2",
+            "building": "Clinic",
+            "file": "assets/icons/buildings/clinic-v2.png"
+        },
+        {
+            "name": "engineer-station",
+            "building": "Engineer Station",
+            "file": "assets/icons/buildings/engineer-station.png"
+        },
+        {
+            "name": "clinic-v3",
+            "building": "Clinic",
+            "file": "assets/icons/buildings/clinic-v3.png"
+        }
+    ]
 }
