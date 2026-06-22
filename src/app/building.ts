@@ -12,6 +12,7 @@ const SMALL_BUILDINGS = new Set<BuildingType>([
     BuildingType.SCHOOL, BuildingType.SHIPYARD, BuildingType.DOCK,
     BuildingType.FISHERY,
     BuildingType.MARKETPLACE, BuildingType.TAVERN, BuildingType.CHAPEL,
+    BuildingType.CLINIC, BuildingType.COURTHOUSE, BuildingType.ENGINEER_STATION,
 ])
 const MEDIUM_BUILDINGS = new Set<BuildingType>([
     BuildingType.WAREHOUSE,
@@ -73,6 +74,9 @@ export function GetBuildingGoldCost(type: BuildingType): number {
         case BuildingType.MARKETPLACE:    return 120
         case BuildingType.TAVERN:         return 150
         case BuildingType.CHAPEL:         return 250
+        case BuildingType.CLINIC:         return 150
+        case BuildingType.COURTHOUSE:     return 200
+        case BuildingType.ENGINEER_STATION: return 200
         case BuildingType.WAREHOUSE:      return 150
         case BuildingType.DOCK:           return 200
         case BuildingType.SHIPYARD:       return 300
@@ -97,6 +101,9 @@ const SERVICE_UNLOCK_TIER: { [key in ServiceType]: number } = {
     [ServiceType.SCHOOL]: 4,
     [ServiceType.TAVERN]: 5,
     [ServiceType.CHURCH]: 6,
+    [ServiceType.HEALTH]:  3,
+    [ServiceType.JUSTICE]: 4,
+    [ServiceType.ENGINEER]: 5,
 }
 
 // Resource -> earliest tier that requires it. Seeded from the needs/upgrade
@@ -271,6 +278,9 @@ const NO_ROAD_BUILDINGS = new Set<BuildingType>([
     BuildingType.MARKETPLACE,
     BuildingType.TAVERN,
     BuildingType.CHAPEL,
+    BuildingType.CLINIC,
+    BuildingType.COURTHOUSE,
+    BuildingType.ENGINEER_STATION,
     BuildingType.DELETE,
 ])
 
@@ -323,6 +333,7 @@ export const BUILDING_ICONS: { [key: string]: string } = {
     [BuildingType.SCHOOL]: '📜',     [BuildingType.WAREHOUSE]: '📦',
     [BuildingType.MARKETPLACE]: '🏪', [BuildingType.TAVERN]: '🍺',
     [BuildingType.CHAPEL]: '⛪',
+    [BuildingType.CLINIC]: '🏥', [BuildingType.COURTHOUSE]: '⚖️', [BuildingType.ENGINEER_STATION]: '🔧',
     [BuildingType.SHIPYARD]: '⚓',   [BuildingType.DOCK]: '⛵',
     [BuildingType.ROAD]: '🛣️',
     [BuildingType.DELETE]: '🗑️',
@@ -746,9 +757,9 @@ export function GetServiceNeed(tier: number) {
     const services: ServiceType[] = []
     if (tier >= 1) services.push(ServiceType.WATER)
     if (tier >= 2) services.push(ServiceType.MARKET)
-    if (tier >= 3) services.push(ServiceType.FIRE, ServiceType.POLICE)
-    if (tier >= 4) services.push(ServiceType.SCHOOL)
-    if (tier >= 5) services.push(ServiceType.TAVERN)
+    if (tier >= 3) services.push(ServiceType.FIRE, ServiceType.POLICE, ServiceType.HEALTH)
+    if (tier >= 4) services.push(ServiceType.SCHOOL, ServiceType.JUSTICE)
+    if (tier >= 5) services.push(ServiceType.TAVERN, ServiceType.ENGINEER)
     if (tier >= 6) services.push(ServiceType.CHURCH)
     return services.map(s => new ServiceNeed(s))
 }
@@ -814,6 +825,12 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
         new_building = new Building(type, [new Item(Resource.TIMBER, 30)], undefined, undefined, new Service(ServiceType.TAVERN, 12))
     } else if (type == BuildingType.CHAPEL) {
         new_building = new Building(type, [new Item(Resource.STONE, 40)], undefined, undefined, new Service(ServiceType.CHURCH, 14))
+    } else if (type == BuildingType.CLINIC) {
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, undefined, new Service(ServiceType.HEALTH, 12))
+    } else if (type == BuildingType.COURTHOUSE) {
+        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, undefined, new Service(ServiceType.JUSTICE, 14))
+    } else if (type == BuildingType.ENGINEER_STATION) {
+        new_building = new Building(type, [new Item(Resource.STEEL, 20)], undefined, undefined, new Service(ServiceType.ENGINEER, 14))
     } else if (type == BuildingType.WAREHOUSE) {
         new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, undefined, undefined, new Warehouse())
     } else if (type == BuildingType.SHIPYARD) {

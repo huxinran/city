@@ -99,6 +99,9 @@ export enum ServiceType {
     MARKET = "Market",
     TAVERN = "Tavern",
     CHURCH = "Church",
+    HEALTH = "Health",
+    JUSTICE = "Justice",
+    ENGINEER = "Engineering",
 }
 
 export enum ProductionStatus {
@@ -189,6 +192,9 @@ export enum BuildingType {
     MARKETPLACE = "Marketplace",
     TAVERN = "Tavern",
     CHAPEL = "Chapel",
+    CLINIC = "Clinic",
+    COURTHOUSE = "Courthouse",
+    ENGINEER_STATION = "Engineer Station",
     WAREHOUSE = "Warehouse",
     SHIPYARD = "Shipyard",
     DOCK = "Dock",
