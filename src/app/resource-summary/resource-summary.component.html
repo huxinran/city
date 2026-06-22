@@ -1,15 +1,13 @@
 <div class="panel">
-  <div class="panel-title">Resources</div>
   <div class="res-grid">
     @for (item of items(); track item.type) {
       @if (item.num > 0) {
-        <div class="res">
-          <div class="res-head">
-            @if (iconSrc(item.type); as src) {
-              <img class="res-icon" [src]="src" [alt]="item.type">
-            }
+        <div class="res" [title]="item.type">
+          @if (iconSrc(item.type); as src) {
+            <img class="res-icon" [src]="src" [alt]="item.type">
+          } @else {
             <span class="res-name">{{item.type}}</span>
-          </div>
+          }
           <span class="res-cnt">{{item.num | number: '1.0-0'}}</span>
         </div>
       }

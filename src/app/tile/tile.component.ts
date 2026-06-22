@@ -9,13 +9,14 @@ import { GetBuildingIconSrc } from '../building-icons'
 import { IconComponent } from '../icon/icon.component'
 
 const MAP_TILE_ASSETS: { [key: string]: { file: string, color: string } } = {
-  [Terrain.WATER]: { file: 'sea.png', color: '#4ba6d4' },
-  [Terrain.GRASS]: { file: 'grass.png', color: '#8ec96a' },
-  [Terrain.SAND]:  { file: 'sand.png', color: '#f0dd99' },
+  [Terrain.WATER]: { file: 'sea.png', color: '#47c9ff' },
+  [Terrain.GRASS]: { file: 'grass.png', color: '#a9d86b' },
+  [Terrain.SAND]:  { file: 'sand.png', color: '#ffe48b' },
 }
 
-const MAP_TILE_BASE = 'assets/map-tiles-cute-64/'
+const MAP_TILE_BASE = 'assets/map-tiles-cute-48/'
 const ROAD_TILE_ASSET = MAP_TILE_BASE + 'cobblestone-road.png'
+const TERRAIN_OBJECT_BASE = 'assets/terrain-objects-cute-48/'
 
 @Component({
   selector: 'app-tile',
@@ -44,6 +45,10 @@ export class TileComponent {
   get isWorkshop(): boolean {
     let type = this.tile.building?.type
     return type != undefined && IsWorkshopBuilding(type)
+  }
+
+  get isWarehouse(): boolean {
+    return this.tile.building?.type == BuildingType.WAREHOUSE
   }
 
 
@@ -75,6 +80,18 @@ export class TileComponent {
     let feature_type = this.state.state.feature_type
 
     if (building_type) {
+      // Clicking an occupied tile while a non-delete build tool is active:
+      // clear the selection and focus the existing building instead.
+      if (building_type !== BuildingType.DELETE) {
+        let anchor = this.tile.covered
+          ? this.state.GetTile(city, this.tile.anchor_i, this.tile.anchor_j)
+          : this.tile
+        if (anchor.building) {
+          this.state.ClearSelection()
+          city.focus_tile = anchor
+          return
+        }
+      }
       this.state.ApplyBuild(this.tile)
       return
     }
@@ -137,6 +154,12 @@ export class TileComponent {
     return !this.tile.building && !this.tile.covered && this.tile.feature == Feature.ROCK
   }
 
+  public get terrainFeatureSrc(): string | undefined {
+    if (this.isFeatureTree) return TERRAIN_OBJECT_BASE + 'tree.png'
+    if (this.isFeatureRock) return TERRAIN_OBJECT_BASE + 'rock.png'
+    return undefined
+  }
+
   // Scales the icon with building footprint size.
   public get iconSize(): string {
     return `${this.size * 14 + 8}px`
@@ -191,7 +214,7 @@ export class TileComponent {
       this._buildingKey = key
       this._buildingStyle = key == BuildingType.ROAD
         ? {
-            'background-color': '#8f897d',
+            'background-color': '#b9b3a4',
             'background-image': `url("${ROAD_TILE_ASSET}")`,
             'background-size': '100% 100%',
             'background-repeat': 'no-repeat',
@@ -202,3 +225,4 @@ export class TileComponent {
     return this._buildingStyle
   }
 }
+

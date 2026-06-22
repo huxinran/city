@@ -1,5 +1,15 @@
 <div class="statusbar">
-    <span class="city">{{state.state.current_city!.name}}</span>
+    <span class="city-wrap">
+        <button class="city" (click)="toggleCities()">{{state.state.current_city!.name}} ▾</button>
+        @if (citiesOpen()) {
+            <div class="city-backdrop" (click)="closeCities()"></div>
+            <div class="city-menu">
+                @for (c of state.state.cities; track c.name) {
+                    <button class="city-item" [class.active]="c === state.state.current_city" (click)="selectCity(c.name)">{{c.name}}</button>
+                }
+            </div>
+        }
+    </span>
     @for (tier of state.state.current_city!.population.tiers; track $index) {
         <span class="stat" [title]="tier.tier">
             <img class="resident-icon" [src]="icon(tier.tier)" [alt]="tier.tier">
@@ -10,8 +20,10 @@
         <span class="k">💰</span>
         <span class="v gold">{{state.state.gold | number: '1.0-0'}}</span>
     </span>
-    <span class="stat">
-        <span class="k">🏛️ {{state.state.tax_rate * 100 | number: '1.0-0'}}%</span>
-        <span class="v gold">+{{state.TaxIncome(state.state.current_city!) | number: '1.0-2'}}</span>
-    </span>
+    @for (m of materials; track m.type) {
+        <span class="stat" [title]="m.type">
+            <span class="k">{{m.icon}}</span>
+            <span class="v">{{count(m.type) | number: '1.0-0'}}</span>
+        </span>
+    }
 </div>

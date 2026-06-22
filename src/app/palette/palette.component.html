@@ -1,34 +1,88 @@
 <div class="palette">
-  <div class="palette-title">Build</div>
-  <div class="hint">Drag onto the map, or click then tap a tile.</div>
+
 
   @for (group of groups; track group.name) {
     <div class="group">
-      <div class="group-title">{{group.name}}</div>
-      <div class="icons">
-        @for (type of group.items; track $index) {
-          <button class="pal-icon" [class.sel]="isSelected(type)"
-                  draggable="true"
-                  (dragstart)="onDragStart(type)" (dragend)="onDragEnd()"
-                  (click)="select(type)" [title]="type">
-              <div class="pal-icon-slot">
-                <app-icon [src]="iconSrc(type)" [fallback]="iconName(type)" [alt]="type" [size]="24"></app-icon>
-              </div>
-          </button>
+      <div class="group-title" [class.clickable]="group.name !== 'Basics'" (click)="toggleGroup(group.name)">
+        @if (group.name !== 'Basics') {
+          <span class="caret">{{ isCollapsed(group.name) ? '▸' : '▾' }}</span>
         }
+        {{group.name}}
       </div>
+      @if (!isCollapsed(group.name)) {
+        <div class="icons">
+          @for (type of group.items; track $index) {
+            <button class="pal-icon" [class.sel]="isSelected(type)" [class.danger]="type === Delete"
+                    draggable="true"
+                    (dragstart)="onDragStart(type)" (dragend)="onDragEnd()"
+                    (click)="select(type)"
+                    (mouseenter)="show(type, $event)" (mouseleave)="hide()">
+                <div class="pal-icon-slot">
+                  <app-icon [src]="iconSrc(type)" [fallback]="iconName(type)" [alt]="type" [size]="44"></app-icon>
+                </div>
+            </button>
+          }
+        </div>
+      }
     </div>
   }
 
-  <div class="group">
-    <div class="group-title">Tools</div>
-    <div class="icons">
-      <button class="pal-icon danger" [class.sel]="isSelected(Delete)"
-              draggable="true"
-              (dragstart)="onDragStart(Delete)" (dragend)="onDragEnd()"
-              (click)="select(Delete)" title="Delete">
-        <span class="pal-emoji">🗑️</span>
-      </button>
-    </div>
-  </div>
 </div>
+
+@if (hovered && info(hovered); as inf) {
+  <div class="build-tip" [style.left.px]="tipX" [style.top.px]="tipY">
+    <div class="tip-name">{{hovered}}</div>
+    @if (inf.gold || inf.worker) {
+      <div class="tip-meta">
+        @if (inf.gold) {
+          <span class="tip-item">💰 {{inf.gold}}</span>
+        }
+        @if (inf.worker) {
+          <span class="tip-item" [title]="inf.worker">
+            <img class="tip-worker" [src]="workerIcon(inf.worker)" [alt]="inf.worker">
+            ×{{inf.workerNeeded}}
+          </span>
+        }
+      </div>
+    }
+    @if (inf.cost.length) {
+      <div class="tip-row">
+        <span class="tip-label">Cost</span>
+        <span class="tip-val">
+          @for (it of inf.cost; track $index) {
+            <span class="tip-item">
+              <app-icon [src]="resSrc(it.type)" [fallback]="resEmoji(it.type)" [alt]="it.type" [size]="18"></app-icon>
+              {{it.num}}
+            </span>
+          }
+        </span>
+      </div>
+    }
+    @if (inf.ingredient.length) {
+      <div class="tip-row">
+        <span class="tip-label">Needs</span>
+        <span class="tip-val">
+          @for (it of inf.ingredient; track $index) {
+            <span class="tip-item">
+              <app-icon [src]="resSrc(it.type)" [fallback]="resEmoji(it.type)" [alt]="it.type" [size]="18"></app-icon>
+              {{it.num}}
+            </span>
+          }
+        </span>
+      </div>
+    }
+    @if (inf.product.length) {
+      <div class="tip-row">
+        <span class="tip-label">Makes</span>
+        <span class="tip-val">
+          @for (it of inf.product; track $index) {
+            <span class="tip-item">
+              <app-icon [src]="resSrc(it.type)" [fallback]="resEmoji(it.type)" [alt]="it.type" [size]="18"></app-icon>
+              {{it.num}}
+            </span>
+          }
+        </span>
+      </div>
+    }
+  </div>
+}

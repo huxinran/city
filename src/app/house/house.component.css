@@ -1,1 +1,48 @@
-/* styling provided by global design system */
+/* most styling comes from the global design system */
+
+.upgrade-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 4px 0 6px;
+}
+
+.cost-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.cost-cat {
+  flex: 0 0 48px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-mut);
+}
+
+.cost-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.cost-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Resource the city can't currently afford — flagged red. */
+.cost-item.lack {
+  color: var(--danger);
+}
+
+.cost-num {
+  font-variant-numeric: tabular-nums;
+}

@@ -5,7 +5,7 @@ import { Cart } from '../building';
 import { ShippingTaskType } from '../types';
 import { repaintOn } from '../live';
 
-const TILE = 30;
+const TILE = 48;
 
 @Component({
   selector: 'app-cart-layer',

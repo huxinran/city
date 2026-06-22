@@ -9,7 +9,7 @@
     box-sizing: border-box;
     height: 100%;
     width: 100%;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: none;
     cursor: pointer;
     transition: filter 0.1s ease;
 }
@@ -51,7 +51,7 @@
     border-radius: 0;
     border: none;
     box-shadow: none;
-    background-color: #8f897d;
+    background-color: #b9b3a4;
     image-rendering: pixelated;
 }
 
@@ -75,14 +75,13 @@
 }
 
 /* Tree / rock decoration sitting on a bare terrain tile (removable). */
-.terrain-icon {
+.terrain-object {
     position: absolute;
     inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    line-height: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
     pointer-events: none;
 }
 
@@ -104,8 +103,8 @@
     grid-template-rows: repeat(3, 1fr);
     width: 100%;
     height: 100%;
-    gap: 2px;
-    padding: 3px;
+    gap: 1px;
+    padding: 1px;
     box-sizing: border-box;
 }
 
@@ -132,6 +131,38 @@
     justify-content: center;
     font-size: 13px;
     line-height: 1;
+}
+
+/* Warehouse: 2x2 grid — top-left = main building, others = shelves/storage */
+.warehouse-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    width: 100%;
+    height: 100%;
+    gap: 1px;
+    padding: 2px;
+    box-sizing: border-box;
+}
+
+.warehouse-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.warehouse-shelf {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    border: 1px solid rgba(255,255,255,0.2);
 }
 
 /* Workshop buildings: 2x2 tile — left = process icon, right = output product */

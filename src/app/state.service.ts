@@ -2,7 +2,7 @@ import { Injectable, NgZone, inject, signal } from '@angular/core';
 import { State } from './state';
 import { Item, Storage } from './storage';
 import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, CountItem, TakeItemsAsPossible, StorageItems} from './utils';
-import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, CreateBuilding, GetBuildingSize, GetRequiredTerrains, FeatureMatches, GetRequiredNearbyFeature, GetRequiredNearbyTerrain } from './building'
+import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, CreateBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, FeatureMatches, GetRequiredNearbyFeature, GetRequiredNearbyTerrain } from './building'
 import { City } from './city';
 import { Population,  } from './population';
 import { Resident, ProductionStatus, ShippingTaskType, BuildingType, Terrain, Feature, CityName } from './types'
@@ -270,10 +270,17 @@ export class StateService {
     if (!this.HasRequiredSurroundings(city, type, tile.i, tile.j, size)) {
       return false
     }
+    // Check gold up front (no charge) so materials aren't spent if we can't
+    // afford it; deduct only once the building is actually created.
+    let goldCost = GetBuildingGoldCost(type)
+    if (this.state.gold < goldCost) {
+      return false
+    }
     let building = CreateBuilding(type, city.storage)
     if (!building) {
       return false
     }
+    this.state.gold -= goldCost
     tile.building = building
     for (let t of footprint) {
       if (t === tile) {
@@ -470,10 +477,12 @@ export class StateService {
       let house = t.building!.house!
       for (let n of house.resource_needs!) {
         let cnt = CountItem(house.storage, n.type)
-        if (cnt! <= 1.0) {
-          n.satisfied = Transfer(city.storage, house.storage, [new Item(n.type, 1)])
-        }   
-        n.satisfied = TakeItems(house.storage, [new Item(n.type, 0.002)])  
+        // Only pull from city storage when nearly empty, and only a small top-up
+        // so city stock spreads evenly across many houses rather than first-come gets all.
+        if (cnt! <= 0.1) {
+          Transfer(city.storage, house.storage, [new Item(n.type, 0.2)])
+        }
+        n.satisfied = TakeItems(house.storage, [new Item(n.type, 0.002)])
       }
     }
   }

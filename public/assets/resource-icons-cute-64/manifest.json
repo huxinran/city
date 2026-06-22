@@ -1,51 +1,127 @@
 {
-  "tileSize": 64,
-  "style": "cute cartoon-ish high-detail pixel art source images on clean white background",
-  "note": "Active resource icons live under sources/. Older rejected or experimental images were moved to assets/old_asset/.",
-  "icons": [
-    {
-      "name": "apple",
-      "file": "assets/resource-icons-cute-64/sources/apple.png"
-    },
-    {
-      "name": "lettuce",
-      "file": "assets/resource-icons-cute-64/sources/lettuce.png"
-    },
-    {
-      "name": "grape",
-      "file": "assets/resource-icons-cute-64/sources/grape.png"
-    },
-    {
-      "name": "olive",
-      "file": "assets/resource-icons-cute-64/sources/olive.png"
-    },
-    {
-      "name": "pig",
-      "file": "assets/resource-icons-cute-64/sources/pig.png"
-    },
-    {
-      "name": "cow",
-      "file": "assets/resource-icons-cute-64/sources/cow.png"
-    },
-    {
-      "name": "sheep",
-      "file": "assets/resource-icons-cute-64/sources/sheep.png"
-    },
-    {
-      "name": "chicken",
-      "file": "assets/resource-icons-cute-64/sources/chicken.png"
-    },
-    {
-      "name": "wheat",
-      "file": "assets/resource-icons-cute-64/sources/wheat.png"
-    },
-    {
-      "name": "flour",
-      "file": "assets/resource-icons-cute-64/sources/flour.png"
-    },
-    {
-      "name": "bread",
-      "file": "assets/resource-icons-cute-64/sources/bread.png"
-    }
-  ]
+    "tileSize":  64,
+    "style":  "cute cartoon-ish high-detail pixel art source images on clean white background",
+    "note":  "Active resource icons live under sources/. Older rejected or experimental images were moved to assets/old_asset/.",
+    "icons":  [
+                  {
+                      "name":  "apple",
+                      "file":  "assets/resource-icons-cute-64/sources/apple.png"
+                  },
+                  {
+                      "name":  "lettuce",
+                      "file":  "assets/resource-icons-cute-64/sources/lettuce.png"
+                  },
+                  {
+                      "name":  "grape",
+                      "file":  "assets/resource-icons-cute-64/sources/grape.png"
+                  },
+                  {
+                      "name":  "olive",
+                      "file":  "assets/resource-icons-cute-64/sources/olive.png"
+                  },
+                  {
+                      "name":  "pig",
+                      "file":  "assets/resource-icons-cute-64/sources/pig.png"
+                  },
+                  {
+                      "name":  "cow",
+                      "file":  "assets/resource-icons-cute-64/sources/cow.png"
+                  },
+                  {
+                      "name":  "sheep",
+                      "file":  "assets/resource-icons-cute-64/sources/sheep.png"
+                  },
+                  {
+                      "name":  "chicken",
+                      "file":  "assets/resource-icons-cute-64/sources/chicken.png"
+                  },
+                  {
+                      "name":  "wheat",
+                      "file":  "assets/resource-icons-cute-64/sources/wheat.png"
+                  },
+                  {
+                      "name":  "flour",
+                      "file":  "assets/resource-icons-cute-64/sources/flour.png"
+                  },
+                  {
+                      "name":  "bread",
+                      "file":  "assets/resource-icons-cute-64/sources/bread.png"
+                  },
+                  {
+                      "name":  "wood",
+                      "file":  "assets/resource-icons-cute-64/sources/wood.png"
+                  },
+                  {
+                      "name":  "timber",
+                      "file":  "assets/resource-icons-cute-64/sources/timber.png"
+                  },
+                  {
+                      "name":  "clay",
+                      "file":  "assets/resource-icons-cute-64/sources/clay.png"
+                  },
+                  {
+                      "name":  "brick",
+                      "file":  "assets/resource-icons-cute-64/sources/brick.png"
+                  },
+                  {
+                      "name":  "iron-ore",
+                      "file":  "assets/resource-icons-cute-64/sources/iron-ore.png"
+                  },
+                  {
+                      "name":  "iron-ingot",
+                      "file":  "assets/resource-icons-cute-64/sources/iron-ingot.png"
+                  },
+                  {
+                      "name":  "steel",
+                      "file":  "assets/resource-icons-cute-64/sources/steel.png"
+                  },
+                  {
+                      "name":  "window",
+                      "file":  "assets/resource-icons-cute-64/sources/window.png"
+                  },
+                  {
+                      "name":  "marble-block",
+                      "file":  "assets/resource-icons-cute-64/sources/marble-block.png"
+                  },
+                  {
+                      "name":  "marble-statue",
+                      "file":  "assets/resource-icons-cute-64/sources/marble-statue.png"
+                  },
+                  {
+                      "name":  "coin",
+                      "file":  "assets/resource-icons-cute-64/sources/coin.png"
+                  },
+                  {
+                      "name":  "fish",
+                      "file":  "assets/resource-icons-cute-64/sources/fish.png"
+                  },
+                  {
+                      "name":  "milk",
+                      "file":  "assets/resource-icons-cute-64/sources/milk.png"
+                  },
+                  {
+                      "name":  "cheese",
+                      "file":  "assets/resource-icons-cute-64/sources/cheese.png"
+                  },
+                  {
+                      "name":  "sausage",
+                      "file":  "assets/resource-icons-cute-64/sources/sausage.png"
+                  },
+                  {
+                      "name":  "wool",
+                      "file":  "assets/resource-icons-cute-64/sources/wool.png"
+                  },
+                  {
+                      "name":  "pant",
+                      "file":  "assets/resource-icons-cute-64/sources/pant.png"
+                  },
+                  {
+                      "name":  "fish-caught-v2",
+                      "file":  "assets/resource-icons-cute-64/sources/fish-caught-v2.png"
+                  },
+                  {
+                      "name":  "pant-blue-v2",
+                      "file":  "assets/resource-icons-cute-64/sources/pant-blue-v2.png"
+                  }
+              ]
 }

@@ -21,7 +21,25 @@
 </div>
 
 <hr class="divider">
+@if (hasUpgradeCost) {
+    <div class="upgrade-title">Upgrade needs</div>
+    @for (group of costGroups; track group.label) {
+        <div class="cost-group">
+            <span class="cost-cat">{{group.label}}</span>
+            <span class="cost-items">
+                @for (it of group.items; track $index) {
+                    <span class="cost-item" [class.lack]="!has(it)" [title]="it.type">
+                        <app-icon [src]="resSrc(it.type)" [fallback]="resEmoji(it.type)" [alt]="it.type" [size]="20"></app-icon>
+                        <span class="cost-num">{{it.num}}</span>
+                    </span>
+                }
+            </span>
+        </div>
+    }
+}
 <div class="btn-row">
-    <button class="btn btn-sm btn-primary" [disabled]="tile.building!.house!.happiness < 1.0 || tile.building!.house!.tier >= 6" (click)="Upgrade()">Upgrade</button>
+    <button class="btn btn-sm btn-primary"
+            [disabled]="tile.building!.house!.happiness < 0.8 || tile.building!.house!.tier >= 6 || !canAffordUpgrade"
+            (click)="Upgrade()">Upgrade</button>
     <button class="btn btn-sm" [disabled]="tile.building!.house!.tier == 1" (click)="Downgrade()">Downgrade</button>
 </div>

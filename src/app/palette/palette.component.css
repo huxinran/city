@@ -1,40 +1,45 @@
 .palette {
-  padding: 10px;
-}
-
-.palette-title {
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-
-.hint {
-  font-size: 10.5px;
-  color: var(--text-mut);
-  line-height: 1.3;
-  margin-bottom: 12px;
+  padding: 3px;
+  background: var(--panel-2);
+  min-height: 100%;
 }
 
 .group {
-  margin-bottom: 14px;
+  margin-bottom: 4px;
 }
 
 .group-title {
-  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--text-dim);
-  margin-bottom: 6px;
+  margin-bottom: 2px;
+  padding: 2px 1px;
+}
+
+.group-title.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.group-title.clickable:hover {
+  color: var(--text);
+}
+
+.caret {
+  font-size: 8px;
+  width: 8px;
+  display: inline-block;
 }
 
 .icons {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+  gap: 2px;
 }
 
 .pal-icon {
@@ -44,7 +49,7 @@
   justify-content: center;
   background: var(--panel-2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
   cursor: grab;
   transition: transform 0.08s ease, border-color 0.12s ease, background 0.12s ease;
   user-select: none;
@@ -62,26 +67,91 @@
 
 .pal-icon.sel {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 0 2px rgba(90, 158, 58, 0.35);
 }
 
 .pal-icon.danger.sel {
   border-color: var(--danger);
-  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
+  box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.3);
 }
 
 .pal-icon-slot {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 44px;
+  height: 44px;
 }
 
+
 .pal-emoji {
-  font-size: 20px;
+  font-size: 28px;
   line-height: 1;
   pointer-events: none;
+}
+
+/* Floating hover tooltip (fixed so it escapes the scrollable column). */
+.build-tip {
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  min-width: 140px;
+  max-width: 240px;
+  padding: 8px 10px;
+  background: var(--panel);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+}
+
+.tip-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.tip-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-bottom: 5px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tip-worker {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+
+.tip-row {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.tip-label {
+  flex: 0 0 42px;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.tip-val {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.tip-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
 }
 

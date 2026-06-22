@@ -1,0 +1,12 @@
+{
+    "tileSize":  64,
+    "style":  "cute cartoon-ish high-detail pixel art building icons on clean white background",
+    "note":  "Generated source images for building and house tier icons.",
+    "buildings":  [
+                      {
+                          "name":  "farmer-hut",
+                          "tier":  "Farmer",
+                          "file":  "assets/building-icons-cute-64/sources/farmer-hut.png"
+                      }
+                  ]
+}

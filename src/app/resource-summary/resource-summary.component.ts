@@ -7,20 +7,21 @@ import { Item } from '../storage';
 import { repaintOn } from '../live';
 import { Resource } from '../types';
 
-const RESOURCE_ICON_BASE = 'assets/resource-icons-cute-64/sources/'
+const RESOURCE_ICON_BASE = 'assets/resource-icons-cute-64/'
 const RESOURCE_ICON_FILES: { [key: string]: string } = {
-  [Resource.APPLE]: 'apple.png',
-  [Resource.BREAD]: 'bread.png',
+  [Resource.APPLE]:  'apple.png',
+  [Resource.BREAD]:  'bread.png',
   [Resource.CABBAGE]: 'lettuce.png',
-  [Resource.EGG]: 'chicken.png',
-  [Resource.FLOUR]: 'flour.png',
-  [Resource.GRAPE]: 'grape.png',
-  [Resource.MILK]: 'cow.png',
-  [Resource.OLIVE]: 'olive.png',
-  [Resource.PORK]: 'pig.png',
-  [Resource.WHEAT]: 'wheat.png',
-  [Resource.WOOL]: 'sheep.png',
+  [Resource.EGG]:    'chicken.png',
+  [Resource.FLOUR]:  'flour.png',
+  [Resource.GRAPE]:  'grape.png',
+  [Resource.MILK]:   'cow.png',
+  [Resource.OLIVE]:  'olive.png',
+  [Resource.PORK]:   'pig.png',
+  [Resource.WHEAT]:  'wheat.png',
+  [Resource.WOOL]:   'sheep.png',
 }
+
 
 @Component({
   selector: 'app-resource-summary',
@@ -30,7 +31,7 @@ const RESOURCE_ICON_FILES: { [key: string]: string } = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResourceSummaryComponent {
-  state  =  inject(StateService)
+  state = inject(StateService)
   constructor() { repaintOn(s => [s.frame]) }
 
   items(): Item[] {
@@ -41,4 +42,5 @@ export class ResourceSummaryComponent {
     const file = RESOURCE_ICON_FILES[type]
     return file ? `${RESOURCE_ICON_BASE}${file}` : undefined
   }
+
 }

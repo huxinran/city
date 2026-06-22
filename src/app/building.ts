@@ -9,11 +9,13 @@ import { Resource, HouseType, Resident, ProductionStatus, ServiceType, ShippingT
 const SMALL_BUILDINGS = new Set<BuildingType>([
     BuildingType.ROAD, BuildingType.HOUSE,
     BuildingType.WELL, BuildingType.FIRE_STATION, BuildingType.POLICE_STATION,
-    BuildingType.SCHOOL, BuildingType.WAREHOUSE, BuildingType.SHIPYARD, BuildingType.DOCK,
+    BuildingType.SCHOOL, BuildingType.SHIPYARD, BuildingType.DOCK,
+    BuildingType.FISHERY,
+    BuildingType.MARKETPLACE, BuildingType.TAVERN, BuildingType.CHAPEL,
 ])
 const MEDIUM_BUILDINGS = new Set<BuildingType>([
+    BuildingType.WAREHOUSE,
     // Extraction / production (2x2 factories)
-    BuildingType.FISHERY,
     BuildingType.LUMBER_HUT, BuildingType.STONE_QUARRY, BuildingType.CLAY_PIT,
     BuildingType.SAND_PIT, BuildingType.COAL_KILN, BuildingType.IRON_MINE,
     BuildingType.GOLD_MINE, BuildingType.GEM_MINE, BuildingType.SALTERN,
@@ -26,6 +28,7 @@ const MEDIUM_BUILDINGS = new Set<BuildingType>([
     BuildingType.CANNERY, BuildingType.FORGE, BuildingType.GOLDSMITH,
     BuildingType.TOOLSMITH, BuildingType.JEWELER, BuildingType.CARPENTER_SHOP,
     BuildingType.WINERY, BuildingType.OIL_PRESS, BuildingType.RUM_DISTILLERY,
+    BuildingType.CONCRETE_PLANT, BuildingType.SCULPTOR, BuildingType.GLAZIER,
 ])
 
 export const WORKSHOP_BUILDINGS = new Set<BuildingType>([
@@ -43,10 +46,29 @@ export const WORKSHOP_BUILDINGS = new Set<BuildingType>([
     BuildingType.CANNERY, BuildingType.FORGE, BuildingType.GOLDSMITH,
     BuildingType.TOOLSMITH, BuildingType.JEWELER, BuildingType.CARPENTER_SHOP,
     BuildingType.WINERY, BuildingType.OIL_PRESS, BuildingType.RUM_DISTILLERY,
+    BuildingType.CONCRETE_PLANT, BuildingType.SCULPTOR, BuildingType.GLAZIER,
 ])
 
 export function IsWorkshopBuilding(type: BuildingType): boolean {
     return WORKSHOP_BUILDINGS.has(type)
+}
+
+// Buildings that produce construction goods (wood, stone, brick, glass, metal,
+// etc.) rather than consumer goods. They get their own palette category instead
+// of sitting on the population upgrade path.
+export const BUILDING_MATERIAL_BUILDINGS = new Set<BuildingType>([
+    BuildingType.LUMBER_HUT, BuildingType.SAWMILL,
+    BuildingType.STONE_QUARRY, BuildingType.MASON_SHOP,
+    BuildingType.CLAY_PIT, BuildingType.BRICKYARY,
+    BuildingType.COAL_KILN, BuildingType.SAND_PIT,
+    BuildingType.GLASSWORK, BuildingType.GLAZIER, BuildingType.CONCRETE_PLANT,
+    BuildingType.SCULPTOR,
+    BuildingType.IRON_MINE, BuildingType.FORGE,
+    BuildingType.STEELWORK, BuildingType.TOOLSMITH,
+])
+
+export function IsBuildingMaterial(type: BuildingType): boolean {
+    return BUILDING_MATERIAL_BUILDINGS.has(type)
 }
 
 // Roads/houses/services are 1x1, workshops are 2x2, farms are 3x3.
@@ -54,6 +76,108 @@ export function GetBuildingSize(type: BuildingType): number {
     if (SMALL_BUILDINGS.has(type)) return 1
     if (MEDIUM_BUILDINGS.has(type)) return 2
     return 3
+}
+
+// Gold charged (in addition to materials) to construct each building.
+export function GetBuildingGoldCost(type: BuildingType): number {
+    switch (type) {
+        case BuildingType.DELETE:         return 0
+        case BuildingType.ROAD:           return 2
+        case BuildingType.HOUSE:          return 50
+        case BuildingType.WELL:           return 80
+        case BuildingType.FIRE_STATION:   return 120
+        case BuildingType.POLICE_STATION: return 120
+        case BuildingType.SCHOOL:         return 200
+        case BuildingType.MARKETPLACE:    return 120
+        case BuildingType.TAVERN:         return 150
+        case BuildingType.CHAPEL:         return 250
+        case BuildingType.WAREHOUSE:      return 150
+        case BuildingType.DOCK:           return 200
+        case BuildingType.SHIPYARD:       return 300
+    }
+    if (FARM_BUILDINGS.has(type)) return 100
+    if (WORKSHOP_BUILDINGS.has(type)) return 150
+    return 100
+}
+
+// --- Build palette ordering by upgrade path -----------------------------------
+// A building is grouped under the population tier its OUTPUT serves: the earliest
+// tier whose needs (ongoing consumption or upgrade basket) include that product.
+// Service buildings are grouped by the tier that first requires the service.
+// Buildings whose output isn't a direct house need (raw materials, intermediate
+// goods, ship/port) return undefined and fall into an "Other" bucket.
+
+const SERVICE_UNLOCK_TIER: { [key in ServiceType]: number } = {
+    [ServiceType.WATER]:  1,
+    [ServiceType.MARKET]: 2,
+    [ServiceType.FIRE]:   3,
+    [ServiceType.POLICE]: 3,
+    [ServiceType.SCHOOL]: 4,
+    [ServiceType.TAVERN]: 5,
+    [ServiceType.CHURCH]: 6,
+}
+
+// Resource -> earliest tier that requires it. Seeded from the needs/upgrade
+// tables, then propagated backward through every recipe so that an ingredient is
+// always available no later than the product it feeds — e.g. wool inherits the
+// tier of pant, wheat inherits flour's (which inherits bread's). Lazily built.
+let _resourceTier: { [key: string]: number } | undefined
+function resourceTierMap(): { [key: string]: number } {
+    if (_resourceTier) return _resourceTier
+    let tier: { [key: string]: number } = {}
+    // Seed: resources directly needed by houses (ongoing + upgrade baskets).
+    for (let t = 1; t <= 6; t++) {
+        let resources = [
+            ...GetResourceNeed(t).map(n => n.type),
+            ...GetUpgradeItems(t).map(i => i.type),
+        ]
+        for (let r of resources) {
+            if (!(r in tier) || t < tier[r]) tier[r] = t
+        }
+    }
+    // Collect every production recipe (ingredient list -> product list).
+    let recipes: { ingredients: string[], products: string[] }[] = []
+    for (let type of Object.values(BuildingType)) {
+        let b = MakeBuilding(type as BuildingType)
+        if (b?.production) {
+            recipes.push({
+                ingredients: b.production.ingredient.map(i => i.type),
+                products: b.production.product.map(p => p.type),
+            })
+        }
+    }
+    // Propagate to a fixpoint: each ingredient's tier is pulled down to the
+    // earliest tier of any product that consumes it (multi-step chains settle).
+    let changed = true
+    while (changed) {
+        changed = false
+        for (let r of recipes) {
+            let productTier = Math.min(...r.products.map(p => tier[p] ?? Infinity))
+            if (productTier === Infinity) continue
+            for (let ing of r.ingredients) {
+                if (productTier < (tier[ing] ?? Infinity)) {
+                    tier[ing] = productTier
+                    changed = true
+                }
+            }
+        }
+    }
+    _resourceTier = tier
+    return _resourceTier
+}
+
+export function GetBuildingTier(type: BuildingType): number | undefined {
+    let b = MakeBuilding(type)
+    if (!b) return undefined
+    if (b.service) return SERVICE_UNLOCK_TIER[b.service.need_provided]
+    if (b.production) {
+        let map = resourceTierMap()
+        let tiers = b.production.product
+            .map(p => map[p.type])
+            .filter((t): t is number => t !== undefined)
+        if (tiers.length) return Math.min(...tiers)
+    }
+    return undefined
 }
 
 // Farm-type buildings get a special "farmhouse + produce" map rendering.
@@ -104,13 +228,9 @@ const TREE_BUILDINGS = new Set<BuildingType>([
     BuildingType.APIARY,
 ])
 
-// Roads and houses can be built on any terrain; water buildings need water;
-// everything else goes on any open land (grass, dirt or sand).
 const LAND_TERRAINS = [Terrain.GRASS, Terrain.SAND]
-const ANY_TERRAIN = [...LAND_TERRAINS, Terrain.WATER]
 
 export function GetRequiredTerrains(type: BuildingType): Terrain[] {
-    if (type == BuildingType.ROAD || type == BuildingType.HOUSE) return ANY_TERRAIN
     if (SEA_BUILDINGS.has(type)) return [Terrain.WATER]
     return LAND_TERRAINS
 }
@@ -120,7 +240,6 @@ export function GetRequiredTerrains(type: BuildingType): Terrain[] {
 // only roads and houses ignore features. Resource buildings additionally need
 // a feature *nearby* — see GetRequiredNearbyFeature.
 export function FeatureMatches(type: BuildingType, feature?: Feature): boolean {
-    if (type == BuildingType.ROAD || type == BuildingType.HOUSE) return true
     return feature == undefined
 }
 
@@ -150,6 +269,9 @@ const NO_ROAD_BUILDINGS = new Set<BuildingType>([
     BuildingType.WAREHOUSE,
     BuildingType.SHIPYARD,
     BuildingType.DOCK,
+    BuildingType.MARKETPLACE,
+    BuildingType.TAVERN,
+    BuildingType.CHAPEL,
     BuildingType.DELETE,
 ])
 
@@ -194,10 +316,14 @@ export const BUILDING_ICONS: { [key: string]: string } = {
     [BuildingType.CARPENTER_SHOP]: '🪓',
     [BuildingType.WINERY]: '🍇',     [BuildingType.OIL_PRESS]: '🫒',
     [BuildingType.RUM_DISTILLERY]: '🍬',
+    [BuildingType.CONCRETE_PLANT]: '🏗️', [BuildingType.SCULPTOR]: '🗿',
+    [BuildingType.GLAZIER]: '🪟',
     // Infrastructure — old-era flavored
     [BuildingType.HOUSE]: '🏠',      [BuildingType.WELL]: '🪣',
     [BuildingType.FIRE_STATION]: '🔔', [BuildingType.POLICE_STATION]: '⚖️',
     [BuildingType.SCHOOL]: '📜',     [BuildingType.WAREHOUSE]: '📦',
+    [BuildingType.MARKETPLACE]: '🏪', [BuildingType.TAVERN]: '🍺',
+    [BuildingType.CHAPEL]: '⛪',
     [BuildingType.SHIPYARD]: '⚓',   [BuildingType.DOCK]: '⛵',
     [BuildingType.ROAD]: '🛣️',
     [BuildingType.DELETE]: '🗑️',
@@ -233,6 +359,9 @@ const WORKSHOP_PRODUCT_ICONS: { [key: string]: string } = {
     [BuildingType.WINERY]: '🍷',
     [BuildingType.OIL_PRESS]: '🫗',
     [BuildingType.RUM_DISTILLERY]: '🥃',
+    [BuildingType.CONCRETE_PLANT]: '🧱',
+    [BuildingType.SCULPTOR]: '🗿',
+    [BuildingType.GLAZIER]: '🪟',
 }
 
 export function GetWorkshopProductIcon(type: BuildingType): string {
@@ -515,41 +644,120 @@ export function GetCurrentMaxOccupant(tier: number, happiness:number) {
     let min = Math.max(2, (tier - 1) * 10)
     let max = tier * 10
     let range = max - min
-    return Math.round(min + range * happiness)
+    return Math.floor(min + range * happiness)
+}
+
+// --- House upgrade costs -----------------------------------------------------
+// To upgrade a house INTO the given tier you must supply a basket of goods,
+// grouped into Food / Daily / Luxury. The basket grows in both quantity and
+// variety each step: humble homes need basic staples, the grandest estates
+// demand fine furnishings and luxuries. (Services are required separately — see
+// GetServiceNeed — and gate happiness, which itself gates the upgrade.)
+//
+// All goods here are produced within a single self-sufficient region, but the
+// chains run long, so higher tiers take real industrial build-out.
+export interface UpgradeBasket {
+    food: Item[]
+    daily: Item[]
+    luxury: Item[]
+    build: Item[]
+}
+
+const EMPTY_BASKET: UpgradeBasket = { food: [], daily: [], luxury: [], build: [] }
+
+// Building-material ladder consumed to physically build out each upgrade:
+// timber -> brick -> steel -> window -> statue, finer with every tier.
+const UPGRADE_COSTS: { [tier: number]: UpgradeBasket } = {
+    // Cottage -> Tenement (Farmer -> Worker): first comforts.
+    2: {
+        food:   [new Item(Resource.BREAD, 10)],
+        daily:  [new Item(Resource.POTTERY, 8)],
+        luxury: [],
+        build:  [new Item(Resource.TIMBER, 10)],
+    },
+    // Tenement -> House (Worker -> Artisan): a furnished household.
+    3: {
+        food:   [new Item(Resource.SAUSAGE, 10), new Item(Resource.CHEESE, 10)],
+        daily:  [new Item(Resource.PANT, 8)],
+        luxury: [new Item(Resource.CIDER, 8)],
+        build:  [new Item(Resource.BRICK, 15)],
+    },
+    // House -> Villa (Artisan -> Scholar): a refined home.
+    4: {
+        food:   [new Item(Resource.CHEESE, 12), new Item(Resource.APPLE, 12)],
+        daily:  [new Item(Resource.FURNITURE, 10), new Item(Resource.GLASS, 8)],
+        luxury: [new Item(Resource.WINE, 10)],
+        build:  [new Item(Resource.STEEL, 12)],
+    },
+    // Villa -> Mansion (Scholar -> Entrepreneur): a gentleman's estate.
+    5: {
+        food:   [new Item(Resource.SAUSAGE, 15), new Item(Resource.JAM, 12)],
+        daily:  [new Item(Resource.FURNITURE, 15), new Item(Resource.GLASS, 12)],
+        luxury: [new Item(Resource.WINE, 15), new Item(Resource.BRANDY, 12)],
+        build:  [new Item(Resource.WINDOW, 15)],
+    },
+    // Mansion -> Estate (Entrepreneur -> Magnate): the grandest residence.
+    6: {
+        food:   [new Item(Resource.CHEESE, 18), new Item(Resource.APPLE, 18)],
+        daily:  [new Item(Resource.FURNITURE, 20), new Item(Resource.GLASS, 18)],
+        luxury: [new Item(Resource.BRANDY, 25), new Item(Resource.WINE, 20), new Item(Resource.OIL, 15)],
+        build:  [new Item(Resource.STATUE, 10)],
+    },
+}
+
+// The categorized basket required to upgrade a house into `targetTier`.
+export function GetUpgradeCost(targetTier: number): UpgradeBasket {
+    return UPGRADE_COSTS[targetTier] ?? EMPTY_BASKET
+}
+
+// Flattened list of every item in the upgrade basket, for affordability checks
+// and charging in one shot.
+export function GetUpgradeItems(targetTier: number): Item[] {
+    let b = GetUpgradeCost(targetTier)
+    return [...b.food, ...b.daily, ...b.luxury, ...b.build]
 }
 
 
+// Goods a house consumes continuously (drives happiness, which gates upgrades).
+// Each tier draws on Food, Daily, then Luxury goods — the higher the station,
+// the broader the basket it expects to keep stocked.
 export function GetResourceNeed(tier: number) {
-    if (tier == 1) {
-        return [new ResourceNeed(Resource.FISH), new ResourceNeed(Resource.PANT)]
-    } else if (tier == 2) {
-        return [new ResourceNeed(Resource.PANT), new ResourceNeed(Resource.SAUSAGE), new ResourceNeed(Resource.CABBAGE), new ResourceNeed(Resource.CHEESE)]
-    } else if  (tier == 3) {
-        return [new ResourceNeed(Resource.CHEESE), new ResourceNeed(Resource.BREAD), new ResourceNeed(Resource.CIDER), new ResourceNeed(Resource.POTTERY)]
-    } else if (tier == 4) {
-        return [new ResourceNeed(Resource.SAUSAGE), new ResourceNeed(Resource.CABBAGE), new ResourceNeed(Resource.BREAD), new ResourceNeed(Resource.CHEESE), new ResourceNeed(Resource.APPLE), new ResourceNeed(Resource.POTTERY)]
-    } else if (tier == 5) {
-        return [new ResourceNeed(Resource.SAUSAGE), new ResourceNeed(Resource.CABBAGE), new ResourceNeed(Resource.BREAD), new ResourceNeed(Resource.CHEESE), new ResourceNeed(Resource.APPLE), new ResourceNeed(Resource.POTTERY), new ResourceNeed(Resource.CIGAR)]
-    } else {
-        return []
-    } 
+    const needs: Resource[] = []
+    // Food
+    if (tier >= 1) needs.push(Resource.FISH)
+    if (tier >= 2) needs.push(Resource.SAUSAGE)
+    if (tier >= 2) needs.push(Resource.CABBAGE)
+    if (tier >= 3) needs.push(Resource.BREAD)
+    if (tier >= 4) needs.push(Resource.CHEESE)
+    // Daily items
+    if (tier >= 1) needs.push(Resource.PANT)
+    if (tier >= 2) needs.push(Resource.POTTERY)
+    if (tier >= 5) needs.push(Resource.FURNITURE)
+    // Luxury
+    if (tier >= 3) needs.push(Resource.CIDER)
+    if (tier >= 4) needs.push(Resource.WINE)
+    if (tier >= 6) needs.push(Resource.BRANDY)
+    return needs.map(r => new ResourceNeed(r))
 }
 
+// Services a house of the given tier requires (coverage from service buildings).
+// The list grows each tier: water for everyone, commerce and safety for the
+// middle class, schooling and culture for the elite.
 export function GetServiceNeed(tier: number) {
-    if (tier == 1) {
-        return [new ServiceNeed(ServiceType.WATER)]
-    } else if (tier == 2) {
-        return [new ServiceNeed(ServiceType.WATER), new ServiceNeed(ServiceType.FIRE), new ServiceNeed(ServiceType.POLICE)]
-    } else if  (tier == 3) {
-        return [new ServiceNeed(ServiceType.WATER), new ServiceNeed(ServiceType.FIRE), new ServiceNeed(ServiceType.POLICE), new ServiceNeed(ServiceType.SCHOOL)]
-    } else if (tier == 4) {
-        return [new ServiceNeed(ServiceType.WATER)]
-    } else {
-        return [new ServiceNeed(ServiceType.WATER)]
-    }
+    const services: ServiceType[] = []
+    if (tier >= 1) services.push(ServiceType.WATER)
+    if (tier >= 2) services.push(ServiceType.MARKET)
+    if (tier >= 3) services.push(ServiceType.FIRE, ServiceType.POLICE)
+    if (tier >= 4) services.push(ServiceType.SCHOOL)
+    if (tier >= 5) services.push(ServiceType.TAVERN)
+    if (tier >= 6) services.push(ServiceType.CHURCH)
+    return services.map(s => new ServiceNeed(s))
 }
 
-export function CreateBuilding(type: BuildingType, storage: Storage) {
+// Build a building's blueprint (its material cost and production recipe) without
+// charging anything. Pure — safe to call for previews/tooltips. CreateBuilding
+// wraps this and deducts the cost from storage.
+export function MakeBuilding(type: BuildingType): Building | undefined {
     let new_building
     if (type == BuildingType.HOUSE) {
         new_building = new Building(type, [new Item(Resource.WOOD, 5)], new House(), undefined, undefined,)
@@ -590,17 +798,23 @@ export function CreateBuilding(type: BuildingType, storage: Storage) {
     } else if (type == BuildingType.POTTERY_SHOP) {
         new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.CLAY, 1)], [new Item(Resource.POTTERY, 1)])) 
     } else if (type == BuildingType.OVERALL_FACTORY) {
-        new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.WOOL, 1)], [new Item(Resource.PANT, 1)]))
+        new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, new Production(10, Resident.FARMER, 10.0, [new Item(Resource.WOOL, 1)], [new Item(Resource.PANT, 1)]))
     } else if (type == BuildingType.CIGAR_FACTORY) {
         new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.TOBACCO, 1)], [new Item(Resource.CIGAR, 1)])) 
     } else if (type == BuildingType.WELL) {
-        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, undefined, new Service(ServiceType.WATER, 5))    
+        new_building = new Building(type, [new Item(Resource.WOOD, 10)], undefined, undefined, new Service(ServiceType.WATER, 10))
     } else if (type == BuildingType.FIRE_STATION) {
-        new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, undefined, new Service(ServiceType.FIRE, 6))    
+        new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, undefined, new Service(ServiceType.FIRE, 12))
     } else if (type == BuildingType.POLICE_STATION) {
-        new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, undefined, new Service(ServiceType.POLICE, 6))    
+        new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, undefined, new Service(ServiceType.POLICE, 12))
     } else if (type == BuildingType.SCHOOL) {
-        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, undefined, new Service(ServiceType.SCHOOL, 8))    
+        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, undefined, new Service(ServiceType.SCHOOL, 16))
+    } else if (type == BuildingType.MARKETPLACE) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, undefined, new Service(ServiceType.MARKET, 12))
+    } else if (type == BuildingType.TAVERN) {
+        new_building = new Building(type, [new Item(Resource.WOOD, 30)], undefined, undefined, new Service(ServiceType.TAVERN, 12))
+    } else if (type == BuildingType.CHAPEL) {
+        new_building = new Building(type, [new Item(Resource.STONE, 40)], undefined, undefined, new Service(ServiceType.CHURCH, 14))
     } else if (type == BuildingType.WAREHOUSE) {
         new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, undefined, undefined, new Warehouse())
     } else if (type == BuildingType.SHIPYARD) {
@@ -670,8 +884,14 @@ export function CreateBuilding(type: BuildingType, storage: Storage) {
         new_building = new Building(type, [new Item(Resource.WOOD, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.WAX, 1)], [new Item(Resource.CANDLE, 1)]))
     } else if (type == BuildingType.GLASSWORK) {
         new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.SAND, 1)], [new Item(Resource.GLASS, 1)]))
+    } else if (type == BuildingType.GLAZIER) {
+        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.GLASS, 1)], [new Item(Resource.WINDOW, 1)]))
     } else if (type == BuildingType.MASON_SHOP) {
         new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.STONE, 1)], [new Item(Resource.SLATE, 1)]))
+    } else if (type == BuildingType.CONCRETE_PLANT) {
+        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.STONE, 1), new Item(Resource.SAND, 1)], [new Item(Resource.CONCRETE, 1)]))
+    } else if (type == BuildingType.SCULPTOR) {
+        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.STONE, 1), new Item(Resource.TOOL, 1)], [new Item(Resource.STATUE, 1)]))
     } else if (type == BuildingType.CANNERY) {
         new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.APPLE, 1)], [new Item(Resource.JAM, 1)]))
     // Processing — Artisan tier
@@ -697,11 +917,15 @@ export function CreateBuilding(type: BuildingType, storage: Storage) {
     } else if (type == BuildingType.RUM_DISTILLERY) {
         new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.SUGAR_CANE, 1)], [new Item(Resource.RUM, 1)]))
     }
+    return new_building
+}
+
+export function CreateBuilding(type: BuildingType, storage: Storage) {
+    let new_building = MakeBuilding(type)
     if (new_building == undefined) {
         return undefined
     }
-
-    if (TakeItems(storage, new_building!.material)) {
+    if (TakeItems(storage, new_building.material)) {
         return new_building
     }
     return undefined

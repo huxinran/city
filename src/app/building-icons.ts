@@ -54,10 +54,13 @@ export const BUILDING_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.BRANDY_DISTILLERY]:     'lucideFlaskConical',
     [BuildingType.CANDLE_Manufactory]:    'lucideSparkle',
     [BuildingType.GLASSWORK]:             'lucideGlassWater',
+    [BuildingType.GLAZIER]:               'lucideAppWindow',
     [BuildingType.STEELWORK]:             'lucideHammer',
     [BuildingType.SAWMILL]:               'lucideAxe',
     [BuildingType.BRICKYARY]:             'lucideFactory',
     [BuildingType.MASON_SHOP]:            'lucideMountain',
+    [BuildingType.CONCRETE_PLANT]:        'lucideFactory',
+    [BuildingType.SCULPTOR]:              'lucideAxe',
     [BuildingType.CANNERY]:               'lucideApple',
     [BuildingType.FORGE]:                 'lucideFlame',
     [BuildingType.GOLDSMITH]:             'lucideCoins',
@@ -73,6 +76,9 @@ export const BUILDING_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.FIRE_STATION]:          'lucideBell',
     [BuildingType.POLICE_STATION]:        'lucideScale',
     [BuildingType.SCHOOL]:                'lucideScrollText',
+    [BuildingType.MARKETPLACE]:           'lucideStore',
+    [BuildingType.TAVERN]:                'lucideBeer',
+    [BuildingType.CHAPEL]:                'lucideChurch',
     [BuildingType.WAREHOUSE]:             'lucideWarehouse',
     [BuildingType.SHIPYARD]:              'lucideAnchor',
     [BuildingType.DOCK]:                  'lucideSailboat',
@@ -103,10 +109,13 @@ export const WORKSHOP_PRODUCT_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.BRANDY_DISTILLERY]:  'lucideWine',          // brandy glass
     [BuildingType.CANDLE_Manufactory]: 'lucideWandSparkles',  // lit candle
     [BuildingType.GLASSWORK]:          'lucideGlasses',       // glass product
+    [BuildingType.GLAZIER]:            'lucideAppWindow',     // window
     [BuildingType.STEELWORK]:          'lucideWeight',        // steel ingot
     [BuildingType.SAWMILL]:            'lucideTreeDeciduous', // timber
     [BuildingType.BRICKYARY]:          'lucideBrickWall',     // fired brick
     [BuildingType.MASON_SHOP]:         'lucideMountainSnow',  // hewn slate
+    [BuildingType.CONCRETE_PLANT]:     'lucideBrickWall',     // concrete
+    [BuildingType.SCULPTOR]:           'lucideCrown',         // statue
     [BuildingType.CANNERY]:            'lucideFlaskRound',    // jam jar
     [BuildingType.FORGE]:              'lucideDumbbell',      // iron bar
     [BuildingType.GOLDSMITH]:          'lucideHandCoins',     // refined gold
@@ -133,6 +142,7 @@ export function GetWorkshopProductIconName(type: BuildingType): string {
 // If neither exists the SVG fallback from BUILDING_ICON_NAMES is shown.
 // ---------------------------------------------------------------------------
 const BUILDING_IMAGE_SLUGS: { [key: string]: string } = {
+    [BuildingType.ROAD]:                  'road',
     // Farms
     [BuildingType.WHEAT_FARM]:            'wheat-farm',
     [BuildingType.RICE_PADDY]:            'rice-paddy',
@@ -184,10 +194,13 @@ const BUILDING_IMAGE_SLUGS: { [key: string]: string } = {
     [BuildingType.BRANDY_DISTILLERY]:     'brandy-distillery',
     [BuildingType.CANDLE_Manufactory]:    'candle-manufactory',
     [BuildingType.GLASSWORK]:             'glassworks',
+    [BuildingType.GLAZIER]:               'glazier',
     [BuildingType.STEELWORK]:             'steelworks',
     [BuildingType.SAWMILL]:               'sawmill',
     [BuildingType.BRICKYARY]:             'brickyard',
     [BuildingType.MASON_SHOP]:            'mason-shop',
+    [BuildingType.CONCRETE_PLANT]:        'concrete-plant',
+    [BuildingType.SCULPTOR]:              'sculptor',
     [BuildingType.CANNERY]:               'preserve-shop',
     [BuildingType.FORGE]:                 'forge',
     [BuildingType.GOLDSMITH]:             'goldsmith',
@@ -203,32 +216,47 @@ const BUILDING_IMAGE_SLUGS: { [key: string]: string } = {
     [BuildingType.FIRE_STATION]:          'fire-station',
     [BuildingType.POLICE_STATION]:        'police-station',
     [BuildingType.SCHOOL]:                'school',
+    [BuildingType.MARKETPLACE]:           'marketplace',
+    [BuildingType.TAVERN]:                'tavern',
+    [BuildingType.CHAPEL]:                'chapel',
     [BuildingType.WAREHOUSE]:             'warehouse',
     [BuildingType.SHIPYARD]:              'shipyard',
     [BuildingType.DOCK]:                  'dock',
+    [BuildingType.DELETE]:                'delete',
 }
 
-const BASE = 'assets/icons/buildings/'
+const BUILDING_ICON_BASE = 'assets/icons/buildings/'
+const RESOURCE_ICON_BASE = 'assets/resource-icons-cute-64/'
 
-// Returns candidate URLs to try in order: .png first, then .jpg.
-export function GetBuildingImageCandidates(type: BuildingType): string[] {
-    const slug = BUILDING_IMAGE_SLUGS[type]
-    if (!slug) return []
-    return [`${BASE}${slug}.png`, `${BASE}${slug}.jpg`]
+// Maps buildings to the resource icon PNG of their primary output product.
+// Only lists buildings where a matching resource PNG already exists.
+const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
+    [BuildingType.WHEAT_FARM]:        'wheat.png',
+    [BuildingType.APPLE_ORCHARD]:     'apple.png',
+    [BuildingType.CABBAGE_PATCH]:     'lettuce.png',
+    [BuildingType.PIG_FARM]:          'pig.png',
+    [BuildingType.DIARY_FARM]:        'cow.png',
+    [BuildingType.SHEEP_FARM]:        'sheep.png',
+    [BuildingType.CHICKEN_COOP]:      'chicken.png',
+    [BuildingType.VINEYARD]:          'grape.png',
+    [BuildingType.OLIVE_GROVE]:       'olive.png',
+    [BuildingType.WIND_MILL]:         'flour.png',
+    [BuildingType.BAKERY]:            'bread.png',
+    [BuildingType.BUTCHERY]:          'pig.png',
+    [BuildingType.WINERY]:            'grape.png',
+    [BuildingType.OIL_PRESS]:         'olive.png',
+    [BuildingType.OVERALL_FACTORY]:   'sheep.png',
+    [BuildingType.CREAMERY]:          'cow.png',
 }
 
-// Slugs that actually have a 32x32 image dropped into assets/icons/buildings/.
-// After adding "<slug>.png", list its slug here and the image replaces the
-// emoji; anything not listed keeps its emoji (and makes no image request).
-// e.g. 'wheat-farm', 'bakery', 'house'
-const AVAILABLE_BUILDING_ICONS = new Set<string>([
-])
-
-// The image URL for a building's icon, or undefined to use the emoji fallback.
+// Returns a PNG URL for a building icon:
+// 1. Dedicated building PNG in assets/icons/buildings/ (preferred once art exists)
+// 2. Resource icon of its primary output product (available now)
+// 3. undefined → emoji fallback in IconComponent
 export function GetBuildingIconSrc(type: BuildingType): string | undefined {
+    const resourceFile = BUILDING_PRODUCT_ICONS[type]
+    if (resourceFile) return `${RESOURCE_ICON_BASE}${resourceFile}`
     const slug = BUILDING_IMAGE_SLUGS[type]
-    if (!slug || !AVAILABLE_BUILDING_ICONS.has(slug)) {
-        return undefined
-    }
-    return `${BASE}${slug}.png`
+    if (slug) return `${BUILDING_ICON_BASE}${slug}.png`
+    return undefined
 }

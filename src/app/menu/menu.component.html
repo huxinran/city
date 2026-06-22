@@ -1,37 +1,9 @@
-<span class="brand">🏙️ City</span>
-
 <div class="menu-wrap">
   <button class="btn btn-sm" (click)="toggle()">Menu ▾</button>
 
   @if (open()) {
     <div class="menu-backdrop" (click)="close()"></div>
     <div class="menu-panel">
-
-      <button class="menu-item" [class.active]="submenu() === 'terrain'" (click)="showSub('terrain')">Terrain ▸</button>
-      @if (submenu() === 'terrain') {
-        <div class="menu-sub">
-          <button class="menu-item" (click)="setTerrain(Terrain.GRASS)">Grass</button>
-          <button class="menu-item" (click)="setTerrain(Terrain.SAND)">Sand</button>
-          <button class="menu-item" (click)="setTerrain(Terrain.WATER)">Water</button>
-        </div>
-      }
-
-      <button class="menu-item" [class.active]="submenu() === 'features'" (click)="showSub('features')">Features ▸</button>
-      @if (submenu() === 'features') {
-        <div class="menu-sub">
-          <button class="menu-item" (click)="setFeature(Feature.TREE)">🌳 Tree</button>
-          <button class="menu-item" (click)="setFeature(Feature.ROCK)">🪨 Rock</button>
-        </div>
-      }
-
-      <button class="menu-item" [class.active]="submenu() === 'cities'" (click)="showSub('cities')">Cities ▸</button>
-      @if (submenu() === 'cities') {
-        <div class="menu-sub">
-          @for (city of state.state.cities; track $index) {
-            <button class="menu-item" (click)="changeCity(city.name)">{{city.name}}</button>
-          }
-        </div>
-      }
 
       <button class="menu-item" (click)="save()">Save</button>
       <button class="menu-item" (click)="load()">Load</button>

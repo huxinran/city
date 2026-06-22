@@ -9,7 +9,7 @@ import { StateService } from '../state.service';
 import { BuildingType } from '../types';
 import { repaintOn } from '../live';
 
-const TILE = 30;
+const TILE = 48;
 
 @Component({
   selector: 'app-city',

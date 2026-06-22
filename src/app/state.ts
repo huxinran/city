@@ -18,9 +18,9 @@ export class State {
 
           // CENTER — Anrelia: temperate capital, a balanced & self-sufficient breadbasket.
           this.cities.push(new City(CityName.ANRELIA, 80, 80,
-            [BuildingType.WHEAT_FARM, BuildingType.APPLE_ORCHARD, BuildingType.CABBAGE_PATCH, BuildingType.PIG_FARM, BuildingType.DIARY_FARM, BuildingType.CHICKEN_COOP, BuildingType.VINEYARD, BuildingType.OLIVE_GROVE, BuildingType.FISHERY],
-            [BuildingType.LUMBER_HUT, BuildingType.STONE_QUARRY, BuildingType.CLAY_PIT, BuildingType.SAND_PIT],
-            [BuildingType.WIND_MILL, BuildingType.BAKERY, BuildingType.BUTCHERY, BuildingType.CIDERY, BuildingType.CREAMERY, BuildingType.POTTERY_SHOP, BuildingType.WINERY, BuildingType.OIL_PRESS, BuildingType.SAWMILL, BuildingType.CARPENTER_SHOP]))
+            [BuildingType.WHEAT_FARM, BuildingType.APPLE_ORCHARD, BuildingType.CABBAGE_PATCH, BuildingType.PIG_FARM, BuildingType.DIARY_FARM, BuildingType.SHEEP_FARM, BuildingType.CHICKEN_COOP, BuildingType.VINEYARD, BuildingType.OLIVE_GROVE, BuildingType.FISHERY],
+            [BuildingType.LUMBER_HUT, BuildingType.STONE_QUARRY, BuildingType.CLAY_PIT, BuildingType.SAND_PIT, BuildingType.COAL_KILN, BuildingType.IRON_MINE],
+            [BuildingType.WIND_MILL, BuildingType.BAKERY, BuildingType.BUTCHERY, BuildingType.CIDERY, BuildingType.CREAMERY, BuildingType.POTTERY_SHOP, BuildingType.WINERY, BuildingType.OIL_PRESS, BuildingType.SAWMILL, BuildingType.CARPENTER_SHOP, BuildingType.OVERALL_FACTORY, BuildingType.BRICKYARY, BuildingType.MASON_SHOP, BuildingType.GLASSWORK, BuildingType.CANNERY, BuildingType.BRANDY_DISTILLERY, BuildingType.FORGE, BuildingType.TOOLSMITH, BuildingType.STEELWORK, BuildingType.CONCRETE_PLANT, BuildingType.SCULPTOR]))
 
           // NORTH — Mintaka: cold frontier of hardy crops, herding, mining and metalwork.
           this.cities.push(new City(CityName.MINTAKA, 80, 80,

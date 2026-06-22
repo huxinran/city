@@ -1,0 +1,15 @@
+{
+    "tileSize":  48,
+    "style":  "cute anime 48x48 transparent terrain object sprites scaled for one map tile",
+    "note":  "Tree and rock sprites are exact 48x48 PNGs with transparent backgrounds. Objects are sized to sit on one 48px terrain tile without filling the whole square.",
+    "objects":  [
+                    {
+                        "name":  "tree",
+                        "file":  "assets/terrain-objects-cute-48/tree.png"
+                    },
+                    {
+                        "name":  "rock",
+                        "file":  "assets/terrain-objects-cute-48/rock.png"
+                    }
+                ]
+}

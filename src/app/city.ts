@@ -156,6 +156,6 @@ export class City {
             }
         }
         AddItem(this.storage, new Item(Resource.WOOD, 500))
-        this.infrastructure  = [...this.infrastructure, BuildingType.WELL, BuildingType.FIRE_STATION, BuildingType.POLICE_STATION, BuildingType.SCHOOL, BuildingType.SHIPYARD, BuildingType.DOCK]
+        this.infrastructure  = [...this.infrastructure, BuildingType.WELL, BuildingType.FIRE_STATION, BuildingType.POLICE_STATION, BuildingType.SCHOOL, BuildingType.MARKETPLACE, BuildingType.TAVERN, BuildingType.CHAPEL, BuildingType.SHIPYARD, BuildingType.DOCK]
     }
 }

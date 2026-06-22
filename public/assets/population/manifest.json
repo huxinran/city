@@ -1,31 +1,37 @@
 {
-  "tileSize": 32,
-  "style": "front-facing pixel art, transparent background, crisp 1px outline",
+  "tileSize": 64,
+  "style": "cute cartoon-ish high-detail pixel art population tier icons on clean white background",
+  "note": "Active app icons are stored at the top level. Generated source copies are also kept under sources/.",
   "tiers": [
     {
       "name": "Farmer",
-      "file": "assets/population/farmer.png"
+      "file": "assets/population/farmer.png",
+      "source": "assets/population/sources/farmer.png"
     },
     {
       "name": "Worker",
-      "file": "assets/population/worker.png"
+      "file": "assets/population/worker.png",
+      "source": "assets/population/sources/worker.png"
     },
     {
       "name": "Artisan",
-      "file": "assets/population/artisan.png"
+      "file": "assets/population/artisan.png",
+      "source": "assets/population/sources/artisan.png"
     },
     {
       "name": "Scholar",
-      "file": "assets/population/scholar.png"
+      "file": "assets/population/scholar.png",
+      "source": "assets/population/sources/scholar.png"
     },
     {
       "name": "Entrepreneur",
-      "file": "assets/population/entrepreneur.png"
+      "file": "assets/population/entrepreneur.png",
+      "source": "assets/population/sources/entrepreneur.png"
     },
     {
       "name": "Magnate",
-      "file": "assets/population/magnate.png"
+      "file": "assets/population/magnate.png",
+      "source": "assets/population/sources/magnate.png"
     }
-  ],
-  "sheet": "assets/population/population-tiers-sheet.png"
+  ]
 }

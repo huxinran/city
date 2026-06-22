@@ -12,12 +12,12 @@
     grid-column: 1/-1;
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 14px 20px;
-    font-size: 14px;
-    background: linear-gradient(90deg, #0e1a2b, #15233b);
-    border-bottom: 1px solid var(--border);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+    gap: 12px;
+    padding: 10px 18px;
+    font-size: 15px;
+    background: linear-gradient(90deg, #ede4d0, #f7f0e2);
+    border-bottom: 1px solid var(--border-strong);
+    box-shadow: 0 2px 8px rgba(80, 50, 10, 0.10);
     z-index: 10;
 }
 
@@ -36,16 +36,23 @@
     grid-row: 2;
     grid-column: 2;
     overflow: auto;
-    background: radial-gradient(circle at 30% 20%, #2c6588, #0e2233 70%);
+    background: radial-gradient(circle at 30% 20%, #b8d4e8, #7fb0cc 70%);
     padding: 2px;
     box-sizing: border-box;
     cursor: grab;
+    /* Hide the scrollbar — the map is panned by click-drag instead. */
+    scrollbar-width: none;          /* Firefox */
+    -ms-overflow-style: none;       /* old Edge/IE */
+}
+
+.map-container::-webkit-scrollbar {
+    display: none;                  /* Chrome / Safari */
 }
 
 .right-menu {
     grid-row: 2;
     grid-column: 3;
-    padding: 14px;
+    padding: 8px;
     box-sizing: border-box;
     overflow-y: auto;
     background: var(--bg);

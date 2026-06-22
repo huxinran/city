@@ -1,0 +1,22 @@
+{
+    "tileSize":  64,
+    "style":  "cute cartoon-ish high-detail pixel art building menu icons on clean white background",
+    "note":  "Dedicated build-palette icons. Generated originals remain in Codex generated_images.",
+    "icons":  [
+                  {
+                      "name":  "road",
+                      "building":  "Road",
+                      "file":  "assets/icons/buildings/road.png"
+                  },
+                  {
+                      "name":  "warehouse",
+                      "building":  "Warehouse",
+                      "file":  "assets/icons/buildings/warehouse.png"
+                  },
+                  {
+                      "name":  "delete",
+                      "building":  "Delete",
+                      "file":  "assets/icons/buildings/delete.png"
+                  }
+              ]
+}

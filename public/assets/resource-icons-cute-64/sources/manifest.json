@@ -45,6 +45,82 @@
                   {
                       "name":  "bread",
                       "file":  "assets/resource-icons-cute-64/sources/bread.png"
+                  },
+                  {
+                      "name":  "wood",
+                      "file":  "assets/resource-icons-cute-64/sources/wood.png"
+                  },
+                  {
+                      "name":  "timber",
+                      "file":  "assets/resource-icons-cute-64/sources/timber.png"
+                  },
+                  {
+                      "name":  "clay",
+                      "file":  "assets/resource-icons-cute-64/sources/clay.png"
+                  },
+                  {
+                      "name":  "brick",
+                      "file":  "assets/resource-icons-cute-64/sources/brick.png"
+                  },
+                  {
+                      "name":  "iron-ore",
+                      "file":  "assets/resource-icons-cute-64/sources/iron-ore.png"
+                  },
+                  {
+                      "name":  "iron-ingot",
+                      "file":  "assets/resource-icons-cute-64/sources/iron-ingot.png"
+                  },
+                  {
+                      "name":  "steel",
+                      "file":  "assets/resource-icons-cute-64/sources/steel.png"
+                  },
+                  {
+                      "name":  "window",
+                      "file":  "assets/resource-icons-cute-64/sources/window.png"
+                  },
+                  {
+                      "name":  "marble-block",
+                      "file":  "assets/resource-icons-cute-64/sources/marble-block.png"
+                  },
+                  {
+                      "name":  "marble-statue",
+                      "file":  "assets/resource-icons-cute-64/sources/marble-statue.png"
+                  },
+                  {
+                      "name":  "coin",
+                      "file":  "assets/resource-icons-cute-64/sources/coin.png"
+                  },
+                  {
+                      "name":  "fish",
+                      "file":  "assets/resource-icons-cute-64/sources/fish.png"
+                  },
+                  {
+                      "name":  "milk",
+                      "file":  "assets/resource-icons-cute-64/sources/milk.png"
+                  },
+                  {
+                      "name":  "cheese",
+                      "file":  "assets/resource-icons-cute-64/sources/cheese.png"
+                  },
+                  {
+                      "name":  "sausage",
+                      "file":  "assets/resource-icons-cute-64/sources/sausage.png"
+                  },
+                  {
+                      "name":  "wool",
+                      "file":  "assets/resource-icons-cute-64/sources/wool.png"
+                  },
+                  {
+                      "name":  "pant",
+                      "file":  "assets/resource-icons-cute-64/sources/pant.png"
+                  },
+                  {
+                      "name":  "fish-caught-v2",
+                      "file":  "assets/resource-icons-cute-64/sources/fish-caught-v2.png"
+                  },
+                  {
+                      "name":  "pant-blue-v2",
+                      "file":  "assets/resource-icons-cute-64/sources/pant-blue-v2.png"
                   }
               ]
 }

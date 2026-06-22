@@ -1,8 +1,6 @@
 <div class="box" [class.focused]="isFocused" [attr.data-i]="tile.i" [attr.data-j]="tile.j" (click)="HandleClick()" [ngStyle]="GetTerrainStyle()">
-    @if (isFeatureTree) {
-        <span class="terrain-icon">🌳</span>
-    } @else if (isFeatureRock) {
-        <span class="terrain-icon">🪨</span>
+    @if (terrainFeatureSrc; as featureSrc) {
+        <img class="terrain-object" [src]="featureSrc" alt="">
     }
     @if (tile.building) {
         <div class="building" [class.cobble]="isRoad" [ngStyle]="GetBuildingStyle()"
@@ -16,14 +14,21 @@
                     <div class="farm-house">
                         <span>🛖</span>
                     </div>
-                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="13"></app-icon>
-                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="13"></app-icon>
-                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="13"></app-icon>
-                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="13"></app-icon>
-                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="13"></app-icon>
-                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="13"></app-icon>
-                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="13"></app-icon>
-                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="13"></app-icon>
+                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="20"></app-icon>
+                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="20"></app-icon>
+                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="20"></app-icon>
+                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="20"></app-icon>
+                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="20"></app-icon>
+                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="20"></app-icon>
+                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="20"></app-icon>
+                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="20"></app-icon>
+                </div>
+            } @else if (isWarehouse) {
+                <div class="warehouse-layout">
+                    <div class="warehouse-main">🏚️</div>
+                    <div class="warehouse-shelf">🗄️</div>
+                    <div class="warehouse-shelf">📦</div>
+                    <div class="warehouse-shelf">🗄️</div>
                 </div>
             } @else if (isWorkshop) {
                 <div class="workshop-layout">

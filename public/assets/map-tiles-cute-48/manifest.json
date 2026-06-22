@@ -1,0 +1,23 @@
+{
+    "tileSize":  48,
+    "style":  "cute anime flat 48x48 terrain tiles with bright but softer colors and clear minimal features",
+    "note":  "Exact 48x48 PNGs for fixed-size map rendering. Older generated 64px terrain tiles remain in assets/map-tiles-cute-64/.",
+    "tiles":  [
+                  {
+                      "name":  "sea",
+                      "file":  "assets/map-tiles-cute-48/sea.png"
+                  },
+                  {
+                      "name":  "grass",
+                      "file":  "assets/map-tiles-cute-48/grass.png"
+                  },
+                  {
+                      "name":  "sand",
+                      "file":  "assets/map-tiles-cute-48/sand.png"
+                  },
+                  {
+                      "name":  "cobblestone-road",
+                      "file":  "assets/map-tiles-cute-48/cobblestone-road.png"
+                  }
+              ]
+}
