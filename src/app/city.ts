@@ -125,13 +125,9 @@ export function GenerateTerrain(h: number, w: number): { terrain: Terrain[], fea
 export class City {
     constructor(
         public name: CityName,
-        public h: number, 
+        public h: number,
         public w: number,
-        public farms: BuildingType[],
-        public materials: BuildingType[],
-        public workshops: BuildingType[],
-        public infrastructure: BuildingType[] = [],
-        public tiles : Tile[] = [], 
+        public tiles : Tile[] = [],
         public storage : Storage = new Storage(),
         public houses : Tile[] = [],
         public productions : Tile[] = [],
@@ -156,6 +152,5 @@ export class City {
             }
         }
         AddItem(this.storage, new Item(Resource.WOOD, 500))
-        this.infrastructure  = [...this.infrastructure, BuildingType.WELL, BuildingType.FIRE_STATION, BuildingType.POLICE_STATION, BuildingType.SCHOOL, BuildingType.MARKETPLACE, BuildingType.TAVERN, BuildingType.CHAPEL, BuildingType.SHIPYARD, BuildingType.DOCK]
     }
 }

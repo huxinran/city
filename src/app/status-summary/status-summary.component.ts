@@ -3,11 +3,13 @@ import { StateService } from '../state.service';
 import { DecimalPipe } from '@angular/common';
 import { repaintOn } from '../live';
 import { GetResidentIconAsset } from '../building';
+import { GetResourceIconSrc, GetResourceEmoji } from '../resource-icons';
 import { CountItem } from '../utils';
 import { Resource } from '../types';
+import { IconComponent } from '../icon/icon.component';
 @Component({
   selector: 'app-status-summary',
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, IconComponent],
   templateUrl: './status-summary.component.html',
   styleUrl: './status-summary.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,13 +27,19 @@ export class StatusSummaryComponent {
   selectCity(name: string) { this.state.ChangeCity(name); this.closeCities() }
 
   // Primary construction materials shown in the top bar for quick reference.
-  materials = [
-    { type: Resource.WOOD, icon: '🪵' },
-    { type: Resource.STONE, icon: '🪨' },
-    { type: Resource.BRICK, icon: '🧱' },
-    { type: Resource.GLASS, icon: '🪟' },
-    { type: Resource.STATUE, icon: '🗿' },
+  materials: Resource[] = [
+    Resource.TIMBER,
+    Resource.BRICK,
+    Resource.STEEL,
+    Resource.WINDOW,
+    Resource.STATUE,
   ]
+
+  // Gold is the currency, rendered with the coin icon.
+  goldType = Resource.GOLD
+
+  resSrc(type: Resource): string | undefined { return GetResourceIconSrc(type) }
+  resEmoji(type: Resource): string { return GetResourceEmoji(type) }
 
   count(type: Resource): number {
     return CountItem(this.state.state.current_city!.storage, type)

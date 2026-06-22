@@ -2,13 +2,44 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StateService } from '../state.service';
 import { BuildingType, Resource, Resident } from '../types';
-import { GetBuildingIcon, MakeBuilding, GetBuildingGoldCost, GetBuildingTier, GetResidentIconAsset, IsBuildingMaterial } from '../building';
-import { City } from '../city';
+import { GetBuildingIcon, MakeBuilding, GetBuildingGoldCost, GetBuildingTier, GetResidentIconAsset } from '../building';
 import { GetBuildingIconSrc } from '../building-icons';
 import { GetResourceIconSrc, GetResourceEmoji } from '../resource-icons';
 import { Item } from '../storage';
 import { IconComponent } from '../icon/icon.component';
 import { repaintOn } from '../live';
+
+// Always-available buildings shown under "Basics" (and excluded from the
+// categorized tier groups so they aren't listed twice).
+const BASIC_BUILDINGS = [BuildingType.ROAD, BuildingType.HOUSE, BuildingType.WAREHOUSE, BuildingType.DELETE]
+
+// Display order within a tier group: raw materials before the products they
+// feed. Buildings not listed keep their enum order, after the listed ones.
+const PALETTE_ORDER: BuildingType[] = [
+  // Farmer
+  BuildingType.LUMBER_HUT,      // wood
+  BuildingType.SAWMILL,         // timber
+  BuildingType.FISHERY,         // fish
+  BuildingType.SHEEP_FARM,      // sheep -> wool
+  BuildingType.OVERALL_FACTORY, // pant
+  // Worker
+  BuildingType.CLAY_PIT,        // clay
+  BuildingType.BRICKYARY,       // brick
+  BuildingType.CABBAGE_PATCH,   // cabbage
+  BuildingType.PIG_FARM,        // pig -> pork
+  BuildingType.BUTCHERY,        // sausage
+  // Artisan
+  BuildingType.IRON_MINE,       // iron ore
+  BuildingType.FORGE,           // iron ingot
+  BuildingType.STEELWORK,       // steel
+  BuildingType.WHEAT_FARM,      // wheat
+  BuildingType.WIND_MILL,       // flour
+  BuildingType.BAKERY,          // bread
+]
+function paletteOrder(t: BuildingType): number {
+  let i = PALETTE_ORDER.indexOf(t)
+  return i === -1 ? Number.POSITIVE_INFINITY : i
+}
 
 interface PaletteGroup {
   name: string;
@@ -38,59 +69,36 @@ export class PaletteComponent {
 
   get Delete(): BuildingType { return BuildingType.DELETE }
 
-  // Group sections are collapsed by default; "Basics" is pinned open. We track
-  // which groups the user has expanded.
-  private expanded = new Set<string>()
+  // Group sections are expanded by default; "Basics" is pinned open. We track
+  // which groups the user has collapsed.
+  private collapsed = new Set<string>()
   public isCollapsed(name: string): boolean {
-    return name !== 'Basics' && !this.expanded.has(name)
+    return name !== 'Basics' && this.collapsed.has(name)
   }
   public toggleGroup(name: string) {
     if (name === 'Basics') return
-    if (this.expanded.has(name)) this.expanded.delete(name)
-    else this.expanded.add(name)
+    if (this.collapsed.has(name)) this.collapsed.delete(name)
+    else this.collapsed.add(name)
   }
 
-  // Highest residential tier currently reached in the city (1 if none built).
-  // A tier group is shown only once you've unlocked it — i.e. you have houses of
-  // the previous tier, so the next tier's buildings appear as you progress.
-  private unlockedThrough(city: City): number {
-    let maxTier = 1
-    for (let t of city.houses) {
-      let h = t.building?.house
-      if (h && h.tier > maxTier) maxTier = h.tier
-    }
-    return Math.min(6, maxTier + 1)
-  }
-
-  // Cached so the getter (called on every change-detection pass) only rebuilds
-  // the group arrays when the city or the unlocked tier actually changes.
-  private _groupsCity?: object
-  private _groupsUnlock = 0
-  private _groups: PaletteGroup[] = []
+  // Built once: the full building catalog, grouped by population tier. Every
+  // building (materials included) sits on the population upgrade path, grouped
+  // under the tier its output serves.
+  private _groups?: PaletteGroup[]
   get groups(): PaletteGroup[] {
-    let city = this.state.state.current_city!
-    let unlock = this.unlockedThrough(city)
-    if (this._groupsCity !== city || this._groupsUnlock !== unlock) {
-      this._groupsCity = city
-      this._groupsUnlock = unlock
+    if (!this._groups) {
       let groups: PaletteGroup[] = [
-        { name: 'Basics', items: [BuildingType.ROAD, BuildingType.HOUSE, BuildingType.WAREHOUSE, BuildingType.DELETE] },
+        { name: 'Basics', items: [...BASIC_BUILDINGS] },
       ]
-      let all = [...city.farms, ...city.materials, ...city.workshops, ...city.infrastructure]
-      // Construction-goods producers get their own category.
-      let materials = all.filter(t => IsBuildingMaterial(t))
-      if (materials.length) groups.push({ name: 'Materials', items: materials })
-      // Remaining buildings sit on the population upgrade path: each grouped
-      // under the tier its output serves. Only show tiers you've unlocked.
-      let consumer = all.filter(t => !IsBuildingMaterial(t))
+      let all = (Object.values(BuildingType) as BuildingType[]).filter(t => !BASIC_BUILDINGS.includes(t))
       let tierNames = [Resident.FARMER, Resident.WORKER, Resident.ARTISAN, Resident.SCHOLAR, Resident.ENTREPRENEUR, Resident.MAGNATE]
       for (let i = 0; i < tierNames.length; i++) {
-        if (i + 1 > unlock) break
-        let items = consumer.filter(t => GetBuildingTier(t) === i + 1)
+        let items = all.filter(t => GetBuildingTier(t) === i + 1)
+        items.sort((a, b) => paletteOrder(a) - paletteOrder(b))
         if (items.length) groups.push({ name: tierNames[i], items })
       }
       // Anything whose output isn't a direct house need (ports, etc.).
-      let other = consumer.filter(t => GetBuildingTier(t) === undefined)
+      let other = all.filter(t => GetBuildingTier(t) === undefined)
       if (other.length) groups.push({ name: 'Other', items: other })
       this._groups = groups
     }

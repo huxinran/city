@@ -11,14 +11,14 @@
 .group-title {
   display: flex;
   align-items: center;
-  gap: 3px;
-  font-size: 9px;
+  gap: 4px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--text-dim);
-  margin-bottom: 2px;
-  padding: 2px 1px;
+  margin-bottom: 3px;
+  padding: 3px 1px;
 }
 
 .group-title.clickable {
@@ -31,8 +31,8 @@
 }
 
 .caret {
-  font-size: 8px;
-  width: 8px;
+  font-size: 11px;
+  width: 11px;
   display: inline-block;
 }
 

@@ -16,14 +16,14 @@
             <span class="v">{{tier.has}}<span class="mut">/{{tier.needed}}</span></span>
         </span>
     }
-    <span class="stat">
-        <span class="k">💰</span>
+    <span class="stat" [title]="goldType">
+        <app-icon class="material-icon" [src]="resSrc(goldType)" [fallback]="'💰'" [alt]="goldType" [size]="60"></app-icon>
         <span class="v gold">{{state.state.gold | number: '1.0-0'}}</span>
     </span>
-    @for (m of materials; track m.type) {
-        <span class="stat" [title]="m.type">
-            <span class="k">{{m.icon}}</span>
-            <span class="v">{{count(m.type) | number: '1.0-0'}}</span>
+    @for (m of materials; track m) {
+        <span class="stat" [title]="m">
+            <app-icon class="material-icon" [src]="resSrc(m)" [fallback]="resEmoji(m)" [alt]="m" [size]="60"></app-icon>
+            <span class="v">{{count(m) | number: '1.0-0'}}</span>
         </span>
     }
 </div>

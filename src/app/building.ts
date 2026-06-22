@@ -53,24 +53,6 @@ export function IsWorkshopBuilding(type: BuildingType): boolean {
     return WORKSHOP_BUILDINGS.has(type)
 }
 
-// Buildings that produce construction goods (wood, stone, brick, glass, metal,
-// etc.) rather than consumer goods. They get their own palette category instead
-// of sitting on the population upgrade path.
-export const BUILDING_MATERIAL_BUILDINGS = new Set<BuildingType>([
-    BuildingType.LUMBER_HUT, BuildingType.SAWMILL,
-    BuildingType.STONE_QUARRY, BuildingType.MASON_SHOP,
-    BuildingType.CLAY_PIT, BuildingType.BRICKYARY,
-    BuildingType.COAL_KILN, BuildingType.SAND_PIT,
-    BuildingType.GLASSWORK, BuildingType.GLAZIER, BuildingType.CONCRETE_PLANT,
-    BuildingType.SCULPTOR,
-    BuildingType.IRON_MINE, BuildingType.FORGE,
-    BuildingType.STEELWORK, BuildingType.TOOLSMITH,
-])
-
-export function IsBuildingMaterial(type: BuildingType): boolean {
-    return BUILDING_MATERIAL_BUILDINGS.has(type)
-}
-
 // Roads/houses/services are 1x1, workshops are 2x2, farms are 3x3.
 export function GetBuildingSize(type: BuildingType): number {
     if (SMALL_BUILDINGS.has(type)) return 1
@@ -166,7 +148,24 @@ function resourceTierMap(): { [key: string]: number } {
     return _resourceTier
 }
 
+// Palette grouping overrides: a few buildings are surfaced under an earlier
+// tier than their output resource would imply, so the basic materials show up
+// where the player first needs them. (Wood + timber sit with the Farmer tier.)
+const BUILDING_TIER_OVERRIDE: { [key: string]: number } = {
+    [BuildingType.LUMBER_HUT]: 1,   // wood   (Farmer)
+    [BuildingType.SAWMILL]:    1,   // timber (Farmer)
+    [BuildingType.BRICKYARY]:  2,   // brick  (Worker; brick itself is a tier-3 build good)
+    [BuildingType.FIRE_STATION]: 2, // fire service (Worker; default service-unlock tier is 3)
+    [BuildingType.WHEAT_FARM]: 3,   // wheat  (Artisan; bread is a tier-2 upgrade good, which would pull the chain to Worker)
+    [BuildingType.WIND_MILL]:  3,   // flour  (Artisan)
+    [BuildingType.BAKERY]:     3,   // bread  (Artisan)
+    [BuildingType.IRON_MINE]:  3,   // iron ore   (Artisan; steel is a tier-4 build good, which would pull the chain to Scholar)
+    [BuildingType.FORGE]:      3,   // iron ingot (Artisan)
+    [BuildingType.STEELWORK]:  3,   // steel      (Artisan)
+}
+
 export function GetBuildingTier(type: BuildingType): number | undefined {
+    if (type in BUILDING_TIER_OVERRIDE) return BUILDING_TIER_OVERRIDE[type]
     let b = MakeBuilding(type)
     if (!b) return undefined
     if (b.service) return SERVICE_UNLOCK_TIER[b.service.need_provided]

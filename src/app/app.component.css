@@ -13,8 +13,8 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 18px;
-    font-size: 15px;
+    padding: 16px 22px;
+    font-size: 17px;
     background: linear-gradient(90deg, #ede4d0, #f7f0e2);
     border-bottom: 1px solid var(--border-strong);
     box-shadow: 0 2px 8px rgba(80, 50, 10, 0.10);

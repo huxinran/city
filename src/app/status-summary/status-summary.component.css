@@ -3,8 +3,8 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 4px 18px;
-    font-size: 16px;
+    gap: 6px 24px;
+    font-size: 22px;
 }
 
 .city-wrap {
@@ -83,13 +83,14 @@
 }
 
 .resident-icon {
-    width: 44px;
-    height: 44px;
+    width: 64px;
+    height: 64px;
     image-rendering: pixelated;
     object-fit: contain;
 }
 
-.stat .k { color: var(--text-dim); font-size: 36px; line-height: 1; }
-.stat .v { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.stat .k { color: var(--text-dim); font-size: 56px; line-height: 1; }
+.material-icon ::ng-deep .icon-img { image-rendering: pixelated; }
+.stat .v { color: var(--text); font-weight: 600; font-size: 24px; font-variant-numeric: tabular-nums; }
 .stat .v.gold { color: #fbbf24; }
 .stat .mut { color: var(--text-mut); }
