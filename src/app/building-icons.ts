@@ -47,7 +47,7 @@ export const BUILDING_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.BAKERY]:                'lucideChefHat',
     [BuildingType.BUTCHERY]:              'lucideBone',
     [BuildingType.CIDERY]:                'lucideCupSoda',
-    [BuildingType.OVERALL_FACTORY]:       'lucideScissors',
+    [BuildingType.PANT_SHOP]:       'lucideScissors',
     [BuildingType.CIGAR_FACTORY]:         'lucideLeaf',
     [BuildingType.CREAMERY]:              'lucideMilk',
     [BuildingType.POTTERY_SHOP]:          'lucideWeight',
@@ -102,7 +102,7 @@ export const WORKSHOP_PRODUCT_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.BAKERY]:             'lucideCroissant',     // bread
     [BuildingType.BUTCHERY]:           'lucideSandwich',      // sausage
     [BuildingType.CIDERY]:             'lucideBeer',          // cider
-    [BuildingType.OVERALL_FACTORY]:    'lucideSparkles',      // pants / cloth
+    [BuildingType.PANT_SHOP]:    'lucideSparkles',      // pants / cloth
     [BuildingType.CIGAR_FACTORY]:      'lucideFlameKindling', // lit cigar
     [BuildingType.CREAMERY]:           'lucideEggFried',      // dairy product
     [BuildingType.POTTERY_SHOP]:       'lucideCookingPot',    // pottery vessel
@@ -187,7 +187,7 @@ const BUILDING_IMAGE_SLUGS: { [key: string]: string } = {
     [BuildingType.BAKERY]:                'bakery',
     [BuildingType.BUTCHERY]:              'butchery',
     [BuildingType.CIDERY]:                'cidery',
-    [BuildingType.OVERALL_FACTORY]:       'tailor-shop',
+    [BuildingType.PANT_SHOP]:       'pant-shop',
     [BuildingType.CIGAR_FACTORY]:         'cigar-factory',
     [BuildingType.CREAMERY]:              'creamery',
     [BuildingType.POTTERY_SHOP]:          'pottery-shop',
@@ -253,7 +253,7 @@ const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
     [BuildingType.BUTCHERY]:          'sausage.png',
     [BuildingType.WINERY]:            'grape.png',
     [BuildingType.OIL_PRESS]:         'olive.png',
-    [BuildingType.OVERALL_FACTORY]:   'pant.png',
+    [BuildingType.PANT_SHOP]:   'pant.png',
     [BuildingType.CREAMERY]:          'cheese.png',
 }
 

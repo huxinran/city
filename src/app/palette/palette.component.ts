@@ -21,7 +21,7 @@ const PALETTE_ORDER: BuildingType[] = [
   BuildingType.SAWMILL,         // timber
   BuildingType.FISHERY,         // fish
   BuildingType.SHEEP_FARM,      // sheep -> wool
-  BuildingType.OVERALL_FACTORY, // pant
+  BuildingType.PANT_SHOP, // pant
   // Worker
   BuildingType.CLAY_PIT,        // clay
   BuildingType.BRICKYARY,       // brick
@@ -143,6 +143,9 @@ export class PaletteComponent {
     this.tipY = r.top
   }
   public hide() { this.hovered = undefined }
+
+  // Gold/currency, shown alongside material in the cost row.
+  public goldType = Resource.GOLD
 
   // Resource icon (PNG src + emoji fallback) for tooltip item chips.
   public resSrc(type: Resource): string | undefined { return GetResourceIconSrc(type) }

@@ -151,6 +151,6 @@ export class City {
                 this.tiles.push(tile)
             }
         }
-        AddItem(this.storage, new Item(Resource.WOOD, 500))
+        AddItem(this.storage, new Item(Resource.TIMBER, 100))
     }
 }

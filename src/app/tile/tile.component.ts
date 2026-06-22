@@ -4,9 +4,13 @@ import { CommonModule } from '@angular/common';
 import { Tile } from '../tile';
 import { StateService } from '../state.service';
 import { BuildingType, Terrain, Feature } from '../types'
-import { GetBuildingSize, IsFarmBuilding, IsWorkshopBuilding, GetBuildingIcon, GetWorkshopProductIcon } from '../building'
+import { GetBuildingSize, GetBuildingIcon, IsFarmBuilding, IsWorkshopBuilding } from '../building'
 import { GetBuildingIconSrc } from '../building-icons'
 import { IconComponent } from '../icon/icon.component'
+
+// Dedicated farmhouse / barnyard art for the farm plot's house cell. The PNG
+// will be added later; until it exists the cell falls back to the emoji.
+const FARM_HOUSE_ICON = 'assets/icons/buildings/farmhouse.png'
 
 const MAP_TILE_ASSETS: { [key: string]: { file: string, color: string } } = {
   [Terrain.WATER]: { file: 'sea.png', color: '#47c9ff' },
@@ -47,10 +51,14 @@ export class TileComponent {
     return type != undefined && IsWorkshopBuilding(type)
   }
 
-  get isWarehouse(): boolean {
-    return this.tile.building?.type == BuildingType.WAREHOUSE
-  }
+  // Dedicated farmhouse art (added later); overlaid on a corner of the field.
+  public farmHouseSrc = FARM_HOUSE_ICON
 
+  // The field: a produce/animal cell for every footprint tile except the
+  // one taken by the farmhouse.
+  public get produceCells(): number[] {
+    return Array(Math.max(0, this.size * this.size - 1)).fill(0)
+  }
 
   // Place every tile explicitly on the grid so multi-tile buildings can span
   // their footprint. Covered tiles are hidden; the anchor spans over them.
@@ -140,12 +148,6 @@ export class TileComponent {
     return type ? GetBuildingIconSrc(type) : undefined
   }
 
-  public GetProductIcon(): string {
-    let type = this.tile.building?.type
-    if (type == undefined) return ''
-    return GetWorkshopProductIcon(type)
-  }
-
   get isFeatureTree(): boolean {
     return !this.tile.building && !this.tile.covered && this.tile.feature == Feature.TREE
   }
@@ -170,29 +172,23 @@ export class TileComponent {
     return f?.i == this.tile.i && f?.j == this.tile.j
   }
 
-  private GetBuildingColor(): string {
-    let b = this.tile.building!
-    if (b.house) return 'linear-gradient(145deg, #f6d79b, #e0a85a)'
-    if (b.production) return 'linear-gradient(145deg, #e6b483, #c47f4d)'
-    if (b.service) return 'linear-gradient(145deg, #aee0f0, #6fa8c9)'
-    if (b.warehouse) return 'linear-gradient(145deg, #d8c8ac, #ab9576)'
-    if (b.shipyard || b.dock) return 'linear-gradient(145deg, #c0cdd6, #8298a8)'
-    if (b.type == BuildingType.ROAD) return 'linear-gradient(145deg, #b8b3a8, #948e82)'
-    return 'linear-gradient(145deg, #e3d2b0, #c9b48c)'
-  }
-
   private _terrain?: Terrain
+  private _terrainSize = 0
   private _terrainStyle: any
   private _buildingKey?: string
   private _buildingStyle: any
 
-  private TerrainStyle(terrain: Terrain): any {
+  private TerrainStyle(terrain: Terrain, size: number): any {
     let asset = MAP_TILE_ASSETS[terrain] ?? MAP_TILE_ASSETS[Terrain.GRASS]
+    // A multi-tile building's anchor spans its whole footprint, so tile the
+    // terrain image once per cell (instead of stretching one across the span)
+    // to match the surrounding 1x1 tiles.
+    let pct = 100 / size
     return {
       'background-color': asset.color,
       'background-image': `url("${MAP_TILE_BASE}${asset.file}")`,
-      'background-size': '100% 100%',
-      'background-repeat': 'no-repeat',
+      'background-size': `${pct}% ${pct}%`,
+      'background-repeat': 'repeat',
       'image-rendering': 'pixelated',
     }
   }
@@ -201,9 +197,11 @@ export class TileComponent {
   // letting ngStyle skip work across thousands of tiles each tick.
   public GetTerrainStyle() {
     this.state.mapVersion()  // repaint this tile on map edits (OnPush dependency)
-    if (this._terrain !== this.tile.terrain) {
+    let size = this.size
+    if (this._terrain !== this.tile.terrain || this._terrainSize !== size) {
       this._terrain = this.tile.terrain
-      this._terrainStyle = this.TerrainStyle(this.tile.terrain)
+      this._terrainSize = size
+      this._terrainStyle = this.TerrainStyle(this.tile.terrain, size)
     }
     return this._terrainStyle
   }
@@ -220,7 +218,7 @@ export class TileComponent {
             'background-repeat': 'no-repeat',
             'image-rendering': 'pixelated',
           }
-        : { 'background': this.GetBuildingColor() }
+        : {}  // no card background — the building icon shows directly on terrain
     }
     return this._buildingStyle
   }

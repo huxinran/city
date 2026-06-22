@@ -6,7 +6,7 @@
           @if (iconSrc(item.type); as src) {
             <img class="res-icon" [src]="src" [alt]="item.type">
           } @else {
-            <span class="res-name">{{item.type}}</span>
+            <span class="res-emoji">{{emoji(item.type)}}</span>
           }
           <span class="res-cnt">{{item.num | number: '1.0-0'}}</span>
         </div>

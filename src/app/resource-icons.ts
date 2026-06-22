@@ -10,7 +10,7 @@ const RESOURCE_ICON_FILES: { [key: string]: string } = {
   [Resource.EGG]:    'chicken.png',
   [Resource.FLOUR]:  'flour.png',
   [Resource.GRAPE]:  'grape.png',
-  [Resource.MILK]:   'cow.png',
+  [Resource.MILK]:   'milk.png',
   [Resource.OLIVE]:  'olive.png',
   [Resource.FISH]:   'fish.png',
   [Resource.PANT]:   'pant.png',
@@ -21,7 +21,7 @@ const RESOURCE_ICON_FILES: { [key: string]: string } = {
   [Resource.CHEESE]: 'cheese.png',
   [Resource.PORK]:   'pig.png',
   [Resource.WHEAT]:  'wheat.png',
-  [Resource.WOOL]:   'sheep.png',
+  [Resource.WOOL]:   'wool.png',
   // Building materials + currency
   [Resource.WOOD]:   'wood.png',
   [Resource.TIMBER]: 'timber.png',

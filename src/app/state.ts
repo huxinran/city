@@ -22,6 +22,6 @@ export class State {
           this.cities.push(new City(CityName.SOLARA, 80, 80))    // SOUTH — tropical plantations: banana, sugar, cocoa.
 
           this.current_city = cities[0]
-          this.gold = 1000
+          this.gold = 3000
       }
 }

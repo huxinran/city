@@ -1,8 +1,8 @@
 .res-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
 
-  gap: 6px;
+  gap: 8px;
 }
 
 .res {
@@ -18,20 +18,18 @@
 }
 
 .res-icon {
-  width: 44px;
-  height: 44px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
   image-rendering: pixelated;
 }
 
 
-.res-name {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--text-dim);
+.res-emoji {
+  font-size: 40px;
+  line-height: 56px;
+  height: 56px;
   text-align: center;
-  line-height: 1.2;
-  word-break: break-word;
 }
 
 .res-cnt {

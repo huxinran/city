@@ -18,7 +18,7 @@
                     (click)="select(type)"
                     (mouseenter)="show(type, $event)" (mouseleave)="hide()">
                 <div class="pal-icon-slot">
-                  <app-icon [src]="iconSrc(type)" [fallback]="iconName(type)" [alt]="type" [size]="44"></app-icon>
+                  <app-icon [src]="iconSrc(type)" [fallback]="iconName(type)" [alt]="type" [size]="58"></app-icon>
                 </div>
             </button>
           }
@@ -32,23 +32,16 @@
 @if (hovered && info(hovered); as inf) {
   <div class="build-tip" [style.left.px]="tipX" [style.top.px]="tipY">
     <div class="tip-name">{{hovered}}</div>
-    @if (inf.gold || inf.worker) {
-      <div class="tip-meta">
-        @if (inf.gold) {
-          <span class="tip-item">💰 {{inf.gold}}</span>
-        }
-        @if (inf.worker) {
-          <span class="tip-item" [title]="inf.worker">
-            <img class="tip-worker" [src]="workerIcon(inf.worker)" [alt]="inf.worker">
-            ×{{inf.workerNeeded}}
-          </span>
-        }
-      </div>
-    }
-    @if (inf.cost.length) {
+    @if (inf.gold || inf.cost.length) {
       <div class="tip-row">
         <span class="tip-label">Cost</span>
         <span class="tip-val">
+          @if (inf.gold) {
+            <span class="tip-item">
+              <app-icon [src]="resSrc(goldType)" fallback="💰" alt="gold" [size]="18"></app-icon>
+              {{inf.gold}}
+            </span>
+          }
           @for (it of inf.cost; track $index) {
             <span class="tip-item">
               <app-icon [src]="resSrc(it.type)" [fallback]="resEmoji(it.type)" [alt]="it.type" [size]="18"></app-icon>
@@ -58,9 +51,20 @@
         </span>
       </div>
     }
-    @if (inf.ingredient.length) {
+    @if (inf.worker) {
       <div class="tip-row">
         <span class="tip-label">Needs</span>
+        <span class="tip-val">
+          <span class="tip-item" [title]="inf.worker">
+            <img class="tip-worker" [src]="workerIcon(inf.worker)" [alt]="inf.worker">
+            {{inf.workerNeeded}}
+          </span>
+        </span>
+      </div>
+    }
+    @if (inf.ingredient.length) {
+      <div class="tip-row">
+        <span class="tip-label">Takes</span>
         <span class="tip-val">
           @for (it of inf.ingredient; track $index) {
             <span class="tip-item">

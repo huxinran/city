@@ -9,39 +9,21 @@
              (dragend)="onBuildingDragEnd()">
             @if (isRoad) {
                 <!-- cobblestone texture only, no content -->
-            } @else if (isFarm) {
+            } @else if (isFarm && size > 1) {
                 <div class="farm-layout">
-                    <div class="farm-house">
-                        <span>🛖</span>
-                    </div>
-                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="20"></app-icon>
-                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="20"></app-icon>
-                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="20"></app-icon>
-                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="20"></app-icon>
-                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="20"></app-icon>
-                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="20"></app-icon>
-                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="20"></app-icon>
-                    <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="20"></app-icon>
+                    <!-- Farmhouse cell (dedicated art added later; emoji until then). -->
+                    <app-icon class="farm-house" [src]="farmHouseSrc" fallback="🏡" [size]="size * 7"></app-icon>
+                    @for (cell of produceCells; track $index) {
+                        <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="size * 7"></app-icon>
+                    }
                 </div>
-            } @else if (isWarehouse) {
-                <div class="warehouse-layout">
-                    <div class="warehouse-main">🏚️</div>
-                    <div class="warehouse-shelf">🗄️</div>
-                    <div class="warehouse-shelf">📦</div>
-                    <div class="warehouse-shelf">🗄️</div>
-                </div>
-            } @else if (isWorkshop) {
+            } @else if (isWorkshop && size > 1) {
                 <div class="workshop-layout">
-                    <app-icon class="workshop-icon" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="16"></app-icon>
-                    <span class="workshop-product">{{GetProductIcon()}}</span>
+                    <app-icon class="workshop-building" fallback="🏭" [size]="size * 13"></app-icon>
+                    <app-icon class="workshop-product" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="size * 9"></app-icon>
                 </div>
             } @else {
-                <div class="icon-slot">
-                    <app-icon [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="size * 14 + 8"></app-icon>
-                </div>
-                @if (size > 1) {
-                    <span class="name">{{GetType()}}</span>
-                }
+                <app-icon class="building-icon" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="size * 16"></app-icon>
             }
         </div>
     }

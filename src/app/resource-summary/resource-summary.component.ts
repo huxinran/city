@@ -6,21 +6,7 @@ import { StorageItems } from '../utils';
 import { Item } from '../storage';
 import { repaintOn } from '../live';
 import { Resource } from '../types';
-
-const RESOURCE_ICON_BASE = 'assets/resource-icons-cute-64/'
-const RESOURCE_ICON_FILES: { [key: string]: string } = {
-  [Resource.APPLE]:  'apple.png',
-  [Resource.BREAD]:  'bread.png',
-  [Resource.CABBAGE]: 'lettuce.png',
-  [Resource.EGG]:    'chicken.png',
-  [Resource.FLOUR]:  'flour.png',
-  [Resource.GRAPE]:  'grape.png',
-  [Resource.MILK]:   'cow.png',
-  [Resource.OLIVE]:  'olive.png',
-  [Resource.PORK]:   'pig.png',
-  [Resource.WHEAT]:  'wheat.png',
-  [Resource.WOOL]:   'sheep.png',
-}
+import { GetResourceIconSrc, GetResourceEmoji } from '../resource-icons';
 
 
 @Component({
@@ -38,9 +24,13 @@ export class ResourceSummaryComponent {
     return StorageItems(this.state.state.current_city!.storage)
   }
 
+  // Shared lookup so the panel shows every mapped PNG (and any future ones).
   iconSrc(type: Resource): string | undefined {
-    const file = RESOURCE_ICON_FILES[type]
-    return file ? `${RESOURCE_ICON_BASE}${file}` : undefined
+    return GetResourceIconSrc(type)
+  }
+
+  emoji(type: Resource): string {
+    return GetResourceEmoji(type)
   }
 
 }

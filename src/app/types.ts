@@ -154,7 +154,7 @@ export enum BuildingType {
     OLIVE_GROVE = "Olive Grove",
     ORANGE_ORCHARD = "Orange Orchard",
     ONION_FIELD = "Onion Field",
-    OVERALL_FACTORY = "Tailor Shop",
+    PANT_SHOP = "Pant Shop",
     FORGE = "Forge",
     GOLDSMITH = "Goldsmith",
     TOOLSMITH = "Toolsmith",
