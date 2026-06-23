@@ -42,6 +42,8 @@ const RESOURCE_ICON_FILES: { [key: string]: string } = {
   [Resource.IRON_ORE]: 'iron-ore.png',
   [Resource.GOLD_ORE]: 'gold-ore.png',
   [Resource.PANT]: 'pant.png',
+  [Resource.SHIRT]: 'shirt.png',
+  [Resource.BOOT]: 'boot.png',
   [Resource.TIMBER]: 'timber.png',
   [Resource.TOOL]: 'tool.png',
   [Resource.PORK]: 'pig.png',

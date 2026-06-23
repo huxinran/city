@@ -22,7 +22,7 @@ export class CityComponent {
   @Input() city!: City;
 
   state = inject(StateService)
-  constructor() { repaintOn(s => [s.mapVersion]) }
+  constructor() { repaintOn(s => [s.mapVersion, s.frame]) }
 
   // Footprint preview shown under the cursor while dragging a building.
   public dropHi?: { i: number, j: number, size: number }

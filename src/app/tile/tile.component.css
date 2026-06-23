@@ -48,7 +48,6 @@
 }
 
 .building-icon ::ng-deep .icon-img,
-.farm-house ::ng-deep .icon-img,
 .farm-produce ::ng-deep .icon-img,
 .workshop-product ::ng-deep .icon-img {
     width: 100%;
@@ -59,20 +58,6 @@
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
 }
 
-/* Farm: a field of produce/animals across the whole footprint, with the
-   farmhouse art (added later) overlaid on the top-left corner. */
-.farm-layout {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    width: 100%;
-    height: 100%;
-    gap: 1px;
-    box-sizing: border-box;
-}
-
-.farm-house,
 .farm-produce {
     display: flex;
     align-items: center;
@@ -81,26 +66,59 @@
     min-height: 0;
 }
 
-/* Workshop/factory: the building with its product icon shown as a badge. */
+/* Farm (crop + animal): background art fills full tile, produce icons overlaid. */
+.farm-bg-layout {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.farm-bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.farm-overlay-row {
+    position: absolute;
+    bottom: 20%;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-end;
+    padding: 0 8%;
+    box-sizing: border-box;
+}
+
+/* Workshop: background art fills full tile, product icon pinned to bottom-right. */
 .workshop-layout {
     position: relative;
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-.workshop-building {
-    line-height: 1;
+.workshop-bg {
+    position: absolute;
+    inset: -4%;
+    width: 108%;
+    height: 108%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
 }
 
 .workshop-product {
     position: absolute;
-    right: 2%;
-    bottom: 2%;
-    width: 52%;
-    height: 52%;
+    right: 8%;
+    bottom: 20%;
+    width: 38%;
+    height: 38%;
 }
 
 /* Roads fill the whole tile so adjacent road tiles connect seamlessly. */

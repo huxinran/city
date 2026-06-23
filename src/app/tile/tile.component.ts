@@ -4,13 +4,13 @@ import { CommonModule } from '@angular/common';
 import { Tile } from '../tile';
 import { StateService } from '../state.service';
 import { BuildingType, Terrain, Feature } from '../types'
-import { GetBuildingSize, GetBuildingIcon, IsFarmBuilding, IsWorkshopBuilding } from '../building'
+import { GetBuildingSize, GetBuildingIcon, IsFarmBuilding, IsAnimalFarm, IsWorkshopBuilding } from '../building'
 import { GetBuildingIconSrc } from '../building-icons'
 import { IconComponent } from '../icon/icon.component'
 
-// Dedicated farmhouse / barnyard art for the farm plot's house cell. The PNG
-// will be added later; until it exists the cell falls back to the emoji.
-const FARM_HOUSE_ICON = 'assets/icons/buildings/farmhouse.png'
+const CROP_FARM_ICON = 'assets/icons/buildings/crop-farm.png'
+const ANIMAL_FARM_ICON = 'assets/icons/buildings/animal-farm.png'
+const WORKSHOP_ICON = 'assets/icons/buildings/workshop.png'
 
 const MAP_TILE_ASSETS: { [key: string]: { file: string, color: string } } = {
   [Terrain.WATER]: { file: 'sea.png', color: '#47c9ff' },
@@ -51,14 +51,17 @@ export class TileComponent {
     return type != undefined && IsWorkshopBuilding(type)
   }
 
-  // Dedicated farmhouse art (added later); overlaid on a corner of the field.
-  public farmHouseSrc = FARM_HOUSE_ICON
+  public workshopSrc = WORKSHOP_ICON
 
-  // The field: a produce/animal cell for every footprint tile except the
-  // one taken by the farmhouse.
-  public get produceCells(): number[] {
-    return Array(Math.max(0, this.size * this.size - 1)).fill(0)
+  // Full-tile background art for a farm plot: pasture for animal farms,
+  // plowed fields for crop farms.
+  public get farmBgSrc(): string {
+    let type = this.tile.building?.type
+    return type != undefined && IsAnimalFarm(type) ? ANIMAL_FARM_ICON : CROP_FARM_ICON
   }
+
+  // Produce/animal icons overlaid on the farm background (one row of three).
+  public readonly farmProduceCells: number[] = [0, 1, 2]
 
   // Place every tile explicitly on the grid so multi-tile buildings can span
   // their footprint. Covered tiles are hidden; the anchor spans over them.
@@ -129,13 +132,6 @@ export class TileComponent {
     this.state.bumpMap()
   }
 
-  public GetType() {
-    if (this.tile.building?.house != undefined) {
-      return this.tile.building?.house?.type
-    }
-    return this.tile.building?.type
-  }
-
   public GetIcon(): string {
     let type = this.tile.building?.type
     if (type == undefined) return ''
@@ -160,11 +156,6 @@ export class TileComponent {
     if (this.isFeatureTree) return TERRAIN_OBJECT_BASE + 'tree.png'
     if (this.isFeatureRock) return TERRAIN_OBJECT_BASE + 'rock.png'
     return undefined
-  }
-
-  // Scales the icon with building footprint size.
-  public get iconSize(): string {
-    return `${this.size * 14 + 8}px`
   }
 
   public get isFocused(): boolean {

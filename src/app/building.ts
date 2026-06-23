@@ -220,6 +220,15 @@ export function IsFarmBuilding(type: BuildingType): boolean {
     return FARM_BUILDINGS.has(type)
 }
 
+export const ANIMAL_FARM_BUILDINGS = new Set<BuildingType>([
+    BuildingType.PIG_FARM, BuildingType.DIARY_FARM,
+    BuildingType.SHEEP_FARM, BuildingType.CHICKEN_COOP,
+])
+
+export function IsAnimalFarm(type: BuildingType): boolean {
+    return ANIMAL_FARM_BUILDINGS.has(type)
+}
+
 // --- Terrain requirements: where each building may be placed ---
 // Water buildings need water. Mines need a rock outcrop nearby, lumber/foraging
 // need trees nearby, and the sand pit needs a sand tile nearby — see
@@ -557,13 +566,15 @@ function GetNumOfCarts(tier: number) {
     }
 }
 
+// Tiles travelled per tick. Kept well below 1 so carts step a fraction of a
+// tile each tick — slower journeys and smooth, granular motion between tiles.
 function GetCartSpeed(tier: number) {
     if (tier == 1) {
-        return 1.0
+        return 0.3
     } else if (tier == 2) {
-        return 1.5
+        return 0.45
     } else {
-        return 2.0
+        return 0.6
     }
 }
 
@@ -789,45 +800,45 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
     } else if (type == BuildingType.STONE_QUARRY) {
         new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.STONE, 1)]))    
     } else if (type == BuildingType.CLAY_PIT) {
-        new_building = new Building(type, [new Item(Resource.STONE, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.CLAY, 1)]))    
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.CLAY, 1)]))
     } else if (type == BuildingType.COAL_KILN) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.COAL, 1)]))    
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.COAL, 1)]))
     } else if (type == BuildingType.WHEAT_FARM) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.WHEAT, 1)]))   
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.WHEAT, 1)]))
     } else if (type == BuildingType.WIND_MILL) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.WHEAT, 1)], [new Item(Resource.FLOUR, 1)]))   
+        new_building = new Building(type, [new Item(Resource.BRICK, 10)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.WHEAT, 1)], [new Item(Resource.FLOUR, 1)]))
     } else if (type == BuildingType.BAKERY) {
-        new_building = new Building(type, [new Item(Resource.STONE, 10)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.FLOUR, 1)], [new Item(Resource.BREAD, 1)]))    
+        new_building = new Building(type, [new Item(Resource.BRICK, 10)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.FLOUR, 1)], [new Item(Resource.BREAD, 1)]))
     } else if (type == BuildingType.PIG_FARM) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.PORK, 1)]))     
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.PORK, 1)]))
     } else if (type == BuildingType.BUTCHERY) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.PORK, 1)], [new Item(Resource.SAUSAGE, 1)]))     
+        new_building = new Building(type, [new Item(Resource.SLATE, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.PORK, 1)], [new Item(Resource.SAUSAGE, 1)]))
     } else if (type == BuildingType.FISHERY) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.FISH, 1)])) 
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.FISH, 1)]))
     } else if (type == BuildingType.CABBAGE_PATCH) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.CABBAGE, 1)])) 
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.CABBAGE, 1)]))
     } else if (type == BuildingType.APPLE_ORCHARD) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.APPLE, 1)])) 
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.APPLE, 1)]))
     } else if (type == BuildingType.TOBACCO_PLANTATION) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.TOBACCO, 1)])) 
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.TOBACCO, 1)]))
     } else if (type == BuildingType.DIARY_FARM) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.MILK, 1)])) 
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.MILK, 1)]))
     } else if (type == BuildingType.SHEEP_FARM) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.WOOL, 1)])) 
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.WOOL, 1)]))
     } else if (type == BuildingType.CIDERY) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, new Production(10, Resident.FARMER, 10.0, [new Item(Resource.APPLE, 1)], [new Item(Resource.CIDER, 1)])) 
+        new_building = new Building(type, [new Item(Resource.SLATE, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [new Item(Resource.APPLE, 1)], [new Item(Resource.CIDER, 1)]))
     } else if (type == BuildingType.CREAMERY) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.MILK, 1)], [new Item(Resource.CHEESE, 1)])) 
+        new_building = new Building(type, [new Item(Resource.SLATE, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.MILK, 1)], [new Item(Resource.CHEESE, 1)]))
     } else if (type == BuildingType.POTTERY_SHOP) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.CLAY, 1)], [new Item(Resource.POTTERY, 1)])) 
+        new_building = new Building(type, [new Item(Resource.SLATE, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.CLAY, 1)], [new Item(Resource.POTTERY, 1)]))
     } else if (type == BuildingType.PANT_SHOP) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, new Production(10, Resident.FARMER, 10.0, [new Item(Resource.WOOL, 1)], [new Item(Resource.PANT, 1)]))
+        new_building = new Building(type, [new Item(Resource.SLATE, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [new Item(Resource.WOOL, 1)], [new Item(Resource.PANT, 1)]))
     } else if (type == BuildingType.SHIRT_SHOP) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.COTTON, 1)], [new Item(Resource.SHIRT, 1)]))
+        new_building = new Building(type, [new Item(Resource.SLATE, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.COTTON, 1)], [new Item(Resource.SHIRT, 1)]))
     } else if (type == BuildingType.BOOT_SHOP) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.FUR, 1)], [new Item(Resource.BOOT, 1)]))
+        new_building = new Building(type, [new Item(Resource.BRICK, 10)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.FUR, 1)], [new Item(Resource.BOOT, 1)]))
     } else if (type == BuildingType.CIGAR_FACTORY) {
-        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.TOBACCO, 1)], [new Item(Resource.CIGAR, 1)])) 
+        new_building = new Building(type, [new Item(Resource.BRICK, 10)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.TOBACCO, 1)], [new Item(Resource.CIGAR, 1)]))
     } else if (type == BuildingType.WELL) {
         new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, undefined, new Service(ServiceType.WATER, 10))
     } else if (type == BuildingType.FIRE_STATION) {
@@ -835,25 +846,25 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
     } else if (type == BuildingType.POLICE_STATION) {
         new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, undefined, new Service(ServiceType.POLICE, 12))
     } else if (type == BuildingType.SCHOOL) {
-        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, undefined, new Service(ServiceType.SCHOOL, 16))
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, undefined, new Service(ServiceType.SCHOOL, 16))
     } else if (type == BuildingType.MARKETPLACE) {
         new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, undefined, new Service(ServiceType.MARKET, 12))
     } else if (type == BuildingType.TAVERN) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 30)], undefined, undefined, new Service(ServiceType.TAVERN, 12))
+        new_building = new Building(type, [new Item(Resource.SLATE, 20)], undefined, undefined, new Service(ServiceType.TAVERN, 12))
     } else if (type == BuildingType.CHAPEL) {
-        new_building = new Building(type, [new Item(Resource.STONE, 40)], undefined, undefined, new Service(ServiceType.CHURCH, 14))
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, undefined, new Service(ServiceType.CHURCH, 14))
     } else if (type == BuildingType.CLINIC) {
         new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, undefined, new Service(ServiceType.HEALTH, 12))
     } else if (type == BuildingType.COURTHOUSE) {
-        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, undefined, new Service(ServiceType.JUSTICE, 14))
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, undefined, new Service(ServiceType.JUSTICE, 14))
     } else if (type == BuildingType.ENGINEER_STATION) {
         new_building = new Building(type, [new Item(Resource.STEEL, 20)], undefined, undefined, new Service(ServiceType.ENGINEER, 14))
     } else if (type == BuildingType.WAREHOUSE) {
         new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, undefined, undefined, new Warehouse())
     } else if (type == BuildingType.SHIPYARD) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, undefined, undefined, undefined, new Shipyard())
+        new_building = new Building(type, [new Item(Resource.SLATE, 20)], undefined, undefined, undefined, undefined, new Shipyard())
     } else if (type == BuildingType.DOCK) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, undefined, undefined, undefined, undefined, new Dock())
+        new_building = new Building(type, [new Item(Resource.SLATE, 20)], undefined, undefined, undefined, undefined, undefined, new Dock())
     } else if (type == BuildingType.ROAD) {
         new_building = new Building(type, [new Item(Resource.TIMBER, 1)])
     // Raw material farms & gathering (Farmer)
@@ -903,52 +914,52 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
         new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.COCOA, 1)]))
     // Mining (Worker)
     } else if (type == BuildingType.GEM_MINE) {
-        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 8.0, [], [new Item(Resource.GEM, 1)]))
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.WORKER, 8.0, [], [new Item(Resource.GEM, 1)]))
     } else if (type == BuildingType.GOLD_MINE) {
-        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 8.0, [], [new Item(Resource.GOLD_ORE, 1)]))
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.WORKER, 8.0, [], [new Item(Resource.GOLD_ORE, 1)]))
     } else if (type == BuildingType.IRON_MINE) {
-        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.ARTISAN, 8.0, [], [new Item(Resource.IRON_ORE, 1)]))
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.ARTISAN, 8.0, [], [new Item(Resource.IRON_ORE, 1)]))
     // Processing — Worker tier
     } else if (type == BuildingType.SAWMILL) {
-        new_building = new Building(type, [new Item(Resource.STONE, 10)], undefined, new Production(4, Resident.FARMER, 10.0, [new Item(Resource.WOOD, 1)], [new Item(Resource.TIMBER, 1)]))
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(4, Resident.FARMER, 10.0, [new Item(Resource.WOOD, 1)], [new Item(Resource.TIMBER, 1)]))
     } else if (type == BuildingType.BRICKYARY) {
-        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.CLAY, 1), new Item(Resource.COAL, 1)], [new Item(Resource.BRICK, 1)]))
+        new_building = new Building(type, [new Item(Resource.SLATE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.CLAY, 1), new Item(Resource.COAL, 1)], [new Item(Resource.BRICK, 1)]))
     } else if (type == BuildingType.CANDLE_Manufactory) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.WAX, 1)], [new Item(Resource.CANDLE, 1)]))
+        new_building = new Building(type, [new Item(Resource.SLATE, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.WAX, 1)], [new Item(Resource.CANDLE, 1)]))
     } else if (type == BuildingType.GLASSWORK) {
-        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.SAND, 1)], [new Item(Resource.GLASS, 1)]))
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.SAND, 1)], [new Item(Resource.GLASS, 1)]))
     } else if (type == BuildingType.GLAZIER) {
-        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.GLASS, 1)], [new Item(Resource.WINDOW, 1)]))
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.GLASS, 1)], [new Item(Resource.WINDOW, 1)]))
     } else if (type == BuildingType.MASON_SHOP) {
-        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.STONE, 1)], [new Item(Resource.SLATE, 1)]))
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.STONE, 1)], [new Item(Resource.SLATE, 1)]))
     } else if (type == BuildingType.CONCRETE_PLANT) {
-        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.STONE, 1), new Item(Resource.SAND, 1)], [new Item(Resource.CONCRETE, 1)]))
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.STONE, 1), new Item(Resource.SAND, 1)], [new Item(Resource.CONCRETE, 1)]))
     } else if (type == BuildingType.SCULPTOR) {
-        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.STONE, 1), new Item(Resource.TOOL, 1)], [new Item(Resource.STATUE, 1)]))
+        new_building = new Building(type, [new Item(Resource.STEEL, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.STONE, 1), new Item(Resource.TOOL, 1)], [new Item(Resource.STATUE, 1)]))
     } else if (type == BuildingType.CANNERY) {
-        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.APPLE, 1)], [new Item(Resource.JAM, 1)]))
+        new_building = new Building(type, [new Item(Resource.SLATE, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.APPLE, 1)], [new Item(Resource.JAM, 1)]))
     // Processing — Artisan tier
     } else if (type == BuildingType.BRANDY_DISTILLERY) {
-        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.GRAPE, 1)], [new Item(Resource.BRANDY, 1)]))
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.GRAPE, 1)], [new Item(Resource.BRANDY, 1)]))
     } else if (type == BuildingType.STEELWORK) {
-        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.IRON, 1), new Item(Resource.COAL, 1)], [new Item(Resource.STEEL, 1)]))
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.IRON, 1), new Item(Resource.COAL, 1)], [new Item(Resource.STEEL, 1)]))
     // Metal & craft chains
     } else if (type == BuildingType.FORGE) {
-        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.IRON_ORE, 1), new Item(Resource.COAL, 1)], [new Item(Resource.IRON, 1)]))
+        new_building = new Building(type, [new Item(Resource.STEEL, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.IRON_ORE, 1), new Item(Resource.COAL, 1)], [new Item(Resource.IRON, 1)]))
     } else if (type == BuildingType.TOOLSMITH) {
-        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.IRON, 1)], [new Item(Resource.TOOL, 1)]))
+        new_building = new Building(type, [new Item(Resource.STEEL, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.IRON, 1)], [new Item(Resource.TOOL, 1)]))
     } else if (type == BuildingType.GOLDSMITH) {
-        new_building = new Building(type, [new Item(Resource.STONE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.GOLD_ORE, 1)], [new Item(Resource.GOLD, 1)]))
+        new_building = new Building(type, [new Item(Resource.SLATE, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.GOLD_ORE, 1)], [new Item(Resource.GOLD, 1)]))
     } else if (type == BuildingType.JEWELER) {
-        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.GOLD, 1)], [new Item(Resource.JEWELRY, 1)]))
+        new_building = new Building(type, [new Item(Resource.STEEL, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.GOLD, 1)], [new Item(Resource.JEWELRY, 1)]))
     } else if (type == BuildingType.CARPENTER_SHOP) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.TIMBER, 1)], [new Item(Resource.FURNITURE, 1)]))
+        new_building = new Building(type, [new Item(Resource.SLATE, 10)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.TIMBER, 1)], [new Item(Resource.FURNITURE, 1)]))
     } else if (type == BuildingType.WINERY) {
-        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.GRAPE, 1)], [new Item(Resource.WINE, 1)]))
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.GRAPE, 1)], [new Item(Resource.WINE, 1)]))
     } else if (type == BuildingType.OIL_PRESS) {
-        new_building = new Building(type, [new Item(Resource.TIMBER, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.OLIVE, 1)], [new Item(Resource.OIL, 1)]))
+        new_building = new Building(type, [new Item(Resource.SLATE, 10)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.OLIVE, 1)], [new Item(Resource.OIL, 1)]))
     } else if (type == BuildingType.RUM_DISTILLERY) {
-        new_building = new Building(type, [new Item(Resource.STONE, 30)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.SUGAR_CANE, 1)], [new Item(Resource.RUM, 1)]))
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.SUGAR_CANE, 1)], [new Item(Resource.RUM, 1)]))
     }
     if (new_building) {
         new_building.material = BuildMaterial(type, new_building.material)

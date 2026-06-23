@@ -119,6 +119,10 @@ export function GenerateTerrain(h: number, w: number): { terrain: Terrain[], fea
     for (let k = 0; k < forests; ++k) {
         blob(rand(lo, hiI), rand(lo, hiJ), rand(20, 45), Feature.TREE)
     }
+    // Strip any features that ended up on water tiles
+    for (let i = 0; i < h * w; i++) {
+        if (grid[i] === Terrain.WATER) feature[i] = undefined
+    }
     return { terrain: grid, feature }
 }
 

@@ -158,3 +158,78 @@
   - Saved path: `public/assets/icons/buildings/workshop-2x2-reference-v1.png`
   - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_0a56c5e302cffd8d016a39b12905d081938d63e077738c39ba.png`
   - Notes: saved as generated; golden-roof workshop anchored in the upper-left, open stone/concrete paver yard filling the remaining footprint, low perimeter stone/wood walls, and bottom gate inspired by the provided reference. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `workshop-2x2-square-perspective-v1.png`
+  - Request: revise the reference-based workshop so the footprint is square and still has perspective.
+  - Saved path: `public/assets/icons/buildings/workshop-2x2-square-perspective-v1.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_0ac51df52e6aa48d016a39b25dd69c8196be5b08fae4a19a84.png`
+  - Notes: saved as generated; square 2x2 paved workshop yard with straight perimeter walls, clear corners, bottom gate, and isometric perspective. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `mine-camp-2x2-dirt-yard-v1.png`
+  - Request: create a resource gathering building, mine or lumberjack camp, similar to `workshop-2x2-square-perspective-v1.png`, same dimensions, with dirt ground and a more basic rustic stone/brick building.
+  - Saved path: `public/assets/icons/buildings/mine-camp-2x2-dirt-yard-v1.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_0a52e8c00e431e78016a39c3b75f6881949a2ee7a06a5d9498.png`
+  - Notes: saved as generated; square 2x2 mine/resource camp with a rustic stone-and-timber building in the upper-left, dirt yard, ore/stone props, low perimeter walls, bottom gate, and matching isometric perspective. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- Housing population tier batch v1
+  - Request: generate 6 housing icons, one for each population tier from most basic to most lavish, using the existing `house.png` as the basic reference.
+  - Saved paths:
+    - `public/assets/icons/buildings/housing-tier-01-basic-hut-v1.png`
+    - `public/assets/icons/buildings/housing-tier-02-modest-cottage-v1.png`
+    - `public/assets/icons/buildings/housing-tier-03-town-house-v1.png`
+    - `public/assets/icons/buildings/housing-tier-04-merchant-residence-v1.png`
+    - `public/assets/icons/buildings/housing-tier-05-wealthy-manor-v1.png`
+    - `public/assets/icons/buildings/housing-tier-06-lavish-mansion-v1.png`
+  - Generated source cache:
+    - Tier 1: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_0d10f4c3ff37b426016a39c583d66c8197a7e0cda6747c11e6.png`
+    - Tier 2: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_0d10f4c3ff37b426016a39c5e433e081979bc4738159a4325c.png`
+    - Tier 3: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_0d10f4c3ff37b426016a39c6447e588197b1b5b7f453d53ada.png`
+    - Tier 4: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_0d10f4c3ff37b426016a39c69f51f081978c28bd93525e143f.png`
+    - Tier 5: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_0d10f4c3ff37b426016a39c70009f4819780f46eed381a433e.png`
+    - Tier 6: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_0d10f4c3ff37b426016a39c76bf80c819794f5761150100c2a.png`
+  - Notes: saved as generated; six standalone isometric housing icons progressing from a basic thatch-and-wood hut to a lavish noble mansion. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- Housing population tier batch v3
+  - Request: make the worker house less fancy with a distinct roof color; make the previous tier 5 the maximum tier because tier 6 was too fancy; add one tier between the old tier 4 and old tier 5.
+  - Saved paths:
+    - `public/assets/icons/buildings/housing-tier-01-basic-hut-v3.png`
+    - `public/assets/icons/buildings/housing-tier-02-worker-house-v3.png`
+    - `public/assets/icons/buildings/housing-tier-03-town-house-v3.png`
+    - `public/assets/icons/buildings/housing-tier-04-merchant-residence-v3.png`
+    - `public/assets/icons/buildings/housing-tier-05-upper-class-residence-v3.png`
+    - `public/assets/icons/buildings/housing-tier-06-wealthy-manor-v3.png`
+  - Generated source cache:
+    - Tier 2 worker house: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_0ecd31b6b77cee1c016a39cd642d648193bb0d597699e1132c.png`
+    - Tier 5 upper-class residence: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_09d4da8379230f97016a39cc54bc488190afc2e3f2b924d6be.png`
+  - Notes: saved as generated; tier 2 is simpler with a blue-gray roof, tier 5 is a new intermediate residence, and tier 6 reuses the previous wealthy manor as the maximum tier. Tiers 1, 3, and 4 are copied forward from v1. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- Housing population tier batch v4
+  - Request: keep the first two houses, make tier 3 less fancy with two stories and fewer windows, make tiers 5 and 6 easier to distinguish, give each house a different roof color, and reduce window counts on later tiers.
+  - Saved paths:
+    - `public/assets/icons/buildings/housing-tier-01-basic-hut-v4.png`
+    - `public/assets/icons/buildings/housing-tier-02-worker-house-v4.png`
+    - `public/assets/icons/buildings/housing-tier-03-two-story-green-roof-v4.png`
+    - `public/assets/icons/buildings/housing-tier-04-merchant-red-roof-v4.png`
+    - `public/assets/icons/buildings/housing-tier-05-upper-class-purple-roof-v4.png`
+    - `public/assets/icons/buildings/housing-tier-06-wealthy-manor-slate-roof-v4.png`
+  - Generated source cache:
+    - Tier 3: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_04965f8b988da248016a39d5654ec881939372d881c8349d0d.png`
+    - Tier 4: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_04965f8b988da248016a39d5dcb3108193992dcaabb689d33e.png`
+    - Tier 5: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_04965f8b988da248016a39d6769610819386a3f5ee980657cb.png`
+    - Tier 6: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_04965f8b988da248016a39d6fb1bf48193be05117baaeb3248.png`
+  - Notes: saved as generated; tiers 1 and 2 are copied forward unchanged from v3. Tiers 3-6 were regenerated with distinct roof colors, reduced windows, and a clearer material/detail progression from modest two-story house to wealthy manor. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- Housing population tier batch v5
+  - Request: save tier 3 unchanged; keep tier 4 but remove the side sign; make tier 5 have one tower; make tier 6 have two towers, a yellow roof, and clearly show three stories.
+  - Saved paths:
+    - `public/assets/icons/buildings/housing-tier-01-basic-hut-v5.png`
+    - `public/assets/icons/buildings/housing-tier-02-worker-house-v5.png`
+    - `public/assets/icons/buildings/housing-tier-03-two-story-green-roof-v5.png`
+    - `public/assets/icons/buildings/housing-tier-04-merchant-red-roof-v5.png`
+    - `public/assets/icons/buildings/housing-tier-05-one-tower-purple-roof-v5.png`
+    - `public/assets/icons/buildings/housing-tier-06-two-tower-yellow-roof-v5.png`
+  - Generated source cache:
+    - Tier 4: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_05ea19b9d4211da1016a39d97a1cfc81938ff279136c240f3a.png`
+    - Tier 5: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_0975805d92a35ba0016a39dd24ce688197a0c008b4929664e5.png`
+    - Tier 6: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_0975805d92a35ba0016a39ddba4f688197a66cc97fcd8d8642.png`
+  - Notes: saved as generated; tiers 1-3 are copied forward from v4, tier 4 is the sign-free merchant house, tier 5 has one tower and a purple roof, and tier 6 has two towers with a yellow roof and three-story massing. No background cleanup, app mapping, runtime manifest wiring, or code integration.

@@ -1,7 +1,7 @@
 .container {
     display: grid;
     grid-template-rows: min-content 1fr;
-    grid-template-columns: minmax(210px, 250px) 4fr minmax(360px, 1.2fr);
+    grid-template-columns: minmax(210px, 250px) 5fr minmax(300px, 1fr);
     height: 100vh;
     width: 100vw;
     overflow: hidden;
@@ -37,7 +37,7 @@
     grid-column: 2;
     overflow: auto;
     background: radial-gradient(circle at 30% 20%, #b8d4e8, #7fb0cc 70%);
-    padding: 2px;
+    padding: 0;
     box-sizing: border-box;
     cursor: grab;
     /* Hide the scrollbar — the map is panned by click-drag instead. */

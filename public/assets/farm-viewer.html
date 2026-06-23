@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Farm Icon Viewer</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: sans-serif; background: #1a1a2e; color: #eee; padding: 24px; }
+  h1 { font-size: 1.3rem; margin-bottom: 8px; color: #a0c4ff; }
+  p.note { font-size: 0.75rem; color: #888; margin-bottom: 28px; }
+  h2 { font-size: 0.95rem; margin: 28px 0 12px; color: #ffd6a5; border-bottom: 1px solid #333; padding-bottom: 6px; }
+  .row { display: flex; flex-wrap: wrap; gap: 20px; }
+  .card {
+    background: #16213e;
+    border: 1px solid #2a2a4a;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 200px;
+  }
+  .card.active { border-color: #a0c4ff; box-shadow: 0 0 0 1px #a0c4ff44; }
+  .card img {
+    width: 172px;
+    height: 172px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    background:
+      linear-gradient(45deg, #444 25%, transparent 25%),
+      linear-gradient(-45deg, #444 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #444 75%),
+      linear-gradient(-45deg, transparent 75%, #444 75%);
+    background-size: 12px 12px;
+    background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
+    background-color: #333;
+    border-radius: 4px;
+  }
+  .card .name { font-size: 0.68rem; text-align: center; color: #bbb; word-break: break-all; }
+  .badge {
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .badge.active { background: #a0c4ff33; color: #a0c4ff; }
+  .badge.candidate { background: #caffbf33; color: #caffbf; }
+  .badge.other { background: #ffd6a522; color: #ffd6a5; }
+</style>
+</head>
+<body>
+
+<h1>Farm Icon Viewer</h1>
+<p class="note">Checkerboard = transparent background. Blue border = currently active in game.</p>
+
+<h2>Animal Farms — Pasture / Barn style</h2>
+<div class="row">
+  <div class="card active">
+    <img src="icons/buildings/animal-farm.png" alt="">
+    <div class="name">animal-farm.png<br><span style="color:#888">(grassland-barn-v3)</span></div>
+    <div class="badge active">ACTIVE</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/animal-farm-3x3-pasture-v1.png" alt="">
+    <div class="name">animal-farm-3x3-pasture-v1</div>
+    <div class="badge other">pasture v1</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/animal-farm-3x3-pasture-v2.png" alt="">
+    <div class="name">animal-farm-3x3-pasture-v2</div>
+    <div class="badge other">pasture v2</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/animal-farm-3x3-pasture-v3-square.png" alt="">
+    <div class="name">animal-farm-3x3-pasture-v3-square</div>
+    <div class="badge other">pasture v3</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/grassland-barn-farm-3x3-v1.png" alt="">
+    <div class="name">grassland-barn-farm-3x3-v1</div>
+    <div class="badge other">grassland v1</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/grassland-barn-farm-3x3-v2.png" alt="">
+    <div class="name">grassland-barn-farm-3x3-v2</div>
+    <div class="badge other">grassland v2</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/grassland-barn-farm-3x3-v3.png" alt="">
+    <div class="name">grassland-barn-farm-3x3-v3<br><span style="color:#888">(= active)</span></div>
+    <div class="badge active">ACTIVE SOURCE</div>
+  </div>
+</div>
+
+<h2>Crop Farms — Field / Plowed style</h2>
+<div class="row">
+  <div class="card">
+    <img src="icons/buildings/farm-3x3-fields-v1.png" alt="">
+    <div class="name">farm-3x3-fields-v1<br><span style="color:#888">house + crop rows</span></div>
+    <div class="badge candidate">candidate</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/farm-3x3-empty-fields-v2.png" alt="">
+    <div class="name">farm-3x3-empty-fields-v2<br><span style="color:#888">house + empty plots</span></div>
+    <div class="badge candidate">candidate</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/farm-3x3-plain-field-v3.png" alt="">
+    <div class="name">farm-3x3-plain-field-v3<br><span style="color:#888">house + plowed field</span></div>
+    <div class="badge candidate">candidate</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/farm-3x3-large-field-v4.png" alt="">
+    <div class="name">farm-3x3-large-field-v4<br><span style="color:#888">house + large plowed</span></div>
+    <div class="badge candidate">candidate</div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/plowed-barn-farm-3x3-reference-v1.png" alt="">
+    <div class="name">plowed-barn-farm-3x3-reference-v1<br><span style="color:#888">red barn + plowed</span></div>
+    <div class="badge candidate">candidate</div>
+  </div>
+</div>
+
+</body>
+</html>

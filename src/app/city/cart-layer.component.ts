@@ -7,6 +7,15 @@ import { repaintOn } from '../live';
 
 const TILE = 48;
 
+// A cart's visual state, derived from its current task. Add a new state here
+// (icon + emoji) and map to it in cartState() — the template needs no changes.
+type CartVisual = { icon: string, emoji: string }
+const CART_VISUALS = {
+  fetching: { icon: 'assets/icons/buildings/cart-fetching.png', emoji: '🛺' },
+  loaded:   { icon: 'assets/icons/buildings/cart-loaded.png',   emoji: '📦' },
+  empty:    { icon: 'assets/icons/buildings/cart-empty.png',    emoji: '🛒' },
+} satisfies Record<string, CartVisual>
+
 @Component({
   selector: 'app-cart-layer',
   imports: [CommonModule],
@@ -19,18 +28,14 @@ const TILE = 48;
       transition: left 0.2s linear, top 0.2s linear;
       will-change: left, top;
     }
-    .cart-svg { width: 22px; height: 22px; display: block; }
+    .cart-img { width: 48px; height: 48px; display: block; image-rendering: pixelated; object-fit: contain; }
+    .cart-fallback { display: none; font-size: 22px; line-height: 1; }
   `],
   template: `
     @for (cart of activeCarts; track cart) {
       <div class="cart" [ngStyle]="cartStyle(cart)">
-        <svg class="cart-svg" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
-          <line x1="5" y1="1" x2="5" y2="9" stroke="#3a2208" stroke-width="2" stroke-linecap="round"/>
-          <rect x="4" y="7" width="13" height="9" fill="#c8872a" stroke="#5a3200" stroke-width="1.5" rx="1"/>
-          <line x1="7" y1="16" x2="15" y2="16" stroke="#3a2208" stroke-width="1.5"/>
-          <circle cx="7" cy="19" r="2.5" fill="#3a2208"/>
-          <circle cx="15" cy="19" r="2.5" fill="#3a2208"/>
-        </svg>
+        <img class="cart-img" [src]="cartState(cart).icon" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="cart-fallback">{{ cartState(cart).emoji }}</span>
       </div>
     }
   `,
@@ -49,6 +54,14 @@ export class CartLayerComponent {
       }
     }
     return carts
+  }
+
+  // Loaded going out to deliver, empty heading back, or off to fetch a pickup.
+  cartState(cart: Cart): CartVisual {
+    const task = cart.task!
+    if (task.type === ShippingTaskType.PICKING_UP) return CART_VISUALS.fetching
+    if (task.cargo.length > 0) return CART_VISUALS.loaded
+    return CART_VISUALS.empty
   }
 
   cartStyle(cart: Cart) {

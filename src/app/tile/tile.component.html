@@ -10,16 +10,17 @@
             @if (isRoad) {
                 <!-- cobblestone texture only, no content -->
             } @else if (isFarm && size > 1) {
-                <div class="farm-layout">
-                    <!-- Farmhouse cell (dedicated art added later; emoji until then). -->
-                    <app-icon class="farm-house" [src]="farmHouseSrc" fallback="🏡" [size]="size * 7"></app-icon>
-                    @for (cell of produceCells; track $index) {
-                        <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="size * 7"></app-icon>
-                    }
+                <div class="farm-bg-layout">
+                    <img class="farm-bg-img" [src]="farmBgSrc" alt="">
+                    <div class="farm-overlay-row">
+                        @for (cell of farmProduceCells; track $index) {
+                            <app-icon class="farm-produce" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="size * 9"></app-icon>
+                        }
+                    </div>
                 </div>
             } @else if (isWorkshop && size > 1) {
                 <div class="workshop-layout">
-                    <app-icon class="workshop-building" fallback="🏭" [size]="size * 13"></app-icon>
+                    <img class="workshop-bg" [src]="workshopSrc" alt="">
                     <app-icon class="workshop-product" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="size * 9"></app-icon>
                 </div>
             } @else {

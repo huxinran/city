@@ -285,6 +285,8 @@ const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
     [BuildingType.BUTCHERY]: 'sausage.png',
     [BuildingType.CIDERY]: 'cider.png',
     [BuildingType.PANT_SHOP]: 'pant.png',
+    [BuildingType.SHIRT_SHOP]: 'shirt.png',
+    [BuildingType.BOOT_SHOP]: 'boot.png',
     [BuildingType.CIGAR_FACTORY]: 'cigar.png',
     [BuildingType.CREAMERY]: 'cheese.png',
     [BuildingType.POTTERY_SHOP]: 'pottery.png',

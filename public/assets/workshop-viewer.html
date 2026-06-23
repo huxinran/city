@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Workshop Icon Viewer</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: sans-serif; background: #1a1a2e; color: #eee; padding: 24px; }
+  h1 { font-size: 1.3rem; margin-bottom: 8px; color: #a0c4ff; }
+  p.note { font-size: 0.75rem; color: #888; margin-bottom: 28px; }
+  .row { display: flex; flex-wrap: wrap; gap: 24px; }
+  .card {
+    background: #16213e;
+    border: 1px solid #2a2a4a;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 220px;
+  }
+  .card img {
+    width: 192px;
+    height: 192px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    background:
+      linear-gradient(45deg, #444 25%, transparent 25%),
+      linear-gradient(-45deg, #444 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #444 75%),
+      linear-gradient(-45deg, transparent 75%, #444 75%);
+    background-size: 12px 12px;
+    background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
+    background-color: #333;
+    border-radius: 4px;
+  }
+  .card .name { font-size: 0.7rem; text-align: center; color: #bbb; }
+</style>
+</head>
+<body>
+<h1>Workshop Background Options</h1>
+<p class="note">Checkerboard = transparent. Tell me which one to use.</p>
+<div class="row">
+  <div class="card">
+    <img src="icons/buildings/workshop-2x2-reference-v1.png" alt="">
+    <div class="name">workshop-2x2-reference-v1<br><span style="color:#888">round stone yard</span></div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/workshop-2x2-square-perspective-v1.png" alt="">
+    <div class="name">workshop-2x2-square-perspective-v1<br><span style="color:#888">square stone yard</span></div>
+  </div>
+  <div class="card">
+    <img src="icons/buildings/workshop-2x2-stone-yard-v1.png" alt="">
+    <div class="name">workshop-2x2-stone-yard-v1<br><span style="color:#888">darker stone, angled</span></div>
+  </div>
+</div>
+</body>
+</html>
