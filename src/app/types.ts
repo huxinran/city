@@ -220,6 +220,7 @@ export enum Terrain {
 export enum Feature {
     TREE = "Tree",
     ROCK = "Rock",
+    BUSH = "Bush",
 }
 
 export enum ShipType {

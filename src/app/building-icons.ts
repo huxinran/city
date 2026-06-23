@@ -243,12 +243,12 @@ const RESOURCE_ICON_BASE = 'assets/used/resources/'
 // Maps buildings to the resource icon PNG of their primary output product.
 // Only lists buildings where a matching resource PNG already exists.
 const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
-    [BuildingType.WHEAT_FARM]: 'wheat.png',
+    [BuildingType.WHEAT_FARM]: 'wheat-sheaf-v3.png',
     [BuildingType.RICE_PADDY]: 'rice.png',
-    [BuildingType.APPLE_ORCHARD]: 'apple.png',
+    [BuildingType.APPLE_ORCHARD]: 'apple-regen-v2.png',
     [BuildingType.ORANGE_ORCHARD]: 'orange.png',
     [BuildingType.CABBAGE_PATCH]: 'lettuce.png',
-    [BuildingType.PIG_FARM]: 'pig.png',
+    [BuildingType.PIG_FARM]: 'pig-ear-v2.png',
     [BuildingType.DIARY_FARM]: 'cow.png',
     [BuildingType.SHEEP_FARM]: 'sheep.png',
     [BuildingType.FISHERY]: 'fish.png',
@@ -274,7 +274,7 @@ const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
     [BuildingType.LUMBER_HUT]: 'wood.png',
     [BuildingType.STONE_QUARRY]: 'stone.png',
     [BuildingType.CLAY_PIT]: 'clay.png',
-    [BuildingType.SAND_PIT]: 'sand.png',
+    [BuildingType.SAND_PIT]: 'sand-pile-v2.png',
     [BuildingType.COAL_KILN]: 'coal.png',
     [BuildingType.IRON_MINE]: 'iron-ore.png',
     [BuildingType.GOLD_MINE]: 'gold-ore.png',
@@ -307,7 +307,7 @@ const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
     [BuildingType.JEWELER]: 'jewelry.png',
     [BuildingType.CARPENTER_SHOP]: 'furniture.png',
     [BuildingType.WINERY]: 'wine.png',
-    [BuildingType.OIL_PRESS]: 'oil.png',
+    [BuildingType.OIL_PRESS]: 'olive-oil.png',
     [BuildingType.RUM_DISTILLERY]: 'rum.png',
 }
 

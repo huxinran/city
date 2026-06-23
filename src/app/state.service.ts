@@ -374,6 +374,36 @@ export class StateService {
     }
     this.AddBuildingToLists(city, to)
 
+    // Tasks hold a reference to their destination tile; after a move that tile
+    // no longer carries the building, so the task is orphaned. Left alone it
+    // gets dropped by HandleShipTasks while the production stays
+    // WAITING_PICK_UP / WAITING_DELIVERY forever (no new task is ever issued),
+    // stranding the building. Re-point every task that targeted the old tile.
+    //
+    // Pending tasks only need the new dst — HandleShipTasks rebuilds their path.
+    for (let task of city.shipping_tasks) {
+      if (task.dst === from) task.dst = to
+    }
+    // In-flight DELIVERYING / PICKING_UP carts are en route to the building, so
+    // re-route them from their own warehouse to the new tile (reset progress so
+    // the cart cleanly retravels). RETURNING carts are heading back to the
+    // warehouse with cargo and don't touch dst, so the move doesn't affect them.
+    let field = RoadDistanceField(city, to)
+    for (let wt of city.warehouses) {
+      for (let cart of wt.building!.warehouse!.carts) {
+        let task = cart.task
+        if (!task || task.dst !== from) continue
+        task.dst = to
+        if (task.type == ShippingTaskType.RETURNING) continue
+        let dist = WarehouseRoadDistance(city, field, wt)
+        if (dist != Infinity) {
+          task.distance = dist
+          task.progress = 0
+          task.path = BuildRoadPath(city, field, wt, to)
+        }
+      }
+    }
+
     city.focus_tile = to
     this.bumpMap()
     return true

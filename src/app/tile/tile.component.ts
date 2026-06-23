@@ -19,7 +19,7 @@ const MAP_TILE_ASSETS: { [key: string]: { file: string, color: string } } = {
 }
 
 const MAP_TILE_BASE = 'assets/used/map-tiles/'
-const ROAD_TILE_ASSET = MAP_TILE_BASE + 'cobblestone-road.png'
+const ROAD_TILE_ASSET = MAP_TILE_BASE + 'cobblestone-road-light-48-v3.png'
 const TERRAIN_OBJECT_BASE = 'assets/used/terrain/'
 
 @Component({
@@ -152,9 +152,14 @@ export class TileComponent {
     return !this.tile.building && !this.tile.covered && this.tile.feature == Feature.ROCK
   }
 
+  get isFeatureBush(): boolean {
+    return !this.tile.building && !this.tile.covered && this.tile.feature == Feature.BUSH
+  }
+
   public get terrainFeatureSrc(): string | undefined {
     if (this.isFeatureTree) return TERRAIN_OBJECT_BASE + 'tree.png'
     if (this.isFeatureRock) return TERRAIN_OBJECT_BASE + 'rock.png'
+    if (this.isFeatureBush) return TERRAIN_OBJECT_BASE + 'bush.png'
     return undefined
   }
 

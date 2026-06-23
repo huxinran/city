@@ -91,7 +91,7 @@ export function GenerateTerrain(h: number, w: number): { terrain: Terrain[], fea
     const hiJ = w - seaThickness - 4
     const area = (h - 2 * seaThickness) * (w - 2 * seaThickness)
 
-    // The feature layer: tree / rock outcrops scattered over the land. Grown as
+    // The feature layer: tree / rock / bush patches scattered over the land. Grown as
     // irregular continuous blobs by random-walking outward from a seed, claiming
     // neighbouring (non-water, still-bare) tiles so the edge stays connected but
     // ragged (no clean circle).
@@ -111,13 +111,18 @@ export function GenerateTerrain(h: number, w: number): { terrain: Terrain[], fea
         }
     }
 
-    const rocks = Math.max(2, Math.round(area / 900))
+    const rocks = Math.max(2, Math.round(area / 1300))
     for (let k = 0; k < rocks; ++k) {
         blob(rand(lo, hiI), rand(lo, hiJ), rand(20, 45), Feature.ROCK)
     }
     const forests = Math.max(3, Math.round(area / 400))
     for (let k = 0; k < forests; ++k) {
         blob(rand(lo, hiI), rand(lo, hiJ), rand(20, 45), Feature.TREE)
+    }
+    // Bushes: small scattered shrub patches, smaller and sparser than forests.
+    const bushes = Math.max(2, Math.round(area / 1100))
+    for (let k = 0; k < bushes; ++k) {
+        blob(rand(lo, hiI), rand(lo, hiJ), rand(8, 20), Feature.BUSH)
     }
     // Strip any features that ended up on water tiles
     for (let i = 0; i < h * w; i++) {

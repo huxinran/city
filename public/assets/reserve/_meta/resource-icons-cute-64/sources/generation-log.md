@@ -192,3 +192,16 @@ Notes for v4 batch: latest horse generation was intentionally not copied into th
   - Saved path: `public/assets/used/resources/wheat-sheaf-v3.png`
   - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019ef24f-2029-7ff0-8a80-079f3d1492a3/ig_0b9debec78d131fb016a39fa1bb34481918189db8b9fb97969.png`
   - Notes: solid white background used. Saved as generated; no background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `sand-pile-v2.png`
+  - Request: redo `public/assets/used/resources/sand.png` as only a pile of sand, removing the shovel-like tool.
+  - Saved path: `public/assets/used/resources/sand-pile-v2.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019ef24f-2029-7ff0-8a80-079f3d1492a3/ig_07bb4baeaa9d1f18016a39fb90540081969022e34d7213aba3.png`
+  - Notes: solid white background used. Saved as generated; no background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `cobblestone-road-light-48-v3.png`
+  - Request: create a light gray cobblestone road tile for the main map at exactly 48x48 pixels, with enough detail to read at that size.
+  - Saved path: `public/assets/used/map-tiles/cobblestone-road-light-48-v3.png`
+  - Source copy: `public/assets/reserve/cobblestone-road/cobblestone-road-light-source-v3.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019ef24f-2029-7ff0-8a80-079f3d1492a3/ig_0f2ec3cee29dffba016a39fde8396c8190a63df05980d33149.png`
+  - Notes: output tile verified at 48x48 pixels. No app mapping, runtime manifest wiring, or code integration.

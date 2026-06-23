@@ -93,6 +93,10 @@ Columns: `core name` | `actual filename` | `folder` | `in use?` | `note`
 | olive-oil-jug | olive-oil-jug-v2.png | sources/ | source variant v2 |
 | olive-oil-jug-dark | olive-oil-jug-v3.png | sources/ | source variant v3 |
 | pant-blue | pant-blue-v2.png | sources/ | blue colorway alternate |
+| pork-ham | pork-ham-v1.png | reserve/ | round ham steak with center bone; generated 2026-06-23 |
+| pork-ham-small-bone | pork-ham-v2.png | reserve/ | bigger meat with smaller center bone; generated 2026-06-23 |
+| pork-ham-leg | pork-ham-v3.png | reserve/ | whole chunky ham leg with protruding bone; generated 2026-06-23 |
+| pork-leg-cut-face | pork-ham-v4.png | reserve/ | **preferred alternate**; pig leg with cut face and center bone; generated 2026-06-23 |
 | pottery-household | pottery-household-v2.png | sources/ | household-style alternate |
 | wine-barrel | wine-barrel-v2.png | sources/ | barrel depiction v2 |
 | wine-barrel-dark | wine-barrel-v3.png | sources/ | barrel depiction v3 |
@@ -142,6 +146,7 @@ Columns: `core name` | `actual filename` | `folder` | `in use?` | `note`
 | road-pre-cobble | road-before-cobble-20260621-213614.png | old_versions/ | pre-cobble design |
 | ship-3-mast | ship-3-mast.png | reserve/ | standalone ship sprite |
 | shipyard-ramp | shipyard-v2-launch-ramp.png | reserve/ | **preferred alternate** (marked latest in viewer) |
+| warehouse-2x2-camp-yard | warehouse-2x2-camp-yard-v3-transparent.png | reserve/ | **preferred alternate**; square 2x2 warehouse yard matching mine-camp orientation; generated 2026-06-23 |
 
 ---
 

@@ -1,11 +1,22 @@
 <div class="statusbar">
     <span class="city-wrap">
-        <button class="city" (click)="toggleCities()">{{state.state.current_city!.name}} ▾</button>
+        <button class="city-crest-btn" [title]="state.state.current_city!.name" (click)="toggleCities()">
+            @if (crest(state.state.current_city!.name); as src) {
+                <img class="city-crest" [src]="src" [alt]="state.state.current_city!.name">
+            } @else {
+                <span class="city-crest-text">{{state.state.current_city!.name}} ▾</span>
+            }
+        </button>
         @if (citiesOpen()) {
             <div class="city-backdrop" (click)="closeCities()"></div>
             <div class="city-menu">
                 @for (c of state.state.cities; track c.name) {
-                    <button class="city-item" [class.active]="c === state.state.current_city" (click)="selectCity(c.name)">{{c.name}}</button>
+                    <button class="city-item" [class.active]="c === state.state.current_city" (click)="selectCity(c.name)">
+                        @if (crest(c.name); as src) {
+                            <img class="city-item-crest" [src]="src" [alt]="c.name">
+                        }
+                        <span class="city-item-name">{{c.name}}</span>
+                    </button>
                 }
             </div>
         }

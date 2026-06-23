@@ -4,6 +4,7 @@ import { DecimalPipe } from '@angular/common';
 import { repaintOn } from '../live';
 import { GetResidentIconAsset } from '../building';
 import { GetResourceIconSrc, GetResourceEmoji } from '../resource-icons';
+import { GetCityCrestSrc } from '../city-icons';
 import { CountItem } from '../utils';
 import { Resource } from '../types';
 import { IconComponent } from '../icon/icon.component';
@@ -25,6 +26,7 @@ export class StatusSummaryComponent {
   toggleCities() { this.citiesOpen.update(o => !o) }
   closeCities() { this.citiesOpen.set(false) }
   selectCity(name: string) { this.state.ChangeCity(name); this.closeCities() }
+  crest(name: string): string | undefined { return GetCityCrestSrc(name) }
 
   // Primary construction materials shown in the top bar for quick reference.
   materials: Resource[] = [
