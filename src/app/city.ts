@@ -161,5 +161,20 @@ export class City {
             }
         }
         AddItem(this.storage, new Item(Resource.TIMBER, 100))
+        // Each city starts with a small cache of its signature food so the first
+        // houses can be fed immediately while production gets established.
+        if (name === CityName.JINLIN) {
+            AddItem(this.storage, new Item(Resource.RICE,    50))
+            AddItem(this.storage, new Item(Resource.FISH,    30))
+        } else if (name === CityName.COLUMBIA) {
+            AddItem(this.storage, new Item(Resource.CORN,    50))
+            AddItem(this.storage, new Item(Resource.BEEF,    20))
+        } else if (name === CityName.SOLARA) {
+            AddItem(this.storage, new Item(Resource.BANANA,  50))
+            AddItem(this.storage, new Item(Resource.PALM_FRUIT, 20))
+        } else if (name === CityName.MINTAKA) {
+            AddItem(this.storage, new Item(Resource.FISH,    50))
+            AddItem(this.storage, new Item(Resource.FUR,     20))
+        }
     }
 }

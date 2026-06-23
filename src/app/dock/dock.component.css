@@ -23,3 +23,35 @@
 
 ::ng-deep .mat-input-element { height: 30px; }
 ::ng-deep .mat-select { height: 30px; }
+
+.progress-bar-wrap {
+    width: 80px;
+    height: 6px;
+    background: #ddd;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 3px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: #4caf50;
+    border-radius: 3px;
+    transition: width 0.2s;
+}
+
+.route-status {
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.btn-danger {
+    background: #e53935;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    padding: 1px 5px;
+}
+
+.btn-danger:hover { background: #b71c1c; }

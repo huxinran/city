@@ -281,6 +281,10 @@ export class StateService {
       return false
     }
     this.state.gold -= goldCost
+    // Stamp the city identity onto every house so it reads the right need tables.
+    if (building.house) {
+      building.house.city_type = city.name
+    }
     tile.building = building
     for (let t of footprint) {
       if (t === tile) {

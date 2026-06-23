@@ -1,45 +1,69 @@
-import { ChangeDetectionStrategy, Component, inject, Input,  } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 
 import { Tile } from '../tile';
 import { StateService } from '../state.service';
-import { CityName, Resource } from '../types'
+import { Resource } from '../types'
 import { Route, Ship } from '../building';
-import { Item } from '../storage';
-import { StorageItems } from '../utils';
 import { City } from '../city';
 import { repaintOn } from '../live';
 
 import { FormsModule } from '@angular/forms';
-import { DecimalPipe } from '@angular/common';
 
 
 @Component({
   selector: 'app-dock',
-  imports: [FormsModule, DecimalPipe],
+  imports: [FormsModule],
   templateUrl: './dock.component.html',
   styleUrl: './dock.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DockComponent {
   @Input() tile!: Tile
-  from? : City
-  to? : City
-  resource?: Item
-  amount : number = 0
-  ship? : Ship
-  state  =  inject(StateService)
+  from?: City
+  to?: City
+  selectedResource?: Resource
+  amount: number = 10
+  ship?: Ship
+  state = inject(StateService)
   constructor() { repaintOn(s => [s.frame]) }
 
-  get Cities() : string[] { return Object.keys(CityName) }
+  get cities(): City[] { return this.state.state.cities }
 
-  get Resources() : string[] { return Object.keys(Resource) }
+  // Full resource list for the create-route dropdown.
+  get allResources(): Resource[] { return Object.values(Resource) }
 
-  items(): Item[] {
-    return StorageItems(this.state.state.current_city!.storage)
+  get currentCity(): City { return this.state.state.current_city! }
+
+  // All routes across every city — outgoing shown in full, incoming labeled.
+  get allRoutes(): { route: Route; city: City }[] {
+    const result: { route: Route; city: City }[] = []
+    for (const city of this.state.state.cities) {
+      for (const route of city.routes) {
+        result.push({ route, city })
+      }
+    }
+    return result
   }
 
   CreateRoute() {
-    let new_route = new Route(this.from!.name, this.to!.name, this.resource!.type, this.amount, this.ship)
-    this.state.state.current_city!.routes.push(new_route)
+    if (!this.from || !this.to || !this.selectedResource) return
+    const ship = this.ship
+    const route = new Route(this.from.name, this.to.name, this.selectedResource, this.amount, ship)
+    this.from.routes.push(route)
+    // Reset form
+    this.from = undefined
+    this.to = undefined
+    this.selectedResource = undefined
+    this.ship = undefined
+    this.amount = 10
+  }
+
+  DeleteRoute(city: City, route: Route) {
+    const idx = city.routes.indexOf(route)
+    if (idx >= 0) city.routes.splice(idx, 1)
+  }
+
+  progressPct(route: Route): number {
+    return Math.round(route.progress * 100)
   }
 }

@@ -30,6 +30,7 @@ export const BUILDING_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.TOBACCO_PLANTATION]:    'lucideLeaf',
     [BuildingType.COTTON_FIELD]:          'lucideSparkles',
     [BuildingType.RUBBER_PLANTATION]:     'lucideTreePalm',
+    [BuildingType.HORSE_FARM]:            'lucideHorse',
     [BuildingType.TRAPLINE]:              'lucidePawPrint',
     [BuildingType.APIARY]:                'lucideEgg',
     // Raw material extraction
@@ -177,6 +178,7 @@ const BUILDING_IMAGE_SLUGS: { [key: string]: string } = {
     [BuildingType.TOBACCO_PLANTATION]:    'tobacco-plantation',
     [BuildingType.COTTON_FIELD]:          'cotton-field',
     [BuildingType.RUBBER_PLANTATION]:     'rubber-plantation',
+    [BuildingType.HORSE_FARM]:            'horse-farm',
     [BuildingType.TRAPLINE]:              'trapline',
     [BuildingType.APIARY]:                'apiary',
     // Raw materials
@@ -269,6 +271,7 @@ const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
     [BuildingType.TOBACCO_PLANTATION]: 'tobacco.png',
     [BuildingType.COTTON_FIELD]: 'cotton.png',
     [BuildingType.RUBBER_PLANTATION]: 'rubber.png',
+    [BuildingType.HORSE_FARM]: 'horse.png',
     [BuildingType.TRAPLINE]: 'fur.png',
     [BuildingType.APIARY]: 'wax.png',
     [BuildingType.LUMBER_HUT]: 'wood.png',

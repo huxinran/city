@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { PercentPipe } from '@angular/common';
 import { Tile } from '../tile';
-import { House, RefreshHouse, GetUpgradeCost, GetUpgradeItems, UpgradeBasket } from '../building';
+import { House, RefreshHouse, GetUpgradeCost, GetUpgradeItems, GetCityMaxTier, UpgradeBasket } from '../building';
 import { StateService } from '../state.service';
 import { TakeItems, CountItem } from '../utils';
 import { Item } from '../storage';
@@ -25,9 +25,15 @@ export class HouseComponent {
   state = inject(StateService)
   constructor() { repaintOn(s => [s.frame]) }
 
+  private get house(): House { return this.tile.building!.house! }
+
+  public get atMaxTier(): boolean {
+    return this.house.tier >= GetCityMaxTier(this.house.city_type)
+  }
+
   // The categorized basket needed to upgrade this house to the next tier.
   public get upgradeCost(): UpgradeBasket {
-    return GetUpgradeCost(this.tile.building!.house!.tier + 1)
+    return GetUpgradeCost(this.house.tier + 1, this.house.city_type)
   }
 
   // Non-empty category sections for display (Food / Daily / Luxury).
@@ -42,7 +48,8 @@ export class HouseComponent {
   }
 
   public get hasUpgradeCost(): boolean {
-    return GetUpgradeItems(this.tile.building!.house!.tier + 1).length > 0
+    if (this.atMaxTier) return false
+    return GetUpgradeItems(this.house.tier + 1, this.house.city_type).length > 0
   }
 
   // Whether the city has enough of a single required item on hand.
@@ -52,24 +59,25 @@ export class HouseComponent {
 
   // Whether the city can afford the whole upgrade basket.
   public get canAffordUpgrade(): boolean {
-    let items = GetUpgradeItems(this.tile.building!.house!.tier + 1)
+    if (this.atMaxTier) return false
+    let items = GetUpgradeItems(this.house.tier + 1, this.house.city_type)
     if (items.length === 0) return false
     return items.every(it => this.has(it))
   }
 
   public Upgrade() {
-    let house = this.tile.building!.house!
-    let items = GetUpgradeItems(house.tier + 1)
+    let house = this.house
+    if (this.atMaxTier) return
+    let items = GetUpgradeItems(house.tier + 1, house.city_type)
     if (items.length === 0) return
-    // Charge the whole basket atomically; bail if any item is short.
     if (!TakeItems(this.state.state.current_city!.storage, items)) return
     house.tier += 1
     RefreshHouse(house)
-    this.state.bumpMap()  // a new tier may unlock buildings in the palette
+    this.state.bumpMap()
   }
 
   public Downgrade() {
-    let house: House = this.tile.building!.house!
+    let house = this.house
     house.tier -= 1
     RefreshHouse(house)
     this.state.bumpMap()

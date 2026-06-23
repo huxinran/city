@@ -1,64 +1,93 @@
-<div class="panel-title">Ships</div>
+<div class="panel-title">Fleet</div>
 <table class="table">
-  <thead><tr><th>Type</th><th>Status</th></tr></thead>
+  <thead><tr><th>Type</th><th>Capacity</th><th>Speed</th><th>Status</th></tr></thead>
   <tbody>
-    @for (ship of state.state.current_city!.ships; track $index) {
-      <tr><td>{{ship.type}}</td><td>{{ship.status}}</td></tr>
+    @for (ship of currentCity.ships; track $index) {
+      <tr>
+        <td>{{ship.type}}</td>
+        <td>{{ship.max_cargo}}</td>
+        <td>{{ship.speed}}</td>
+        <td>{{ship.status}}</td>
+      </tr>
     } @empty {
-      <tr><td class="empty" colspan="2">No ships yet</td></tr>
+      <tr><td class="empty" colspan="4">No ships — build one at a Shipyard</td></tr>
     }
   </tbody>
 </table>
 
 <hr class="divider">
-<div class="panel-title">Routes</div>
+<div class="panel-title">Trade Routes</div>
 <table class="table">
-  <thead><tr><th>From</th><th>To</th><th>Resource</th><th>Amt</th><th>Status</th></tr></thead>
+  <thead><tr><th>From</th><th>To</th><th>Resource</th><th>Amt</th><th>Progress</th><th></th></tr></thead>
   <tbody>
-    @for (route of state.state.current_city!.routes; track $index) {
+    @for (entry of allRoutes; track $index) {
       <tr>
-        <td>{{route.from}}</td><td>{{route.to}}</td><td>{{route.resource}}</td><td>{{route.amount}}</td>
-        <td>{{route.ship?.status}}{{ route.ship && route.ship.status !== 'Ready' ? ' ' + (route.progress * 100 | number:'1.0-0') + '%' : '' }}</td>
+        <td>{{entry.route.from}}</td>
+        <td>{{entry.route.to}}</td>
+        <td>{{entry.route.resource}}</td>
+        <td>{{entry.route.amount}}</td>
+        <td>
+          @if (entry.route.ship) {
+            <span class="route-status">{{entry.route.ship.status}}</span>
+            @if (entry.route.ship.status !== 'Ready') {
+              <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" [style.width.%]="progressPct(entry.route)"></div>
+              </div>
+            }
+          } @else {
+            <span class="route-status empty">No ship</span>
+          }
+        </td>
+        <td>
+          <button class="btn btn-sm btn-danger" (click)="DeleteRoute(entry.city, entry.route)">✕</button>
+        </td>
       </tr>
     } @empty {
-      <tr><td class="empty" colspan="5">No routes yet</td></tr>
+      <tr><td class="empty" colspan="6">No routes yet</td></tr>
     }
   </tbody>
 </table>
 
+<hr class="divider">
 <details class="collapsible">
   <summary>Create Route</summary>
   <div class="field">
     <label>From</label>
     <select class="input" [(ngModel)]="from">
       <option [ngValue]="undefined" disabled>Select city…</option>
-      @for (c of state.state.cities; track $index) { <option [ngValue]="c">{{c.name}}</option> }
+      @for (c of cities; track $index) { <option [ngValue]="c">{{c.name}}</option> }
     </select>
   </div>
   <div class="field">
     <label>To</label>
     <select class="input" [(ngModel)]="to">
       <option [ngValue]="undefined" disabled>Select city…</option>
-      @for (c of state.state.cities; track $index) { <option [ngValue]="c">{{c.name}}</option> }
+      @for (c of cities; track $index) { <option [ngValue]="c">{{c.name}}</option> }
     </select>
   </div>
   <div class="field">
     <label>Resource</label>
-    <select class="input" [(ngModel)]="resource">
+    <select class="input" [(ngModel)]="selectedResource">
       <option [ngValue]="undefined" disabled>Select resource…</option>
-      @for (item of items(); track item.type) { <option [ngValue]="item">{{item.type}}</option> }
+      @for (r of allResources; track r) { <option [ngValue]="r">{{r}}</option> }
     </select>
   </div>
   <div class="field">
-    <label>Amount</label>
-    <input class="input" type="number" min="0" step="1" [(ngModel)]="amount">
+    <label>Amount / trip</label>
+    <input class="input" type="number" min="1" step="1" [(ngModel)]="amount">
   </div>
   <div class="field">
-    <label>Ship</label>
+    <label>Ship (from origin)</label>
     <select class="input" [(ngModel)]="ship">
-      <option [ngValue]="undefined" disabled>Select a ship…</option>
-      @for (s of state.state.current_city!.ships; track $index) { <option [ngValue]="s">{{s.type}}</option> }
+      <option [ngValue]="undefined">— unassigned —</option>
+      @for (s of (from ? from.ships : []); track $index) {
+        <option [ngValue]="s">{{s.type}} (cap {{s.max_cargo}})</option>
+      }
     </select>
   </div>
-  <button class="btn btn-sm btn-primary btn-block" [disabled]="!from || !to || !resource" (click)="CreateRoute()">Create Route</button>
+  <button class="btn btn-sm btn-primary btn-block"
+          [disabled]="!from || !to || from === to || !selectedResource || amount < 1"
+          (click)="CreateRoute()">
+    Create Route
+  </button>
 </details>

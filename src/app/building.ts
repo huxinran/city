@@ -13,6 +13,7 @@ const SMALL_BUILDINGS = new Set<BuildingType>([
     BuildingType.FISHERY,
     BuildingType.MARKETPLACE, BuildingType.TAVERN, BuildingType.CHAPEL,
     BuildingType.CLINIC, BuildingType.COURTHOUSE, BuildingType.ENGINEER_STATION,
+    BuildingType.WHALING_POST,
 ])
 const MEDIUM_BUILDINGS = new Set<BuildingType>([
     BuildingType.WAREHOUSE,
@@ -30,6 +31,17 @@ const MEDIUM_BUILDINGS = new Set<BuildingType>([
     BuildingType.TOOLSMITH, BuildingType.JEWELER, BuildingType.CARPENTER_SHOP,
     BuildingType.WINERY, BuildingType.OIL_PRESS, BuildingType.RUM_DISTILLERY,
     BuildingType.CONCRETE_PLANT, BuildingType.SCULPTOR, BuildingType.GLAZIER,
+    // Jinlin workshops
+    BuildingType.TOFU_SHOP, BuildingType.KILN, BuildingType.NOODLE_SHOP,
+    // Columbia workshops
+    BuildingType.CORN_MILL, BuildingType.TANNERY, BuildingType.DENIM_MILL,
+    BuildingType.WHISKEY_DISTILLERY, BuildingType.RAIL_MILL,
+    // Solara workshops
+    BuildingType.PALM_OIL_PRESS, BuildingType.COCOA_SHOP,
+    BuildingType.COPPER_MINE, BuildingType.BRONZE_FOUNDRY,
+    // Mintaka workshops
+    BuildingType.FUR_WORKSHOP, BuildingType.SMOKEHOUSE,
+    BuildingType.BLUBBER_PRESS, BuildingType.AMBER_MINE,
 ])
 
 export const WORKSHOP_BUILDINGS = new Set<BuildingType>([
@@ -48,6 +60,17 @@ export const WORKSHOP_BUILDINGS = new Set<BuildingType>([
     BuildingType.TOOLSMITH, BuildingType.JEWELER, BuildingType.CARPENTER_SHOP,
     BuildingType.WINERY, BuildingType.OIL_PRESS, BuildingType.RUM_DISTILLERY,
     BuildingType.CONCRETE_PLANT, BuildingType.SCULPTOR, BuildingType.GLAZIER,
+    // Jinlin
+    BuildingType.TOFU_SHOP, BuildingType.KILN, BuildingType.NOODLE_SHOP,
+    // Columbia
+    BuildingType.CORN_MILL, BuildingType.TANNERY, BuildingType.DENIM_MILL,
+    BuildingType.WHISKEY_DISTILLERY, BuildingType.RAIL_MILL,
+    // Solara
+    BuildingType.PALM_OIL_PRESS, BuildingType.COCOA_SHOP,
+    BuildingType.COPPER_MINE, BuildingType.BRONZE_FOUNDRY,
+    // Mintaka
+    BuildingType.WHALING_POST, BuildingType.FUR_WORKSHOP, BuildingType.SMOKEHOUSE,
+    BuildingType.BLUBBER_PRESS, BuildingType.AMBER_MINE,
 ])
 
 export function IsWorkshopBuilding(type: BuildingType): boolean {
@@ -114,14 +137,20 @@ let _resourceTier: { [key: string]: number } | undefined
 function resourceTierMap(): { [key: string]: number } {
     if (_resourceTier) return _resourceTier
     let tier: { [key: string]: number } = {}
-    // Seed: resources directly needed by houses (ongoing + upgrade baskets).
-    for (let t = 1; t <= 6; t++) {
-        let resources = [
-            ...GetResourceNeed(t).map(n => n.type),
-            ...GetUpgradeItems(t).map(i => i.type),
-        ]
-        for (let r of resources) {
-            if (!(r in tier) || t < tier[r]) tier[r] = t
+    // Seed from Anrelia (6 tiers) and all themed cities (3 tiers each).
+    const citySeeds: (CityName | undefined)[] = [
+        undefined, CityName.JINLIN, CityName.COLUMBIA, CityName.SOLARA, CityName.MINTAKA,
+    ]
+    for (let cityType of citySeeds) {
+        let maxTier = GetCityMaxTier(cityType)
+        for (let t = 1; t <= maxTier; t++) {
+            let resources = [
+                ...GetResourceNeed(t, cityType).map(n => n.type),
+                ...GetUpgradeItems(t, cityType).map(i => i.type),
+            ]
+            for (let r of resources) {
+                if (!(r in tier) || t < tier[r]) tier[r] = t
+            }
         }
     }
     // Collect every production recipe (ingredient list -> product list).
@@ -181,6 +210,34 @@ const BUILDING_TIER_OVERRIDE: { [key: string]: number } = {
     [BuildingType.IRON_MINE]:  3,   // iron ore   (Artisan; steel is a tier-4 build good, which would pull the chain to Scholar)
     [BuildingType.FORGE]:      3,   // iron ingot (Artisan)
     [BuildingType.STEELWORK]:  3,   // steel      (Artisan)
+    // --- Jinlin buildings ---
+    [BuildingType.TEA_GARDEN]:  1,  // tea garden produces basic resource
+    [BuildingType.SILK_FARM]:   1,  // silk farm produces basic material
+    [BuildingType.TOFU_SHOP]:   1,  // tofu is a tier-1 food need in Jinlin
+    [BuildingType.KILN]:        2,  // porcelain is tier-2 daily need in Jinlin
+    [BuildingType.NOODLE_SHOP]: 2,  // noodles are tier-2 food in Jinlin
+    // --- Columbia buildings ---
+    [BuildingType.CATTLE_RANCH]:      1,  // beef is the basic food source
+    [BuildingType.CORN_MILL]:         1,  // cornbread is tier-1 food in Columbia
+    [BuildingType.TANNERY]:           1,  // leather is tier-1 daily need
+    [BuildingType.DENIM_MILL]:        2,  // denim is tier-2 daily need
+    [BuildingType.WHISKEY_DISTILLERY]:2,  // whiskey is tier-2 luxury
+    [BuildingType.RAIL_MILL]:         3,  // rail is tier-3 industrial good
+    // --- Solara buildings ---
+    [BuildingType.PALM_GROVE]:      1,  // palm fruit is raw material
+    [BuildingType.PALM_OIL_PRESS]:  1,  // palm oil is tier-1 daily need
+    [BuildingType.COCOA_SHOP]:      2,  // cocoa drink is tier-2 food
+    [BuildingType.COPPER_MINE]:     2,  // copper feeds bronze (tier-2 daily)
+    [BuildingType.BRONZE_FOUNDRY]:  2,  // bronze is tier-2 daily need
+    [BuildingType.INCENSE_GROVE]:   2,  // incense is tier-2 luxury
+    [BuildingType.IVORY_CAMP]:      3,  // ivory is a tier-3 luxury good
+    // --- Mintaka buildings ---
+    [BuildingType.REINDEER_FARM]:   2,  // reindeer meat is tier-2 food
+    [BuildingType.FUR_WORKSHOP]:    1,  // fur coat is tier-1 daily need
+    [BuildingType.SMOKEHOUSE]:      1,  // smoked fish is tier-1 food
+    [BuildingType.WHALING_POST]:    2,  // blubber feeds whale oil (tier-2)
+    [BuildingType.BLUBBER_PRESS]:   2,  // whale oil is tier-2 daily need
+    [BuildingType.AMBER_MINE]:      3,  // amber is a tier-3 luxury good
 }
 
 export function GetBuildingTier(type: BuildingType): number | undefined {
@@ -214,6 +271,14 @@ export const FARM_BUILDINGS = new Set<BuildingType>([
     BuildingType.COTTON_FIELD, BuildingType.RUBBER_PLANTATION,
     BuildingType.BERRY_GROVE, BuildingType.APIARY,
     BuildingType.TRAPLINE,
+    // Jinlin farms
+    BuildingType.TEA_GARDEN, BuildingType.SILK_FARM,
+    // Columbia farms
+    BuildingType.CATTLE_RANCH,
+    // Solara farms
+    BuildingType.PALM_GROVE, BuildingType.INCENSE_GROVE, BuildingType.IVORY_CAMP,
+    // Mintaka farms
+    BuildingType.REINDEER_FARM,
 ])
 
 export function IsFarmBuilding(type: BuildingType): boolean {
@@ -239,6 +304,7 @@ const SEA_BUILDINGS = new Set<BuildingType>([
     BuildingType.DOCK,
     BuildingType.SHIPYARD,
     BuildingType.SALTERN,
+    BuildingType.WHALING_POST,
 ])
 const ROCK_BUILDINGS = new Set<BuildingType>([
     BuildingType.STONE_QUARRY,
@@ -247,12 +313,16 @@ const ROCK_BUILDINGS = new Set<BuildingType>([
     BuildingType.GEM_MINE,
     BuildingType.GOLD_MINE,
     BuildingType.IRON_MINE,
+    BuildingType.COPPER_MINE,
+    BuildingType.AMBER_MINE,
 ])
 const TREE_BUILDINGS = new Set<BuildingType>([
     BuildingType.LUMBER_HUT,
     BuildingType.TRAPLINE,
     BuildingType.BERRY_GROVE,
     BuildingType.APIARY,
+    BuildingType.INCENSE_GROVE,
+    BuildingType.IVORY_CAMP,
 ])
 
 const LAND_TERRAINS = [Terrain.GRASS, Terrain.SAND]
@@ -359,6 +429,23 @@ export const BUILDING_ICONS: { [key: string]: string } = {
     [BuildingType.SHIPYARD]: '⚓',   [BuildingType.DOCK]: '⛵',
     [BuildingType.ROAD]: '🛣️',
     [BuildingType.DELETE]: '🗑️',
+    // Jinlin (East Asian) buildings
+    [BuildingType.TEA_GARDEN]: '🍵',   [BuildingType.SILK_FARM]: '🪺',
+    [BuildingType.TOFU_SHOP]: '🫘',    [BuildingType.KILN]: '🏺',
+    [BuildingType.NOODLE_SHOP]: '🍜',
+    // Columbia (American frontier) buildings
+    [BuildingType.CATTLE_RANCH]: '🐄',  [BuildingType.CORN_MILL]: '🌽',
+    [BuildingType.TANNERY]: '🥩',       [BuildingType.DENIM_MILL]: '🧵',
+    [BuildingType.WHISKEY_DISTILLERY]: '🥃', [BuildingType.RAIL_MILL]: '🛤️',
+    // Solara (African / tropical) buildings
+    [BuildingType.PALM_GROVE]: '🌴',    [BuildingType.PALM_OIL_PRESS]: '🫗',
+    [BuildingType.COCOA_SHOP]: '🍫',    [BuildingType.COPPER_MINE]: '🪨',
+    [BuildingType.BRONZE_FOUNDRY]: '🔶', [BuildingType.INCENSE_GROVE]: '🌿',
+    [BuildingType.IVORY_CAMP]: '🐘',
+    // Mintaka (polar) buildings
+    [BuildingType.REINDEER_FARM]: '🦌',  [BuildingType.FUR_WORKSHOP]: '🧥',
+    [BuildingType.SMOKEHOUSE]: '🐟',     [BuildingType.WHALING_POST]: '🐋',
+    [BuildingType.BLUBBER_PRESS]: '🛢️',  [BuildingType.AMBER_MINE]: '🟡',
 }
 
 export function GetBuildingIcon(type: BuildingType): string {
@@ -420,9 +507,9 @@ export function RefreshHouse(house: House) {
     house.resident_type = GetResidentType(house.tier)
     house.type = GetHouseType(house.tier)
     house.current_max_occupant = GetCurrentMaxOccupant(house.tier, house.happiness)
-    house.resource_needs = GetResourceNeed(house.tier)
-    house.service_needs = GetServiceNeed(house.tier)
-} 
+    house.resource_needs = GetResourceNeed(house.tier, house.city_type)
+    house.service_needs = GetServiceNeed(house.tier, house.city_type)
+}
 
 
 export class House {
@@ -436,7 +523,8 @@ export class House {
         public resource_needs: ResourceNeed[] = GetResourceNeed(tier),
         public service_needs: ServiceNeed[] = GetServiceNeed(tier),
         public resident_type: Resident = Resident.FARMER,
-        public storage: Storage = new Storage()
+        public storage: Storage = new Storage(),
+        public city_type: CityName = CityName.ANRELIA,
     ) {
         RefreshHouse(this)
     }
@@ -739,45 +827,177 @@ const UPGRADE_COSTS: { [tier: number]: UpgradeBasket } = {
     },
 }
 
+// City-specific upgrade baskets (only tiers 2 and 3; higher tiers locked).
+const UPGRADE_COSTS_JINLIN: { [tier: number]: UpgradeBasket } = {
+    2: {
+        food:   [new Item(Resource.TOFU, 8)],
+        daily:  [new Item(Resource.SILK, 6)],
+        luxury: [],
+        build:  [new Item(Resource.TIMBER, 10)],
+    },
+    3: {
+        food:   [new Item(Resource.NOODLE, 10)],
+        daily:  [new Item(Resource.PORCELAIN, 8)],
+        luxury: [new Item(Resource.TEA, 8)],
+        build:  [new Item(Resource.BRICK, 15)],
+    },
+}
+
+const UPGRADE_COSTS_COLUMBIA: { [tier: number]: UpgradeBasket } = {
+    2: {
+        food:   [new Item(Resource.CORNBREAD, 8)],
+        daily:  [new Item(Resource.LEATHER, 6)],
+        luxury: [],
+        build:  [new Item(Resource.TIMBER, 10)],
+    },
+    3: {
+        food:   [new Item(Resource.BEEF, 10)],
+        daily:  [new Item(Resource.DENIM, 8)],
+        luxury: [new Item(Resource.WHISKEY, 8)],
+        build:  [new Item(Resource.BRICK, 15)],
+    },
+}
+
+const UPGRADE_COSTS_SOLARA: { [tier: number]: UpgradeBasket } = {
+    2: {
+        food:   [new Item(Resource.COCOA_DRINK, 8)],
+        daily:  [new Item(Resource.PALM_OIL, 6)],
+        luxury: [],
+        build:  [new Item(Resource.TIMBER, 10)],
+    },
+    3: {
+        food:   [new Item(Resource.PORK, 10)],
+        daily:  [new Item(Resource.BRONZE, 8)],
+        luxury: [new Item(Resource.INCENSE, 8)],
+        build:  [new Item(Resource.BRICK, 15)],
+    },
+}
+
+const UPGRADE_COSTS_MINTAKA: { [tier: number]: UpgradeBasket } = {
+    2: {
+        food:   [new Item(Resource.SMOKED_FISH, 8)],
+        daily:  [new Item(Resource.FUR_COAT, 6)],
+        luxury: [],
+        build:  [new Item(Resource.TIMBER, 10)],
+    },
+    3: {
+        food:   [new Item(Resource.REINDEER_MEAT, 10)],
+        daily:  [new Item(Resource.WHALE_OIL, 8)],
+        luxury: [new Item(Resource.RUM, 8)],
+        build:  [new Item(Resource.BRICK, 15)],
+    },
+}
+
+// Max tier per city: non-Anrelia cities cap at 3.
+export function GetCityMaxTier(cityType?: CityName): number {
+    return (!cityType || cityType === CityName.ANRELIA) ? 6 : 3
+}
+
 // The categorized basket required to upgrade a house into `targetTier`.
-export function GetUpgradeCost(targetTier: number): UpgradeBasket {
+export function GetUpgradeCost(targetTier: number, cityType?: CityName): UpgradeBasket {
+    if (cityType === CityName.JINLIN)   return UPGRADE_COSTS_JINLIN[targetTier]   ?? EMPTY_BASKET
+    if (cityType === CityName.COLUMBIA) return UPGRADE_COSTS_COLUMBIA[targetTier] ?? EMPTY_BASKET
+    if (cityType === CityName.SOLARA)   return UPGRADE_COSTS_SOLARA[targetTier]   ?? EMPTY_BASKET
+    if (cityType === CityName.MINTAKA)  return UPGRADE_COSTS_MINTAKA[targetTier]  ?? EMPTY_BASKET
     return UPGRADE_COSTS[targetTier] ?? EMPTY_BASKET
 }
 
 // Flattened list of every item in the upgrade basket, for affordability checks
 // and charging in one shot.
-export function GetUpgradeItems(targetTier: number): Item[] {
-    let b = GetUpgradeCost(targetTier)
+export function GetUpgradeItems(targetTier: number, cityType?: CityName): Item[] {
+    let b = GetUpgradeCost(targetTier, cityType)
     return [...b.food, ...b.daily, ...b.luxury, ...b.build]
 }
 
 
-// Goods a house consumes continuously (drives happiness, which gates upgrades).
-// Each tier draws on Food, Daily, then Luxury goods — the higher the station,
-// the broader the basket it expects to keep stocked.
-export function GetResourceNeed(tier: number) {
+// --- Per-city resource need tables (3 tiers each) ---
+
+function GetResourceNeedJinlin(tier: number): ResourceNeed[] {
     const needs: Resource[] = []
-    // Food
+    if (tier >= 1) needs.push(Resource.RICE, Resource.FISH)
+    if (tier >= 2) needs.push(Resource.TOFU)
+    if (tier >= 3) needs.push(Resource.NOODLE)
+    if (tier >= 1) needs.push(Resource.PANT)
+    if (tier >= 2) needs.push(Resource.SILK)
+    if (tier >= 3) needs.push(Resource.PORCELAIN)
+    if (tier >= 2) needs.push(Resource.TEA)
+    if (tier >= 3) needs.push(Resource.WINE)
+    return needs.map(r => new ResourceNeed(r))
+}
+
+function GetResourceNeedColumbia(tier: number): ResourceNeed[] {
+    const needs: Resource[] = []
+    if (tier >= 1) needs.push(Resource.CORNBREAD)
+    if (tier >= 2) needs.push(Resource.BEEF)
+    if (tier >= 3) needs.push(Resource.SAUSAGE)
+    if (tier >= 1) needs.push(Resource.LEATHER)
+    if (tier >= 2) needs.push(Resource.DENIM)
+    if (tier >= 3) needs.push(Resource.FURNITURE)
+    if (tier >= 2) needs.push(Resource.WHISKEY)
+    if (tier >= 3) needs.push(Resource.BRANDY)
+    return needs.map(r => new ResourceNeed(r))
+}
+
+function GetResourceNeedSolara(tier: number): ResourceNeed[] {
+    const needs: Resource[] = []
+    if (tier >= 1) needs.push(Resource.BANANA)
+    if (tier >= 2) needs.push(Resource.COCOA_DRINK)
+    if (tier >= 3) needs.push(Resource.PORK)
+    if (tier >= 1) needs.push(Resource.PALM_OIL)
+    if (tier >= 2) needs.push(Resource.BRONZE)
+    if (tier >= 3) needs.push(Resource.POTTERY)
+    if (tier >= 2) needs.push(Resource.INCENSE)
+    if (tier >= 3) needs.push(Resource.GOLD)
+    return needs.map(r => new ResourceNeed(r))
+}
+
+function GetResourceNeedMintaka(tier: number): ResourceNeed[] {
+    const needs: Resource[] = []
+    if (tier >= 1) needs.push(Resource.SMOKED_FISH)
+    if (tier >= 2) needs.push(Resource.REINDEER_MEAT)
+    if (tier >= 3) needs.push(Resource.CHEESE)
+    if (tier >= 1) needs.push(Resource.FUR_COAT)
+    if (tier >= 2) needs.push(Resource.WHALE_OIL)
+    if (tier >= 3) needs.push(Resource.TOOL)
+    if (tier >= 2) needs.push(Resource.RUM)
+    if (tier >= 3) needs.push(Resource.AMBER)
+    return needs.map(r => new ResourceNeed(r))
+}
+
+// Goods a house consumes continuously (drives happiness, which gates upgrades).
+export function GetResourceNeed(tier: number, cityType?: CityName): ResourceNeed[] {
+    if (cityType === CityName.JINLIN)   return GetResourceNeedJinlin(tier)
+    if (cityType === CityName.COLUMBIA) return GetResourceNeedColumbia(tier)
+    if (cityType === CityName.SOLARA)   return GetResourceNeedSolara(tier)
+    if (cityType === CityName.MINTAKA)  return GetResourceNeedMintaka(tier)
+    // Anrelia (default): original 6-tier system
+    const needs: Resource[] = []
     if (tier >= 1) needs.push(Resource.FISH)
     if (tier >= 2) needs.push(Resource.SAUSAGE)
     if (tier >= 2) needs.push(Resource.CABBAGE)
     if (tier >= 3) needs.push(Resource.BREAD)
     if (tier >= 4) needs.push(Resource.CHEESE)
-    // Daily items
     if (tier >= 1) needs.push(Resource.PANT)
     if (tier >= 2) needs.push(Resource.POTTERY)
     if (tier >= 5) needs.push(Resource.FURNITURE)
-    // Luxury
     if (tier >= 3) needs.push(Resource.CIDER)
     if (tier >= 4) needs.push(Resource.WINE)
     if (tier >= 6) needs.push(Resource.BRANDY)
     return needs.map(r => new ResourceNeed(r))
 }
 
+// Services needed for non-Anrelia 3-tier cities.
+function GetServiceNeedOtherCity(tier: number): ServiceNeed[] {
+    const services: ServiceType[] = []
+    if (tier >= 1) services.push(ServiceType.WATER)
+    if (tier >= 2) services.push(ServiceType.MARKET, ServiceType.HEALTH)
+    if (tier >= 3) services.push(ServiceType.FIRE, ServiceType.SCHOOL)
+    return services.map(s => new ServiceNeed(s))
+}
+
 // Services a house of the given tier requires (coverage from service buildings).
-// The list grows each tier: water for everyone, commerce and safety for the
-// middle class, schooling and culture for the elite.
-export function GetServiceNeed(tier: number) {
+export function GetServiceNeed(tier: number, cityType?: CityName): ServiceNeed[] {
+    if (cityType && cityType !== CityName.ANRELIA) return GetServiceNeedOtherCity(tier)
     const services: ServiceType[] = []
     if (tier >= 1) services.push(ServiceType.WATER)
     if (tier >= 2) services.push(ServiceType.MARKET)
@@ -960,6 +1180,58 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
         new_building = new Building(type, [new Item(Resource.SLATE, 10)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.OLIVE, 1)], [new Item(Resource.OIL, 1)]))
     } else if (type == BuildingType.RUM_DISTILLERY) {
         new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.SUGAR_CANE, 1)], [new Item(Resource.RUM, 1)]))
+    // ---- Jinlin (East Asian) buildings ----
+    } else if (type == BuildingType.TEA_GARDEN) {
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.TEA, 1)]))
+    } else if (type == BuildingType.SILK_FARM) {
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.SILK, 1)]))
+    } else if (type == BuildingType.TOFU_SHOP) {
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [new Item(Resource.SOYBEAN, 1)], [new Item(Resource.TOFU, 1)]))
+    } else if (type == BuildingType.KILN) {
+        new_building = new Building(type, [new Item(Resource.BRICK, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.CLAY, 1)], [new Item(Resource.PORCELAIN, 1)]))
+    } else if (type == BuildingType.NOODLE_SHOP) {
+        new_building = new Building(type, [new Item(Resource.BRICK, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.RICE, 1)], [new Item(Resource.NOODLE, 1)]))
+    // ---- Columbia (American frontier) buildings ----
+    } else if (type == BuildingType.CATTLE_RANCH) {
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.BEEF, 1)]))
+    } else if (type == BuildingType.CORN_MILL) {
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [new Item(Resource.CORN, 1)], [new Item(Resource.CORNBREAD, 1)]))
+    } else if (type == BuildingType.TANNERY) {
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [new Item(Resource.BEEF, 1)], [new Item(Resource.LEATHER, 1)]))
+    } else if (type == BuildingType.DENIM_MILL) {
+        new_building = new Building(type, [new Item(Resource.BRICK, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.COTTON, 1)], [new Item(Resource.DENIM, 1)]))
+    } else if (type == BuildingType.WHISKEY_DISTILLERY) {
+        new_building = new Building(type, [new Item(Resource.BRICK, 15)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.CORN, 1)], [new Item(Resource.WHISKEY, 1)]))
+    } else if (type == BuildingType.RAIL_MILL) {
+        new_building = new Building(type, [new Item(Resource.STEEL, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.STEEL, 1)], [new Item(Resource.RAIL, 1)]))
+    // ---- Solara (African / tropical) buildings ----
+    } else if (type == BuildingType.PALM_GROVE) {
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.PALM_FRUIT, 1)]))
+    } else if (type == BuildingType.PALM_OIL_PRESS) {
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [new Item(Resource.PALM_FRUIT, 1)], [new Item(Resource.PALM_OIL, 1)]))
+    } else if (type == BuildingType.COCOA_SHOP) {
+        new_building = new Building(type, [new Item(Resource.BRICK, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.COCOA, 1)], [new Item(Resource.COCOA_DRINK, 1)]))
+    } else if (type == BuildingType.COPPER_MINE) {
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.WORKER, 8.0, [], [new Item(Resource.COPPER, 1)]))
+    } else if (type == BuildingType.BRONZE_FOUNDRY) {
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.COPPER, 1)], [new Item(Resource.BRONZE, 1)]))
+    } else if (type == BuildingType.INCENSE_GROVE) {
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.INCENSE, 1)]))
+    } else if (type == BuildingType.IVORY_CAMP) {
+        new_building = new Building(type, [new Item(Resource.BRICK, 10)], undefined, new Production(10, Resident.ARTISAN, 8.0, [], [new Item(Resource.IVORY, 1)]))
+    // ---- Mintaka (polar) buildings ----
+    } else if (type == BuildingType.REINDEER_FARM) {
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.REINDEER_MEAT, 1)]))
+    } else if (type == BuildingType.FUR_WORKSHOP) {
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [new Item(Resource.FUR, 1)], [new Item(Resource.FUR_COAT, 1)]))
+    } else if (type == BuildingType.SMOKEHOUSE) {
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [new Item(Resource.FISH, 1), new Item(Resource.SALT, 1)], [new Item(Resource.SMOKED_FISH, 1)]))
+    } else if (type == BuildingType.WHALING_POST) {
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(10, Resident.FARMER, 10.0, [], [new Item(Resource.BLUBBER, 1)]))
+    } else if (type == BuildingType.BLUBBER_PRESS) {
+        new_building = new Building(type, [new Item(Resource.BRICK, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.BLUBBER, 1)], [new Item(Resource.WHALE_OIL, 1)]))
+    } else if (type == BuildingType.AMBER_MINE) {
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.ARTISAN, 8.0, [], [new Item(Resource.AMBER, 1)]))
     }
     if (new_building) {
         new_building.material = BuildMaterial(type, new_building.material)
@@ -977,6 +1249,12 @@ function BuildMaterial(type: BuildingType, current: Item[]): Item[] {
     if (type == BuildingType.HOUSE) return [new Item(Resource.TIMBER, 1)]
     if (FARM_BUILDINGS.has(type)) return [new Item(Resource.TIMBER, 1)]
     if (type == BuildingType.WAREHOUSE) return [new Item(Resource.TIMBER, 10)]
+    // Themed city workshops also bootstrap cheaply from timber
+    if (type == BuildingType.TOFU_SHOP || type == BuildingType.NOODLE_SHOP) return [new Item(Resource.TIMBER, 5)]
+    if (type == BuildingType.CORN_MILL || type == BuildingType.TANNERY)     return [new Item(Resource.TIMBER, 5)]
+    if (type == BuildingType.PALM_OIL_PRESS || type == BuildingType.COCOA_SHOP) return [new Item(Resource.TIMBER, 5)]
+    if (type == BuildingType.FUR_WORKSHOP || type == BuildingType.SMOKEHOUSE) return [new Item(Resource.TIMBER, 5)]
+    if (type == BuildingType.BLUBBER_PRESS) return [new Item(Resource.TIMBER, 5)]
     return current
 }
 
