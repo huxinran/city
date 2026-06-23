@@ -8,9 +8,9 @@ import { GetBuildingSize, GetBuildingIcon, IsFarmBuilding, IsAnimalFarm, IsWorks
 import { GetBuildingIconSrc } from '../building-icons'
 import { IconComponent } from '../icon/icon.component'
 
-const CROP_FARM_ICON = 'assets/icons/buildings/crop-farm.png'
-const ANIMAL_FARM_ICON = 'assets/icons/buildings/animal-farm.png'
-const WORKSHOP_ICON = 'assets/icons/buildings/workshop.png'
+const CROP_FARM_ICON = 'assets/used/buildings/crop-farm.png'
+const ANIMAL_FARM_ICON = 'assets/used/buildings/animal-farm.png'
+const WORKSHOP_ICON = 'assets/used/buildings/workshop.png'
 
 const MAP_TILE_ASSETS: { [key: string]: { file: string, color: string } } = {
   [Terrain.WATER]: { file: 'sea.png', color: '#47c9ff' },
@@ -18,9 +18,9 @@ const MAP_TILE_ASSETS: { [key: string]: { file: string, color: string } } = {
   [Terrain.SAND]:  { file: 'sand.png', color: '#ffe48b' },
 }
 
-const MAP_TILE_BASE = 'assets/map-tiles-cute-48/'
+const MAP_TILE_BASE = 'assets/used/map-tiles/'
 const ROAD_TILE_ASSET = MAP_TILE_BASE + 'cobblestone-road.png'
-const TERRAIN_OBJECT_BASE = 'assets/terrain-objects-cute-48/'
+const TERRAIN_OBJECT_BASE = 'assets/used/terrain/'
 
 @Component({
   selector: 'app-tile',

@@ -145,7 +145,7 @@ export function GetWorkshopProductIconName(type: BuildingType): string {
 // ---------------------------------------------------------------------------
 // Image-based icons
 // Each value is a filename slug (no extension, no path prefix).
-// The loader tries  assets/icons/buildings/<slug>.png  then  .jpg  in order.
+// The loader tries  assets/used/buildings/<slug>.png  then  .jpg  in order.
 // If neither exists the SVG fallback from BUILDING_ICON_NAMES is shown.
 // ---------------------------------------------------------------------------
 const BUILDING_IMAGE_SLUGS: { [key: string]: string } = {
@@ -237,8 +237,8 @@ const BUILDING_IMAGE_SLUGS: { [key: string]: string } = {
     [BuildingType.DELETE]:                'delete',
 }
 
-const BUILDING_ICON_BASE = 'assets/icons/buildings/'
-const RESOURCE_ICON_BASE = 'assets/resource-icons-cute-64/'
+const BUILDING_ICON_BASE = 'assets/used/buildings/'
+const RESOURCE_ICON_BASE = 'assets/used/resources/'
 
 // Maps buildings to the resource icon PNG of their primary output product.
 // Only lists buildings where a matching resource PNG already exists.
@@ -312,7 +312,7 @@ const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
 }
 
 // Returns a PNG URL for a building icon:
-// 1. Dedicated building PNG in assets/icons/buildings/ (preferred once art exists)
+// 1. Dedicated building PNG in assets/used/buildings/ (preferred once art exists)
 // 2. Resource icon of its primary output product (available now)
 // 3. undefined → emoji fallback in IconComponent
 export function GetBuildingIconSrc(type: BuildingType): string | undefined {

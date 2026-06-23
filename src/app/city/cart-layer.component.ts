@@ -11,9 +11,9 @@ const TILE = 48;
 // (icon + emoji) and map to it in cartState() — the template needs no changes.
 type CartVisual = { icon: string, emoji: string }
 const CART_VISUALS = {
-  fetching: { icon: 'assets/icons/buildings/cart-fetching.png', emoji: '🛺' },
-  loaded:   { icon: 'assets/icons/buildings/cart-loaded.png',   emoji: '📦' },
-  empty:    { icon: 'assets/icons/buildings/cart-empty.png',    emoji: '🛒' },
+  fetching: { icon: 'assets/used/buildings/cart-fetching.png', emoji: '🛺' },
+  loaded:   { icon: 'assets/used/buildings/cart-loaded.png',   emoji: '📦' },
+  empty:    { icon: 'assets/used/buildings/cart-empty.png',    emoji: '🛒' },
 } satisfies Record<string, CartVisual>
 
 @Component({

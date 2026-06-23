@@ -2,7 +2,7 @@ import { Resource } from './types'
 
 // Shared resource icon lookup: a cute PNG when art exists, else an emoji.
 
-const RESOURCE_ICON_BASE = 'assets/resource-icons-cute-64/'
+const RESOURCE_ICON_BASE = 'assets/used/resources/'
 const RESOURCE_ICON_FILES: { [key: string]: string } = {
   [Resource.APPLE]: 'apple.png',
   [Resource.BANANA]: 'banana.png',
