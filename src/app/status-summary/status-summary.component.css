@@ -5,7 +5,10 @@
     flex-wrap: wrap;
     gap: 6px 24px;
     font-size: 22px;
+    flex: 1;
 }
+
+.pop-spacer { flex: 1; }
 
 .city-wrap {
     position: relative;
@@ -119,6 +122,6 @@
 
 .stat .k { color: var(--text-dim); font-size: 56px; line-height: 1; }
 .material-icon ::ng-deep .icon-img { image-rendering: pixelated; }
-.stat .v { color: var(--text); font-weight: 600; font-size: 24px; font-variant-numeric: tabular-nums; }
+.stat .v { color: var(--text); font-weight: 600; font-size: 15px; font-variant-numeric: tabular-nums; }
 .stat .v.gold { color: #fbbf24; }
 .stat .mut { color: var(--text-mut); }

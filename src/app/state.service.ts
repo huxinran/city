@@ -630,15 +630,14 @@ export class StateService {
     for (let t of city.shipyards) {
       let shipyard = t.building!.shipyard!
       let blueprint = shipyard.selected
-      if (shipyard.status == ProductionStatus.IN_PROGRESS) {
-        shipyard.progress = Math.min(1.0, shipyard.progress += 1.0 / blueprint!.build_time)
-      }
-
-      if (shipyard.progress == 1.0) {
+      // Only build while in progress with a chosen blueprint; nothing to do
+      // (and no blueprint to read) otherwise.
+      if (shipyard.status != ProductionStatus.IN_PROGRESS || !blueprint) continue
+      shipyard.progress = Math.min(1.0, shipyard.progress + 1.0 / blueprint.build_time)
+      if (shipyard.progress >= 1.0) {
         shipyard.progress = 0
         shipyard.status = ProductionStatus.READY
-        let ship = new Ship(blueprint!.type, blueprint!.max_cargo, blueprint!.speed)
-        city.ships.push(ship)
+        city.ships.push(new Ship(blueprint.type, blueprint.max_cargo, blueprint.speed))
       }
     }
   }

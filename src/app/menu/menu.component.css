@@ -21,6 +21,28 @@
 }
 .selection b { color: var(--accent); }
 
+.menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    padding: 2px;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+}
+
+.menu-btn:hover {
+    background: var(--elevated);
+}
+
+.menu-icon {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    display: block;
+}
+
 /* Custom dropdown menu (replaces Angular Material mat-menu) */
 .menu-wrap {
     position: relative;

@@ -1,5 +1,7 @@
 <div class="menu-wrap">
-  <button class="btn btn-sm" (click)="toggle()">Menu ▾</button>
+  <button class="menu-btn" (click)="toggle()" title="Menu">
+    <img src="assets/reserve/main-menu/main-menu-button-v1.png" alt="Menu" class="menu-icon">
+  </button>
 
   @if (open()) {
     <div class="menu-backdrop" (click)="close()"></div>

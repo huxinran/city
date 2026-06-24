@@ -13,6 +13,8 @@ import { repaintOn } from '../live';
 // categorized tier groups so they aren't listed twice).
 const BASIC_BUILDINGS = [BuildingType.ROAD, BuildingType.HOUSE, BuildingType.WAREHOUSE, BuildingType.DELETE]
 
+const HIDDEN_BUILDINGS = new Set<BuildingType>([BuildingType.COMPOST_PIT])
+
 // All city-exclusive buildings across every themed city (derived from shared constants).
 const ALL_CITY_EXCLUSIVE_BUILDINGS = new Set<BuildingType>(
     Object.values(CITY_EXCLUSIVE_BUILDINGS).flat() as BuildingType[]
@@ -103,7 +105,7 @@ export class PaletteComponent {
     ]
     // Exclude basics and ALL city-exclusive buildings from the shared tier buckets.
     let all = (Object.values(BuildingType) as BuildingType[])
-      .filter(t => !BASIC_BUILDINGS.includes(t) && !ALL_CITY_EXCLUSIVE_BUILDINGS.has(t))
+      .filter(t => !BASIC_BUILDINGS.includes(t) && !ALL_CITY_EXCLUSIVE_BUILDINGS.has(t) && !HIDDEN_BUILDINGS.has(t))
     let tierNames = [Resident.FARMER, Resident.WORKER, Resident.ARTISAN, Resident.SCHOLAR, Resident.ENTREPRENEUR, Resident.MAGNATE]
     for (let i = 0; i < tierNames.length; i++) {
       let items = all.filter(t => GetBuildingTier(t) === i + 1)

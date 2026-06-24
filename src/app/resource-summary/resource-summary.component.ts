@@ -26,8 +26,9 @@ export class ResourceSummaryComponent {
         .filter(n => n !== city.name)
         .flatMap(n => CITY_EXCLUSIVE_RESOURCES[n] ?? [])
     )
+    const hiddenResources = new Set<Resource>([Resource.FERTILIZER])
     return Object.values(Resource)
-      .filter(r => !otherCityResources.has(r))
+      .filter(r => !otherCityResources.has(r) && !hiddenResources.has(r))
       .map(type => new Item(type, city.storage.amounts[type] ?? 0))
   }
 

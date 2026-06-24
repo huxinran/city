@@ -2,10 +2,7 @@ import { City } from './city'
 import {Storage, Item} from './storage'
 import { Tile } from './tile'
 
-export function GetResource(storage: Storage, type: string): number {
-    return storage.amounts[type] ?? 0
-}
-
+// The quantity of a resource held in a storage (0 if never stocked).
 export function CountItem(storage: Storage, type: string): number {
     return storage.amounts[type] ?? 0
 }
@@ -21,7 +18,7 @@ export function AddItems(storage: Storage, items: Item[]) {
 
 
 export function TryTakeItem(storage: Storage, item: Item): boolean {
-    return GetResource(storage, item.type) >= item.num
+    return CountItem(storage, item.type) >= item.num
 }
 
 export function TakeItem(storage: Storage, item: Item) {

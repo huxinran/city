@@ -21,20 +21,22 @@
             </div>
         }
     </span>
-    @for (tier of state.state.current_city!.population.tiers; track $index) {
-        <span class="stat" [title]="tier.tier">
-            <img class="resident-icon" [src]="icon(tier.tier)" [alt]="tier.tier">
-            <span class="v">{{tier.has}}<span class="mut">/{{tier.needed}}</span></span>
+    <span class="pop-spacer"></span>
+    @for (m of materials; track m) {
+        <span class="stat" [title]="m">
+            <app-icon class="material-icon" [src]="resSrc(m)" [fallback]="resEmoji(m)" [alt]="m" [size]="60"></app-icon>
+            <span class="v">{{count(m) | number: '1.0-0'}}</span>
         </span>
     }
     <span class="stat" [title]="goldType">
         <app-icon class="material-icon" [src]="resSrc(goldType)" [fallback]="'💰'" [alt]="goldType" [size]="60"></app-icon>
         <span class="v gold">{{state.state.gold | number: '1.0-0'}}</span>
     </span>
-    @for (m of materials; track m) {
-        <span class="stat" [title]="m">
-            <app-icon class="material-icon" [src]="resSrc(m)" [fallback]="resEmoji(m)" [alt]="m" [size]="60"></app-icon>
-            <span class="v">{{count(m) | number: '1.0-0'}}</span>
+    <span class="pop-spacer"></span>
+    @for (tier of state.state.current_city!.population.tiers; track $index) {
+        <span class="stat" [title]="tier.tier">
+            <img class="resident-icon" [src]="icon(tier.tier)" [alt]="tier.tier">
+            <span class="v">{{tier.has}}<span class="mut">/{{tier.needed}}</span></span>
         </span>
     }
 </div>
