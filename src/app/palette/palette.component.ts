@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StateService } from '../state.service';
-import { BuildingType, Resource, Resident } from '../types';
+import { BuildingType, Resource, Resident, CityName, CITY_EXCLUSIVE_BUILDINGS } from '../types';
 import { GetBuildingIcon, MakeBuilding, GetBuildingGoldCost, GetBuildingTier, GetResidentIconAsset } from '../building';
 import { GetBuildingIconSrc } from '../building-icons';
 import { GetResourceIconSrc, GetResourceEmoji } from '../resource-icons';
@@ -12,6 +12,11 @@ import { repaintOn } from '../live';
 // Always-available buildings shown under "Basics" (and excluded from the
 // categorized tier groups so they aren't listed twice).
 const BASIC_BUILDINGS = [BuildingType.ROAD, BuildingType.HOUSE, BuildingType.WAREHOUSE, BuildingType.DELETE]
+
+// All city-exclusive buildings across every themed city (derived from shared constants).
+const ALL_CITY_EXCLUSIVE_BUILDINGS = new Set<BuildingType>(
+    Object.values(CITY_EXCLUSIVE_BUILDINGS).flat() as BuildingType[]
+)
 
 // Display order within a tier group: raw materials before the products they
 // feed. Buildings not listed keep their enum order, after the listed ones.
@@ -88,28 +93,30 @@ export class PaletteComponent {
     else this.collapsed.add(name)
   }
 
-  // Built once: the full building catalog, grouped by population tier. Every
-  // building (materials included) sits on the population upgrade path, grouped
-  // under the tier its output serves.
-  private _groups?: PaletteGroup[]
+  // Building groups re-computed on every render so city switches take effect.
   get groups(): PaletteGroup[] {
-    if (!this._groups) {
-      let groups: PaletteGroup[] = [
-        { name: 'Basics', items: [...BASIC_BUILDINGS] },
-      ]
-      let all = (Object.values(BuildingType) as BuildingType[]).filter(t => !BASIC_BUILDINGS.includes(t))
-      let tierNames = [Resident.FARMER, Resident.WORKER, Resident.ARTISAN, Resident.SCHOLAR, Resident.ENTREPRENEUR, Resident.MAGNATE]
-      for (let i = 0; i < tierNames.length; i++) {
-        let items = all.filter(t => GetBuildingTier(t) === i + 1)
-        items.sort((a, b) => paletteOrder(a) - paletteOrder(b))
-        if (items.length) groups.push({ name: tierNames[i], items })
-      }
-      // Anything whose output isn't a direct house need (ports, etc.).
-      let other = all.filter(t => GetBuildingTier(t) === undefined)
-      if (other.length) groups.push({ name: 'Other', items: other })
-      this._groups = groups
+    const cityName = this.state.state.current_city?.name as CityName | undefined
+    const cityBuildings = cityName ? (CITY_EXCLUSIVE_BUILDINGS[cityName] ?? []) : []
+
+    let groups: PaletteGroup[] = [
+      { name: 'Basics', items: [...BASIC_BUILDINGS] },
+    ]
+    // Exclude basics and ALL city-exclusive buildings from the shared tier buckets.
+    let all = (Object.values(BuildingType) as BuildingType[])
+      .filter(t => !BASIC_BUILDINGS.includes(t) && !ALL_CITY_EXCLUSIVE_BUILDINGS.has(t))
+    let tierNames = [Resident.FARMER, Resident.WORKER, Resident.ARTISAN, Resident.SCHOLAR, Resident.ENTREPRENEUR, Resident.MAGNATE]
+    for (let i = 0; i < tierNames.length; i++) {
+      let items = all.filter(t => GetBuildingTier(t) === i + 1)
+      items.sort((a, b) => paletteOrder(a) - paletteOrder(b))
+      if (items.length) groups.push({ name: tierNames[i], items })
     }
-    return this._groups
+    let other = all.filter(t => GetBuildingTier(t) === undefined)
+    if (other.length) groups.push({ name: 'Other', items: other })
+    // Show the current city's exclusive buildings only if it has any.
+    if (cityBuildings.length > 0) {
+      groups.push({ name: cityName!, items: cityBuildings })
+    }
+    return groups
   }
 
   public iconName(type: BuildingType): string {

@@ -16,6 +16,10 @@
                       "file":  "assets/map-tiles-cute-48/sand.png"
                   },
                   {
+                      "name":  "dirt",
+                      "file":  "assets/map-tiles-cute-48/dirt.png"
+                  },
+                  {
                       "name":  "cobblestone-road",
                       "file":  "assets/map-tiles-cute-48/cobblestone-road.png"
                   }

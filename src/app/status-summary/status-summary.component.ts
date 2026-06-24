@@ -31,10 +31,10 @@ export class StatusSummaryComponent {
   // Primary construction materials shown in the top bar for quick reference.
   materials: Resource[] = [
     Resource.TIMBER,
+    Resource.SLATE,
     Resource.BRICK,
     Resource.STEEL,
     Resource.WINDOW,
-    Resource.STATUE,
   ]
 
   // Gold is the currency, rendered with the coin icon.

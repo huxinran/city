@@ -103,6 +103,7 @@ const RESOURCE_EMOJI: { [key: string]: string } = {
   [Resource.TOOL]:       '🔧', [Resource.WAX]:        '🍯', [Resource.WEAPON]:     '⚔️', [Resource.WHEAT]:      '🌾',
   [Resource.WINDOW]:     '🪟', [Resource.WINE]:       '🍷', [Resource.WOOD]:       '🪵',
   [Resource.WOOL]:       '🐑',
+  [Resource.FERTILIZER]: '🌱',
 }
 
 // PNG URL for a resource icon, or undefined to use the emoji fallback.

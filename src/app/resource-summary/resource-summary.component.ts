@@ -2,10 +2,9 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 
 import { StateService } from '../state.service';
-import { StorageItems } from '../utils';
 import { Item } from '../storage';
 import { repaintOn } from '../live';
-import { Resource } from '../types';
+import { Resource, CityName, CITY_EXCLUSIVE_RESOURCES } from '../types';
 import { GetResourceIconSrc, GetResourceEmoji } from '../resource-icons';
 
 
@@ -21,7 +20,15 @@ export class ResourceSummaryComponent {
   constructor() { repaintOn(s => [s.frame]) }
 
   items(): Item[] {
-    return StorageItems(this.state.state.current_city!.storage)
+    const city = this.state.state.current_city!
+    const otherCityResources = new Set<Resource>(
+      Object.values(CityName)
+        .filter(n => n !== city.name)
+        .flatMap(n => CITY_EXCLUSIVE_RESOURCES[n] ?? [])
+    )
+    return Object.values(Resource)
+      .filter(r => !otherCityResources.has(r))
+      .map(type => new Item(type, city.storage.amounts[type] ?? 0))
   }
 
   // Shared lookup so the panel shows every mapped PNG (and any future ones).

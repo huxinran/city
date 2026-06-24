@@ -4,18 +4,20 @@ import { CommonModule } from '@angular/common';
 import { Tile } from '../tile';
 import { StateService } from '../state.service';
 import { BuildingType, Terrain, Feature } from '../types'
-import { GetBuildingSize, GetBuildingIcon, IsFarmBuilding, IsAnimalFarm, IsWorkshopBuilding } from '../building'
+import { GetBuildingSize, GetBuildingIcon, IsFarmBuilding, IsAnimalFarm, IsWorkshopBuilding, IsMineCampBuilding } from '../building'
 import { GetBuildingIconSrc } from '../building-icons'
 import { IconComponent } from '../icon/icon.component'
 
 const CROP_FARM_ICON = 'assets/used/buildings/crop-farm.png'
 const ANIMAL_FARM_ICON = 'assets/used/buildings/animal-farm.png'
 const WORKSHOP_ICON = 'assets/used/buildings/workshop.png'
+const MINE_CAMP_ICON = 'assets/used/buildings/mine-camp.png'
 
 const MAP_TILE_ASSETS: { [key: string]: { file: string, color: string } } = {
-  [Terrain.WATER]: { file: 'sea.png', color: '#47c9ff' },
+  [Terrain.WATER]: { file: 'sea.png',  color: '#47c9ff' },
   [Terrain.GRASS]: { file: 'grass.png', color: '#a9d86b' },
   [Terrain.SAND]:  { file: 'sand.png', color: '#ffe48b' },
+  [Terrain.DIRT]:  { file: 'dirt.png', color: '#c4956a' },
 }
 
 const MAP_TILE_BASE = 'assets/used/map-tiles/'
@@ -52,6 +54,12 @@ export class TileComponent {
   }
 
   public workshopSrc = WORKSHOP_ICON
+  public mineCampSrc = MINE_CAMP_ICON
+
+  get isMineCamp(): boolean {
+    let type = this.tile.building?.type
+    return type != undefined && IsMineCampBuilding(type)
+  }
 
   // Full-tile background art for a farm plot: pasture for animal farms,
   // plowed fields for crop farms.

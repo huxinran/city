@@ -1,4 +1,4 @@
-import { Ship, ShippingTask, Route } from "./building"
+import { Ship, ShippingTask, Route, Technology } from "./building"
 import { Storage, Item } from "./storage"
 import { Tile} from "./tile"
 import { Population } from "./population"
@@ -144,6 +144,8 @@ export class City {
         public warehouses: Tile[] = [],
         public shipyards: Tile[] = [],
         public docks: Tile[] = [],
+        public universities: Tile[] = [],
+        public unlocked_techs: Technology[] = [],
         public shipping_tasks: ShippingTask[] = [],
         public carts: Tile[] = [],
         public ships: Ship[] = [],

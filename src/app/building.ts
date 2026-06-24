@@ -17,6 +17,7 @@ const SMALL_BUILDINGS = new Set<BuildingType>([
 ])
 const MEDIUM_BUILDINGS = new Set<BuildingType>([
     BuildingType.WAREHOUSE,
+    BuildingType.UNIVERSITY,
     // Extraction / production (2x2 factories)
     BuildingType.LUMBER_HUT, BuildingType.STONE_QUARRY, BuildingType.CLAY_PIT,
     BuildingType.SAND_PIT, BuildingType.COAL_KILN, BuildingType.IRON_MINE,
@@ -159,7 +160,10 @@ function resourceTierMap(): { [key: string]: number } {
         let b = MakeBuilding(type as BuildingType)
         if (b?.production) {
             recipes.push({
-                ingredients: b.production.ingredient.map(i => i.type),
+                ingredients: [
+                    ...b.production.ingredient.map(i => i.type),
+                    ...(b.production.extra_sources ?? []).filter(es => es.required).map(es => es.resource),
+                ],
                 products: b.production.product.map(p => p.type),
             })
         }
@@ -238,6 +242,9 @@ const BUILDING_TIER_OVERRIDE: { [key: string]: number } = {
     [BuildingType.WHALING_POST]:    2,  // blubber feeds whale oil (tier-2)
     [BuildingType.BLUBBER_PRESS]:   2,  // whale oil is tier-2 daily need
     [BuildingType.AMBER_MINE]:      3,  // amber is a tier-3 luxury good
+    // --- Shared utility ---
+    [BuildingType.COMPOST_PIT]: 1,      // fertilizer boosts tier-1+ farms
+    [BuildingType.UNIVERSITY]:  4,      // unlocks after Scholars (tier 4)
 }
 
 export function GetBuildingTier(type: BuildingType): number | undefined {
@@ -279,6 +286,8 @@ export const FARM_BUILDINGS = new Set<BuildingType>([
     BuildingType.PALM_GROVE, BuildingType.INCENSE_GROVE, BuildingType.IVORY_CAMP,
     // Mintaka farms
     BuildingType.REINDEER_FARM,
+    // Shared utility
+    BuildingType.COMPOST_PIT,
 ])
 
 export function IsFarmBuilding(type: BuildingType): boolean {
@@ -292,6 +301,20 @@ export const ANIMAL_FARM_BUILDINGS = new Set<BuildingType>([
 
 export function IsAnimalFarm(type: BuildingType): boolean {
     return ANIMAL_FARM_BUILDINGS.has(type)
+}
+
+// Raw resource extraction buildings that use the mine-camp art as background.
+export const MINE_CAMP_BUILDINGS = new Set<BuildingType>([
+    BuildingType.LUMBER_HUT,
+    BuildingType.STONE_QUARRY, BuildingType.CLAY_PIT, BuildingType.SAND_PIT,
+    BuildingType.COAL_KILN, BuildingType.IRON_MINE, BuildingType.GOLD_MINE,
+    BuildingType.GEM_MINE, BuildingType.SALTERN,
+    // Solara / Mintaka extraction
+    BuildingType.COPPER_MINE, BuildingType.AMBER_MINE,
+])
+
+export function IsMineCampBuilding(type: BuildingType): boolean {
+    return MINE_CAMP_BUILDINGS.has(type)
 }
 
 // --- Terrain requirements: where each building may be placed ---
@@ -325,7 +348,7 @@ const TREE_BUILDINGS = new Set<BuildingType>([
     BuildingType.IVORY_CAMP,
 ])
 
-const LAND_TERRAINS = [Terrain.GRASS, Terrain.SAND]
+const LAND_TERRAINS = [Terrain.GRASS, Terrain.SAND, Terrain.DIRT]
 
 export function GetRequiredTerrains(type: BuildingType): Terrain[] {
     if (SEA_BUILDINGS.has(type)) return [Terrain.WATER]
@@ -446,6 +469,9 @@ export const BUILDING_ICONS: { [key: string]: string } = {
     [BuildingType.REINDEER_FARM]: '🦌',  [BuildingType.FUR_WORKSHOP]: '🧥',
     [BuildingType.SMOKEHOUSE]: '🐟',     [BuildingType.WHALING_POST]: '🐋',
     [BuildingType.BLUBBER_PRESS]: '🛢️',  [BuildingType.AMBER_MINE]: '🟡',
+    // Shared utility
+    [BuildingType.COMPOST_PIT]: '🌱',
+    [BuildingType.UNIVERSITY]:  '🎓',
 }
 
 export function GetBuildingIcon(type: BuildingType): string {
@@ -498,6 +524,7 @@ export class Building {
         public warehouse?: Warehouse,
         public shipyard?: Shipyard,
         public dock?: Dock,
+        public university?: University,
     ) {}
 }
 
@@ -587,17 +614,83 @@ export class Dock {
 
 
 
+// Technologies researched at the University that unlock or improve buildings.
+export enum Technology {
+    FERTILIZER_APPLICATION = "Fertilizer Application",
+    CROP_ROTATION = "Crop Rotation",
+    ADVANCED_MINING = "Advanced Mining",
+}
+
+export class ResearchProject {
+    constructor(
+        public tech: Technology,
+        public name: string,
+        public description: string,
+        public research_time: number,  // ticks at full staffing to complete
+        public gold_cost: number,
+    ) {}
+}
+
+export const ALL_RESEARCH: ResearchProject[] = [
+    new ResearchProject(
+        Technology.FERTILIZER_APPLICATION,
+        "Fertilizer Application",
+        "Farms can use fertilizer for a 1.5× speed boost when stockpiled.",
+        400, 300,
+    ),
+    new ResearchProject(
+        Technology.CROP_ROTATION,
+        "Crop Rotation",
+        "All farms produce 30% faster permanently.",
+        600, 500,
+    ),
+    new ResearchProject(
+        Technology.ADVANCED_MINING,
+        "Advanced Mining",
+        "All extraction buildings operate 30% faster.",
+        500, 400,
+    ),
+]
+
+export class University {
+    constructor(
+        public scholar_slots: number = 10,
+        public scholars: number = 0,
+        public selected_tech?: Technology,
+        public progress: number = 0,
+    ) {}
+}
+
+// An extra resource consumed by a production building each cycle.
+// Required extras block production until the building's local stockpile
+// has enough.  Optional extras are consumed when available and multiply
+// the production speed by speed_multiplier for that cycle.
+// required_tech: if set, this extra source is only active after that tech is researched.
+export class ExtraSource {
+    constructor(
+        public resource: Resource,
+        public amount: number,
+        public required: boolean,
+        public speed_multiplier: number = 1.5,
+        public max_stockpile: number = 5,
+        public required_tech?: Technology,
+    ) {}
+}
+
 export class Production {
     constructor(
-        public worker_needed: number, 
+        public worker_needed: number,
         public worker_type: Resident,
-        public full_efficiency: number, 
-        public ingredient: Item[], 
+        public full_efficiency: number,
+        public ingredient: Item[],
         public product: Item[],
         public worker: number = 0,
         public progress: number = 0,
         public storage: Storage = new Storage(),
         public status: ProductionStatus = ProductionStatus.READY,
+        public extra_sources: ExtraSource[] = [],
+        public boost_multiplier: number = 1.0,
+        public stocking_in_progress: boolean = false,
     ) {}
 }
 
@@ -1143,7 +1236,9 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
     } else if (type == BuildingType.SAWMILL) {
         new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(4, Resident.FARMER, 10.0, [new Item(Resource.WOOD, 1)], [new Item(Resource.TIMBER, 1)]))
     } else if (type == BuildingType.BRICKYARY) {
-        new_building = new Building(type, [new Item(Resource.SLATE, 20)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.CLAY, 1), new Item(Resource.COAL, 1)], [new Item(Resource.BRICK, 1)]))
+        let p = new Production(10, Resident.WORKER, 10.0, [new Item(Resource.CLAY, 1)], [new Item(Resource.BRICK, 1)])
+        p.extra_sources = [new ExtraSource(Resource.COAL, 1, true)]
+        new_building = new Building(type, [new Item(Resource.SLATE, 20)], undefined, p)
     } else if (type == BuildingType.CANDLE_Manufactory) {
         new_building = new Building(type, [new Item(Resource.SLATE, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.WAX, 1)], [new Item(Resource.CANDLE, 1)]))
     } else if (type == BuildingType.GLASSWORK) {
@@ -1162,10 +1257,14 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
     } else if (type == BuildingType.BRANDY_DISTILLERY) {
         new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.GRAPE, 1)], [new Item(Resource.BRANDY, 1)]))
     } else if (type == BuildingType.STEELWORK) {
-        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.IRON, 1), new Item(Resource.COAL, 1)], [new Item(Resource.STEEL, 1)]))
+        let p = new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.IRON, 1)], [new Item(Resource.STEEL, 1)])
+        p.extra_sources = [new ExtraSource(Resource.COAL, 1, true)]
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, p)
     // Metal & craft chains
     } else if (type == BuildingType.FORGE) {
-        new_building = new Building(type, [new Item(Resource.STEEL, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.IRON_ORE, 1), new Item(Resource.COAL, 1)], [new Item(Resource.IRON, 1)]))
+        let p = new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.IRON_ORE, 1)], [new Item(Resource.IRON, 1)])
+        p.extra_sources = [new ExtraSource(Resource.COAL, 1, true)]
+        new_building = new Building(type, [new Item(Resource.STEEL, 20)], undefined, p)
     } else if (type == BuildingType.TOOLSMITH) {
         new_building = new Building(type, [new Item(Resource.STEEL, 20)], undefined, new Production(10, Resident.ARTISAN, 10.0, [new Item(Resource.IRON, 1)], [new Item(Resource.TOOL, 1)]))
     } else if (type == BuildingType.GOLDSMITH) {
@@ -1232,9 +1331,21 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
         new_building = new Building(type, [new Item(Resource.BRICK, 10)], undefined, new Production(10, Resident.WORKER, 10.0, [new Item(Resource.BLUBBER, 1)], [new Item(Resource.WHALE_OIL, 1)]))
     } else if (type == BuildingType.AMBER_MINE) {
         new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, new Production(10, Resident.ARTISAN, 8.0, [], [new Item(Resource.AMBER, 1)]))
+    // ---- Shared utility ----
+    } else if (type == BuildingType.COMPOST_PIT) {
+        new_building = new Building(type, [new Item(Resource.TIMBER, 10)], undefined, new Production(5, Resident.FARMER, 6.0, [], [new Item(Resource.FERTILIZER, 1)]))
+    } else if (type == BuildingType.UNIVERSITY) {
+        new_building = new Building(type, [new Item(Resource.BRICK, 20)], undefined, undefined, undefined, undefined, undefined, undefined, new University())
     }
     if (new_building) {
         new_building.material = BuildMaterial(type, new_building.material)
+        // All farms (except the compost pit) get an optional fertilizer boost,
+        // gated behind the Fertilizer Application research.
+        if (new_building.production && FARM_BUILDINGS.has(type) && type !== BuildingType.COMPOST_PIT) {
+            new_building.production.extra_sources = [
+                new ExtraSource(Resource.FERTILIZER, 1, false, 1.5, 5, Technology.FERTILIZER_APPLICATION),
+            ]
+        }
     }
     return new_building
 }

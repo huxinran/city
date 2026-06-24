@@ -14,6 +14,8 @@ export class Tile {
     covered = false
     anchor_i = -1
     anchor_j = -1
+    // Terrain saved here when a house is placed on the tile, restored on removal.
+    original_terrain?: Terrain
 
     constructor(i: number, j: number, terrain: Terrain) {
         this.i = i;

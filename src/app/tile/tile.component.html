@@ -18,6 +18,11 @@
                         }
                     </div>
                 </div>
+            } @else if (isMineCamp && size > 1) {
+                <div class="workshop-layout">
+                    <img class="workshop-bg" [src]="mineCampSrc" alt="">
+                    <app-icon class="workshop-product" [src]="buildingIconSrc" [fallback]="GetIcon()" [size]="size * 9"></app-icon>
+                </div>
             } @else if (isWorkshop && size > 1) {
                 <div class="workshop-layout">
                     <img class="workshop-bg" [src]="workshopSrc" alt="">

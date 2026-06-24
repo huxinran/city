@@ -7,12 +7,13 @@ import { WarehouseComponent } from '../warehouse/warehouse.component';
 import { Tile } from '../tile';
 import { ShipyardComponent } from '../shipyard/shipyard.component';
 import { DockComponent } from '../dock/dock.component';
+import { UniversityComponent } from '../university/university.component';
 import { StateService } from '../state.service';
 import { repaintOn } from '../live';
 
 @Component({
   selector: 'app-building',
-  imports: [ProductionComponent, ProductionComponent, HouseComponent, ServiceComponent, WarehouseComponent, ShipyardComponent, DockComponent],
+  imports: [ProductionComponent, HouseComponent, ServiceComponent, WarehouseComponent, ShipyardComponent, DockComponent, UniversityComponent],
   templateUrl: './building.component.html',
   styleUrl: './building.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

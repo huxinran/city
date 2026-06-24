@@ -4,17 +4,18 @@ Every image file currently loaded by the game, one row per file.
 **Core name** = the simplest possible identifier for what the image depicts.
 When two files would share a core name, the active one keeps it and the other gets a more specific name.
 
-Columns: `core name` | `actual filename` | `folder` | `in use?` | `note`
+Columns: `core name` | `actual filename` | `in use?` | `note`
 
 ---
 
-## Resource Icons — `resource-icons-cute-64/`
+## Resource Icons — `used/resources/`
 
 | Core name | Filename | In use | Note |
 |-----------|----------|--------|------|
 | apple | apple.png | yes | |
 | banana | banana.png | yes | |
 | berry | berry.png | yes | |
+| boot | boot.png | yes | |
 | brandy | brandy.png | yes | |
 | bread | bread.png | yes | |
 | brick | brick.png | yes | |
@@ -24,6 +25,7 @@ Columns: `core name` | `actual filename` | `folder` | `in use?` | `note`
 | chicken | chicken.png | yes | |
 | cider | cider.png | yes | |
 | cigar | cigar.png | yes | |
+| clam | clam.png | yes | promoted from reserve |
 | clay | clay.png | yes | |
 | coal | coal.png | yes | |
 | cocoa | cocoa.png | yes | |
@@ -33,6 +35,7 @@ Columns: `core name` | `actual filename` | `folder` | `in use?` | `note`
 | cotton | cotton.png | yes | |
 | cow | cow.png | yes | used as dairy-farm product icon |
 | egg | egg.png | yes | |
+| feather-hat | feather-hat.png | yes | luxury hat resource |
 | fish | fish.png | yes | |
 | flour | flour.png | yes | |
 | fur | fur.png | yes | |
@@ -41,15 +44,18 @@ Columns: `core name` | `actual filename` | `folder` | `in use?` | `note`
 | glass | glass.png | yes | |
 | gold-ore | gold-ore.png | yes | |
 | grape | grape.png | yes | |
+| horse | horse.png | yes | |
 | iron-ingot | iron-ingot.png | yes | represents processed IRON resource |
 | iron-ore | iron-ore.png | yes | |
 | jam | jam.png | yes | |
 | jewelry | jewelry.png | yes | |
+| marble | marble.png | yes | raw marble resource |
 | marble-statue | marble-statue.png | yes | represents STATUE resource |
 | melon | melon.png | yes | |
 | milk | milk.png | yes | |
 | oil | oil.png | yes | |
 | olive | olive.png | yes | |
+| olive-oil | olive-oil.png | yes | processed olive oil; distinct from oil |
 | onion | onion.png | yes | |
 | orange | orange.png | yes | |
 | pant | pant.png | yes | |
@@ -64,6 +70,7 @@ Columns: `core name` | `actual filename` | `folder` | `in use?` | `note`
 | sand | sand.png | yes | |
 | sausage | sausage.png | yes | |
 | sheep | sheep.png | yes | |
+| shirt | shirt.png | yes | cloth shirt resource |
 | slate | slate.png | yes | |
 | soybean | soybean.png | yes | |
 | steel | steel.png | yes | |
@@ -74,47 +81,75 @@ Columns: `core name` | `actual filename` | `folder` | `in use?` | `note`
 | tomato | tomato.png | yes | |
 | tool | tool.png | yes | |
 | wax | wax.png | yes | |
+| weapon | weapon.png | yes | |
 | wheat | wheat.png | yes | |
 | window | window.png | yes | |
 | wine | wine.png | yes | |
 | wood | wood.png | yes | |
 | wool | wool.png | yes | |
 
-### Reserve / source variants (not in use by game)
+### Reserve / alternate versions (not primary)
 
 | Core name | Filename | Location | Note |
 |-----------|----------|----------|------|
-| clam | clam.png | reserve/ + sources/ | unused resource candidate |
-| egg-basket | egg-basket-v2.png | sources/ | alternate egg depiction |
-| fish-caught | fish-caught-v2.png | sources/ | alternate fish depiction |
-| hand-push-cart | hand-push-cart.png | reserve/ + sources/ | unused UI candidate |
-| oil-bottle | oil-v1.png | reserve/ | **preferred alternate** (marked latest in viewer) |
-| oil-flask | oil-v2.png | reserve/ | second alternate |
-| olive-oil-jug | olive-oil-jug-v2.png | sources/ | source variant v2 |
-| olive-oil-jug-dark | olive-oil-jug-v3.png | sources/ | source variant v3 |
-| pant-blue | pant-blue-v2.png | sources/ | blue colorway alternate |
-| pork-ham | pork-ham-v1.png | reserve/ | round ham steak with center bone; generated 2026-06-23 |
-| pork-ham-small-bone | pork-ham-v2.png | reserve/ | bigger meat with smaller center bone; generated 2026-06-23 |
-| pork-ham-leg | pork-ham-v3.png | reserve/ | whole chunky ham leg with protruding bone; generated 2026-06-23 |
-| pork-leg-cut-face | pork-ham-v4.png | reserve/ | **preferred alternate**; pig leg with cut face and center bone; generated 2026-06-23 |
-| pottery-household | pottery-household-v2.png | sources/ | household-style alternate |
-| wine-barrel | wine-barrel-v2.png | sources/ | barrel depiction v2 |
-| wine-barrel-dark | wine-barrel-v3.png | sources/ | barrel depiction v3 |
-| wine-classic | wine-v1.png | reserve/ | earlier bottle design |
+| apple-regen | apple-regen-v2.png | used/resources/ | alternate apple depiction |
+| boot-fur | fur-boot.png | reserve/fur-boot/ | fur boot variant |
+| boot-fur-v2 | fur-boot-v2.png | reserve/fur-boot/ | second fur boot variant |
+| chicken-regen | chicken-regen-v2.png | used/resources/ | alternate chicken depiction |
+| clam-alt | clam.png | reserve/clam/ | reserve copy (used/ is active) |
+| clam-alt-2 | clam-2.png | reserve/clam/ | second clam depiction |
+| cotton-shirt | cotton-shirt.png | reserve/cotton-shirt/ | shirt alternate (cotton style) |
+| cotton-shirt-v2 | cotton-shirt-v2.png | reserve/cotton-shirt/ | |
+| cotton-shirt-v3 | cotton-shirt-v3.png | reserve/cotton-shirt/ | |
+| cotton-shirt-v4 | cotton-shirt-v4.png | reserve/cotton-shirt/ | |
+| cow-regen | cow-regen-v2.png | used/resources/ | alternate cow depiction |
+| egg-basket | egg-basket-v2.png | reserve/egg-basket/ | alternate egg depiction |
+| feather-hat-v2 | feather-hat-v2.png | reserve/feather-hat/ | second design |
+| fish-caught | fish-caught-v2.png | reserve/fish-caught/ | alternate fish depiction |
+| hand-push-cart | hand-push-cart.png | reserve/hand-push-cart/ | unused UI candidate |
+| horse-v2 | horse-v2.png | reserve/horse/ | second horse design |
+| horse-v3 | horse-v3.png | reserve/horse/ | third horse design |
+| horse-v5 | horse-v5.png | reserve/horse/ | fifth horse design |
+| marble-block | marble-block.png | reserve/marble-block/ | block/quarried alternate |
+| oil-bottle | oil-v1.png | reserve/oil/ | **preferred alternate** |
+| oil-flask | oil-v2.png | reserve/oil/ | second alternate |
+| olive-oil-jug | olive-oil-jug-v2.png | reserve/olive-oil-jug/ | jug depiction v2 |
+| olive-oil-jug-dark | olive-oil-jug-v3.png | reserve/olive-oil-jug/ | jug depiction v3 |
+| pant-blue | pant-blue-v2.png | reserve/pant-blue/ | blue colorway alternate |
+| pig-ear | pig-ear-v2.png | used/resources/ | pig ear cut depiction |
+| pork-ham | pork-ham-v1.png | reserve/pork/ | round ham steak with center bone; generated 2026-06-23 |
+| pork-ham-small-bone | pork-ham-v2.png | reserve/pork/ | bigger meat with smaller center bone; generated 2026-06-23 |
+| pork-ham-leg | pork-ham-v3.png | reserve/pork/ | whole chunky ham leg with protruding bone; generated 2026-06-23 |
+| pork-leg-cut-face | pork-ham-v4.png | reserve/pork/ | **preferred alternate**; pig leg with cut face and center bone; generated 2026-06-23 |
+| pottery-household | pottery-household-v2.png | reserve/pottery-household/ | household-style alternate |
+| sand-pile | sand-pile-v2.png | used/resources/ | sand pile alternate |
+| sheep-regen | sheep-regen-v2.png | used/resources/ | alternate sheep depiction |
+| weapon-sword-shield | weapon-sword-shield.png | reserve/weapon-sword-shield/ | sword+shield design |
+| weapon-sword-shield-v2 | weapon-sword-shield-v2.png | reserve/weapon-sword-shield/ | second sword+shield design |
+| wheat-sheaf | wheat-sheaf-v3.png | used/resources/ | sheaf depiction |
+| wine-barrel | wine-barrel-v2.png | reserve/wine-barrel/ | barrel depiction v2 |
+| wine-barrel-dark | wine-barrel-v3.png | reserve/wine-barrel/ | barrel depiction v3 |
+| wine-classic | wine-v1.png | reserve/wine/ | earlier bottle design |
 
 ---
 
-## Building Icons — `icons/buildings/`
+## Building Icons — `used/buildings/`
 
 | Core name | Filename | In use | Note |
 |-----------|----------|--------|------|
+| animal-farm | animal-farm.png | yes | |
+| cart-empty | cart-empty.png | yes | cart sprite — empty state |
+| cart-fetching | cart-fetching.png | yes | cart sprite — fetching state |
+| cart-loaded | cart-loaded.png | yes | cart sprite — loaded state |
 | chapel | chapel.png | yes | |
 | clinic | clinic.png | yes | |
 | courthouse | courthouse.png | yes | |
+| crop-farm | crop-farm.png | yes | |
 | delete | delete.png | yes | shovel / delete tool |
 | dock | dock.png | yes | swapped to v4-with-3-mast-ship 2026-06-22 |
 | engineer-station | engineer-station.png | yes | |
 | fire-station | fire-station.png | yes | |
+| horse-farm | horse-farm.png | yes | |
 | house | house.png | yes | |
 | marketplace | marketplace.png | yes | |
 | police-station | police-station.png | yes | |
@@ -124,45 +159,70 @@ Columns: `core name` | `actual filename` | `folder` | `in use?` | `note`
 | tavern | tavern.png | yes | |
 | warehouse | warehouse.png | yes | |
 | well | well.png | yes | |
+| workshop | workshop.png | yes | |
 
 ### Reserve / alternate versions (not in use by game)
 
 | Core name | Filename | Location | Note |
 |-----------|----------|----------|------|
-| clinic-simplified | clinic-v2.png | reserve/ | second design |
-| clinic-minimal | clinic-v3.png | reserve/ | simplified/minimal |
-| clinic-minimal-sized | clinic-v3-same-size.png | reserve/ | sized match of v3 |
-| clinic-compact | clinic-v4.png | reserve/ | fourth iteration |
-| clinic-bigger | clinic-v5-slight-bigger.png | reserve/ | slightly larger v5 |
-| clinic-bigger-v2 | clinic-v6-slight-bigger.png | reserve/ | **preferred alternate** (marked latest in viewer) |
-| delete-old | delete-before-clean-shovel-20260621-210910.png | old_versions/ | pre-shovel design |
-| dock-large-ship | dock-v2-bigger-ship.png | reserve/ | bigger ship variant |
-| dock-real-ship | dock-v3-large-real-ship.png | reserve/ | realistic large ship |
-| dock-3-mast | dock-v4-with-3-mast-ship.png | reserve/ | **preferred alternate** (marked latest in viewer) |
-| engineer-station-v2 | engineer-station-v2.png | reserve/ | second design |
-| engineer-station-tools | engineer-station-v3-tools-same-size.png | reserve/ | **preferred alternate** (marked latest in viewer) |
-| police-station-old | police-station-v1.png | reserve/ | earlier design |
-| road-curb | road-before-long-curb-20260621-210711.png | old_versions/ | long-curb style |
-| road-pre-cobble | road-before-cobble-20260621-213614.png | old_versions/ | pre-cobble design |
-| ship-3-mast | ship-3-mast.png | reserve/ | standalone ship sprite |
-| shipyard-ramp | shipyard-v2-launch-ramp.png | reserve/ | **preferred alternate** (marked latest in viewer) |
-| warehouse-2x2-camp-yard | warehouse-2x2-camp-yard-v3-transparent.png | reserve/ | **preferred alternate**; square 2x2 warehouse yard matching mine-camp orientation; generated 2026-06-23 |
+| animal-farm-pasture-v1 | animal-farm-3x3-pasture-v1.png | reserve/animal-farm/ | 3x3 pasture v1 |
+| animal-farm-pasture-v2 | animal-farm-3x3-pasture-v2.png | reserve/animal-farm/ | 3x3 pasture v2 |
+| animal-farm-square | animal-farm-3x3-pasture-v3-square.png | reserve/animal-farm/ | square layout v3 |
+| clinic-simplified | clinic-v2.png | reserve/clinic/ | second design |
+| clinic-minimal | clinic-v3.png | reserve/clinic/ | simplified/minimal |
+| clinic-minimal-sized | clinic-v3-same-size.png | reserve/clinic/ | sized match of v3 |
+| clinic-compact | clinic-v4.png | reserve/clinic/ | fourth iteration |
+| clinic-bigger | clinic-v5-slight-bigger.png | reserve/clinic/ | slightly larger v5 |
+| clinic-bigger-v2 | clinic-v6-slight-bigger.png | reserve/clinic/ | **preferred alternate** (marked latest in viewer) |
+| delete-old | delete-before-clean-shovel-20260621-210910.png | reserve/delete/ | pre-shovel design |
+| dock-large-ship | dock-v2-bigger-ship.png | reserve/dock/ | bigger ship variant |
+| dock-real-ship | dock-v3-large-real-ship.png | reserve/dock/ | realistic large ship |
+| dock-3-mast | dock-v4-with-3-mast-ship.png | reserve/dock/ | **preferred alternate** (marked latest in viewer) |
+| engineer-station-v2 | engineer-station-v2.png | reserve/engineer-station/ | second design |
+| engineer-station-tools | engineer-station-v3-tools-same-size.png | reserve/engineer-station/ | **preferred alternate** (marked latest in viewer) |
+| horse-farm-alt | horse-farm.png | reserve/horse-farm/ | reserve copy |
+| housing-tier-01 | housing-tier-01-basic-hut-v5.png | reserve/housing-tier-01/ | basic hut — 5 variants (v1–v5) |
+| housing-tier-02 | housing-tier-02-worker-house-v5.png | reserve/housing-tier-02/ | worker house — 5 variants (v1–v5) |
+| housing-tier-03 | housing-tier-03-two-story-green-roof-v5.png | reserve/housing-tier-03/ | town house — 5 variants (v1–v5) |
+| housing-tier-04 | housing-tier-04-merchant-red-roof-v5.png | reserve/housing-tier-04/ | merchant residence — 5 variants (v1–v5) |
+| housing-tier-05 | housing-tier-05-one-tower-purple-roof-v5.png | reserve/housing-tier-05/ | upper class — 5 variants (v1–v5) |
+| housing-tier-06 | housing-tier-06-two-tower-yellow-roof-v5.png | reserve/housing-tier-06/ | lavish mansion — 5 variants (v1–v5) |
+| mine-camp | mine-camp-2x2-dirt-yard-v1.png | reserve/mine-camp/ | 2x2 dirt yard mine |
+| police-station-old | police-station-v1.png | reserve/police-station/ | earlier design |
+| road-curb | road-before-long-curb-20260621-210711.png | reserve/road/ | long-curb style |
+| road-pre-cobble | road-before-cobble-20260621-213614.png | reserve/road/ | pre-cobble design |
+| ship-3-mast | ship-3-mast.png | reserve/ship-3-mast/ | standalone ship sprite |
+| shipyard-ramp | shipyard-v2-launch-ramp.png | reserve/shipyard/ | **preferred alternate** (marked latest in viewer) |
+| warehouse-2x2-camp-yard | warehouse-2x2-camp-yard-v3-transparent.png | reserve/ (legacy) | **preferred alternate**; square 2x2 warehouse yard matching mine-camp orientation; generated 2026-06-23 |
+| workshop-perspective | workshop-2x2-square-perspective-v1.png | reserve/workshop/ | 2x2 square perspective |
+| workshop-stone-yard | workshop-2x2-stone-yard-v1.png | reserve/workshop/ | 2x2 stone yard |
+| workshop-reference | workshop-2x2-reference-v1.png | reserve/workshop/ | reference layout |
 
 ---
 
-## Population — `population/`
+## Population — `used/population/`
 
 | Core name | Filename | In use | Note |
 |-----------|----------|--------|------|
 | farmer | farmer.png | yes | full-body tier icon |
-| worker | worker.png | yes | full-body tier icon |
-| artisan | artisan.png | yes | full-body tier icon |
-| scholar | scholar.png | yes | full-body tier icon |
-| entrepreneur | entrepreneur.png | yes | full-body tier icon |
-| magnate | magnate.png | yes | full-body tier icon |
-| entrepreneur-older | entrepreneur-older.png | no | **preferred alternate** (marked latest in viewer) |
+| worker | — | no | not present in used/; see reserve/worker/ |
+| artisan | — | no | not present in used/; see reserve/artisan/ |
+| scholar | — | no | not present in used/; see reserve/scholar/ |
+| entrepreneur | — | no | not present in used/; see reserve/entrepreneur/ |
+| magnate | — | no | not present in used/; see reserve/magnate/ |
 
-## Population Busts — `population/busts/`
+### Reserve full-body tier icons
+
+| Core name | Filename | Location | Note |
+|-----------|----------|----------|------|
+| worker | worker-2.png | reserve/worker/ | full-body tier icon |
+| artisan | artisan.png | reserve/artisan/ | full-body tier icon |
+| scholar | scholar.png | reserve/scholar/ | full-body tier icon |
+| entrepreneur | entrepreneur.png | reserve/entrepreneur/ | full-body tier icon |
+| entrepreneur-older | entrepreneur-older.png | reserve/entrepreneur/ | **preferred alternate** (marked latest in viewer) |
+| magnate | magnate.png | reserve/magnate/ | full-body tier icon |
+
+## Population Busts — `used/population/busts/`
 
 | Core name | Filename | In use | Note |
 |-----------|----------|--------|------|
@@ -172,37 +232,67 @@ Columns: `core name` | `actual filename` | `folder` | `in use?` | `note`
 | scholar-bust | scholar-bust.png | yes | |
 | entrepreneur-bust | entrepreneur-bust.png | yes | |
 | magnate-bust | magnate-bust.png | yes | |
-| entrepreneur-bust-older | entrepreneur-bust-older.png | no | **preferred alternate** (marked latest in viewer) |
+
+### Reserve bust alternates
+
+| Core name | Filename | Location | Note |
+|-----------|----------|----------|------|
+| entrepreneur-bust-older | entrepreneur-bust-older.png | reserve/entrepreneur-bust/ | **preferred alternate** (marked latest in viewer) |
 
 ---
 
-## Map Tiles — `map-tiles-cute-48/` (active)
+## Coat of Arms — `used/coat-of-arms/`
 
 | Core name | Filename | In use | Note |
 |-----------|----------|--------|------|
-| grass-tile | grass.png | yes | 48px active set |
-| sand-tile | sand.png | yes | 48px active set |
-| sea-tile | sea.png | yes | 48px active set |
-| cobblestone-road-tile | cobblestone-road.png | yes | 48px active set — core name disambiguated from road building icon |
-
-### Map Tiles — `map-tiles-cute-64/` (legacy 64px set)
-
-| Core name | Filename | In use | Note |
-|-----------|----------|--------|------|
-| grass-tile-64 | grass.png | no | legacy 64px; same image, different size |
-| sand-tile-64 | sand.png | no | legacy 64px |
-| sea-tile-64 | sea.png | no | legacy 64px |
-| cobblestone-road-tile-64 | cobblestone-road.png | no | legacy 64px |
+| anrelia-coa | anrelia.png | yes | city coat of arms |
+| columbia-coa | columbia.png | yes | city coat of arms |
+| jinlin-coa | jinlin.png | yes | city coat of arms |
+| mintaka-coa | mintaka.png | yes | city coat of arms |
+| solara-coa | solara.png | yes | city coat of arms |
 
 ---
 
-## Terrain Objects — `terrain-objects-cute-48/`
+## Map Tiles — `used/map-tiles/` (active 48px)
 
 | Core name | Filename | In use | Note |
 |-----------|----------|--------|------|
-| tree | tree.png | yes | removable map feature |
+| grass-tile | grass.png | yes | 48px active set; updated 2026-06-23 |
+| sand-tile | sand.png | yes | 48px active set; updated 2026-06-23 |
+| sea-tile | sea.png | yes | 48px active set; updated 2026-06-23 |
+| dirt-tile | dirt.png | yes | 48px active set |
+| cobblestone-road-tile | cobblestone-road.png | yes | 48px active set; core name disambiguated from road building icon |
+
+### Map Tile alternates
+
+| Core name | Filename | Location | Note |
+|-----------|----------|----------|------|
+| cobblestone-road-light | cobblestone-road-light-48-v3.png | used/map-tiles/ | lighter variant v3; not primary |
+| grass-tile-legacy | grass.png | reserve/grass/ | legacy 64px set |
+| sand-tile-legacy | sand.png | reserve/sand/ | legacy 64px set |
+| sea-tile-legacy | sea.png | reserve/sea/ | legacy 64px set |
+| cobblestone-road-tile-legacy | cobblestone-road.png | reserve/cobblestone-road/ | legacy 64px set |
+
+---
+
+## Terrain Objects — `used/terrain/`
+
+| Core name | Filename | In use | Note |
+|-----------|----------|--------|------|
+| bush | bush.png | yes | removable map feature |
 | rock | rock.png | yes | removable map feature |
-| rock-bigger | rock-before-bigger-20260621-205036.png | no | old_versions/ — earlier larger design |
+| tree | tree.png | yes | removable map feature |
+
+### Reserve / alternate versions
+
+| Core name | Filename | Location | Note |
+|-----------|----------|----------|------|
+| boulder | boulder.png | reserve/boulder/ | boulder terrain object |
+| bushes-alt | bushes.png | reserve/bushes/ | bushes alternate |
+| rock-bigger | rock-before-bigger-20260621-205036.png | reserve/rock/ | earlier larger design |
+| three-trees | three-trees.png | reserve/three-trees/ | clustered trees alternate |
+| three-trees-large | three-trees-large-v2.png | reserve/three-trees-large/ | large clustered trees |
+| three-trees-tree-like | three-trees-tree-like-v3.png | reserve/three-trees-tree-like/ | tree-like cluster |
 
 ---
 
@@ -212,9 +302,10 @@ The following pairs would have collided on the same core name and were disambigu
 
 | Conflict | File A (keeps core name) | File B (gets specific name) | Reason |
 |----------|--------------------------|-----------------------------|--------|
-| `road` | `icons/buildings/road.png` (building icon) | `map-tiles-cute-48/cobblestone-road.png` → `cobblestone-road-tile` | building vs. terrain tile |
-| `sand` | `resource-icons-cute-64/sand.png` (resource) | `map-tiles-cute-48/sand.png` → `sand-tile` | resource vs. terrain tile |
-| `grass` (n/a — no resource) | `map-tiles-cute-48/grass.png` → `grass-tile` | — | tile suffix added for consistency with sand-tile |
-| `sea` (n/a) | `map-tiles-cute-48/sea.png` → `sea-tile` | — | same |
-| `entrepreneur` | `population/entrepreneur.png` (active) | `entrepreneur-older.png` → `entrepreneur-older` | active vs. alternate |
-| `entrepreneur-bust` | `busts/entrepreneur-bust.png` (active) | `entrepreneur-bust-older.png` → `entrepreneur-bust-older` | active vs. alternate |
+| `road` | `used/buildings/road.png` (building icon) | `used/map-tiles/cobblestone-road.png` → `cobblestone-road-tile` | building vs. terrain tile |
+| `sand` | `used/resources/sand.png` (resource) | `used/map-tiles/sand.png` → `sand-tile` | resource vs. terrain tile |
+| `grass` (n/a — no resource) | `used/map-tiles/grass.png` → `grass-tile` | — | tile suffix added for consistency with sand-tile |
+| `sea` (n/a) | `used/map-tiles/sea.png` → `sea-tile` | — | same |
+| `marble` | `used/resources/marble.png` (raw resource) | `used/resources/marble-statue.png` → `marble-statue` | raw vs. processed luxury good |
+| `entrepreneur` | `reserve/entrepreneur/entrepreneur.png` (active design) | `entrepreneur-older.png` → `entrepreneur-older` | active vs. alternate |
+| `entrepreneur-bust` | `used/population/busts/entrepreneur-bust.png` (active) | `entrepreneur-bust-older.png` → `entrepreneur-bust-older` | active vs. alternate |

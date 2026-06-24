@@ -1,0 +1,47 @@
+<div class="row">
+  <span class="key">Scholars</span>
+  <span class="val">{{univ.scholars}} / {{univ.scholar_slots}}</span>
+</div>
+
+@if (currentProject; as proj) {
+  <hr class="divider">
+  <div class="row">
+    <span class="key">Researching</span>
+    <span class="val">{{proj.name}}</span>
+  </div>
+  <div class="row">
+    <span class="key">Progress</span>
+    <span class="val">{{univ.progress / 100 | percent}}</span>
+  </div>
+  <div class="bar"><span [style.width.%]="univ.progress"></span></div>
+  <button class="btn btn-sm" style="margin-top:6px" (click)="cancel()">Cancel (50% refund)</button>
+}
+
+@if (unlocked.length) {
+  <hr class="divider">
+  <div class="section-label">Researched</div>
+  @for (tech of unlocked; track tech) {
+    <div class="badge on tech-badge">✓ {{tech}}</div>
+  }
+}
+
+@if (available.length) {
+  <hr class="divider">
+  <div class="section-label">Available Research</div>
+  @for (proj of available; track proj.tech) {
+    <div class="research-card">
+      <div class="research-name">{{proj.name}}</div>
+      <div class="research-desc">{{proj.description}}</div>
+      <div class="research-footer">
+        <span class="research-cost">💰 {{proj.gold_cost}}</span>
+        <button class="btn btn-sm btn-primary"
+                [disabled]="!canAfford(proj) || !!univ.selected_tech"
+                (click)="start(proj.tech)">
+          Research
+        </button>
+      </div>
+    </div>
+  }
+} @else if (!currentProject) {
+  <div class="row"><span class="key" style="color:var(--text-mut)">All technologies researched!</span></div>
+}

@@ -1,16 +1,14 @@
 <div class="panel">
   <div class="res-grid">
     @for (item of items(); track item.type) {
-      @if (item.num > 0) {
-        <div class="res" [title]="item.type">
-          @if (iconSrc(item.type); as src) {
-            <img class="res-icon" [src]="src" [alt]="item.type">
-          } @else {
-            <span class="res-emoji">{{emoji(item.type)}}</span>
-          }
-          <span class="res-cnt">{{item.num | number: '1.0-0'}}</span>
-        </div>
-      }
+      <div class="res" [title]="item.type">
+        @if (iconSrc(item.type); as src) {
+          <img class="res-icon" [src]="src" [alt]="item.type">
+        } @else {
+          <span class="res-emoji">{{emoji(item.type)}}</span>
+        }
+        <span class="res-cnt">{{item.num | number: '1.0-0'}}</span>
+      </div>
     }
   </div>
 </div>

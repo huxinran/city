@@ -2,7 +2,7 @@ import { Injectable, NgZone, inject, signal } from '@angular/core';
 import { State } from './state';
 import { Item, Storage } from './storage';
 import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, CountItem, TakeItemsAsPossible, StorageItems} from './utils';
-import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, CreateBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, FeatureMatches, GetRequiredNearbyFeature, GetRequiredNearbyTerrain } from './building'
+import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, ExtraSource, CreateBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, FeatureMatches, GetRequiredNearbyFeature, GetRequiredNearbyTerrain, Technology, ALL_RESEARCH, FARM_BUILDINGS, MINE_CAMP_BUILDINGS } from './building'
 import { City } from './city';
 import { Population,  } from './population';
 import { Resident, ProductionStatus, ShippingTaskType, BuildingType, Terrain, Feature, CityName } from './types'
@@ -108,6 +108,7 @@ export class StateService {
     this.UpdateWarehouses(this.state.current_city!)
     this.UpdateHouses(this.state.current_city!)
     this.UpdateShipyard(this.state.current_city!)
+    this.UpdateUniversity(this.state.current_city!)
     this.UpdateEmployment(this.state.current_city!)
     this.HandleShipTasks(this.state.current_city!)
     this.UpdateService(this.state.current_city!)
@@ -286,6 +287,11 @@ export class StateService {
       building.house.city_type = city.name
     }
     tile.building = building
+    // Houses stamp the ground to dirt so settled land looks distinct from open fields.
+    if (building.house) {
+      tile.original_terrain = tile.terrain
+      tile.terrain = Terrain.DIRT
+    }
     for (let t of footprint) {
       if (t === tile) {
         continue
@@ -309,11 +315,17 @@ export class StateService {
       tile.feature = undefined
       return
     }
+    let isHouse = !!anchor.building.house
     let size = GetBuildingSize(anchor.building.type)
     this.RemoveBuildingFromLists(city, anchor)
     for (let di = 0; di < size; ++di) {
       for (let dj = 0; dj < size; ++dj) {
         let t = this.GetTile(city, anchor.i + di, anchor.j + dj)
+        // Restore terrain that was replaced when the house was placed.
+        if (isHouse && t.original_terrain !== undefined) {
+          t.terrain = t.original_terrain
+          t.original_terrain = undefined
+        }
         t.building = undefined
         t.covered = false
         t.anchor_i = -1
@@ -356,11 +368,18 @@ export class StateService {
     }
     if (!this.HasRequiredSurroundings(city, type, to.i, to.j, size)) return false
 
+    const isHouse = !!building.house
+
     // Clear source footprint (drop from lists first, while still categorisable).
     this.RemoveBuildingFromLists(city, from)
     for (let di = 0; di < size; ++di) {
       for (let dj = 0; dj < size; ++dj) {
         let t = this.GetTile(city, from.i + di, from.j + dj)
+        // Restore terrain at source if this was a house.
+        if (isHouse && t.original_terrain !== undefined) {
+          t.terrain = t.original_terrain
+          t.original_terrain = undefined
+        }
         t.building = undefined
         t.covered = false
         t.anchor_i = -1
@@ -370,6 +389,11 @@ export class StateService {
 
     // Place at destination.
     to.building = building
+    // Stamp dirt at the new position for houses.
+    if (isHouse) {
+      to.original_terrain = to.terrain
+      to.terrain = Terrain.DIRT
+    }
     for (let t of destFootprint) {
       if (t === to) continue
       t.covered = true
@@ -426,6 +450,7 @@ export class StateService {
     else if (b.warehouse) city.warehouses.push(tile)
     else if (b.shipyard) city.shipyards.push(tile)
     else if (b.dock) city.docks.push(tile)
+    else if (b.university) city.universities.push(tile)
   }
 
   // Remove a building's anchor tile from its list. Call before clearing
@@ -443,6 +468,7 @@ export class StateService {
     else if (b.warehouse) drop(city.warehouses)
     else if (b.shipyard) drop(city.shipyards)
     else if (b.dock) drop(city.docks)
+    else if (b.university) drop(city.universities)
   }
 
   // Seed the per-city building lists from a full grid scan. Used on load, where
@@ -455,6 +481,7 @@ export class StateService {
     city.warehouses = []
     city.shipyards = []
     city.docks = []
+    city.universities = []
     for (let t of city.tiles) {
       this.AddBuildingToLists(city, t)
     }
@@ -469,6 +496,7 @@ export class StateService {
     shuffle(city.warehouses)
     shuffle(city.shipyards)
     shuffle(city.docks)
+    shuffle(city.universities)
   }
 
   public UpdateService(city: City) {
@@ -485,7 +513,33 @@ export class StateService {
   public UpdateProduction(city: City) {
     for (let t of city.productions) {
       let production = t.building!.production!
+
+      // Only consider extra sources whose required tech has been researched.
+      let activeExtras = production.extra_sources.filter(
+        es => !es.required_tech || (city.unlocked_techs ?? []).includes(es.required_tech)
+      )
+
+      // Proactively stock active extra sources into the building's local buffer.
+      if (activeExtras.length > 0 && !production.stocking_in_progress) {
+        for (let es of activeExtras) {
+          let stockpile = CountItem(production.storage, es.resource)
+          if (stockpile < es.max_stockpile) {
+            let need = es.max_stockpile - stockpile
+            let task = new ShippingTask(ShippingTaskType.STOCKING, t, [new Item(es.resource, need)])
+            city.shipping_tasks.push(task)
+            production.stocking_in_progress = true
+            break
+          }
+        }
+      }
+
       if (production.status == ProductionStatus.READY) {
+        // Required active extra sources must be pre-stocked before starting
+        let requiredSatisfied = activeExtras
+          .filter(es => es.required)
+          .every(es => CountItem(production.storage, es.resource) >= es.amount)
+        if (!requiredSatisfied) continue
+
         if (production.ingredient.length == 0) {
           production.status = ProductionStatus.IN_PROGRESS
         } else {
@@ -494,7 +548,21 @@ export class StateService {
           production.status = ProductionStatus.WAITING_DELIVERY
         }
       } else if (production.status == ProductionStatus.IN_PROGRESS) {
-        production.progress = Math.min(production.progress + production.full_efficiency * production.worker / production.worker_needed, 100.0)
+        if (production.progress == 0) {
+          // First tick of a new cycle: consume active extras from local stockpile
+          production.boost_multiplier = 1.0
+          for (let es of activeExtras) {
+            let taken = TakeItems(production.storage, [new Item(es.resource, es.amount)])
+            if (taken && !es.required) {
+              production.boost_multiplier *= es.speed_multiplier
+            }
+          }
+        }
+        let techMult = this.getTechSpeedMultiplier(city, t.building!.type)
+        production.progress = Math.min(
+          production.progress + production.full_efficiency * production.worker / production.worker_needed * (production.boost_multiplier ?? 1.0) * techMult,
+          100.0
+        )
         if (production.progress == 100.0) {
           production.status = ProductionStatus.FINISHED
         }
@@ -536,6 +604,13 @@ export class StateService {
             c.task.progress = 0
             c.task.cargo = []
             c.task.dst.building!.production!.status = ProductionStatus.IN_PROGRESS
+          } else if (c.task.type == ShippingTaskType.STOCKING) {
+            // Deposit extra sources into the building's local stockpile buffer
+            AddItems(c.task.dst.building!.production!.storage, c.task.cargo)
+            c.task.dst.building!.production!.stocking_in_progress = false
+            c.task.type = ShippingTaskType.RETURNING
+            c.task.progress = 0
+            c.task.cargo = []
           } else if (c.task.type == ShippingTaskType.PICKING_UP) {
             c.task.type = ShippingTaskType.RETURNING
             c.task.progress = 0
@@ -599,7 +674,7 @@ export class StateService {
         continue
       }
 
-      if (task.type == ShippingTaskType.DELIVERYING) {
+      if (task.type == ShippingTaskType.DELIVERYING || task.type == ShippingTaskType.STOCKING) {
         if (!TakeItems(city.storage, task.cargo)) {
           ++i
           continue
@@ -648,26 +723,25 @@ export class StateService {
 
   public UpdateEmploymentPerTier(has: number, needed: number, productions: Tile[]) {
     let base_ratio = Math.min(1.0, has / needed)
-    let new_employed = 0 
+    let new_employed = 0
     for (let t of productions) {
-      let production = t.building!.production!
-      let new_employee = Math.floor(production.worker_needed * base_ratio)
-      production.worker = new_employee 
+      let b = t.building!
+      let worker_needed = b.production?.worker_needed ?? b.university?.scholar_slots ?? 0
+      let new_employee = Math.floor(worker_needed * base_ratio)
+      if (b.production) b.production.worker = new_employee
+      else if (b.university) b.university.scholars = new_employee
       new_employed += new_employee
     }
-    if (base_ratio == 1.0) {
-      return
-    }
+    if (base_ratio == 1.0) return
     let unemployed = has - new_employed
     while (unemployed > 0) {
       for (let t of productions) {
-        let production = t.building!.production!
-        production.worker += 1
+        let b = t.building!
+        if (b.production) b.production.worker += 1
+        else if (b.university) b.university.scholars += 1
         unemployed -= 1
-        if (unemployed == 0) {
-          break
-        }
-      }      
+        if (unemployed == 0) break
+      }
     }
   }
 
@@ -677,6 +751,16 @@ public ResetPopulation(population: Population) {
         t.needed = 0
         t.houses = []
         t.productions = []
+    }
+  }
+
+ public AddUniversity(population: Population, tile: Tile) {
+    let slots = tile.building!.university!.scholar_slots
+    for (let t of population.tiers) {
+        if (t.tier === Resident.SCHOLAR) {
+            t.needed += slots
+            t.productions.push(tile)
+        }
     }
   }
 
@@ -727,17 +811,64 @@ public GetWorkerNeeded(population: Population, tier: Resident, num: number) {
     for (let t of city.productions) {
       this.AddProduction(population, t)
     }
-
+    for (let t of city.universities) {
+      this.AddUniversity(population, t)
+    }
     for (let t of city.houses) {
       this.AddHouse(population, t)
     }
-
     for (let tier of population.tiers) {
       this.UpdateEmploymentPerTier(tier.has, tier.needed, tier.productions)
     }
     city.population = population
   }
 
+
+  public StartResearch(city: City, tile: Tile, tech: Technology): boolean {
+    let univ = tile.building?.university
+    if (!univ) return false
+    let project = ALL_RESEARCH.find(p => p.tech === tech)
+    if (!project) return false
+    if (this.state.gold < project.gold_cost) return false
+    this.state.gold -= project.gold_cost
+    univ.selected_tech = tech
+    univ.progress = 0
+    return true
+  }
+
+  public UpdateUniversity(city: City) {
+    if (!city.unlocked_techs) city.unlocked_techs = []
+    for (let t of (city.universities ?? [])) {
+      let univ = t.building!.university!
+      if (!univ.selected_tech) continue
+      if (city.unlocked_techs.includes(univ.selected_tech)) {
+        univ.selected_tech = undefined
+        univ.progress = 0
+        continue
+      }
+      let project = ALL_RESEARCH.find(p => p.tech === univ.selected_tech)
+      if (!project || univ.scholars <= 0) continue
+      univ.progress += (univ.scholars / univ.scholar_slots) * (100 / project.research_time)
+      if (univ.progress >= 100) {
+        city.unlocked_techs.push(univ.selected_tech)
+        univ.progress = 0
+        univ.selected_tech = undefined
+      }
+    }
+  }
+
+  private getTechSpeedMultiplier(city: City, type: BuildingType): number {
+    const unlocked = city.unlocked_techs ?? []
+    let mult = 1.0
+    if (FARM_BUILDINGS.has(type) && type !== BuildingType.COMPOST_PIT &&
+        unlocked.includes(Technology.CROP_ROTATION)) {
+      mult *= 1.3
+    }
+    if (MINE_CAMP_BUILDINGS.has(type) && unlocked.includes(Technology.ADVANCED_MINING)) {
+      mult *= 1.3
+    }
+    return mult
+  }
 
   // Collect residential tax. Each resident pays a tier-based amount scaled by
   // the current tax rate; wealthier tiers contribute more.
