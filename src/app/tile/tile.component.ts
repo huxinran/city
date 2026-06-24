@@ -5,7 +5,7 @@ import { Tile } from '../tile';
 import { StateService } from '../state.service';
 import { BuildingType, Terrain, Feature } from '../types'
 import { GetBuildingSize, GetBuildingIcon, IsFarmBuilding, IsAnimalFarm, IsWorkshopBuilding, IsMineCampBuilding } from '../building'
-import { GetBuildingIconSrc } from '../building-icons'
+import { GetBuildingMapIconSrc, GetHouseMapIconSrc } from '../building-icons'
 import { IconComponent } from '../icon/icon.component'
 
 const CROP_FARM_ICON = 'assets/used/buildings/crop-farm.png'
@@ -148,8 +148,11 @@ export class TileComponent {
 
   // Image URL for the building icon, or undefined to fall back to the emoji.
   public get buildingIconSrc(): string | undefined {
-    let type = this.tile.building?.type
-    return type ? GetBuildingIconSrc(type) : undefined
+    let building = this.tile.building
+    if (!building) return undefined
+    // Houses render tier-specific art so an upgrade shows the next-tier building.
+    if (building.house) return GetHouseMapIconSrc(building.house.tier)
+    return GetBuildingMapIconSrc(building.type)
   }
 
   get isFeatureTree(): boolean {

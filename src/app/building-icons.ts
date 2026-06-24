@@ -247,10 +247,10 @@ const RESOURCE_ICON_BASE = 'assets/used/resources/'
 const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
     [BuildingType.WHEAT_FARM]: 'wheat-sheaf-v3.png',
     [BuildingType.RICE_PADDY]: 'rice.png',
-    [BuildingType.APPLE_ORCHARD]: 'apple-regen-v2.png',
+    [BuildingType.APPLE_ORCHARD]: 'apple.png',
     [BuildingType.ORANGE_ORCHARD]: 'orange.png',
     [BuildingType.CABBAGE_PATCH]: 'lettuce.png',
-    [BuildingType.PIG_FARM]: 'pig-ear-v2.png',
+    [BuildingType.PIG_FARM]: 'pig.png',
     [BuildingType.DIARY_FARM]: 'cow.png',
     [BuildingType.SHEEP_FARM]: 'sheep.png',
     [BuildingType.FISHERY]: 'fish.png',
@@ -324,4 +324,25 @@ export function GetBuildingIconSrc(type: BuildingType): string | undefined {
     const slug = BUILDING_IMAGE_SLUGS[type]
     if (slug) return `${BUILDING_ICON_BASE}${slug}.png`
     return undefined
+}
+
+// Slugs for buildings that should render a different art asset on the map than
+// the icon shown in the building menu. Falls back to GetBuildingIconSrc.
+const BUILDING_MAP_IMAGE_SLUGS: { [key: string]: string } = {
+    [BuildingType.WAREHOUSE]: 'warehouse-map',
+}
+
+// Map-tile art for a placed building. Uses the map-specific override when one
+// exists, otherwise the same source as the menu icon.
+export function GetBuildingMapIconSrc(type: BuildingType): string | undefined {
+    const slug = BUILDING_MAP_IMAGE_SLUGS[type]
+    if (slug) return `${BUILDING_ICON_BASE}${slug}.png`
+    return GetBuildingIconSrc(type)
+}
+
+// Map-tile art for a house, chosen by its tier (1..6) so upgraded houses show
+// the next-tier building. Art is the v5 housing set.
+export function GetHouseMapIconSrc(tier: number): string {
+    const t = Math.max(1, Math.min(6, tier))
+    return `${BUILDING_ICON_BASE}house-tier-${t}.png`
 }

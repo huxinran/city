@@ -124,4 +124,6 @@
 .material-icon ::ng-deep .icon-img { image-rendering: pixelated; }
 .stat .v { color: var(--text); font-weight: 600; font-size: 15px; font-variant-numeric: tabular-nums; }
 .stat .v.gold { color: #fbbf24; }
+.stat .v.pos { color: #6b9e6e; }
+.stat .v.neg { color: #b06b6b; }
 .stat .mut { color: var(--text-mut); }

@@ -2,7 +2,7 @@ import { Injectable, NgZone, inject, signal } from '@angular/core';
 import { State } from './state';
 import { Item, Storage } from './storage';
 import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, CountItem, TakeItemsAsPossible, StorageItems} from './utils';
-import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, ExtraSource, CreateBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, FeatureMatches, GetRequiredNearbyFeature, GetRequiredNearbyTerrain, Technology, ALL_RESEARCH, FARM_BUILDINGS, MINE_CAMP_BUILDINGS } from './building'
+import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, ExtraSource, CreateBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, FeatureMatches, GetRequiredNearbyFeature, GetRequiredNearbyTerrain, Technology, ALL_RESEARCH, FARM_BUILDINGS, MINE_CAMP_BUILDINGS, ComputeBaseHappiness } from './building'
 import { City } from './city';
 import { Population,  } from './population';
 import { Resident, ProductionStatus, ShippingTaskType, BuildingType, Terrain, Feature, CityName } from './types'
@@ -10,11 +10,19 @@ import { Tile } from './tile';
 import { SaveState, LoadState, SaveMaps, LoadMaps } from './persistence';
 import { RoadDistanceField, BuildRoadPath, WarehouseRoadDistance } from './pathfinding';
 
-// How much a full (100%) tax rate subtracts from a household's happiness.
-const TAX_UNHAPPINESS = 0.4
+// Taxes only weigh on happiness once they climb above this rate; at or below it
+// residents don't mind paying, so happiness can still reach 100%.
+const TAX_HAPPY_THRESHOLD = 0.5
+// How much tax ABOVE the threshold subtracts from happiness, scaled across the
+// remaining range (threshold..1.0).
+const TAX_UNHAPPINESS = 0.8
 
 // How far (in tiles) a resource building may sit from the rock/tree it works.
 const FEATURE_RADIUS = 3
+
+// Global production speed scalar. Lower = every production building fills its
+// progress bar more slowly (1.0 = original speed).
+const PRODUCTION_SPEED = 0.5
 
 @Injectable({
   providedIn: 'root'
@@ -123,6 +131,57 @@ export class StateService {
     this.ClearBuildType()
     this.ClearTerrainType()
     this.ClearFeatureType()
+  }
+
+  // Handle a click on a map tile, applying whichever paint mode is active
+  // (build / feature / terrain) or selecting the tile. Relocated here from the
+  // per-tile component so the canvas map can drive it from a single hit test.
+  public HandleTileClick(tile: Tile) {
+    let city = this.state.current_city!
+    let building_type = this.state.build_type
+    let terrain_type = this.state.terrain_type
+    let feature_type = this.state.feature_type
+
+    if (building_type) {
+      // Clicking an occupied tile while a non-delete build tool is active:
+      // clear the selection and focus the existing building instead.
+      if (building_type !== BuildingType.DELETE) {
+        let anchor = tile.covered
+          ? this.GetTile(city, tile.anchor_i, tile.anchor_j)
+          : tile
+        if (anchor.building) {
+          this.ClearSelection()
+          city.focus_tile = anchor
+          return
+        }
+      }
+      this.ApplyBuild(tile)
+      return
+    }
+    if (feature_type) {
+      // Features paint onto bare land only — not water, not occupied tiles.
+      if (tile.terrain != Terrain.WATER && !tile.building && !tile.covered) {
+        tile.feature = feature_type
+        city.focus_tile = tile
+        this.bumpMap()
+      }
+      return
+    }
+    if (terrain_type) {
+      tile.terrain = terrain_type
+      // Water can't hold a tree/rock feature.
+      if (terrain_type == Terrain.WATER) {
+        tile.feature = undefined
+      }
+      city.focus_tile = tile
+      this.bumpMap()
+      return
+    }
+    // Plain selection: focus the building's anchor if a covered tile was clicked.
+    city.focus_tile = tile.covered
+      ? this.GetTile(city, tile.anchor_i, tile.anchor_j)
+      : tile
+    this.bumpMap()
   }
 
   // The three paint modes (build / terrain / feature) are mutually exclusive:
@@ -287,11 +346,11 @@ export class StateService {
       building.house.city_type = city.name
     }
     tile.building = building
-    // Houses stamp the ground to dirt so settled land looks distinct from open fields.
-    if (building.house) {
-      tile.original_terrain = tile.terrain
-      tile.terrain = Terrain.DIRT
-    }
+    // Houses no longer stamp the ground to dirt on build (disabled).
+    // if (building.house) {
+    //   tile.original_terrain = tile.terrain
+    //   tile.terrain = Terrain.DIRT
+    // }
     for (let t of footprint) {
       if (t === tile) {
         continue
@@ -389,11 +448,7 @@ export class StateService {
 
     // Place at destination.
     to.building = building
-    // Stamp dirt at the new position for houses.
-    if (isHouse) {
-      to.original_terrain = to.terrain
-      to.terrain = Terrain.DIRT
-    }
+    // Houses no longer stamp the ground to dirt on move (disabled).
     for (let t of destFootprint) {
       if (t === to) continue
       t.covered = true
@@ -560,7 +615,7 @@ export class StateService {
         }
         let techMult = this.getTechSpeedMultiplier(city, t.building!.type)
         production.progress = Math.min(
-          production.progress + production.full_efficiency * production.worker / production.worker_needed * (production.boost_multiplier ?? 1.0) * techMult,
+          production.progress + production.full_efficiency * production.worker / production.worker_needed * (production.boost_multiplier ?? 1.0) * techMult * PRODUCTION_SPEED,
           100.0
         )
         if (production.progress == 100.0) {
@@ -696,22 +751,13 @@ export class StateService {
 
   public UpdatePopulation(city: City) {
     for (let t of city.houses) {
-      let house = t.building!.house! 
-      let needs_satified = 0
-      for (let e of house.service_needs) {
-        if (e.satisfied) {
-          needs_satified += 1
-        }
-      }
-      for (let e of house.resource_needs) {
-        if (e.satisfied) {
-          needs_satified += 1
-        }
-      }
-      let total_needs = house.service_needs.length + house.resource_needs.length
-      let base_happiness = total_needs == 0 ? 1.0 : needs_satified / total_needs
-      // Taxes weigh on residents: the higher the rate, the unhappier they are.
-      house.happiness = Math.max(0, Math.min(1, base_happiness - this.state.tax_rate * TAX_UNHAPPINESS))
+      let house = t.building!.house!
+      // Base happiness from satisfied services + goods (see ComputeBaseHappiness
+      // in building.ts to tune the model). Tax only bites above the threshold, so
+      // a modest tax rate leaves happiness untouched (and 100% reachable).
+      let base_happiness = ComputeBaseHappiness(house)
+      let tax_penalty = Math.max(0, this.state.tax_rate - TAX_HAPPY_THRESHOLD) * TAX_UNHAPPINESS
+      house.happiness = Math.max(0, Math.min(1, base_happiness - tax_penalty))
 
       house.current_max_occupant = GetCurrentMaxOccupant(house.tier, house.happiness)
       if (house.occupant < house.current_max_occupant) {

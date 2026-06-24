@@ -140,6 +140,30 @@ export class House {
     }
 }
 
+// --- Happiness model ---------------------------------------------------------
+// How much satisfied services vs. satisfied goods (resource) needs each weigh
+// toward a household's base happiness. Tweak these to rebalance — e.g. raise
+// HAPPINESS_GOODS_WEIGHT to make food/daily goods matter more than services.
+export const HAPPINESS_SERVICE_WEIGHT = 1.0
+export const HAPPINESS_GOODS_WEIGHT = 1.0
+
+// Base happiness (0..1) from the fraction of a house's service and goods needs
+// currently satisfied, before tax is applied. This is the single place to
+// change how services and goods drive happiness.
+export function ComputeBaseHappiness(house: House): number {
+    let satisfiedWeight = 0
+    let totalWeight = 0
+    for (let n of house.service_needs) {
+        totalWeight += HAPPINESS_SERVICE_WEIGHT
+        if (n.satisfied) satisfiedWeight += HAPPINESS_SERVICE_WEIGHT
+    }
+    for (let n of house.resource_needs) {
+        totalWeight += HAPPINESS_GOODS_WEIGHT
+        if (n.satisfied) satisfiedWeight += HAPPINESS_GOODS_WEIGHT
+    }
+    return totalWeight === 0 ? 1.0 : satisfiedWeight / totalWeight
+}
+
 export class Ship {
     constructor(
         public type: ShipType,
@@ -637,23 +661,53 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
     return b
 }
 
+// Construction-material ladder, lowest tier first. A building's tier maps onto a
+// rung: tier 1 -> timber, 2 -> brick, 3 -> slate, 4+ -> steel (capped at the top).
+const BUILD_MATERIAL_LADDER = [Resource.TIMBER, Resource.BRICK, Resource.SLATE, Resource.STEEL]
+// Ladder position of a resource (1-based); 0 if it is not a construction material.
+function materialLevel(r: Resource): number { return BUILD_MATERIAL_LADDER.indexOf(r) + 1 }
+function materialForTier(tier: number): Resource {
+    return BUILD_MATERIAL_LADDER[Math.min(Math.max(tier, 1), BUILD_MATERIAL_LADDER.length) - 1]
+}
+
 // Construction material cost, overriding the per-building defaults above:
 //  - the wood/timber producers cost only money (no material), so the timber
 //    supply chain can be bootstrapped from nothing;
-//  - farms cost a single timber; the warehouse costs 10.
+//  - farms cost a single timber; the warehouse costs 10;
+//  - a building that PRODUCES a construction material is built from the rung
+//    just below its output (never its own output or higher);
+//  - every other building may use its own tier's material but nothing higher
+//    (e.g. a Well, a tier-1 service, never demands slate/steel).
 function BuildMaterial(type: BuildingType, current: Item[]): Item[] {
     if (type == BuildingType.ROAD) return []
     if (type == BuildingType.LUMBER_HUT || type == BuildingType.SAWMILL) return []
     if (type == BuildingType.HOUSE) return [new Item(Resource.TIMBER, 1)]
     if (FARM_BUILDINGS.has(type)) return [new Item(Resource.TIMBER, 1)]
     if (type == BuildingType.WAREHOUSE) return [new Item(Resource.TIMBER, 10)]
+    // Mason shop bootstraps the stone-block chain from timber, not brick.
+    if (type == BuildingType.MASON_SHOP) return [new Item(Resource.TIMBER, 10)]
     // Themed city workshops also bootstrap cheaply from timber
     if (type == BuildingType.TOFU_SHOP || type == BuildingType.NOODLE_SHOP) return [new Item(Resource.TIMBER, 5)]
     if (type == BuildingType.CORN_MILL || type == BuildingType.TANNERY)     return [new Item(Resource.TIMBER, 5)]
     if (type == BuildingType.PALM_OIL_PRESS || type == BuildingType.COCOA_SHOP) return [new Item(Resource.TIMBER, 5)]
     if (type == BuildingType.FUR_WORKSHOP || type == BuildingType.SMOKEHOUSE) return [new Item(Resource.TIMBER, 5)]
     if (type == BuildingType.BLUBBER_PRESS) return [new Item(Resource.TIMBER, 5)]
-    return current
+
+    const def = BUILDING_DEFS[type]
+    // Material-producer buildings build from the previous rung of the ladder.
+    const product = def?.recipe?.out?.[0]?.type
+    const outLevel = product !== undefined ? materialLevel(product) : 0
+    if (outLevel > 0) {
+        if (outLevel === 1) return []                  // timber producer bootstraps free
+        const prev = BUILD_MATERIAL_LADDER[outLevel - 2]
+        return [new Item(prev, current[0]?.num ?? 20)]
+    }
+    // Other buildings: clamp any material above the building's own tier down to it.
+    const tier = GetBuildingTier(type)
+    if (tier === undefined) return current
+    const cap = materialForTier(tier)
+    const capLevel = materialLevel(cap)
+    return current.map(it => materialLevel(it.type) > capLevel ? new Item(cap, it.num) : it)
 }
 
 export function CreateBuilding(type: BuildingType, storage: Storage) {
@@ -712,17 +766,18 @@ function resourceTierMap(): { [key: string]: number } {
             }
         }
     }
-    // Collect every production recipe (ingredient list -> product list).
+    // Collect every production recipe (ingredient list -> product list). Read
+    // straight from the defs rather than MakeBuilding so this stays independent
+    // of BuildMaterial (which itself consults building tiers).
     let recipes: { ingredients: string[], products: string[] }[] = []
-    for (let type of Object.values(BuildingType)) {
-        let b = MakeBuilding(type as BuildingType)
-        if (b?.production) {
+    for (let [, def] of DEF_ENTRIES) {
+        if (def.recipe) {
             recipes.push({
                 ingredients: [
-                    ...b.production.ingredient.map(i => i.type),
-                    ...(b.production.extra_sources ?? []).filter(es => es.required).map(es => es.resource),
+                    ...def.recipe.in.map(i => i.type),
+                    ...(def.recipe.coal ? [Resource.COAL] : []),
                 ],
-                products: b.production.product.map(p => p.type),
+                products: def.recipe.out.map(p => p.type),
             })
         }
     }
@@ -752,7 +807,11 @@ function resourceTierMap(): { [key: string]: number } {
 const BUILDING_TIER_OVERRIDE: { [key: string]: number } = {
     [BuildingType.LUMBER_HUT]: 1,   // wood   (Farmer)
     [BuildingType.SAWMILL]:    1,   // timber (Farmer)
-    [BuildingType.BRICKYARY]:  2,   // brick  (Worker; brick itself is a tier-3 build good)
+    [BuildingType.BRICKYARY]:  3,   // brick  (Artisan; brick itself is a tier-3 build good)
+    [BuildingType.STONE_QUARRY]: 2, // stone       (Worker)
+    [BuildingType.MASON_SHOP]:   2, // slate/stone block (Worker)
+    [BuildingType.VINEYARD]:     4, // grape (Scholar)
+    [BuildingType.WINERY]:       4, // wine  (Scholar)
     [BuildingType.FIRE_STATION]: 2, // fire service (Worker; default service-unlock tier is 3)
     [BuildingType.MARKETPLACE]: 1,  // market service (Farmer; default service-unlock tier is 2)
     [BuildingType.COTTON_FIELD]: 2, // cotton (Worker)
@@ -805,14 +864,30 @@ const BUILDING_TIER_OVERRIDE: { [key: string]: number } = {
     [BuildingType.UNIVERSITY]:  4,      // unlocks after Scholars (tier 4)
 }
 
+// Buildings forced out of the tier groups into the palette's "Other" bucket,
+// regardless of what their output resource would imply.
+const FORCE_OTHER_BUILDINGS = new Set<BuildingType>([
+    BuildingType.BANANA_PLANTATION,
+    BuildingType.CORN_FIELD,
+    BuildingType.SALTERN,
+    BuildingType.RICE_PADDY,
+    BuildingType.COCOA_PLANT,
+    BuildingType.RUM_DISTILLERY,
+    BuildingType.SOYBEAN_FARM,
+    BuildingType.SUGAR_CANE_PLANTATION,
+    BuildingType.GOLD_MINE,
+    BuildingType.GOLDSMITH,
+])
+
 export function GetBuildingTier(type: BuildingType): number | undefined {
+    if (FORCE_OTHER_BUILDINGS.has(type)) return undefined
     if (type in BUILDING_TIER_OVERRIDE) return BUILDING_TIER_OVERRIDE[type]
-    let b = MakeBuilding(type)
-    if (!b) return undefined
-    if (b.service) return SERVICE_UNLOCK_TIER[b.service.need_provided]
-    if (b.production) {
+    const def = BUILDING_DEFS[type]
+    if (!def) return undefined
+    if (def.service) return SERVICE_UNLOCK_TIER[def.service.need]
+    if (def.recipe) {
         let map = resourceTierMap()
-        let tiers = b.production.product
+        let tiers = def.recipe.out
             .map(p => map[p.type])
             .filter((t): t is number => t !== undefined)
         if (tiers.length) return Math.min(...tiers)

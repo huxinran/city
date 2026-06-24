@@ -13,7 +13,7 @@ import { repaintOn } from '../live';
 // categorized tier groups so they aren't listed twice).
 const BASIC_BUILDINGS = [BuildingType.ROAD, BuildingType.HOUSE, BuildingType.WAREHOUSE, BuildingType.DELETE]
 
-const HIDDEN_BUILDINGS = new Set<BuildingType>([BuildingType.COMPOST_PIT])
+const HIDDEN_BUILDINGS = new Set<BuildingType>([BuildingType.COMPOST_PIT, BuildingType.UNIVERSITY])
 
 // All city-exclusive buildings across every themed city (derived from shared constants).
 const ALL_CITY_EXCLUSIVE_BUILDINGS = new Set<BuildingType>(
@@ -30,7 +30,10 @@ const PALETTE_ORDER: BuildingType[] = [
   BuildingType.SHEEP_FARM,      // sheep -> wool
   BuildingType.PANT_SHOP, // pant
   // Worker
+  BuildingType.STONE_QUARRY,    // stone
+  BuildingType.MASON_SHOP,      // slate / stone block
   BuildingType.CLAY_PIT,        // clay
+  BuildingType.POTTERY_SHOP,    // pottery
   BuildingType.BRICKYARY,       // brick
   BuildingType.COTTON_FIELD,    // cotton
   BuildingType.SHIRT_SHOP,      // shirt

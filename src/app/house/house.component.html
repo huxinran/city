@@ -39,7 +39,7 @@
 }
 <div class="btn-row">
     <button class="btn btn-sm btn-primary"
-            [disabled]="tile.building!.house!.happiness < 0.8 || tile.building!.house!.tier >= 6 || !canAffordUpgrade"
+            [disabled]="!canUpgrade"
             (click)="Upgrade()">Upgrade</button>
     <button class="btn btn-sm" [disabled]="tile.building!.house!.tier == 1" (click)="Downgrade()">Downgrade</button>
 </div>

@@ -36,7 +36,7 @@
     @for (tier of state.state.current_city!.population.tiers; track $index) {
         <span class="stat" [title]="tier.tier">
             <img class="resident-icon" [src]="icon(tier.tier)" [alt]="tier.tier">
-            <span class="v">{{tier.has}}<span class="mut">/{{tier.needed}}</span></span>
+            <span class="v" [class.pos]="tier.has - tier.needed >= 0" [class.neg]="tier.has - tier.needed < 0">{{tier.has - tier.needed >= 0 ? '+' : ''}}{{tier.has - tier.needed}}</span>
         </span>
     }
 </div>

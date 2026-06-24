@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { PercentPipe } from '@angular/common';
 import { Tile } from '../tile';
-import { House, RefreshHouse, GetUpgradeCost, GetUpgradeItems, GetCityMaxTier, UpgradeBasket } from '../building';
+import { House, RefreshHouse, GetUpgradeCost, GetCityMaxTier, UpgradeBasket } from '../building';
 import { StateService } from '../state.service';
-import { TakeItems, CountItem } from '../utils';
+import { CountItem } from '../utils';
 import { Item } from '../storage';
 import { Resource } from '../types';
 import { GetResourceIconSrc, GetResourceEmoji } from '../resource-icons';
@@ -47,9 +47,10 @@ export class HouseComponent {
     ].filter(g => g.items.length > 0)
   }
 
+  // No goods-basket cost is consumed on upgrade; the "Upgrade needs" UI stays
+  // hidden. Upgrades are gated on the house's ongoing service + goods needs.
   public get hasUpgradeCost(): boolean {
-    if (this.atMaxTier) return false
-    return GetUpgradeItems(this.house.tier + 1, this.house.city_type).length > 0
+    return false
   }
 
   // Whether the city has enough of a single required item on hand.
@@ -57,20 +58,20 @@ export class HouseComponent {
     return CountItem(this.state.state.current_city!.storage, item.type) >= item.num
   }
 
-  // Whether the city can afford the whole upgrade basket.
-  public get canAffordUpgrade(): boolean {
-    if (this.atMaxTier) return false
-    let items = GetUpgradeItems(this.house.tier + 1, this.house.city_type)
-    if (items.length === 0) return false
-    return items.every(it => this.has(it))
+  // Every service and goods (resource) need at the current tier is satisfied.
+  public get needsMet(): boolean {
+    return this.house.service_needs.every(n => n.satisfied)
+        && this.house.resource_needs.every(n => n.satisfied)
+  }
+
+  // Upgrade is allowed once all current needs are met (and below max tier).
+  public get canUpgrade(): boolean {
+    return !this.atMaxTier && this.needsMet
   }
 
   public Upgrade() {
+    if (!this.canUpgrade) return
     let house = this.house
-    if (this.atMaxTier) return
-    let items = GetUpgradeItems(house.tier + 1, house.city_type)
-    if (items.length === 0) return
-    if (!TakeItems(this.state.state.current_city!.storage, items)) return
     house.tier += 1
     RefreshHouse(house)
     this.state.bumpMap()

@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { TileComponent } from '../tile/tile.component';
+import { MapCanvasComponent } from './map-canvas.component';
 import { CartLayerComponent } from './cart-layer.component';
 import { City } from '../city';
 import { GetBuildingSize } from '../building';
@@ -13,7 +13,7 @@ const TILE = 48;
 
 @Component({
   selector: 'app-city',
-  imports: [TileComponent, CartLayerComponent, CommonModule],
+  imports: [MapCanvasComponent, CartLayerComponent, CommonModule],
   templateUrl: './city.component.html',
   styleUrl: './city.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,18 +21,21 @@ const TILE = 48;
 export class CityComponent {
   @Input() city!: City;
 
+  @ViewChild(MapCanvasComponent) private mapCanvas?: MapCanvasComponent;
+
   state = inject(StateService)
-  constructor() { repaintOn(s => [s.mapVersion, s.frame]) }
+  // Only repaint the tile grid on map/selection edits. Per-tick live motion
+  // (carts) lives in app-cart-layer, which repaints itself on `frame` — so the
+  // whole grid no longer re-checks 5x/second, which made cart motion stutter.
+  constructor() { repaintOn(s => [s.mapVersion]) }
 
   // Footprint preview shown under the cursor while dragging a building.
   public dropHi?: { i: number, j: number, size: number }
 
   private tileFromEvent(event: DragEvent): { i: number, j: number } | undefined {
-    let el = (event.target as HTMLElement)?.closest('[data-i]') as HTMLElement | null
-    if (!el) {
-      return undefined
-    }
-    return { i: +el.getAttribute('data-i')!, j: +el.getAttribute('data-j')! }
+    // The map is a single canvas now, so hit-test by pixel position via the
+    // map-canvas component rather than reading per-tile data attributes.
+    return this.mapCanvas?.tileAt(event.clientX, event.clientY)
   }
 
   // Size of the building currently being dragged (placed from palette or moved).
@@ -105,15 +108,6 @@ export class CityComponent {
       width: TILE + 'px',
       height: TILE + 'px',
     }
-  }
-
-  public getStyle() {
-    return {
-      display: 'grid',
-      'grid-template-columns': `repeat(${this.city.w}, ${TILE}px)`,
-      'grid-template-rows': `repeat(${this.city.h}, ${TILE}px)`,
-      gap: '0px',
-    };
   }
 
 }

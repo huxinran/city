@@ -4,7 +4,7 @@ import { Resource } from './types'
 
 const RESOURCE_ICON_BASE = 'assets/used/resources/'
 const RESOURCE_ICON_FILES: { [key: string]: string } = {
-  [Resource.APPLE]: 'apple-regen-v2.png',
+  [Resource.APPLE]: 'apple.png',
   [Resource.BANANA]: 'banana.png',
   [Resource.BERRY]: 'berry.png',
   [Resource.BRANDY]: 'brandy.png',
@@ -50,7 +50,7 @@ const RESOURCE_ICON_FILES: { [key: string]: string } = {
   [Resource.BOOT]: 'boot.png',
   [Resource.TIMBER]: 'timber.png',
   [Resource.TOOL]: 'tool.png',
-  [Resource.PORK]: 'pig-ear-v2.png',
+  [Resource.PORK]: 'pork.png',
   [Resource.POTATO]: 'potato.png',
   [Resource.POTTERY]: 'pottery.png',
   [Resource.PUMPKIN]: 'pumpkin.png',

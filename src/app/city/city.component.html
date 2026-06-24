@@ -1,7 +1,5 @@
-<div class="grid" [ngStyle]="getStyle()" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
-    @for (tile of city.tiles; track $index) {
-        <app-tile [tile]="tile"></app-tile>
-    }
+<div class="grid" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
+    <app-map-canvas [city]="city"></app-map-canvas>
     @if (state.dragging && dropHi) {
         <div class="drop-highlight" [ngStyle]="dropHiStyle()"></div>
     }
