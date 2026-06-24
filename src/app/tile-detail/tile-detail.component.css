@@ -2,3 +2,9 @@
     font-size: 13px;
     color: var(--text-mut);
 }
+
+.panel-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

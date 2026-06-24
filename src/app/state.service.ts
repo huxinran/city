@@ -3,6 +3,7 @@ import { State } from './sim/state';
 import { Item, Storage } from './sim/storage';
 import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, CountItem, TakeItemsAsPossible, StorageItems} from './sim/utils';
 import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, ExtraSource, CreateBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, FeatureMatches, GetRequiredNearbyFeature, GetRequiredNearbyTerrain, Technology, ALL_RESEARCH, FARM_BUILDINGS, MINE_CAMP_BUILDINGS, ComputeBaseHappiness } from './sim/building'
+import { BALANCE } from './sim/balance';
 import { City } from './sim/city';
 import { Population,  } from './sim/population';
 import { Resident, ProductionStatus, ShippingTaskType, BuildingType, Terrain, Feature, CityName } from './sim/types'
@@ -11,19 +12,8 @@ import { SaveState, LoadState, SaveMaps, LoadMaps } from './sim/persistence';
 import { RoadDistanceField, BuildRoadPath, WarehouseRoadDistance } from './sim/pathfinding';
 import { Camera } from './camera';
 
-// Taxes only weigh on happiness once they climb above this rate; at or below it
-// residents don't mind paying, so happiness can still reach 100%.
-const TAX_HAPPY_THRESHOLD = 0.5
-// How much tax ABOVE the threshold subtracts from happiness, scaled across the
-// remaining range (threshold..1.0).
-const TAX_UNHAPPINESS = 0.8
-
 // How far (in tiles) a resource building may sit from the rock/tree it works.
 const FEATURE_RADIUS = 3
-
-// Global production speed scalar. Lower = every production building fills its
-// progress bar more slowly (1.0 = original speed).
-const PRODUCTION_SPEED = 0.5
 
 @Injectable({
   providedIn: 'root'
@@ -164,6 +154,13 @@ export class StateService {
           city.focus_tile = anchor
           return
         }
+        // Center a multi-tile footprint on the clicked tile so click placement
+        // matches the drag-and-drop preview (roads stay 1x1, so unaffected).
+        let size = GetBuildingSize(building_type)
+        if (size > 1) {
+          let a = this.CenteredAnchor(city, tile.i, tile.j, size)
+          tile = this.GetTile(city, a.i, a.j)
+        }
       }
       this.ApplyBuild(tile)
       return
@@ -234,6 +231,19 @@ export class StateService {
 
   public GetTile(city: City, i: number, j: number): Tile {
     return city.tiles[i * city.w + j]
+  }
+
+  // Anchor (top-left) tile so the cursor/clicked tile sits at the center of a
+  // size x size footprint, clamped to stay on the grid. 1x1 is a no-op (so
+  // roads and single-tile placement are unaffected). This is the single source
+  // of truth shared by click placement and drag-and-drop placement, so the two
+  // can never disagree on where a multi-tile building lands.
+  public CenteredAnchor(city: City, i: number, j: number, size: number): { i: number, j: number } {
+    let off = Math.round((size - 1) / 2)
+    return {
+      i: Math.max(0, Math.min(i - off, city.h - size)),
+      j: Math.max(0, Math.min(j - off, city.w - size)),
+    }
   }
 
   // True if any tile within FEATURE_RADIUS of a size x size footprint anchored
@@ -625,7 +635,7 @@ export class StateService {
         }
         let techMult = this.getTechSpeedMultiplier(city, t.building!.type)
         production.progress = Math.min(
-          production.progress + production.full_efficiency * production.worker / production.worker_needed * (production.boost_multiplier ?? 1.0) * techMult * PRODUCTION_SPEED,
+          production.progress + production.full_efficiency * production.worker / production.worker_needed * (production.boost_multiplier ?? 1.0) * techMult * BALANCE.productionSpeed,
           100.0
         )
         if (production.progress == 100.0) {
@@ -762,12 +772,10 @@ export class StateService {
   public UpdatePopulation(city: City) {
     for (let t of city.houses) {
       let house = t.building!.house!
-      // Base happiness from satisfied services + goods (see ComputeBaseHappiness
-      // in building.ts to tune the model). Tax only bites above the threshold, so
-      // a modest tax rate leaves happiness untouched (and 100% reachable).
-      let base_happiness = ComputeBaseHappiness(house)
-      let tax_penalty = Math.max(0, this.state.tax_rate - TAX_HAPPY_THRESHOLD) * TAX_UNHAPPINESS
-      house.happiness = Math.max(0, Math.min(1, base_happiness - tax_penalty))
+      // Happiness comes purely from satisfied services + goods (see
+      // ComputeBaseHappiness in building.ts to tune the model). Tax rate no
+      // longer affects happiness.
+      house.happiness = Math.max(0, Math.min(1, ComputeBaseHappiness(house)))
 
       house.current_max_occupant = GetCurrentMaxOccupant(house.tier, house.happiness)
       if (house.occupant < house.current_max_occupant) {

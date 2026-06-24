@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { PercentPipe } from '@angular/common';
 import { Tile } from '../sim/tile';
-import { House, RefreshHouse, GetUpgradeCost, GetCityMaxTier, UpgradeBasket } from '../sim/building';
+import { House, RefreshHouse, GetUpgradeCost, UpgradeBasket, CanUpgradeHouse } from '../sim/building';
 import { StateService } from '../state.service';
 import { CountItem } from '../sim/utils';
 import { Item } from '../sim/storage';
-import { Resource } from '../sim/types';
+import { Resource, Resident, ServiceType } from '../sim/types';
+import { GetResidentIcon, GetResidentIconAsset } from '../sim/building';
+import { GetServiceIconSrc, GetServiceEmoji } from '../building-icons';
 import { GetResourceIconSrc, GetResourceEmoji } from '../resource-icons';
 import { IconComponent } from '../icon/icon.component';
 import { repaintOn } from '../live';
@@ -26,10 +28,6 @@ export class HouseComponent {
   constructor() { repaintOn(s => [s.frame]) }
 
   private get house(): House { return this.tile.building!.house! }
-
-  public get atMaxTier(): boolean {
-    return this.house.tier >= GetCityMaxTier(this.house.city_type)
-  }
 
   // The categorized basket needed to upgrade this house to the next tier.
   public get upgradeCost(): UpgradeBasket {
@@ -58,15 +56,10 @@ export class HouseComponent {
     return CountItem(this.state.state.current_city!.storage, item.type) >= item.num
   }
 
-  // Every service and goods (resource) need at the current tier is satisfied.
-  public get needsMet(): boolean {
-    return this.house.service_needs.every(n => n.satisfied)
-        && this.house.resource_needs.every(n => n.satisfied)
-  }
-
-  // Upgrade is allowed once all current needs are met (and below max tier).
+  // Upgrade gating is config-driven in the sim layer (HOUSE_UPGRADE_RULE in
+  // building.ts) — this just delegates so the rule lives in one place.
   public get canUpgrade(): boolean {
-    return !this.atMaxTier && this.needsMet
+    return CanUpgradeHouse(this.house)
   }
 
   public Upgrade() {
@@ -86,4 +79,8 @@ export class HouseComponent {
 
   public resSrc(type: Resource): string | undefined { return GetResourceIconSrc(type) }
   public resEmoji(type: Resource): string { return GetResourceEmoji(type) }
+  public residentSrc(type: Resident): string { return GetResidentIconAsset(type) }
+  public residentEmoji(type: Resident): string { return GetResidentIcon(type) }
+  public serviceSrc(type: ServiceType): string | undefined { return GetServiceIconSrc(type) }
+  public serviceEmoji(type: ServiceType): string { return GetServiceEmoji(type) }
 }

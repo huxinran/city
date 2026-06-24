@@ -46,3 +46,23 @@
 .cost-num {
   font-variant-numeric: tabular-nums;
 }
+
+/* Resource-need icons: a satisfied need shows in full, an unsatisfied one is
+   dimmed and red-tinted so the icon alone communicates status (no text). */
+.need-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+}
+.need-chip.on {
+  background: rgba(90, 158, 58, 0.12);
+  border-color: rgba(90, 158, 58, 0.30);
+}
+.need-chip.off {
+  background: rgba(192, 60, 60, 0.10);
+  border-color: rgba(192, 60, 60, 0.30);
+  opacity: 0.55;
+}

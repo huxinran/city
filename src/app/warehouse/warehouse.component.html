@@ -7,7 +7,7 @@
     <div class="row">
         <span class="key">Cart {{$index + 1}}</span>
         @if (cart.task) {
-            <span class="badge on">{{cart.task.type}} · {{cart.task.progress / cart.task.distance | percent}}</span>
+            <span class="badge on">{{cart.task.type}}</span>
         } @else {
             <span class="badge off">Ready</span>
         }

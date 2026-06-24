@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Tile } from '../sim/tile';
-import { PercentPipe } from '@angular/common';
 import { RefreshWarehouse } from '../sim/building';
 import { repaintOn } from '../live';
 @Component({
   selector: 'app-warehouse',
-  imports: [PercentPipe],
+  imports: [],
   templateUrl: './warehouse.component.html',
   styleUrl: './warehouse.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

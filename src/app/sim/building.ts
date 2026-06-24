@@ -1,6 +1,7 @@
 import { Storage, Item } from "./storage"
 import { Tile } from "./tile"
 import { TakeItems } from "./utils"
+import { BALANCE } from "./balance"
 import { Resource, HouseType, Resident, ProductionStatus, ServiceType, ShippingTaskType, BuildingType, ShipType, CityName, Terrain, Feature } from "./types"
 
 // Shorthand for the many Item literals in the building registry below.
@@ -141,27 +142,43 @@ export class House {
 }
 
 // --- Happiness model ---------------------------------------------------------
-// How much satisfied services vs. satisfied goods (resource) needs each weigh
-// toward a household's base happiness. Tweak these to rebalance — e.g. raise
-// HAPPINESS_GOODS_WEIGHT to make food/daily goods matter more than services.
-export const HAPPINESS_SERVICE_WEIGHT = 1.0
-export const HAPPINESS_GOODS_WEIGHT = 1.0
-
-// Base happiness (0..1) from the fraction of a house's service and goods needs
-// currently satisfied, before tax is applied. This is the single place to
-// change how services and goods drive happiness.
+// Tuning knobs live in BALANCE.happiness (see balance.ts). Base happiness
+// (0..1) is the weighted fraction of a house's service and goods needs that are
+// currently satisfied.
 export function ComputeBaseHappiness(house: House): number {
     let satisfiedWeight = 0
     let totalWeight = 0
     for (let n of house.service_needs) {
-        totalWeight += HAPPINESS_SERVICE_WEIGHT
-        if (n.satisfied) satisfiedWeight += HAPPINESS_SERVICE_WEIGHT
+        totalWeight += BALANCE.happiness.serviceWeight
+        if (n.satisfied) satisfiedWeight += BALANCE.happiness.serviceWeight
     }
     for (let n of house.resource_needs) {
-        totalWeight += HAPPINESS_GOODS_WEIGHT
-        if (n.satisfied) satisfiedWeight += HAPPINESS_GOODS_WEIGHT
+        totalWeight += BALANCE.happiness.goodsWeight
+        if (n.satisfied) satisfiedWeight += BALANCE.happiness.goodsWeight
     }
     return totalWeight === 0 ? 1.0 : satisfiedWeight / totalWeight
+}
+
+// --- House upgrade condition -------------------------------------------------
+// The rule lives in BALANCE.houseUpgrade (see balance.ts). The UI just calls
+// CanUpgradeHouse().
+
+// Fraction of a need list currently satisfied (1.0 when the list is empty).
+function satisfiedRatio(needs: { satisfied: boolean }[]): number {
+    if (needs.length === 0) return 1.0
+    let met = 0
+    for (let n of needs) if (n.satisfied) met++
+    return met / needs.length
+}
+
+// Whether a house meets the configured condition to upgrade to the next tier.
+// Pure function of the house + BALANCE.houseUpgrade — cheap to call every frame.
+export function CanUpgradeHouse(house: House): boolean {
+    if (house.tier >= GetCityMaxTier(house.city_type)) return false
+    const r = BALANCE.houseUpgrade
+    return satisfiedRatio(house.service_needs) >= r.minServiceRatio
+        && satisfiedRatio(house.resource_needs) >= r.minGoodsRatio
+        && house.happiness >= r.minHappiness
 }
 
 export class Ship {

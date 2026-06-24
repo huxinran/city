@@ -1,5 +1,9 @@
 <div class="row">
-    <span class="key">{{tile.building!.production!.worker_type}}</span>
+    <span class="key">
+        <app-icon [src]="workerSrc(tile.building!.production!.worker_type)"
+                  [fallback]="workerEmoji(tile.building!.production!.worker_type)"
+                  [alt]="tile.building!.production!.worker_type" [size]="20"></app-icon>
+    </span>
     <span class="val">{{tile.building!.production!.worker}} / {{tile.building!.production!.worker_needed}}</span>
 </div>
 <div class="row">
@@ -12,12 +16,14 @@
 <div class="row"><span class="key">Progress</span>
     <span class="val">{{tile.building!.production!.progress / 100 | percent}}</span>
 </div>
-<div class="bar"><span [style.width.%]="tile.building!.production!.progress"></span></div>
 @if (tile.building!.production!.extra_sources.length) {
     <hr class="divider">
     @for (es of tile.building!.production!.extra_sources; track es.resource) {
         <div class="row">
-            <span class="key">{{es.resource}}</span>
+            <span class="key">
+                <app-icon [src]="resSrc(es.resource)" [fallback]="resEmoji(es.resource)"
+                          [alt]="es.resource" [size]="20"></app-icon>
+            </span>
             <span class="val">{{getStockpile(es)}} / {{es.max_stockpile}}</span>
             @if (es.required) {
                 <span class="badge req">Required</span>

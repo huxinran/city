@@ -1,7 +1,15 @@
 <div class="panel">
     <div class="panel-title">Selection</div>
     @if (tile) {
-        <div class="panel-heading">{{tile.building ? tile.building.type : tile.terrain}}</div>
+        <div class="panel-heading">
+            @if (tile.building) {
+                <app-icon [src]="headingSrc(tile)" [fallback]="'🏛️'"
+                          [alt]="headingLabel(tile)" [size]="24"></app-icon>
+                <span>{{headingLabel(tile)}}</span>
+            } @else {
+                <span>{{tile.terrain}}</span>
+            }
+        </div>
         @if (tile.building) {
             <hr class="divider">
             <app-building [tile]="tile"></app-building>

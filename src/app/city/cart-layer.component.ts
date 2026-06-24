@@ -11,6 +11,15 @@ const TILE = 48;
 // the canvas draws smooth 60fps motion instead of stepping 5x/sec.
 const TWEEN_MS = 200;
 
+// Ambient decoration: a single sailing ship that drifts back and forth along the
+// top ocean band (row ~1, always water for every generated map). Purely visual —
+// not a real game ship. The art faces left, so it's flipped when sailing right.
+const SHIP_ICON = 'assets/used/buildings/ship.png';
+const SHIP_ROW = 1.6;          // world tile row (centre) — inside the 3-tile sea
+const SHIP_SIZE = TILE * 2.2;  // drawn footprint
+const SHIP_SPEED = 1.1;        // tiles per second
+const SHIP_MARGIN = 2.5;       // tiles kept clear of the left/right map edges
+
 // A cart's visual state, derived from its current task.
 type CartVisual = { icon: string, emoji: string }
 const CART_VISUALS = {
@@ -49,8 +58,19 @@ export class CartLayerComponent implements OnInit, OnDestroy {
   private anims = new Map<Cart, CartAnim>();
   private images = new Map<string, HTMLImageElement>();
 
+  // Ambient ship state: x position (in tiles), travel direction, last timestamp.
+  private shipX = SHIP_MARGIN;
+  private shipDir = 1;
+  private shipLast = 0;
+
   ngOnInit() {
     this.canvas = document.createElement('canvas');
+    // Inline sizing so the JS-created canvas fills the host regardless of view
+    // encapsulation (see map-canvas for the full explanation) — keeps the cart
+    // layer aligned with the map canvas at dpr≠1.
+    Object.assign(this.canvas.style, {
+      position: 'absolute', inset: '0', display: 'block', width: '100%', height: '100%',
+    });
     this.ctx = this.canvas.getContext('2d')!;
     this.host.appendChild(this.canvas);
     this.zone.runOutsideAngular(() => {
@@ -94,6 +114,36 @@ export class CartLayerComponent implements OnInit, OnDestroy {
     for (const cart of this.anims.keys()) {
       if (!seen.has(cart)) this.anims.delete(cart);
     }
+
+    // Ambient sailing ship, drawn on top of the sea.
+    this.drawShip(now);
+  }
+
+  // Advance and draw the decorative ship: it cruises along the top ocean band,
+  // reversing (and flipping the sprite) when it reaches either side, with a
+  // gentle bob so it feels alive.
+  private drawShip(now: number) {
+    if (this.shipLast === 0) this.shipLast = now;
+    const dt = Math.min(0.05, (now - this.shipLast) / 1000); // clamp tab-switch jumps
+    this.shipLast = now;
+
+    const minX = SHIP_MARGIN, maxX = Math.max(minX, this.city.w - SHIP_MARGIN);
+    this.shipX += this.shipDir * SHIP_SPEED * dt;
+    if (this.shipX >= maxX) { this.shipX = maxX; this.shipDir = -1; }
+    else if (this.shipX <= minX) { this.shipX = minX; this.shipDir = 1; }
+
+    const img = this.image(SHIP_ICON);
+    if (!img.complete || img.naturalWidth === 0) return;
+
+    const cx = this.shipX * TILE;
+    const cy = (SHIP_ROW + 0.5) * TILE + Math.sin(now / 650) * 3;  // bob
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(Math.sin(now / 800) * 0.025);                       // slight rock
+    if (this.shipDir > 0) ctx.scale(-1, 1);                        // face travel dir (art faces left)
+    ctx.drawImage(img, -SHIP_SIZE / 2, -SHIP_SIZE / 2, SHIP_SIZE, SHIP_SIZE);
+    ctx.restore();
   }
 
   // Size the backing store to the viewport (host) in device pixels. The camera

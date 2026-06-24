@@ -1,22 +1,27 @@
 <div class="row">
-    <span class="key">{{tile.building!.house!.resident_type}}</span>
+    <span class="key">
+        <app-icon [src]="residentSrc(tile.building!.house!.resident_type)"
+                  [fallback]="residentEmoji(tile.building!.house!.resident_type)"
+                  [alt]="tile.building!.house!.resident_type" [size]="20"></app-icon>
+    </span>
     <span class="val">{{tile.building!.house!.occupant}} / {{tile.building!.house!.max_occupant}}</span>
 </div>
 <div class="row">
     <span class="key">Happiness</span>
     <span class="val">{{tile.building!.house!.happiness | percent}}</span>
 </div>
-<div class="bar" [class.warn]="tile.building!.house!.happiness < 0.5">
-    <span [style.width.%]="tile.building!.house!.happiness * 100"></span>
-</div>
 
 <hr class="divider">
 <div class="chip-grid">
     @for (need of tile.building!.house!.service_needs; track $index) {
-        <span class="badge" [class.on]="need.satisfied" [class.off]="!need.satisfied">{{need.type}}</span>
+        <span class="need-chip" [class.on]="need.satisfied" [class.off]="!need.satisfied" [title]="need.type">
+            <app-icon [src]="serviceSrc(need.type)" [fallback]="serviceEmoji(need.type)" [alt]="need.type" [size]="20"></app-icon>
+        </span>
     }
     @for (need of tile.building!.house!.resource_needs; track $index) {
-        <span class="badge" [class.on]="need.satisfied" [class.off]="!need.satisfied">{{need.type}}</span>
+        <span class="need-chip" [class.on]="need.satisfied" [class.off]="!need.satisfied" [title]="need.type">
+            <app-icon [src]="resSrc(need.type)" [fallback]="resEmoji(need.type)" [alt]="need.type" [size]="20"></app-icon>
+        </span>
     }
 </div>
 

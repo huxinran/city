@@ -1,4 +1,4 @@
-import { BuildingType } from './sim/types'
+import { BuildingType, ServiceType } from './sim/types'
 
 // Maps each building to a Lucide icon name (process/appearance icon).
 export const BUILDING_ICON_NAMES: { [key: string]: string } = {
@@ -345,4 +345,42 @@ export function GetBuildingMapIconSrc(type: BuildingType): string | undefined {
 export function GetHouseMapIconSrc(tier: number): string {
     const t = Math.max(1, Math.min(6, tier))
     return `${BUILDING_ICON_BASE}house-tier-${t}.png`
+}
+
+// Each service need is represented by the building that provides it, so a
+// house's service needs can be shown as building icons instead of text.
+const SERVICE_BUILDING: { [key in ServiceType]: BuildingType } = {
+    [ServiceType.WATER]:    BuildingType.WELL,
+    [ServiceType.FIRE]:     BuildingType.FIRE_STATION,
+    [ServiceType.POLICE]:   BuildingType.POLICE_STATION,
+    [ServiceType.SCHOOL]:   BuildingType.SCHOOL,
+    [ServiceType.MARKET]:   BuildingType.MARKETPLACE,
+    [ServiceType.TAVERN]:   BuildingType.TAVERN,
+    [ServiceType.CHURCH]:   BuildingType.CHAPEL,
+    [ServiceType.HEALTH]:   BuildingType.CLINIC,
+    [ServiceType.JUSTICE]:  BuildingType.COURTHOUSE,
+    [ServiceType.ENGINEER]: BuildingType.ENGINEER_STATION,
+}
+
+const SERVICE_EMOJI: { [key in ServiceType]: string } = {
+    [ServiceType.WATER]:    '🪣',
+    [ServiceType.FIRE]:     '🔔',
+    [ServiceType.POLICE]:   '⚖️',
+    [ServiceType.SCHOOL]:   '📜',
+    [ServiceType.MARKET]:   '🏪',
+    [ServiceType.TAVERN]:   '🍺',
+    [ServiceType.CHURCH]:   '⛪',
+    [ServiceType.HEALTH]:   '🏥',
+    [ServiceType.JUSTICE]:  '⚖️',
+    [ServiceType.ENGINEER]: '🔧',
+}
+
+// PNG URL of the building that provides a service, or undefined → emoji.
+export function GetServiceIconSrc(type: ServiceType): string | undefined {
+    const building = SERVICE_BUILDING[type]
+    return building ? GetBuildingIconSrc(building) : undefined
+}
+
+export function GetServiceEmoji(type: ServiceType): string {
+    return SERVICE_EMOJI[type] ?? '🏛️'
 }

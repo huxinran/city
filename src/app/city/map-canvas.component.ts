@@ -69,6 +69,17 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.canvas = document.createElement('canvas');
+    // Size the canvas to fill the host via INLINE styles. The component's
+    // encapsulated `canvas { width:100%;height:100% }` rule is rewritten by
+    // Angular to a `canvas[_ngcontent-…]` selector that never matches a canvas
+    // we create with document.createElement, so without this the canvas would
+    // lay out at its backing-store pixel size. At dpr=1 that equals the host
+    // size (so it looked fine), but at dpr≠1 (e.g. Windows 125%/150% scaling)
+    // the canvas overflowed and the screen↔world mapping broke — placing
+    // buildings far from the cursor. Inline styles bypass encapsulation.
+    Object.assign(this.canvas.style, {
+      position: 'absolute', inset: '0', display: 'block', width: '100%', height: '100%',
+    });
     this.ctx = this.canvas.getContext('2d')!;
     this.canvas.addEventListener('click', e => this.onClick(e));
     this.canvas.addEventListener('dragstart', e => this.onDragStart(e));

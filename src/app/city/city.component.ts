@@ -53,13 +53,10 @@ export class CityComponent {
     return type ? GetBuildingSize(type) : 1
   }
 
-  // Anchor (top-left) so the cursor tile sits at the footprint's center, clamped
-  // to stay on the grid. For 1x1 this is a no-op (so road drawing is unaffected).
+  // Anchor (top-left) so the cursor tile sits at the footprint's center. Shares
+  // StateService.CenteredAnchor so drag placement and click placement agree.
   private centeredAnchor(pos: { i: number, j: number }, size: number): { i: number, j: number } {
-    let off = Math.round((size - 1) / 2)
-    let i = Math.max(0, Math.min(pos.i - off, this.city.h - size))
-    let j = Math.max(0, Math.min(pos.j - off, this.city.w - size))
-    return { i, j }
+    return this.state.CenteredAnchor(this.city, pos.i, pos.j, size)
   }
 
   public onDragOver(event: DragEvent) {
