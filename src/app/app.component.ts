@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { clampCamera } from './camera';
 import { CityComponent } from './city/city.component';
 import { MenuComponent } from './menu/menu.component';
 import { PaletteComponent } from './palette/palette.component';
@@ -20,12 +21,13 @@ export class AppComponent {
   constructor() { repaintOn(s => [s.mapVersion]) }
 
   // --- Click-and-drag panning of the map ---
-  // Left-drag on empty map space scrolls the viewport. A real click (no drag)
-  // still builds/selects; grabbing a building (draggable) still moves it.
+  // Left-drag on empty map space pans the camera. A real click (no drag) still
+  // builds/selects; grabbing a building (draggable) still moves it. (Wheel-zoom
+  // lives in the map canvas; both mutate the same shared camera.)
   private panBox?: HTMLElement
   private panDown = false
   private panMoved = false
-  private panStart = { x: 0, y: 0, left: 0, top: 0 }
+  private panStart = { x: 0, y: 0, camX: 0, camY: 0 }
   private readonly PAN_THRESHOLD = 4
 
   public onMapPointerDown(event: PointerEvent) {
@@ -33,7 +35,8 @@ export class AppComponent {
     // Let buildings be dragged (moved) with the native HTML5 drag instead.
     if ((event.target as HTMLElement).closest('[draggable="true"]')) return
     this.panBox = event.currentTarget as HTMLElement
-    this.panStart = { x: event.clientX, y: event.clientY, left: this.panBox.scrollLeft, top: this.panBox.scrollTop }
+    const cam = this.state.camera
+    this.panStart = { x: event.clientX, y: event.clientY, camX: cam.x, camY: cam.y }
     this.panDown = true
     this.panMoved = false
   }
@@ -48,8 +51,12 @@ export class AppComponent {
       this.panBox.setPointerCapture(event.pointerId)
       this.panBox.style.cursor = 'grabbing'
     }
-    this.panBox.scrollLeft = this.panStart.left - dx
-    this.panBox.scrollTop = this.panStart.top - dy
+    const cam = this.state.camera
+    const city = this.state.state.current_city!
+    cam.x = this.panStart.camX - dx / cam.zoom
+    cam.y = this.panStart.camY - dy / cam.zoom
+    clampCamera(cam, this.panBox.clientWidth, this.panBox.clientHeight, city.w * 48, city.h * 48)
+    this.state.bumpCamera()
   }
 
   public onMapPointerUp() {

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
-import { Tile } from '../tile';
+import { Tile } from '../sim/tile';
 import { repaintOn } from '../live';
 
 @Component({

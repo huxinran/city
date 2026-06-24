@@ -4,7 +4,7 @@ import { ProductionComponent } from "../production/production.component";
 import { HouseComponent } from '../house/house.component';
 import { ServiceComponent } from '../service/service.component';
 import { WarehouseComponent } from '../warehouse/warehouse.component';
-import { Tile } from '../tile';
+import { Tile } from '../sim/tile';
 import { ShipyardComponent } from '../shipyard/shipyard.component';
 import { DockComponent } from '../dock/dock.component';
 import { UniversityComponent } from '../university/university.component';

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 
 import { MapCanvasComponent } from './map-canvas.component';
 import { CartLayerComponent } from './cart-layer.component';
-import { City } from '../city';
-import { GetBuildingSize } from '../building';
+import { City } from '../sim/city';
+import { GetBuildingSize } from '../sim/building';
 import { StateService } from '../state.service';
-import { BuildingType } from '../types';
+import { BuildingType } from '../sim/types';
 import { repaintOn } from '../live';
+import { cameraCssTransform } from '../camera';
 
 const TILE = 48;
 
@@ -24,13 +25,19 @@ export class CityComponent {
   @ViewChild(MapCanvasComponent) private mapCanvas?: MapCanvasComponent;
 
   state = inject(StateService)
-  // Only repaint the tile grid on map/selection edits. Per-tick live motion
-  // (carts) lives in app-cart-layer, which repaints itself on `frame` — so the
-  // whole grid no longer re-checks 5x/second, which made cart motion stutter.
-  constructor() { repaintOn(s => [s.mapVersion]) }
+  // The map/carts paint themselves on their own canvases. This component only
+  // hosts the DOM overlays (drop preview, road-start marker), which must repaint
+  // on map edits AND camera pan/zoom so they track the world under the cursor.
+  constructor() { repaintOn(s => [s.mapVersion, s.cameraVersion]) }
 
   // Footprint preview shown under the cursor while dragging a building.
   public dropHi?: { i: number, j: number, size: number }
+
+  // CSS transform mapping the world-coordinate overlay layer onto the screen,
+  // sharing the single camera-math source so it can't drift from the canvases.
+  public worldTransform(): string {
+    return cameraCssTransform(this.state.camera)
+  }
 
   private tileFromEvent(event: DragEvent): { i: number, j: number } | undefined {
     // The map is a single canvas now, so hit-test by pixel position via the

@@ -1,4 +1,4 @@
-import { Resource } from './types'
+import { Resource } from './sim/types'
 
 // Shared resource icon lookup: a cute PNG when art exists, else an emoji.
 

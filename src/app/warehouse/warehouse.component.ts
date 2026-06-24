@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Tile } from '../tile';
+import { Tile } from '../sim/tile';
 import { PercentPipe } from '@angular/common';
-import { RefreshWarehouse } from '../building';
+import { RefreshWarehouse } from '../sim/building';
 import { repaintOn } from '../live';
 @Component({
   selector: 'app-warehouse',

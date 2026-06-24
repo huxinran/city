@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StateService } from '../state.service';
-import { BuildingType, Resource, Resident, CityName, CITY_EXCLUSIVE_BUILDINGS } from '../types';
-import { GetBuildingIcon, MakeBuilding, GetBuildingGoldCost, GetBuildingTier, GetResidentIconAsset } from '../building';
+import { BuildingType, Resource, Resident, CityName, CITY_EXCLUSIVE_BUILDINGS } from '../sim/types';
+import { GetBuildingIcon, MakeBuilding, GetBuildingGoldCost, GetBuildingTier, GetResidentIconAsset } from '../sim/building';
 import { GetBuildingIconSrc } from '../building-icons';
 import { GetResourceIconSrc, GetResourceEmoji } from '../resource-icons';
-import { Item } from '../storage';
+import { Item } from '../sim/storage';
 import { IconComponent } from '../icon/icon.component';
 import { repaintOn } from '../live';
 

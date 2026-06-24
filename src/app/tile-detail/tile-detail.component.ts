@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
-import { Tile } from '../tile';
+import { Tile } from '../sim/tile';
 import { BuildingComponent } from '../building/building.component';
 import { StateService } from '../state.service';
 import { repaintOn } from '../live';

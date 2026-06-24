@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { PercentPipe } from '@angular/common';
-import { Tile } from '../tile';
-import { House, RefreshHouse, GetUpgradeCost, GetCityMaxTier, UpgradeBasket } from '../building';
+import { Tile } from '../sim/tile';
+import { House, RefreshHouse, GetUpgradeCost, GetCityMaxTier, UpgradeBasket } from '../sim/building';
 import { StateService } from '../state.service';
-import { CountItem } from '../utils';
-import { Item } from '../storage';
-import { Resource } from '../types';
+import { CountItem } from '../sim/utils';
+import { Item } from '../sim/storage';
+import { Resource } from '../sim/types';
 import { GetResourceIconSrc, GetResourceEmoji } from '../resource-icons';
 import { IconComponent } from '../icon/icon.component';
 import { repaintOn } from '../live';

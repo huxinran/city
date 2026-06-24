@@ -1,4 +1,4 @@
-import { CityName } from './types'
+import { CityName } from './sim/types'
 
 // Coat-of-arms PNG for each city, shown in the top-bar city picker.
 const CITY_CREST_BASE = 'assets/used/coat-of-arms/'

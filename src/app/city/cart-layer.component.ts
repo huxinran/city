@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Input, NgZone, OnDestroy, OnInit, inject } from '@angular/core';
-import { City } from '../city';
-import { Cart } from '../building';
-import { ShippingTaskType } from '../types';
+import { City } from '../sim/city';
+import { Cart } from '../sim/building';
+import { ShippingTaskType } from '../sim/types';
+import { StateService } from '../state.service';
+import { applyCameraTransform } from '../camera';
 
 const TILE = 48;
 // Matches the old DOM `transition: left/top 0.2s linear`. The sim updates a
@@ -31,7 +33,7 @@ interface CartAnim { fromX: number, fromY: number, toX: number, toY: number, sta
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
     :host { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
-    canvas { position: absolute; top: 0; left: 0; }
+    canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   `],
   template: ``,
 })
@@ -39,6 +41,7 @@ export class CartLayerComponent implements OnInit, OnDestroy {
   @Input() city!: City;
 
   private host = inject(ElementRef<HTMLElement>).nativeElement as HTMLElement;
+  private state = inject(StateService);
   private zone = inject(NgZone);
   private raf = 0;
   private canvas!: HTMLCanvasElement;
@@ -60,13 +63,18 @@ export class CartLayerComponent implements OnInit, OnDestroy {
     cancelAnimationFrame(this.raf);
   }
 
-  // One animation frame: size the canvas to the grid, clear it, then tween and
-  // draw every active cart. No Angular involvement.
+  // One animation frame: size the canvas to the viewport, apply the shared
+  // camera transform, clear, then tween and draw every active cart in world
+  // coordinates. No Angular involvement.
   private frame() {
     this.ensureSize();
-    const ctx = this.ctx;
+    const ctx = this.ctx, cam = this.state.camera;
+    const dpr = window.devicePixelRatio || 1;
     const now = performance.now();
-    ctx.clearRect(0, 0, this.city.w * TILE, this.city.h * TILE);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    applyCameraTransform(ctx, cam, dpr);
+    ctx.imageSmoothingEnabled = false;
     ctx.shadowColor = 'rgba(0,0,0,0.65)';
     ctx.shadowBlur = 3;
     ctx.shadowOffsetX = 0;
@@ -88,19 +96,14 @@ export class CartLayerComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Backing store must track the grid pixel size and devicePixelRatio so pixel
-  // art stays crisp. Setting canvas.width/height resets context state, so the
-  // transform + smoothing flag are reapplied here.
+  // Size the backing store to the viewport (host) in device pixels. The camera
+  // transform and smoothing flag are reapplied each frame in frame().
   private ensureSize() {
     const dpr = window.devicePixelRatio || 1;
-    const w = this.city.w * TILE, h = this.city.h * TILE;
-    if (this.canvas.width === Math.round(w * dpr) && this.canvas.height === Math.round(h * dpr)) return;
-    this.canvas.width = Math.round(w * dpr);
-    this.canvas.height = Math.round(h * dpr);
-    this.canvas.style.width = w + 'px';
-    this.canvas.style.height = h + 'px';
-    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    this.ctx.imageSmoothingEnabled = false;
+    const bw = Math.max(1, Math.round(this.host.clientWidth * dpr));
+    const bh = Math.max(1, Math.round(this.host.clientHeight * dpr));
+    if (this.canvas.width !== bw) this.canvas.width = bw;
+    if (this.canvas.height !== bh) this.canvas.height = bh;
   }
 
   private drawCart(cart: Cart, now: number) {

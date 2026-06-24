@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 
-import { Tile } from '../tile';
+import { Tile } from '../sim/tile';
 import { StateService } from '../state.service';
-import { Resource } from '../types'
-import { Route, Ship } from '../building';
-import { City } from '../city';
+import { Resource } from '../sim/types'
+import { Route, Ship } from '../sim/building';
+import { City } from '../sim/city';
 import { repaintOn } from '../live';
 
 import { FormsModule } from '@angular/forms';

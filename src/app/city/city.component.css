@@ -1,17 +1,31 @@
+/* Absolutely fill the map-container (which is position:relative). Using inset:0
+   instead of height:100% guarantees a DEFINITE size without relying on a chain
+   of percentage heights resolving — otherwise the inner canvas can fall back to
+   its backing-store size and render stretched (clipping the map / breaking the
+   screen-to-world mapping used for placement). */
 :host {
-    display: inline-block;
-    padding: 0;
+    position: absolute;
+    inset: 0;
+    display: block;
 }
 
+/* The map is a viewport: the canvases inside pan/zoom via the camera. */
 .grid {
-    position: relative;
-    display: grid;
-    grid-column-gap: 0px;
-    grid-row-gap: 0px;
-    border: 3px solid #5a4a32;
-    border-radius: 8px;
+    position: absolute;
+    inset: 0;
     overflow: hidden;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    background: #7fb0cc;
+}
+
+/* World-coordinate overlay layer, transformed by the camera (see worldTransform).
+   Children are positioned in world px and stay aligned to the map. */
+.world {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    pointer-events: none;
+    z-index: 4;
 }
 
 

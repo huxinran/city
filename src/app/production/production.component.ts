@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { PercentPipe } from '@angular/common';
 
-import { Tile } from '../tile';
-import { ExtraSource } from '../building';
-import { CountItem } from '../utils';
+import { Tile } from '../sim/tile';
+import { ExtraSource } from '../sim/building';
+import { CountItem } from '../sim/utils';
 import { repaintOn } from '../live';
 
 @Component({

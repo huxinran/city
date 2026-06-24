@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { PercentPipe } from '@angular/common';
 
-import { Tile } from '../tile';
+import { Tile } from '../sim/tile';
 import { StateService } from '../state.service';
-import { Technology, ALL_RESEARCH, ResearchProject } from '../building';
+import { Technology, ALL_RESEARCH, ResearchProject } from '../sim/building';
 import { repaintOn } from '../live';
 
 @Component({

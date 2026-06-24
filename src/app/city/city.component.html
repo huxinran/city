@@ -1,10 +1,14 @@
 <div class="grid" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
     <app-map-canvas [city]="city"></app-map-canvas>
-    @if (state.dragging && dropHi) {
-        <div class="drop-highlight" [ngStyle]="dropHiStyle()"></div>
-    }
-    @if (isRoadArmed()) {
-        <div class="road-start" [ngStyle]="roadStartStyle()"></div>
-    }
+    <!-- DOM overlays positioned in world coordinates; the wrapper is transformed
+         by the camera so they stay glued to the map while panning/zooming. -->
+    <div class="world" [style.transform]="worldTransform()">
+        @if (state.dragging && dropHi) {
+            <div class="drop-highlight" [ngStyle]="dropHiStyle()"></div>
+        }
+        @if (isRoadArmed()) {
+            <div class="road-start" [ngStyle]="roadStartStyle()"></div>
+        }
+    </div>
     <app-cart-layer [city]="city"></app-cart-layer>
 </div>

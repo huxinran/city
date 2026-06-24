@@ -1,14 +1,15 @@
 import { Injectable, NgZone, inject, signal } from '@angular/core';
-import { State } from './state';
-import { Item, Storage } from './storage';
-import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, CountItem, TakeItemsAsPossible, StorageItems} from './utils';
-import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, ExtraSource, CreateBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, FeatureMatches, GetRequiredNearbyFeature, GetRequiredNearbyTerrain, Technology, ALL_RESEARCH, FARM_BUILDINGS, MINE_CAMP_BUILDINGS, ComputeBaseHappiness } from './building'
-import { City } from './city';
-import { Population,  } from './population';
-import { Resident, ProductionStatus, ShippingTaskType, BuildingType, Terrain, Feature, CityName } from './types'
-import { Tile } from './tile';
-import { SaveState, LoadState, SaveMaps, LoadMaps } from './persistence';
-import { RoadDistanceField, BuildRoadPath, WarehouseRoadDistance } from './pathfinding';
+import { State } from './sim/state';
+import { Item, Storage } from './sim/storage';
+import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, CountItem, TakeItemsAsPossible, StorageItems} from './sim/utils';
+import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, ExtraSource, CreateBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, FeatureMatches, GetRequiredNearbyFeature, GetRequiredNearbyTerrain, Technology, ALL_RESEARCH, FARM_BUILDINGS, MINE_CAMP_BUILDINGS, ComputeBaseHappiness } from './sim/building'
+import { City } from './sim/city';
+import { Population,  } from './sim/population';
+import { Resident, ProductionStatus, ShippingTaskType, BuildingType, Terrain, Feature, CityName } from './sim/types'
+import { Tile } from './sim/tile';
+import { SaveState, LoadState, SaveMaps, LoadMaps } from './sim/persistence';
+import { RoadDistanceField, BuildRoadPath, WarehouseRoadDistance } from './sim/pathfinding';
+import { Camera } from './camera';
 
 // Taxes only weigh on happiness once they climb above this rate; at or below it
 // residents don't mind paying, so happiness can still reach 100%.
@@ -40,9 +41,18 @@ export class StateService {
   // Render heartbeat: bumped every simulation tick so views showing live data
   // (carts, production progress, storage) re-check on an OnPush schedule.
   public frame = signal(0)
-  // Grid/selection version: bumped only on user map edits so the 3,600 tile
-  // components repaint on placement/move/delete/selection — not every tick.
+  // Grid/selection version: bumped only on user map edits so the map canvas
+  // repaints on placement/move/delete/selection — not every tick.
   public mapVersion = signal(0)
+
+  // Shared map camera (pan/zoom). Mutated in place by the pan handler and the
+  // map canvas's wheel-zoom; `cameraVersion` is bumped so the map canvas and
+  // the DOM overlay layer repaint. The cart canvas reads it every frame.
+  public camera: Camera = { x: 0, y: 0, zoom: 1 }
+  public cameraVersion = signal(0)
+  public bumpCamera() {
+    this.zone.run(() => this.cameraVersion.update(v => v + 1))
+  }
 
   private zone = inject(NgZone)
 

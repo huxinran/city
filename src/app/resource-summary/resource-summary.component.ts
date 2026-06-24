@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 
 import { StateService } from '../state.service';
-import { Item } from '../storage';
+import { Item } from '../sim/storage';
 import { repaintOn } from '../live';
-import { Resource, CityName, CITY_EXCLUSIVE_RESOURCES } from '../types';
+import { Resource, CityName, CITY_EXCLUSIVE_RESOURCES } from '../sim/types';
 import { GetResourceIconSrc, GetResourceEmoji } from '../resource-icons';
 
 
@@ -30,6 +30,8 @@ export class ResourceSummaryComponent {
     return Object.values(Resource)
       .filter(r => !otherCityResources.has(r) && !hiddenResources.has(r))
       .map(type => new Item(type, city.storage.amounts[type] ?? 0))
+      // Only show resources the city actually has in stock.
+      .filter(i => i.num > 0)
   }
 
   // Shared lookup so the panel shows every mapped PNG (and any future ones).

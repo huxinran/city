@@ -2,11 +2,11 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { StateService } from '../state.service';
 import { DecimalPipe } from '@angular/common';
 import { repaintOn } from '../live';
-import { GetResidentIconAsset } from '../building';
+import { GetResidentIconAsset } from '../sim/building';
 import { GetResourceIconSrc, GetResourceEmoji } from '../resource-icons';
 import { GetCityCrestSrc } from '../city-icons';
-import { CountItem } from '../utils';
-import { Resource } from '../types';
+import { CountItem } from '../sim/utils';
+import { Resource } from '../sim/types';
 import { IconComponent } from '../icon/icon.component';
 @Component({
   selector: 'app-status-summary',

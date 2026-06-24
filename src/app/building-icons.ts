@@ -1,4 +1,4 @@
-import { BuildingType } from './types'
+import { BuildingType } from './sim/types'
 
 // Maps each building to a Lucide icon name (process/appearance icon).
 export const BUILDING_ICON_NAMES: { [key: string]: string } = {

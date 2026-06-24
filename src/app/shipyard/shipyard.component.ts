@@ -2,10 +2,10 @@ import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core
 import { PercentPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { Tile } from '../tile';
+import { Tile } from '../sim/tile';
 import { StateService } from '../state.service';
-import { TakeItems } from '../utils';
-import { ProductionStatus } from '../types';
+import { TakeItems } from '../sim/utils';
+import { ProductionStatus } from '../sim/types';
 import { repaintOn } from '../live';
 
 @Component({
