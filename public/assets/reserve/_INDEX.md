@@ -582,6 +582,22 @@ Flattened backup assets grouped by object. `new path` ← `original path`.
 
 ## Generated berry variants 20260624
 
+- Current detailed berry cluster files in this checkout:
+- `strawberry/strawberry-detailed-v1-source.png` <- generated 4-berry cluster original, white background
+- `strawberry/strawberry-detailed-v1.png` <- generated 4-berry cluster project copy, white background
+- `strawberry/strawberry-detailed-v2-source.png` <- generated revised 2-berry pair original, no leaves, white background
+- `strawberry/strawberry-detailed-v2.png` <- generated revised 2-berry pair project copy, no leaves, white background; accepted/latest
+- `blueberry/blueberry-detailed-v1-source.png` <- existing generated blueberry cluster source
+- `blueberry/blueberry-detailed-v1.png` <- existing generated blueberry cluster reference; accepted/latest
+- `blackberry/blackberry-detailed-v1-source.png` <- generated 4-berry cluster original, white background
+- `blackberry/blackberry-detailed-v1.png` <- generated 4-berry cluster project copy, white background
+- `blackberry/blackberry-detailed-v2-source.png` <- generated revised 3-berry cluster original, no leaves, white background
+- `blackberry/blackberry-detailed-v2.png` <- generated revised 3-berry cluster project copy, no leaves, white background; accepted/latest
+- `raspberry/raspberry-detailed-v1-source.png` <- generated 4-berry cluster original, white background
+- `raspberry/raspberry-detailed-v1.png` <- generated 4-berry cluster project copy, white background
+- `raspberry/raspberry-detailed-v2-source.png` <- generated revised 3-berry cluster original, no leaves, white background
+- `raspberry/raspberry-detailed-v2.png` <- generated revised 3-berry cluster project copy, no leaves, white background; accepted/latest
+
 - `strawberry/strawberry-before-white-bg-removal-20260624.png` <- generated resource icon v1 original
 - `strawberry/strawberry.png` <- generated resource icon v1 transparent final
 - `strawberry/strawberry-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original

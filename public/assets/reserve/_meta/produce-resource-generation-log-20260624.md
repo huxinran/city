@@ -228,3 +228,58 @@ Requested additions validation:
 - Background removal: `node tools/remove-bg.mjs --write --no-backup`
 - Verified all 10 final PNGs have alpha and transparent corners.
 - Verified each final PNG matches its raw original dimensions at 1254x1254.
+
+## Berry cluster backfill 20260624
+
+Backfilled strawberry, blackberry, and raspberry to match the surviving
+`blueberry-detailed-v1.png` cluster style. Because berries read small in-game, each
+new asset uses a tight cluster of four berries with chunky pixel highlights, dark
+brown/olive outlines, and a few green leaves. The generator returned RGB images on
+plain white backgrounds, so the project copies were saved as-is without background
+removal or other post-processing.
+
+Family reference:
+
+- Blueberry: `public/assets/reserve/blueberry/blueberry-detailed-v1.png` - existing cluster reference.
+
+Generated project copies:
+
+- Strawberry: `public/assets/reserve/strawberry/strawberry-detailed-v1-source.png`, `public/assets/reserve/strawberry/strawberry-detailed-v1.png`
+- Blackberry: `public/assets/reserve/blackberry/blackberry-detailed-v1-source.png`, `public/assets/reserve/blackberry/blackberry-detailed-v1.png`
+- Raspberry: `public/assets/reserve/raspberry/raspberry-detailed-v1-source.png`, `public/assets/reserve/raspberry/raspberry-detailed-v1.png`
+
+Source cache originals:
+
+- Strawberry: `C:/Users/Xinran/.codex/generated_images/019efcd2-7e97-7881-a680-7c32ac2b5be7/ig_0abfc3dcc8c28fdd016a3ca0e527d08194b5cb9a1b408b9dba.png`
+- Blackberry: `C:/Users/Xinran/.codex/generated_images/019efcd2-7e97-7881-a680-7c32ac2b5be7/ig_0eb3870f36e099e7016a3ca14bb81481908dd71468b4c8bccc.png`
+- Raspberry: `C:/Users/Xinran/.codex/generated_images/019efcd2-7e97-7881-a680-7c32ac2b5be7/ig_0eb3870f36e099e7016a3ca174842c8190a48878107600c958.png`
+
+Validation:
+
+- Visually inspected all three generated assets and the existing blueberry reference.
+- Verified all three new project copies are 1254x1254.
+- Verified the new project copies are RGB with opaque white corners; no alpha was generated.
+
+## Berry cluster revision 20260624
+
+Revised the berry backfill based on feedback: strawberry should show 2 berries, blackberry
+and raspberry should show 3 berries, no leaves, and a more natural loose arrangement.
+Saved these as v2 files without overwriting the v1 cluster attempts.
+
+Generated project copies:
+
+- Strawberry: `public/assets/reserve/strawberry/strawberry-detailed-v2-source.png`, `public/assets/reserve/strawberry/strawberry-detailed-v2.png` - 2 berries, no leaves.
+- Blackberry: `public/assets/reserve/blackberry/blackberry-detailed-v2-source.png`, `public/assets/reserve/blackberry/blackberry-detailed-v2.png` - 3 berries, no leaves.
+- Raspberry: `public/assets/reserve/raspberry/raspberry-detailed-v2-source.png`, `public/assets/reserve/raspberry/raspberry-detailed-v2.png` - 3 berries, no leaves.
+
+Source cache originals:
+
+- Strawberry: `C:/Users/Xinran/.codex/generated_images/019efcd2-7e97-7881-a680-7c32ac2b5be7/ig_06f5f2d4971ea4fc016a3ca22ccba48196a9476117ad98e13d.png`
+- Blackberry: `C:/Users/Xinran/.codex/generated_images/019efcd2-7e97-7881-a680-7c32ac2b5be7/ig_06f5f2d4971ea4fc016a3ca27ccb8c8196a67612d36a74aea2.png`
+- Raspberry: `C:/Users/Xinran/.codex/generated_images/019efcd2-7e97-7881-a680-7c32ac2b5be7/ig_06f5f2d4971ea4fc016a3ca2b61fdc81969fb08e3e2ecdeafe.png`
+
+Validation:
+
+- Visually inspected all three v2 generated assets.
+- Verified all three v2 project copies are 1254x1254.
+- Verified the v2 project copies are RGB with opaque white corners; no alpha was generated.

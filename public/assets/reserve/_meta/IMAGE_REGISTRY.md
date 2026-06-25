@@ -141,9 +141,9 @@ Columns: `core name` | `actual filename` | `in use?` | `note`
 |-----------|----------------|--------------|--------|
 | avocado | avocado.png | reserve/avocado/ | new |
 | black-bean | black-bean.png | reserve/black-bean/ | new |
-| blackberry | blackberry-v3.png | reserve/blackberry/ | new berry variant (v3 preferred) |
+| blackberry | blackberry-detailed-v2.png | reserve/blackberry/ | revised berry cluster, 3 berries, no leaves, white background |
 | black-pepper | black-pepper-v3.png | reserve/black-pepper/ | new (v1–v3) |
-| blueberry | blueberry-v3.png | reserve/blueberry/ | new berry variant (v3 preferred) |
+| blueberry | blueberry-detailed-v1.png | reserve/blueberry/ | existing berry cluster reference |
 | bok-choy | bok-choy.png | reserve/bok-choy/ | new |
 | cabbage | cabbage.png | reserve/cabbage/ | recreation of lettuce.png (CABBAGE) |
 | cardamom | cardamom.png | reserve/cardamom/ | new |
@@ -174,7 +174,7 @@ Columns: `core name` | `actual filename` | `in use?` | `note`
 | pineapple | pineapple-v2.png | reserve/pineapple/ | new (v2 = slight tilt) |
 | pomegranate | pomegranate-v4.png | reserve/pomegranate/ | new (v1-v4, v4 = natural exposed seed half) |
 | quinoa | quinoa.png | reserve/quinoa/ | new |
-| raspberry | raspberry-v3.png | reserve/raspberry/ | new berry variant (v3 preferred) |
+| raspberry | raspberry-detailed-v2.png | reserve/raspberry/ | revised berry cluster, 3 berries, no leaves, white background |
 | rice-plant | rice-plant-v2.png | reserve/rice-plant/ | recreation/variant of rice.png |
 | rubber | rubber-v2.png | reserve/rubber/ | recreation of rubber.png (sap bucket) |
 | saffron | saffron-v2.png | reserve/saffron/ | new (v2 = crimson threads) |
@@ -182,7 +182,7 @@ Columns: `core name` | `actual filename` | `in use?` | `note`
 | seaweed | seaweed-v2.png | reserve/seaweed/ | new (v2 = no rope) |
 | sorghum | sorghum-v2.png | reserve/sorghum/ | new (v2 = right-pointing sheaf) |
 | spinach | spinach.png | reserve/spinach/ | new |
-| strawberry | strawberry-v3.png | reserve/strawberry/ | new berry variant (v3 preferred) |
+| strawberry | strawberry-detailed-v2.png | reserve/strawberry/ | revised berry pair, 2 berries, no leaves, white background |
 | sugar-beet | sugar-beet-v2.png | reserve/sugar-beet/ | new (v2 = red beet root) |
 | sunflower | sunflower.png | reserve/sunflower/ | new |
 | taro | taro.png | reserve/taro/ | new |
