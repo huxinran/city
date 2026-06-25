@@ -568,3 +568,72 @@ Flattened backup assets grouped by object. `new path` ← `original path`.
 - `watermelon/watermelon-v2.png` <- generated resource icon final-fix transparent final
 - `rubber/rubber-v2-before-white-bg-removal-20260624.png` <- generated resource icon final-fix original
 - `rubber/rubber-v2.png` <- generated resource icon final-fix transparent final
+
+## Generated pomegranate resource revisions 20260624
+
+- `pomegranate/pomegranate-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `pomegranate/pomegranate.png` <- generated resource icon transparent final
+- `pomegranate/pomegranate-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `pomegranate/pomegranate-v2.png` <- generated resource icon v2 transparent final
+- `pomegranate/pomegranate-v3-before-white-bg-removal-20260624.png` <- generated resource icon v3 original
+- `pomegranate/pomegranate-v3.png` <- generated resource icon v3 transparent final
+- `pomegranate/pomegranate-v4-before-white-bg-removal-20260624.png` <- generated resource icon v4 original
+- `pomegranate/pomegranate-v4.png` <- generated resource icon v4 transparent final; accepted/latest with natural exposed seed half
+
+## Generated berry variants 20260624
+
+- `strawberry/strawberry-before-white-bg-removal-20260624.png` <- generated resource icon v1 original
+- `strawberry/strawberry.png` <- generated resource icon v1 transparent final
+- `strawberry/strawberry-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `strawberry/strawberry-v2.png` <- generated resource icon v2 transparent final
+- `strawberry/strawberry-v3-before-white-bg-removal-20260624.png` <- generated resource icon v3 original
+- `strawberry/strawberry-v3.png` <- generated resource icon v3 transparent final; accepted/latest
+- `blueberry/blueberry-before-white-bg-removal-20260624.png` <- generated resource icon v1 original
+- `blueberry/blueberry.png` <- generated resource icon v1 transparent final
+- `blueberry/blueberry-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `blueberry/blueberry-v2.png` <- generated resource icon v2 transparent final
+- `blueberry/blueberry-v3-before-white-bg-removal-20260624.png` <- generated resource icon v3 original
+- `blueberry/blueberry-v3.png` <- generated resource icon v3 transparent final; accepted/latest
+- `blackberry/blackberry-before-white-bg-removal-20260624.png` <- generated resource icon v1 original
+- `blackberry/blackberry.png` <- generated resource icon v1 transparent final
+- `blackberry/blackberry-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `blackberry/blackberry-v2.png` <- generated resource icon v2 transparent final
+- `blackberry/blackberry-v3-before-white-bg-removal-20260624.png` <- generated resource icon v3 original
+- `blackberry/blackberry-v3.png` <- generated resource icon v3 transparent final; accepted/latest
+- `raspberry/raspberry-before-white-bg-removal-20260624.png` <- generated resource icon v1 original
+- `raspberry/raspberry.png` <- generated resource icon v1 transparent final
+- `raspberry/raspberry-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `raspberry/raspberry-v2.png` <- generated resource icon v2 transparent final
+- `raspberry/raspberry-v3-before-white-bg-removal-20260624.png` <- generated resource icon v3 original
+- `raspberry/raspberry-v3.png` <- generated resource icon v3 transparent final; accepted/latest
+
+## Generated requested produce additions 20260624
+
+- `green-peas/green-peas-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `green-peas/green-peas.png` <- generated resource icon transparent final
+- `bell-pepper/bell-pepper-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `bell-pepper/bell-pepper.png` <- generated resource icon transparent final
+- `zucchini/zucchini-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `zucchini/zucchini.png` <- generated resource icon transparent final
+- `yellow-squash/yellow-squash-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `yellow-squash/yellow-squash.png` <- generated resource icon transparent final
+- `yellow-squash/yellow-squash-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `yellow-squash/yellow-squash-v2.png` <- generated resource icon v2 transparent final
+- `yellow-squash/yellow-squash-v3-before-white-bg-removal-20260624.png` <- generated resource icon v3 original
+- `yellow-squash/yellow-squash-v3.png` <- generated resource icon v3 transparent final
+- `yellow-squash/yellow-squash-v4-before-white-bg-removal-20260624.png` <- generated resource icon v4 original
+- `yellow-squash/yellow-squash-v4.png` <- generated resource icon v4 transparent final
+- `yellow-squash/yellow-squash-v5-before-white-bg-removal-20260624.png` <- generated resource icon v5 original
+- `yellow-squash/yellow-squash-v5.png` <- generated resource icon v5 transparent final; accepted/latest
+- `broccoli/broccoli-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `broccoli/broccoli.png` <- generated resource icon transparent final
+- `cauliflower/cauliflower-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `cauliflower/cauliflower.png` <- generated resource icon transparent final
+- `plum/plum-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `plum/plum.png` <- generated resource icon transparent final
+- `dragon-fruit/dragon-fruit-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `dragon-fruit/dragon-fruit.png` <- generated resource icon transparent final
+- `lychee/lychee-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `lychee/lychee.png` <- generated resource icon transparent final
+- `cantaloupe/cantaloupe-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `cantaloupe/cantaloupe.png` <- generated resource icon transparent final

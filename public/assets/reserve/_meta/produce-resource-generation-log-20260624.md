@@ -160,3 +160,71 @@ Accepted/latest saved choices from final-fix pass:
 - Grape: `public/assets/reserve/grape/grape-v2.png`
 - Watermelon: `public/assets/reserve/watermelon/watermelon-v2.png`
 - Rubber: `public/assets/reserve/rubber/rubber-v2.png`
+
+## Pomegranate addition
+
+Created pomegranate resource icon revisions without overwriting earlier files:
+
+- Pomegranate: `public/assets/reserve/pomegranate/pomegranate-before-white-bg-removal-20260624.png`, `public/assets/reserve/pomegranate/pomegranate.png` - initial whole fruit with leaf.
+- Pomegranate: `public/assets/reserve/pomegranate/pomegranate-v2-before-white-bg-removal-20260624.png`, `public/assets/reserve/pomegranate/pomegranate-v2.png` - removed fake leaf, added more fruit detail.
+- Pomegranate: `public/assets/reserve/pomegranate/pomegranate-v3-before-white-bg-removal-20260624.png`, `public/assets/reserve/pomegranate/pomegranate-v3.png` - exposed seed patch.
+- Pomegranate: `public/assets/reserve/pomegranate/pomegranate-v4-before-white-bg-removal-20260624.png`, `public/assets/reserve/pomegranate/pomegranate-v4.png` - whole fruit plus natural half with exposed seed chambers; accepted/latest.
+
+Pomegranate validation:
+
+- Background removal: `node tools/remove-bg.mjs`
+- Verified all 4 final PNGs have alpha.
+- Verified each final PNG is 1254x1254.
+
+## Generated berry variant revisions 20260624
+
+Created strawberry, blueberry, blackberry, and raspberry resource icon variants without
+overwriting earlier attempts. Initial v1/v2 passes were too simple; v3 adds denser
+pixel texture, richer highlights, stronger silhouettes, and more detailed leaves/stems.
+
+- Strawberry: `public/assets/reserve/strawberry/strawberry-before-white-bg-removal-20260624.png`, `public/assets/reserve/strawberry/strawberry.png` - initial simple pass.
+- Strawberry: `public/assets/reserve/strawberry/strawberry-v2-before-white-bg-removal-20260624.png`, `public/assets/reserve/strawberry/strawberry-v2.png` - added texture and seeds.
+- Strawberry: `public/assets/reserve/strawberry/strawberry-v3-before-white-bg-removal-20260624.png`, `public/assets/reserve/strawberry/strawberry-v3.png` - curved silhouette and denser detail; accepted/latest.
+- Blueberry: `public/assets/reserve/blueberry/blueberry-before-white-bg-removal-20260624.png`, `public/assets/reserve/blueberry/blueberry.png` - initial simple pass.
+- Blueberry: `public/assets/reserve/blueberry/blueberry-v2-before-white-bg-removal-20260624.png`, `public/assets/reserve/blueberry/blueberry-v2.png` - added texture and blossom marks.
+- Blueberry: `public/assets/reserve/blueberry/blueberry-v3-before-white-bg-removal-20260624.png`, `public/assets/reserve/blueberry/blueberry-v3.png` - stronger gloss and detail; accepted/latest.
+- Blackberry: `public/assets/reserve/blackberry/blackberry-before-white-bg-removal-20260624.png`, `public/assets/reserve/blackberry/blackberry.png` - initial simple pass.
+- Blackberry: `public/assets/reserve/blackberry/blackberry-v2-before-white-bg-removal-20260624.png`, `public/assets/reserve/blackberry/blackberry-v2.png` - added drupelet texture.
+- Blackberry: `public/assets/reserve/blackberry/blackberry-v3-before-white-bg-removal-20260624.png`, `public/assets/reserve/blackberry/blackberry-v3.png` - stronger gloss and detail; accepted/latest.
+- Raspberry: `public/assets/reserve/raspberry/raspberry-before-white-bg-removal-20260624.png`, `public/assets/reserve/raspberry/raspberry.png` - initial simple pass.
+- Raspberry: `public/assets/reserve/raspberry/raspberry-v2-before-white-bg-removal-20260624.png`, `public/assets/reserve/raspberry/raspberry-v2.png` - added drupelet texture and hollow.
+- Raspberry: `public/assets/reserve/raspberry/raspberry-v3-before-white-bg-removal-20260624.png`, `public/assets/reserve/raspberry/raspberry-v3.png` - stronger gloss and detail; accepted/latest.
+
+Berry validation:
+
+- Verified all 4 v3 final PNGs have alpha.
+- Verified each v3 final PNG is 1254x1254.
+
+## Requested produce additions 20260624
+
+Created 10 requested chunky pixel-art resource icons without overwriting earlier files.
+Each icon keeps a raw white-background original and a keyed transparent PNG.
+
+- Green Peas: `public/assets/reserve/green-peas/green-peas-before-white-bg-removal-20260624.png`, `public/assets/reserve/green-peas/green-peas.png`
+- Bell Pepper: `public/assets/reserve/bell-pepper/bell-pepper-before-white-bg-removal-20260624.png`, `public/assets/reserve/bell-pepper/bell-pepper.png`
+- Zucchini: `public/assets/reserve/zucchini/zucchini-before-white-bg-removal-20260624.png`, `public/assets/reserve/zucchini/zucchini.png`
+- Yellow Squash: `public/assets/reserve/yellow-squash/yellow-squash-before-white-bg-removal-20260624.png`, `public/assets/reserve/yellow-squash/yellow-squash.png` - initial pass, shape too crookneck-like.
+- Yellow Squash: `public/assets/reserve/yellow-squash/yellow-squash-v2-before-white-bg-removal-20260624.png`, `public/assets/reserve/yellow-squash/yellow-squash-v2.png` - straighter oblong summer squash shape, but still too zucchini-like.
+- Yellow Squash: `public/assets/reserve/yellow-squash/yellow-squash-v3-before-white-bg-removal-20260624.png`, `public/assets/reserve/yellow-squash/yellow-squash-v3.png` - web-reference-informed straightneck shape with modest wider blossom end and thin stem end.
+- Yellow Squash: `public/assets/reserve/yellow-squash/yellow-squash-v4-before-white-bg-removal-20260624.png`, `public/assets/reserve/yellow-squash/yellow-squash-v4.png` - straighter body with smaller stem, but thick end too thin.
+- Yellow Squash: `public/assets/reserve/yellow-squash/yellow-squash-v5-before-white-bg-removal-20260624.png`, `public/assets/reserve/yellow-squash/yellow-squash-v5.png` - chunkier thick end with small stem; accepted/latest.
+- Broccoli: `public/assets/reserve/broccoli/broccoli-before-white-bg-removal-20260624.png`, `public/assets/reserve/broccoli/broccoli.png`
+- Cauliflower: `public/assets/reserve/cauliflower/cauliflower-before-white-bg-removal-20260624.png`, `public/assets/reserve/cauliflower/cauliflower.png`
+- Plum: `public/assets/reserve/plum/plum-before-white-bg-removal-20260624.png`, `public/assets/reserve/plum/plum.png`
+- Dragon Fruit: `public/assets/reserve/dragon-fruit/dragon-fruit-before-white-bg-removal-20260624.png`, `public/assets/reserve/dragon-fruit/dragon-fruit.png`
+- Lychee: `public/assets/reserve/lychee/lychee-before-white-bg-removal-20260624.png`, `public/assets/reserve/lychee/lychee.png`
+- Cantaloupe: `public/assets/reserve/cantaloupe/cantaloupe-before-white-bg-removal-20260624.png`, `public/assets/reserve/cantaloupe/cantaloupe.png`
+
+Requested additions preview sheet:
+`tmp/resource-icons-20260624-requested-produce-preview.png`
+
+Requested additions validation:
+
+- Background removal: `node tools/remove-bg.mjs --write --no-backup`
+- Verified all 10 final PNGs have alpha and transparent corners.
+- Verified each final PNG matches its raw original dimensions at 1254x1254.

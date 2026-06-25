@@ -19,6 +19,12 @@ Latest revision sheet:
 Oyster-informed revision sheet:
 `tmp/resource-icons-20260624-oyster-informed-round.png`
 
+Final polish revision sheet:
+`tmp/resource-icons-20260624-final-polish-round.png`
+
+Latest chocolate save sheet:
+`tmp/resource-icons-20260624-latest-chocolate-save.png`
+
 ## Saved unchanged from first pass
 
 - Hops: `public/assets/reserve/hops/hops-before-white-bg-removal-20260624.png`, `public/assets/reserve/hops/hops.png`
@@ -77,8 +83,19 @@ Oyster-informed revision sheet:
 - Cake v4: `public/assets/reserve/cake/cake-v4-before-white-bg-removal-20260624.png`, `public/assets/reserve/cake/cake-v4.png` - cream cake with one strawberry on top.
 - Oyster v5: `public/assets/reserve/oyster/oyster-v5-before-white-bg-removal-20260624.png`, `public/assets/reserve/oyster/oyster-v5.png` - closed rough oyster shell based on real oyster shape references.
 
+## Final polish revisions
+
+- Cake v5: `public/assets/reserve/cake/cake-v5-before-white-bg-removal-20260624.png`, `public/assets/reserve/cake/cake-v5.png` - cream cake with one upward strawberry and no strawberry leaf.
+- Chocolate complete: `public/assets/reserve/chocolate/chocolate-complete-before-white-bg-removal-20260624.png`, `public/assets/reserve/chocolate/chocolate-complete.png` - complete 3x4 chocolate bar.
+- Chocolate broken: `public/assets/reserve/chocolate/chocolate-broken-before-white-bg-removal-20260624.png`, `public/assets/reserve/chocolate/chocolate-broken.png` - 11-block bar with one naturally broken-off block.
+- Coffee v6: `public/assets/reserve/coffee/coffee-v6-before-white-bg-removal-20260624.png`, `public/assets/reserve/coffee/coffee-v6.png` - medium cluster of raw coffee berries.
+
+## Latest saved work
+
+- Chocolate v2: `public/assets/reserve/chocolate/chocolate-v2-before-white-bg-removal-20260624.png`, `public/assets/reserve/chocolate/chocolate-v2.png` - intact chocolate bar generated from the chocolate-v4 style direction.
+
 ## Validation
 
 - Background removal: `node tools/remove-bg.mjs --write --no-backup`
-- Verified all 40 final PNGs have alpha.
-- Verified transparent corners on all 40 final PNGs.
+- Verified all 45 final PNGs have alpha.
+- Verified transparent corners on all 45 final PNGs.

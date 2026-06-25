@@ -133,7 +133,7 @@ Columns: `core name` | `actual filename` | `in use?` | `note`
 
 ### Produce/Resource batch 2026-06-24 — `reserve/<slug>/` (chunky pixel art, not yet in use)
 
-47 large pixel-art resource icons generated 2026-06-24. Each `<slug>/` folder also keeps a
+52 large pixel-art resource icons generated 2026-06-24. Each `<slug>/` folder also keeps a
 `*-before-white-bg-removal-20260624.png` raw original alongside the keyed PNG.
 "Preferred file" is the accepted/latest version per the generation log.
 
@@ -141,7 +141,9 @@ Columns: `core name` | `actual filename` | `in use?` | `note`
 |-----------|----------------|--------------|--------|
 | avocado | avocado.png | reserve/avocado/ | new |
 | black-bean | black-bean.png | reserve/black-bean/ | new |
+| blackberry | blackberry-v3.png | reserve/blackberry/ | new berry variant (v3 preferred) |
 | black-pepper | black-pepper-v3.png | reserve/black-pepper/ | new (v1–v3) |
+| blueberry | blueberry-v3.png | reserve/blueberry/ | new berry variant (v3 preferred) |
 | bok-choy | bok-choy.png | reserve/bok-choy/ | new |
 | cabbage | cabbage.png | reserve/cabbage/ | recreation of lettuce.png (CABBAGE) |
 | cardamom | cardamom.png | reserve/cardamom/ | new |
@@ -170,7 +172,9 @@ Columns: `core name` | `actual filename` | `in use?` | `note`
 | papaya | papaya-v2.png | reserve/papaya/ | new (v2) |
 | peanut | peanut.png | reserve/peanut/ | new |
 | pineapple | pineapple-v2.png | reserve/pineapple/ | new (v2 = slight tilt) |
+| pomegranate | pomegranate-v4.png | reserve/pomegranate/ | new (v1-v4, v4 = natural exposed seed half) |
 | quinoa | quinoa.png | reserve/quinoa/ | new |
+| raspberry | raspberry-v3.png | reserve/raspberry/ | new berry variant (v3 preferred) |
 | rice-plant | rice-plant-v2.png | reserve/rice-plant/ | recreation/variant of rice.png |
 | rubber | rubber-v2.png | reserve/rubber/ | recreation of rubber.png (sap bucket) |
 | saffron | saffron-v2.png | reserve/saffron/ | new (v2 = crimson threads) |
@@ -178,6 +182,7 @@ Columns: `core name` | `actual filename` | `in use?` | `note`
 | seaweed | seaweed-v2.png | reserve/seaweed/ | new (v2 = no rope) |
 | sorghum | sorghum-v2.png | reserve/sorghum/ | new (v2 = right-pointing sheaf) |
 | spinach | spinach.png | reserve/spinach/ | new |
+| strawberry | strawberry-v3.png | reserve/strawberry/ | new berry variant (v3 preferred) |
 | sugar-beet | sugar-beet-v2.png | reserve/sugar-beet/ | new (v2 = red beet root) |
 | sunflower | sunflower.png | reserve/sunflower/ | new |
 | taro | taro.png | reserve/taro/ | new |
@@ -186,6 +191,24 @@ Columns: `core name` | `actual filename` | `in use?` | `note`
 | vanilla | vanilla.png | reserve/vanilla/ | new |
 | watermelon | watermelon-v2.png | reserve/watermelon/ | recreation of melon.png (MELON) |
 | yam | yam-v2.png | reserve/yam/ | new (v2 = full retry) |
+
+### Requested produce additions 2026-06-24 - `reserve/<slug>/` (chunky pixel art, not yet in use)
+
+10 more requested pixel-art resource icons. Each `<slug>/` folder keeps a
+`*-before-white-bg-removal-20260624.png` raw original alongside the keyed PNG.
+
+| Core name | Preferred file | Reserve path | Note |
+|-----------|----------------|--------------|------|
+| bell-pepper | bell-pepper.png | reserve/bell-pepper/ | requested produce addition |
+| broccoli | broccoli.png | reserve/broccoli/ | requested produce addition |
+| cantaloupe | cantaloupe.png | reserve/cantaloupe/ | requested produce addition |
+| cauliflower | cauliflower.png | reserve/cauliflower/ | requested produce addition |
+| dragon-fruit | dragon-fruit.png | reserve/dragon-fruit/ | requested produce addition |
+| green-peas | green-peas.png | reserve/green-peas/ | requested produce addition |
+| lychee | lychee.png | reserve/lychee/ | requested produce addition |
+| plum | plum.png | reserve/plum/ | requested produce addition |
+| yellow-squash | yellow-squash-v5.png | reserve/yellow-squash/ | requested produce addition (v5 preferred chunkier thick end) |
+| zucchini | zucchini.png | reserve/zucchini/ | requested produce addition |
 
 ### Food/Resource batch 2026-06-24 (round 2) — `reserve/<slug>/` (chunky pixel art, not yet in use)
 
