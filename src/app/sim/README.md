@@ -26,6 +26,20 @@ instead of calling `localStorage` directly.
 `types` · `storage` · `tile` · `city` · `building` · `population` ·
 `pathfinding` · `utils` · `state` · `persistence`
 
+## Config (`sim/config/`)
+Pure data tables, separated from logic so content/balance can be tuned without
+touching simulation code:
+- `buildings.config.ts` — `BUILDING_DEFS` (every placeable building) + `BOOTSTRAP_MATERIAL` (build-cost overrides)
+- `cities.config.ts` — per-region needs, services and house-upgrade baskets (`CITY_PROFILES`)
+- `research.config.ts` — university technologies (`ALL_RESEARCH`)
+
+`balance.ts` holds the frequently-tuned global knobs (production speed, housing
+occupancy, cart counts/speeds, happiness/upgrade gates). `building.ts` re-exports
+the config symbols, so callers still import from `./sim/building`.
+
+`ValidateConfig()` (in `building.ts`) runs at startup in dev and logs config drift
+(ingredients/needs with no producer, buildings with no def or icon).
+
 ## Why this matters
 The renderer has already gone from Angular DOM → canvas, and may go canvas →
 PixiJS next. Each of those is a swap of the *adapter* layer. Keeping the sim core

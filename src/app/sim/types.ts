@@ -17,7 +17,7 @@ export enum CityName {
 
 export enum HouseType {
     COTTAGE = "Cottage",
-    TENEMENT = "Tenament",
+    TENEMENT = "Tenement",
     HOUSE = "House",
     VILLA = "Villa",
     MANSION = "Mansion",
@@ -131,7 +131,7 @@ export enum Resource {
 export enum ServiceType {
     WATER = "Water",
     FIRE = "Fire",
-    POLICE = "Policy",
+    POLICE = "Police",
     SCHOOL = "School",
     MARKET = "Market",
     TAVERN = "Tavern",
@@ -152,7 +152,7 @@ export enum ProductionStatus {
 export enum ShippingTaskType {
     READY = "Ready",
     PICKING_UP = "Picking Up",
-    DELIVERYING = "Deliverying",
+    DELIVERING = "Delivering",
     STOCKING = "Stocking",
     RETURNING = "Returning",
 }
@@ -163,9 +163,9 @@ export enum BuildingType {
     BERRY_GROVE = "Berry Grove",
     BRANDY_DISTILLERY = "Brandy Distillery",
     BAKERY = "Bakery",
-    BRICKYARY = "Brickyard",
-    CABBAGE_PATCH = "Lettuce Field",
-    CANDLE_Manufactory = "Candle Manufactory",
+    BRICKYARD = "Brickyard",
+    CABBAGE_PATCH = "Cabbage Patch",
+    CANDLE_MANUFACTORY = "Candle Manufactory",
     CREAMERY = "Creamery",
     CIDERY = "Cidery",
     CIGAR_FACTORY = "Cigar Factory",
@@ -192,7 +192,7 @@ export enum BuildingType {
     IRON_MINE = "Iron Mine",
     CANNERY = "Preserve Shop",
     MELON_GARDEN = "Melon Garden",
-    DIARY_FARM = "Dairy Farm",
+    DAIRY_FARM = "Dairy Farm",
     OLIVE_GROVE = "Olive Grove",
     ORANGE_ORCHARD = "Orange Orchard",
     ONION_FIELD = "Onion Field",

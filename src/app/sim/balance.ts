@@ -32,4 +32,20 @@ export const BALANCE = {
     // Global multiplier on every building's production progress per tick.
     // Lower = slower economy; higher = faster.
     productionSpeed: 0.5,
+
+    // --- Housing occupancy ---------------------------------------------------
+    // Max occupants of a house = tier * occupantsPerTier; the live cap scales
+    // from a floor up to that max with happiness (see GetCurrentMaxOccupant).
+    housing: {
+        minOccupantFloor: 2,    // a house always holds at least this many
+        occupantsPerTier: 10,   // occupant capacity added per house tier
+    },
+
+    // --- Warehouse delivery carts --------------------------------------------
+    // Indexed by warehouse tier (1..3): cart count and speed (tiles per tick).
+    // Tiers above the array length reuse the last entry.
+    warehouse: {
+        cartsByTier: [4, 6, 8],
+        speedByTier: [0.3, 0.45, 0.6],
+    },
 }

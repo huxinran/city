@@ -1,8 +1,8 @@
-import { Injectable, NgZone, inject, signal } from '@angular/core';
+import { Injectable, NgZone, inject, signal, isDevMode } from '@angular/core';
 import { State } from './sim/state';
 import { Item, Storage } from './sim/storage';
 import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, CountItem, TakeItemsAsPossible, StorageItems} from './sim/utils';
-import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, ExtraSource, CreateBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, FeatureMatches, GetRequiredNearbyFeature, GetRequiredNearbyTerrain, Technology, ALL_RESEARCH, FARM_BUILDINGS, MINE_CAMP_BUILDINGS, ComputeBaseHappiness } from './sim/building'
+import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, ExtraSource, CreateBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, CanPlaceOnFeature, GetRequiredNearbyFeature, GetRequiredNearbyTerrain, Technology, ALL_RESEARCH, FARM_BUILDINGS, MINE_CAMP_BUILDINGS, ComputeBaseHappiness, ValidateConfig } from './sim/building'
 import { BALANCE } from './sim/balance';
 import { City } from './sim/city';
 import { Population,  } from './sim/population';
@@ -47,6 +47,14 @@ export class StateService {
   private zone = inject(NgZone)
 
   constructor() {
+    // In dev, surface any building/city config drift (missing producers, defs,
+    // icons) in the console at startup. Stripped from production builds.
+    if (isDevMode()) {
+      const problems = ValidateConfig()
+      if (problems.length) {
+        console.warn(`[config] ${problems.length} issue(s):\n` + problems.map(p => '  • ' + p).join('\n'))
+      }
+    }
     this.state = new State()
     this.Load()
     // Run the loop outside Angular so tick math doesn't trigger change
@@ -341,7 +349,7 @@ export class StateService {
         if (!required.includes(t.terrain)) {
           return false
         }
-        if (!FeatureMatches(type, t.feature)) {
+        if (!CanPlaceOnFeature(t.feature)) {
           return false
         }
         footprint.push(t)
@@ -440,7 +448,7 @@ export class StateService {
         if (!srcKeys.has((to.i + di) * city.w + (to.j + dj))) {
           if (t.building || t.covered) return false
           if (!required.includes(t.terrain)) return false
-          if (!FeatureMatches(type, t.feature)) return false
+          if (!CanPlaceOnFeature(t.feature)) return false
         }
         destFootprint.push(t)
       }
@@ -487,7 +495,7 @@ export class StateService {
     for (let task of city.shipping_tasks) {
       if (task.dst === from) task.dst = to
     }
-    // In-flight DELIVERYING / PICKING_UP carts are en route to the building, so
+    // In-flight DELIVERING / PICKING_UP carts are en route to the building, so
     // re-route them from their own warehouse to the new tile (reset progress so
     // the cart cleanly retravels). RETURNING carts are heading back to the
     // warehouse with cargo and don't touch dst, so the move doesn't affect them.
@@ -618,7 +626,7 @@ export class StateService {
         if (production.ingredient.length == 0) {
           production.status = ProductionStatus.IN_PROGRESS
         } else {
-          let shipping_task = new ShippingTask(ShippingTaskType.DELIVERYING, t, production.ingredient)
+          let shipping_task = new ShippingTask(ShippingTaskType.DELIVERING, t, production.ingredient)
           city.shipping_tasks.push(shipping_task)
           production.status = ProductionStatus.WAITING_DELIVERY
         }
@@ -674,7 +682,7 @@ export class StateService {
         }
         c.task.progress = Math.min(c.task.progress + c.speed, c.task.distance)
         if (c.task.progress == c.task.distance) {
-          if (c.task.type == ShippingTaskType.DELIVERYING) {
+          if (c.task.type == ShippingTaskType.DELIVERING) {
             c.task.type = ShippingTaskType.RETURNING
             c.task.progress = 0
             c.task.cargo = []
@@ -748,7 +756,7 @@ export class StateService {
         continue
       }
 
-      if (task.type == ShippingTaskType.DELIVERYING || task.type == ShippingTaskType.STOCKING) {
+      if (task.type == ShippingTaskType.DELIVERING || task.type == ShippingTaskType.STOCKING) {
         if (!TakeItems(city.storage, task.cargo)) {
           ++i
           continue
@@ -956,7 +964,7 @@ public GetWorkerNeeded(population: Population, tier: Resident, num: number) {
 
   // Sea trade. Each route owns a ship that cycles:
   //   READY       -> load `resource` from the origin city until full, then depart
-  //   DELIVERYING -> sail to the destination; on arrival, unload into its storage
+  //   DELIVERING -> sail to the destination; on arrival, unload into its storage
   //   RETURNING   -> sail back empty; on arrival, become READY again
   // Routes run for every city (not just the one on screen) so trade continues
   // in the background while the player looks at another city.
@@ -985,10 +993,10 @@ public GetWorkerNeeded(population: Population, tier: Resident, num: number) {
           }
           // Depart only once fully loaded (waits for the origin to produce more).
           if (capacity > 0 && loaded >= capacity) {
-            ship.status = ShippingTaskType.DELIVERYING
+            ship.status = ShippingTaskType.DELIVERING
             r.progress = 0.0
           }
-        } else if (ship.status == ShippingTaskType.DELIVERYING) {
+        } else if (ship.status == ShippingTaskType.DELIVERING) {
           r.progress = Math.min(1.0, r.progress + ship.speed / 100.0)
           if (r.progress >= 1.0) {
             r.progress = 0.0

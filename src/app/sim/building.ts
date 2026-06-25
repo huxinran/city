@@ -3,9 +3,16 @@ import { Tile } from "./tile"
 import { TakeItems } from "./utils"
 import { BALANCE } from "./balance"
 import { Resource, HouseType, Resident, ProductionStatus, ServiceType, ShippingTaskType, BuildingType, ShipType, CityName, Terrain, Feature } from "./types"
+import { Technology, ResearchProject, ALL_RESEARCH } from "./config/research.config"
+import { BuildingDef, Recipe, BUILDING_DEFS, BOOTSTRAP_MATERIAL } from "./config/buildings.config"
+import { UpgradeBasket, EMPTY_BASKET, CityProfile, CITY_PROFILES } from "./config/cities.config"
 
-// Shorthand for the many Item literals in the building registry below.
-const I = (type: Resource, num = 1) => new Item(type, num)
+// Config tables live in ./config/*; re-exported here so existing importers
+// (components, state service) keep their `./sim/building` import paths.
+export { Technology, ResearchProject, ALL_RESEARCH }
+export type { BuildingDef, Recipe, UpgradeBasket, CityProfile }
+export { BUILDING_DEFS }
+
 const cloneItems = (items: Item[]) => items.map(it => new Item(it.type, it.num))
 
 
@@ -29,8 +36,9 @@ export function GetHouseType(tier: number): HouseType {
 }
 
 export function GetCurrentMaxOccupant(tier: number, happiness: number) {
-    let min = Math.max(2, (tier - 1) * 10)
-    let max = tier * 10
+    const { minOccupantFloor, occupantsPerTier } = BALANCE.housing
+    let min = Math.max(minOccupantFloor, (tier - 1) * occupantsPerTier)
+    let max = tier * occupantsPerTier
     let range = max - min
     return Math.floor(min + range * happiness)
 }
@@ -115,7 +123,7 @@ export class Building {
 }
 
 export function RefreshHouse(house: House) {
-    house.max_occupant = house.tier * 10
+    house.max_occupant = house.tier * BALANCE.housing.occupantsPerTier
     house.resident_type = GetResidentType(house.tier)
     house.type = GetHouseType(house.tier)
     house.current_max_occupant = GetCurrentMaxOccupant(house.tier, house.happiness)
@@ -128,11 +136,14 @@ export class House {
         public tier: number = 1,
         public happiness: number = 0,
         public occupant: number = 0,
-        public type: HouseType = GetHouseType(tier),
-        public current_max_occupant: number = GetCurrentMaxOccupant(tier, happiness),
+        // The fields below are all (re)derived by RefreshHouse(this) in the
+        // constructor body and again on every upgrade; the values here are just
+        // cheap placeholders, never the real defaults (don't recompute twice).
+        public type: HouseType = HouseType.COTTAGE,
+        public current_max_occupant: number = 0,
         public max_occupant: number = 10,
-        public resource_needs: ResourceNeed[] = GetResourceNeed(tier),
-        public service_needs: ServiceNeed[] = GetServiceNeed(tier),
+        public resource_needs: ResourceNeed[] = [],
+        public service_needs: ServiceNeed[] = [],
         public resident_type: Resident = Resident.FARMER,
         public storage: Storage = new Storage(),
         public city_type: CityName = CityName.ANRELIA,
@@ -201,17 +212,25 @@ export class ShipBlueprint {
     ) {}
 }
 
+// Ship blueprints offered at every shipyard. Build cost scales with cargo
+// capacity. Returns fresh instances so each shipyard owns its own objects.
+export function MakeShipBlueprints(): ShipBlueprint[] {
+    return [
+        new ShipBlueprint(ShipType.CARGO,   1.5, 100, [new Item(Resource.WOOD, 10)],  60),
+        new ShipBlueprint(ShipType.CLIPPER, 2.0,  60, [new Item(Resource.WOOD, 15)],  90),
+        new ShipBlueprint(ShipType.GRAND,   1.0, 300, [new Item(Resource.WOOD, 30)], 120),
+    ]
+}
+
 export class Shipyard {
     constructor(
         public tier: number = 1,
         public status: ProductionStatus = ProductionStatus.READY,
         public progress: number = 0.0,
-        public blueprints: ShipBlueprint[] = [],
+        public blueprints: ShipBlueprint[] = MakeShipBlueprints(),
         public selected?: ShipBlueprint,
         public storage: Storage = new Storage(),
-    ) {
-        this.blueprints = [new ShipBlueprint(ShipType.CARGO, 1.5, 100, [new Item(Resource.WOOD, 10)], 60), new ShipBlueprint(ShipType.CLIPPER, 2.0, 60, [new Item(Resource.WOOD, 10)], 90), new ShipBlueprint(ShipType.GRAND, 1.0, 300, [new Item(Resource.WOOD, 10)], 120)]
-    }
+    ) {}
 }
 
 export class Route {
@@ -234,44 +253,6 @@ export class Dock {
         public num : number = 0,
     ) {}
 }
-
-// Technologies researched at the University that unlock or improve buildings.
-export enum Technology {
-    FERTILIZER_APPLICATION = "Fertilizer Application",
-    CROP_ROTATION = "Crop Rotation",
-    ADVANCED_MINING = "Advanced Mining",
-}
-
-export class ResearchProject {
-    constructor(
-        public tech: Technology,
-        public name: string,
-        public description: string,
-        public research_time: number,  // ticks at full staffing to complete
-        public gold_cost: number,
-    ) {}
-}
-
-export const ALL_RESEARCH: ResearchProject[] = [
-    new ResearchProject(
-        Technology.FERTILIZER_APPLICATION,
-        "Fertilizer Application",
-        "Farms can use fertilizer for a 1.5× speed boost when stockpiled.",
-        400, 300,
-    ),
-    new ResearchProject(
-        Technology.CROP_ROTATION,
-        "Crop Rotation",
-        "All farms produce 30% faster permanently.",
-        600, 500,
-    ),
-    new ResearchProject(
-        Technology.ADVANCED_MINING,
-        "Advanced Mining",
-        "All extraction buildings operate 30% faster.",
-        500, 400,
-    ),
-]
 
 export class University {
     constructor(
@@ -356,18 +337,17 @@ export class ShippingTask {
     ) {}
 }
 
-function GetNumOfCarts(tier: number) {
-    if (tier == 1) return 4
-    else if (tier == 2) return 6
-    else return 8
+// Cart count / speed per warehouse tier come from BALANCE.warehouse; tiers above
+// the table length reuse the last entry. Speed is tiles travelled per tick, kept
+// well below 1 so carts step a fraction of a tile each tick (smooth motion).
+function tierEntry<T>(table: T[], tier: number): T {
+    return table[Math.min(Math.max(tier, 1), table.length) - 1]
 }
-
-// Tiles travelled per tick. Kept well below 1 so carts step a fraction of a
-// tile each tick — slower journeys and smooth, granular motion between tiles.
+function GetNumOfCarts(tier: number) {
+    return tierEntry(BALANCE.warehouse.cartsByTier, tier)
+}
 function GetCartSpeed(tier: number) {
-    if (tier == 1) return 0.3
-    else if (tier == 2) return 0.45
-    else return 0.6
+    return tierEntry(BALANCE.warehouse.speedByTier, tier)
 }
 
 export function RefreshWarehouse(warehouse: Warehouse) {
@@ -393,174 +373,7 @@ export class Warehouse {
 }
 
 
-// --- Building registry -------------------------------------------------------
-// The single source of truth for every placeable building. One entry captures
-// everything that used to be scattered across a dozen Sets, switch statements,
-// icon maps and the old MakeBuilding if-chain. To add a building: add a
-// BuildingType enum value and one entry here — sizes, costs, terrain rules,
-// category flags and icons are all derived from this table.
-//
-// `material` is the construction cost as declared; a few families are rewritten
-// by BuildMaterial (e.g. farms/houses bootstrap from a single timber). `gold`
-// is only set where it differs from the category default (farms 100, other
-// production 150, everything else 100).
-interface Recipe {
-    workers: number
-    worker_type: Resident
-    efficiency: number
-    in: Item[]
-    out: Item[]
-    coal?: boolean   // adds a required Coal extra source (kiln/forge/steelwork)
-}
-interface BuildingDef {
-    size: 1 | 2 | 3
-    material: Item[]
-    icon: string
-    gold?: number
-    recipe?: Recipe
-    service?: { need: ServiceType, radius: number }
-    special?: 'house' | 'warehouse' | 'shipyard' | 'dock' | 'university' | 'road'
-    farm?: boolean       // 3x3 farmhouse-style plot (eligible for fertilizer)
-    animal?: boolean     // pasture art instead of crop rows
-    mine?: boolean       // mine-camp extraction art / Advanced Mining tech
-    sea?: boolean        // must be placed on water
-    near?: Feature       // requires this feature on an adjacent tile (rock/tree)
-    nearSand?: boolean   // requires a sand tile nearby (sand pit)
-    noRoad?: boolean     // may be placed without touching a road
-    productIcon?: string // output icon overlaid on a workshop's process icon
-}
-
-// A standard raw farm: 3x3, one timber to build, ten farmers producing one
-// unit of `out` per cycle. Tree-foraging and animal farms layer flags on top.
-function rawFarm(icon: string, out: Resource, opts: Partial<BuildingDef> = {}): BuildingDef {
-    return {
-        size: 3, farm: true, material: [I(Resource.TIMBER, 10)], icon,
-        recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(out)] },
-        ...opts,
-    }
-}
-
-const BUILDING_DEFS: Partial<Record<BuildingType, BuildingDef>> = {
-    // --- Crop farms (Farmer, 3x3) ---
-    [BuildingType.WHEAT_FARM]:        rawFarm('🌾', Resource.WHEAT),
-    [BuildingType.RICE_PADDY]:        rawFarm('🍚', Resource.RICE),
-    [BuildingType.APPLE_ORCHARD]:     rawFarm('🍎', Resource.APPLE),
-    [BuildingType.ORANGE_ORCHARD]:    rawFarm('🍊', Resource.ORANGE),
-    [BuildingType.CABBAGE_PATCH]:     rawFarm('🥬', Resource.CABBAGE),
-    [BuildingType.POTATO_FARM]:       rawFarm('🥔', Resource.POTATO),
-    [BuildingType.MELON_GARDEN]:      rawFarm('🍉', Resource.MELON),
-    [BuildingType.TOMATO_FIELD]:      rawFarm('🍅', Resource.TOMATO),
-    [BuildingType.CORN_FIELD]:        rawFarm('🌽', Resource.CORN),
-    [BuildingType.BANANA_PLANTATION]: rawFarm('🍌', Resource.BANANA),
-    [BuildingType.ONION_FIELD]:       rawFarm('🧅', Resource.ONION),
-    [BuildingType.VINEYARD]:          rawFarm('🍇', Resource.GRAPE),
-    [BuildingType.OLIVE_GROVE]:       rawFarm('🫒', Resource.OLIVE),
-    [BuildingType.PUMPKIN_PATCH]:     rawFarm('🎃', Resource.PUMPKIN),
-    [BuildingType.SOYBEAN_FARM]:      rawFarm('🫘', Resource.SOYBEAN),
-    [BuildingType.COCOA_PLANT]:       rawFarm('🍫', Resource.COCOA),
-    [BuildingType.SUGAR_CANE_PLANTATION]: rawFarm('🍬', Resource.SUGAR_CANE),
-    [BuildingType.TOBACCO_PLANTATION]: rawFarm('🌿', Resource.TOBACCO),
-    [BuildingType.COTTON_FIELD]:      rawFarm('🪡', Resource.COTTON),
-    [BuildingType.RUBBER_PLANTATION]: rawFarm('🌴', Resource.RUBBER),
-    // --- Foraging farms (require a nearby tree stand) ---
-    [BuildingType.BERRY_GROVE]:       rawFarm('🍓', Resource.BERRY, { near: Feature.TREE }),
-    [BuildingType.APIARY]:            rawFarm('🍯', Resource.WAX,   { near: Feature.TREE }),
-    [BuildingType.TRAPLINE]:          rawFarm('🦊', Resource.FUR,   { near: Feature.TREE }),
-    // --- Animal farms (pasture art) ---
-    [BuildingType.PIG_FARM]:          rawFarm('🐷', Resource.PORK,  { animal: true }),
-    [BuildingType.DIARY_FARM]:        rawFarm('🐄', Resource.MILK,  { animal: true }),
-    [BuildingType.SHEEP_FARM]:        rawFarm('🐑', Resource.WOOL,  { animal: true }),
-    [BuildingType.CHICKEN_COOP]:      rawFarm('🐓', Resource.EGG,   { animal: true }),
-    // --- Raw extraction (mine-camp art) ---
-    [BuildingType.LUMBER_HUT]:  { size: 2, mine: true, near: Feature.TREE, material: [I(Resource.TIMBER, 10)], icon: '🪵', recipe: { workers: 4, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(Resource.WOOD)] } },
-    [BuildingType.STONE_QUARRY]:{ size: 2, mine: true, near: Feature.ROCK, material: [I(Resource.TIMBER, 10)], icon: '🪨', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(Resource.STONE)] } },
-    [BuildingType.CLAY_PIT]:    { size: 2, mine: true, near: Feature.ROCK, material: [I(Resource.TIMBER, 10)], icon: '🟤', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(Resource.CLAY)] } },
-    [BuildingType.COAL_KILN]:   { size: 2, mine: true, near: Feature.ROCK, material: [I(Resource.TIMBER, 10)], icon: '🏭', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(Resource.COAL)] } },
-    [BuildingType.SAND_PIT]:    { size: 2, mine: true, nearSand: true,     material: [I(Resource.TIMBER, 10)], icon: '🏜️', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(Resource.SAND)] } },
-    [BuildingType.SALTERN]:     { size: 2, mine: true, sea: true,          material: [I(Resource.TIMBER, 10)], icon: '🧂', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(Resource.SALT)] } },
-    [BuildingType.IRON_MINE]:   { size: 2, mine: true, near: Feature.ROCK, material: [I(Resource.BRICK, 20)], icon: '⛏️', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 8, in: [], out: [I(Resource.IRON_ORE)] } },
-    [BuildingType.GOLD_MINE]:   { size: 2, mine: true, near: Feature.ROCK, material: [I(Resource.BRICK, 20)], icon: '🪙', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 8, in: [], out: [I(Resource.GOLD_ORE)] } },
-    [BuildingType.GEM_MINE]:    { size: 2, mine: true, near: Feature.ROCK, material: [I(Resource.BRICK, 20)], icon: '💎', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 8, in: [], out: [I(Resource.GEM)] } },
-    // --- Processing workshops (2x2) ---
-    [BuildingType.SAWMILL]:     { size: 2, material: [I(Resource.TIMBER, 10)], icon: '🪚', productIcon: '🪵', recipe: { workers: 4, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.WOOD)], out: [I(Resource.TIMBER)] } },
-    [BuildingType.WIND_MILL]:   { size: 2, material: [I(Resource.BRICK, 10)], icon: '🌀', productIcon: '🥣', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.WHEAT)], out: [I(Resource.FLOUR)] } },
-    [BuildingType.BAKERY]:      { size: 2, material: [I(Resource.BRICK, 10)], icon: '🫕', productIcon: '🥖', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.FLOUR)], out: [I(Resource.BREAD)] } },
-    [BuildingType.BUTCHERY]:    { size: 2, material: [I(Resource.SLATE, 10)], icon: '🔪', productIcon: '🌭', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.PORK)], out: [I(Resource.SAUSAGE)] } },
-    [BuildingType.CIDERY]:      { size: 2, material: [I(Resource.SLATE, 10)], icon: '🍶', productIcon: '🍺', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.APPLE)], out: [I(Resource.CIDER)] } },
-    [BuildingType.CREAMERY]:    { size: 2, material: [I(Resource.SLATE, 10)], icon: '🥛', productIcon: '🧀', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.MILK)], out: [I(Resource.CHEESE)] } },
-    [BuildingType.POTTERY_SHOP]:{ size: 2, material: [I(Resource.SLATE, 10)], icon: '🤲', productIcon: '🏺', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.CLAY)], out: [I(Resource.POTTERY)] } },
-    [BuildingType.PANT_SHOP]:   { size: 2, material: [I(Resource.SLATE, 10)], icon: '🧵', productIcon: '👖', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.WOOL)], out: [I(Resource.PANT)] } },
-    [BuildingType.SHIRT_SHOP]:  { size: 2, material: [I(Resource.SLATE, 10)], icon: '👕', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.COTTON)], out: [I(Resource.SHIRT)] } },
-    [BuildingType.BOOT_SHOP]:   { size: 2, material: [I(Resource.BRICK, 10)], icon: '👢', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.FUR)], out: [I(Resource.BOOT)] } },
-    [BuildingType.CIGAR_FACTORY]:{ size: 2, material: [I(Resource.BRICK, 10)], icon: '🍃', productIcon: '🚬', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.TOBACCO)], out: [I(Resource.CIGAR)] } },
-    [BuildingType.CANDLE_Manufactory]:{ size: 2, material: [I(Resource.SLATE, 10)], icon: '🪔', productIcon: '🕯️', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.WAX)], out: [I(Resource.CANDLE)] } },
-    [BuildingType.GLASSWORK]:   { size: 2, material: [I(Resource.BRICK, 20)], icon: '🫧', productIcon: '🪟', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.SAND)], out: [I(Resource.GLASS)] } },
-    [BuildingType.GLAZIER]:     { size: 2, material: [I(Resource.BRICK, 20)], icon: '🪟', productIcon: '🪟', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.GLASS)], out: [I(Resource.WINDOW)] } },
-    [BuildingType.MASON_SHOP]:  { size: 2, material: [I(Resource.TIMBER, 10)], icon: '🏛️', productIcon: '🪨', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.STONE)], out: [I(Resource.SLATE)] } },
-    [BuildingType.CONCRETE_PLANT]:{ size: 2, material: [I(Resource.BRICK, 20)], icon: '🏗️', productIcon: '🧱', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.STONE), I(Resource.SAND)], out: [I(Resource.CONCRETE)] } },
-    [BuildingType.SCULPTOR]:    { size: 2, material: [I(Resource.STEEL, 20)], icon: '🗿', productIcon: '🗿', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.STONE), I(Resource.TOOL)], out: [I(Resource.STATUE)] } },
-    [BuildingType.CANNERY]:     { size: 2, material: [I(Resource.SLATE, 10)], icon: '🍎', productIcon: '🫙', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.APPLE)], out: [I(Resource.JAM)] } },
-    [BuildingType.BRANDY_DISTILLERY]:{ size: 2, material: [I(Resource.BRICK, 20)], icon: '🧪', productIcon: '🍾', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.GRAPE)], out: [I(Resource.BRANDY)] } },
-    [BuildingType.BRICKYARY]:   { size: 2, material: [I(Resource.SLATE, 20)], icon: '🏭', productIcon: '🧱', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.CLAY)], out: [I(Resource.BRICK)], coal: true } },
-    [BuildingType.STEELWORK]:   { size: 2, material: [I(Resource.BRICK, 20)], icon: '⚒️', productIcon: '⚙️', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.IRON)], out: [I(Resource.STEEL)], coal: true } },
-    [BuildingType.FORGE]:       { size: 2, material: [I(Resource.STEEL, 20)], icon: '🔥', productIcon: '🔩', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.IRON_ORE)], out: [I(Resource.IRON)], coal: true } },
-    [BuildingType.TOOLSMITH]:   { size: 2, material: [I(Resource.STEEL, 20)], icon: '🔧', productIcon: '⚒️', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.IRON)], out: [I(Resource.TOOL)] } },
-    [BuildingType.GOLDSMITH]:   { size: 2, material: [I(Resource.SLATE, 10)], icon: '🔆', productIcon: '🪙', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.GOLD_ORE)], out: [I(Resource.GOLD)] } },
-    [BuildingType.JEWELER]:     { size: 2, material: [I(Resource.STEEL, 20)], icon: '💎', productIcon: '💍', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.GOLD)], out: [I(Resource.JEWELRY)] } },
-    [BuildingType.CARPENTER_SHOP]:{ size: 2, material: [I(Resource.SLATE, 10)], icon: '🪓', productIcon: '🪑', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.TIMBER)], out: [I(Resource.FURNITURE)] } },
-    [BuildingType.WINERY]:      { size: 2, material: [I(Resource.BRICK, 20)], icon: '🍇', productIcon: '🍷', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.GRAPE)], out: [I(Resource.WINE)] } },
-    [BuildingType.OIL_PRESS]:   { size: 2, material: [I(Resource.SLATE, 10)], icon: '🫒', productIcon: '🫗', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.OLIVE)], out: [I(Resource.OIL)] } },
-    [BuildingType.RUM_DISTILLERY]:{ size: 2, material: [I(Resource.BRICK, 20)], icon: '🍬', productIcon: '🥃', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.SUGAR_CANE)], out: [I(Resource.RUM)] } },
-    // --- Sea producers ---
-    [BuildingType.FISHERY]:     { size: 1, sea: true, material: [I(Resource.TIMBER, 10)], icon: '🎣', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(Resource.FISH)] } },
-    // --- Houses, services, infrastructure ---
-    [BuildingType.HOUSE]:       { size: 1, gold: 20,  material: [I(Resource.TIMBER, 5)],  icon: '🏠', special: 'house' },
-    [BuildingType.WELL]:        { size: 1, gold: 80,  noRoad: true, material: [I(Resource.TIMBER, 10)], icon: '🪣', service: { need: ServiceType.WATER, radius: 10 } },
-    [BuildingType.FIRE_STATION]:{ size: 1, gold: 120, noRoad: true, material: [I(Resource.TIMBER, 20)], icon: '🔔', service: { need: ServiceType.FIRE, radius: 12 } },
-    [BuildingType.POLICE_STATION]:{ size: 1, gold: 120, noRoad: true, material: [I(Resource.TIMBER, 20)], icon: '⚖️', service: { need: ServiceType.POLICE, radius: 12 } },
-    [BuildingType.SCHOOL]:      { size: 1, gold: 200, noRoad: true, material: [I(Resource.BRICK, 20)], icon: '📜', service: { need: ServiceType.SCHOOL, radius: 16 } },
-    [BuildingType.MARKETPLACE]: { size: 1, gold: 120, noRoad: true, material: [I(Resource.TIMBER, 20)], icon: '🏪', service: { need: ServiceType.MARKET, radius: 12 } },
-    [BuildingType.TAVERN]:      { size: 1, gold: 150, noRoad: true, material: [I(Resource.SLATE, 20)], icon: '🍺', service: { need: ServiceType.TAVERN, radius: 12 } },
-    [BuildingType.CHAPEL]:      { size: 1, gold: 250, noRoad: true, material: [I(Resource.BRICK, 20)], icon: '⛪', service: { need: ServiceType.CHURCH, radius: 14 } },
-    [BuildingType.CLINIC]:      { size: 1, gold: 150, noRoad: true, material: [I(Resource.TIMBER, 20)], icon: '🏥', service: { need: ServiceType.HEALTH, radius: 12 } },
-    [BuildingType.COURTHOUSE]:  { size: 1, gold: 200, noRoad: true, material: [I(Resource.BRICK, 20)], icon: '⚖️', service: { need: ServiceType.JUSTICE, radius: 14 } },
-    [BuildingType.ENGINEER_STATION]:{ size: 1, gold: 200, noRoad: true, material: [I(Resource.STEEL, 20)], icon: '🔧', service: { need: ServiceType.ENGINEER, radius: 14 } },
-    [BuildingType.WAREHOUSE]:   { size: 2, gold: 150, noRoad: true, material: [I(Resource.TIMBER, 20)], icon: '📦', special: 'warehouse' },
-    [BuildingType.SHIPYARD]:    { size: 1, gold: 300, noRoad: true, sea: true, material: [I(Resource.SLATE, 20)], icon: '⚓', special: 'shipyard' },
-    [BuildingType.DOCK]:        { size: 1, gold: 200, noRoad: true, sea: true, material: [I(Resource.SLATE, 20)], icon: '⛵', special: 'dock' },
-    [BuildingType.ROAD]:        { size: 1, gold: 2,   noRoad: true, material: [I(Resource.TIMBER, 1)], icon: '🛣️', special: 'road' },
-    [BuildingType.UNIVERSITY]:  { size: 2, material: [I(Resource.BRICK, 20)], icon: '🎓', special: 'university' },
-    [BuildingType.COMPOST_PIT]: { size: 3, farm: true, material: [I(Resource.TIMBER, 10)], icon: '🌱', recipe: { workers: 5, worker_type: Resident.FARMER, efficiency: 6, in: [], out: [I(Resource.FERTILIZER)] } },
-    // --- Jinlin (East Asian) ---
-    [BuildingType.TEA_GARDEN]:  rawFarm('🍵', Resource.TEA),
-    [BuildingType.SILK_FARM]:   rawFarm('🪺', Resource.SILK),
-    [BuildingType.TOFU_SHOP]:   { size: 2, material: [I(Resource.TIMBER, 10)], icon: '🫘', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.SOYBEAN)], out: [I(Resource.TOFU)] } },
-    [BuildingType.KILN]:        { size: 2, material: [I(Resource.BRICK, 10)], icon: '🏺', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.CLAY)], out: [I(Resource.PORCELAIN)] } },
-    [BuildingType.NOODLE_SHOP]: { size: 2, material: [I(Resource.BRICK, 10)], icon: '🍜', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.RICE)], out: [I(Resource.NOODLE)] } },
-    // --- Columbia (American frontier) ---
-    [BuildingType.CATTLE_RANCH]:rawFarm('🐄', Resource.BEEF),
-    [BuildingType.CORN_MILL]:   { size: 2, material: [I(Resource.TIMBER, 10)], icon: '🌽', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.CORN)], out: [I(Resource.CORNBREAD)] } },
-    [BuildingType.TANNERY]:     { size: 2, material: [I(Resource.TIMBER, 10)], icon: '🥩', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.BEEF)], out: [I(Resource.LEATHER)] } },
-    [BuildingType.DENIM_MILL]:  { size: 2, material: [I(Resource.BRICK, 10)], icon: '🧵', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.COTTON)], out: [I(Resource.DENIM)] } },
-    [BuildingType.WHISKEY_DISTILLERY]:{ size: 2, material: [I(Resource.BRICK, 15)], icon: '🥃', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.CORN)], out: [I(Resource.WHISKEY)] } },
-    [BuildingType.RAIL_MILL]:   { size: 2, material: [I(Resource.STEEL, 20)], icon: '🛤️', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.STEEL)], out: [I(Resource.RAIL)] } },
-    // --- Solara (African / tropical) ---
-    [BuildingType.PALM_GROVE]:  rawFarm('🌴', Resource.PALM_FRUIT),
-    [BuildingType.INCENSE_GROVE]: rawFarm('🌿', Resource.INCENSE, { near: Feature.TREE }),
-    [BuildingType.IVORY_CAMP]:  { size: 3, farm: true, near: Feature.TREE, material: [I(Resource.BRICK, 10)], icon: '🐘', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 8, in: [], out: [I(Resource.IVORY)] } },
-    [BuildingType.PALM_OIL_PRESS]:{ size: 2, material: [I(Resource.TIMBER, 10)], icon: '🫗', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.PALM_FRUIT)], out: [I(Resource.PALM_OIL)] } },
-    [BuildingType.COCOA_SHOP]:  { size: 2, material: [I(Resource.BRICK, 10)], icon: '🍫', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.COCOA)], out: [I(Resource.COCOA_DRINK)] } },
-    [BuildingType.COPPER_MINE]: { size: 2, mine: true, near: Feature.ROCK, material: [I(Resource.BRICK, 20)], icon: '🪨', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 8, in: [], out: [I(Resource.COPPER)] } },
-    [BuildingType.BRONZE_FOUNDRY]:{ size: 2, material: [I(Resource.BRICK, 20)], icon: '🔶', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.COPPER)], out: [I(Resource.BRONZE)] } },
-    // --- Mintaka (polar) ---
-    [BuildingType.REINDEER_FARM]: rawFarm('🦌', Resource.REINDEER_MEAT),
-    [BuildingType.FUR_WORKSHOP]:{ size: 2, material: [I(Resource.TIMBER, 10)], icon: '🧥', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.FUR)], out: [I(Resource.FUR_COAT)] } },
-    [BuildingType.SMOKEHOUSE]:  { size: 2, material: [I(Resource.TIMBER, 10)], icon: '🐟', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.FISH), I(Resource.SALT)], out: [I(Resource.SMOKED_FISH)] } },
-    [BuildingType.WHALING_POST]:{ size: 1, sea: true, material: [I(Resource.TIMBER, 10)], icon: '🐋', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(Resource.BLUBBER)] } },
-    [BuildingType.BLUBBER_PRESS]:{ size: 2, material: [I(Resource.BRICK, 10)], icon: '🛢️', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.BLUBBER)], out: [I(Resource.WHALE_OIL)] } },
-    [BuildingType.AMBER_MINE]:  { size: 2, mine: true, near: Feature.ROCK, material: [I(Resource.BRICK, 20)], icon: '🟡', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 8, in: [], out: [I(Resource.AMBER)] } },
-}
-
+// Building registry & build-cost overrides live in ./config/buildings.config.
 
 // --- Derived membership sets & lookups ---------------------------------------
 const DEF_ENTRIES = Object.entries(BUILDING_DEFS) as [BuildingType, BuildingDef][]
@@ -604,9 +417,10 @@ export function GetRequiredTerrains(type: BuildingType): Terrain[] {
     return BUILDING_DEFS[type]?.sea ? [Terrain.WATER] : LAND_TERRAINS
 }
 
-// Whether a tile's natural feature allows this building to sit on it. Every
-// building must be placed on open land (no tree/rock on the tile itself).
-export function FeatureMatches(type: BuildingType, feature?: Feature): boolean {
+// Whether a tile's natural feature allows a building to sit on it. Every
+// building must be placed on open land (no tree/rock/bush on the tile itself);
+// the required adjacent feature (for mines/lumber) is checked separately.
+export function CanPlaceOnFeature(feature?: Feature): boolean {
     return feature == undefined
 }
 
@@ -687,28 +501,18 @@ function materialForTier(tier: number): Resource {
     return BUILD_MATERIAL_LADDER[Math.min(Math.max(tier, 1), BUILD_MATERIAL_LADDER.length) - 1]
 }
 
-// Construction material cost, overriding the per-building defaults above:
-//  - the wood/timber producers cost only money (no material), so the timber
-//    supply chain can be bootstrapped from nothing;
-//  - farms cost a single timber; the warehouse costs 10;
+// Construction material cost, overriding the per-building `material` declared in
+// BUILDING_DEFS:
+//  - explicit overrides come from BOOTSTRAP_MATERIAL (timber/free for chains
+//    that must be startable from nothing); farms always cost a single timber;
 //  - a building that PRODUCES a construction material is built from the rung
 //    just below its output (never its own output or higher);
 //  - every other building may use its own tier's material but nothing higher
 //    (e.g. a Well, a tier-1 service, never demands slate/steel).
 function BuildMaterial(type: BuildingType, current: Item[]): Item[] {
-    if (type == BuildingType.ROAD) return []
-    if (type == BuildingType.LUMBER_HUT || type == BuildingType.SAWMILL) return []
-    if (type == BuildingType.HOUSE) return [new Item(Resource.TIMBER, 1)]
+    const override = BOOTSTRAP_MATERIAL[type]
+    if (override) return cloneItems(override)
     if (FARM_BUILDINGS.has(type)) return [new Item(Resource.TIMBER, 1)]
-    if (type == BuildingType.WAREHOUSE) return [new Item(Resource.TIMBER, 10)]
-    // Mason shop bootstraps the stone-block chain from timber, not brick.
-    if (type == BuildingType.MASON_SHOP) return [new Item(Resource.TIMBER, 10)]
-    // Themed city workshops also bootstrap cheaply from timber
-    if (type == BuildingType.TOFU_SHOP || type == BuildingType.NOODLE_SHOP) return [new Item(Resource.TIMBER, 5)]
-    if (type == BuildingType.CORN_MILL || type == BuildingType.TANNERY)     return [new Item(Resource.TIMBER, 5)]
-    if (type == BuildingType.PALM_OIL_PRESS || type == BuildingType.COCOA_SHOP) return [new Item(Resource.TIMBER, 5)]
-    if (type == BuildingType.FUR_WORKSHOP || type == BuildingType.SMOKEHOUSE) return [new Item(Resource.TIMBER, 5)]
-    if (type == BuildingType.BLUBBER_PRESS) return [new Item(Resource.TIMBER, 5)]
 
     const def = BUILDING_DEFS[type]
     // Material-producer buildings build from the previous rung of the ladder.
@@ -824,7 +628,7 @@ function resourceTierMap(): { [key: string]: number } {
 const BUILDING_TIER_OVERRIDE: { [key: string]: number } = {
     [BuildingType.LUMBER_HUT]: 1,   // wood   (Farmer)
     [BuildingType.SAWMILL]:    1,   // timber (Farmer)
-    [BuildingType.BRICKYARY]:  3,   // brick  (Artisan; brick itself is a tier-3 build good)
+    [BuildingType.BRICKYARD]:  3,   // brick  (Artisan; brick itself is a tier-3 build good)
     [BuildingType.STONE_QUARRY]: 2, // stone       (Worker)
     [BuildingType.MASON_SHOP]:   2, // slate/stone block (Worker)
     [BuildingType.VINEYARD]:     4, // grape (Scholar)
@@ -913,157 +717,7 @@ export function GetBuildingTier(type: BuildingType): number | undefined {
 }
 
 
-// --- House upgrade costs -----------------------------------------------------
-// To upgrade a house INTO the given tier you must supply a basket of goods,
-// grouped into Food / Daily / Luxury / build materials. The basket grows in both
-// quantity and variety each step. (Services are required separately — see
-// GetServiceNeed — and gate happiness, which itself gates the upgrade.)
-export interface UpgradeBasket {
-    food: Item[]
-    daily: Item[]
-    luxury: Item[]
-    build: Item[]
-}
-
-const EMPTY_BASKET: UpgradeBasket = { food: [], daily: [], luxury: [], build: [] }
-
-
-// --- Per-city profiles -------------------------------------------------------
-// Each region defines its own consumption needs, required services and house
-// upgrade baskets. `needs`/`services` are ordered lists tagged with the earliest
-// tier that requires them; a house of tier N gets every entry with tier <= N
-// (preserving list order). Non-Anrelia regions cap at tier 3.
-interface CityProfile {
-    maxTier: number
-    needs: { resource: Resource, tier: number }[]
-    services: { service: ServiceType, tier: number }[]
-    upgrades: { [tier: number]: UpgradeBasket }
-}
-
-// Services for the 3-tier themed regions (shared by all non-Anrelia cities).
-const THEMED_SERVICES: { service: ServiceType, tier: number }[] = [
-    { service: ServiceType.WATER,  tier: 1 },
-    { service: ServiceType.MARKET, tier: 2 },
-    { service: ServiceType.HEALTH, tier: 2 },
-    { service: ServiceType.FIRE,   tier: 3 },
-    { service: ServiceType.SCHOOL, tier: 3 },
-]
-
-const CITY_PROFILES: Record<CityName, CityProfile> = {
-    [CityName.ANRELIA]: {
-        maxTier: 6,
-        needs: [
-            { resource: Resource.FISH,      tier: 1 },
-            { resource: Resource.SAUSAGE,   tier: 2 },
-            { resource: Resource.CABBAGE,   tier: 2 },
-            { resource: Resource.BREAD,     tier: 3 },
-            { resource: Resource.CHEESE,    tier: 4 },
-            { resource: Resource.PANT,      tier: 1 },
-            { resource: Resource.POTTERY,   tier: 2 },
-            { resource: Resource.FURNITURE, tier: 5 },
-            { resource: Resource.CIDER,     tier: 3 },
-            { resource: Resource.WINE,      tier: 4 },
-            { resource: Resource.BRANDY,    tier: 6 },
-        ],
-        services: [
-            { service: ServiceType.WATER,    tier: 1 },
-            { service: ServiceType.MARKET,   tier: 2 },
-            { service: ServiceType.FIRE,     tier: 3 },
-            { service: ServiceType.POLICE,   tier: 3 },
-            { service: ServiceType.HEALTH,   tier: 3 },
-            { service: ServiceType.SCHOOL,   tier: 4 },
-            { service: ServiceType.JUSTICE,  tier: 4 },
-            { service: ServiceType.TAVERN,   tier: 5 },
-            { service: ServiceType.ENGINEER, tier: 5 },
-            { service: ServiceType.CHURCH,   tier: 6 },
-        ],
-        upgrades: {
-            // Cottage -> Tenement (Farmer -> Worker): first comforts.
-            2: { food: [I(Resource.BREAD, 10)], daily: [I(Resource.POTTERY, 8)], luxury: [], build: [I(Resource.TIMBER, 10)] },
-            // Tenement -> House (Worker -> Artisan): a furnished household.
-            3: { food: [I(Resource.SAUSAGE, 10), I(Resource.CHEESE, 10)], daily: [I(Resource.PANT, 8)], luxury: [I(Resource.CIDER, 8)], build: [I(Resource.BRICK, 15)] },
-            // House -> Villa (Artisan -> Scholar): a refined home.
-            4: { food: [I(Resource.CHEESE, 12), I(Resource.APPLE, 12)], daily: [I(Resource.FURNITURE, 10), I(Resource.GLASS, 8)], luxury: [I(Resource.WINE, 10)], build: [I(Resource.STEEL, 12)] },
-            // Villa -> Mansion (Scholar -> Entrepreneur): a gentleman's estate.
-            5: { food: [I(Resource.SAUSAGE, 15), I(Resource.JAM, 12)], daily: [I(Resource.FURNITURE, 15), I(Resource.GLASS, 12)], luxury: [I(Resource.WINE, 15), I(Resource.BRANDY, 12)], build: [I(Resource.WINDOW, 15)] },
-            // Mansion -> Estate (Entrepreneur -> Magnate): the grandest residence.
-            6: { food: [I(Resource.CHEESE, 18), I(Resource.APPLE, 18)], daily: [I(Resource.FURNITURE, 20), I(Resource.GLASS, 18)], luxury: [I(Resource.BRANDY, 25), I(Resource.WINE, 20), I(Resource.OIL, 15)], build: [I(Resource.STATUE, 10)] },
-        },
-    },
-    [CityName.JINLIN]: {
-        maxTier: 3,
-        needs: [
-            { resource: Resource.RICE,      tier: 1 },
-            { resource: Resource.FISH,      tier: 1 },
-            { resource: Resource.TOFU,      tier: 2 },
-            { resource: Resource.NOODLE,    tier: 3 },
-            { resource: Resource.PANT,      tier: 1 },
-            { resource: Resource.SILK,      tier: 2 },
-            { resource: Resource.PORCELAIN, tier: 3 },
-            { resource: Resource.TEA,       tier: 2 },
-            { resource: Resource.WINE,      tier: 3 },
-        ],
-        services: THEMED_SERVICES,
-        upgrades: {
-            2: { food: [I(Resource.TOFU, 8)], daily: [I(Resource.SILK, 6)], luxury: [], build: [I(Resource.TIMBER, 10)] },
-            3: { food: [I(Resource.NOODLE, 10)], daily: [I(Resource.PORCELAIN, 8)], luxury: [I(Resource.TEA, 8)], build: [I(Resource.BRICK, 15)] },
-        },
-    },
-    [CityName.COLUMBIA]: {
-        maxTier: 3,
-        needs: [
-            { resource: Resource.CORNBREAD, tier: 1 },
-            { resource: Resource.BEEF,      tier: 2 },
-            { resource: Resource.SAUSAGE,   tier: 3 },
-            { resource: Resource.LEATHER,   tier: 1 },
-            { resource: Resource.DENIM,     tier: 2 },
-            { resource: Resource.FURNITURE, tier: 3 },
-            { resource: Resource.WHISKEY,   tier: 2 },
-            { resource: Resource.BRANDY,    tier: 3 },
-        ],
-        services: THEMED_SERVICES,
-        upgrades: {
-            2: { food: [I(Resource.CORNBREAD, 8)], daily: [I(Resource.LEATHER, 6)], luxury: [], build: [I(Resource.TIMBER, 10)] },
-            3: { food: [I(Resource.BEEF, 10)], daily: [I(Resource.DENIM, 8)], luxury: [I(Resource.WHISKEY, 8)], build: [I(Resource.BRICK, 15)] },
-        },
-    },
-    [CityName.SOLARA]: {
-        maxTier: 3,
-        needs: [
-            { resource: Resource.BANANA,      tier: 1 },
-            { resource: Resource.COCOA_DRINK, tier: 2 },
-            { resource: Resource.PORK,        tier: 3 },
-            { resource: Resource.PALM_OIL,    tier: 1 },
-            { resource: Resource.BRONZE,      tier: 2 },
-            { resource: Resource.POTTERY,     tier: 3 },
-            { resource: Resource.INCENSE,     tier: 2 },
-            { resource: Resource.GOLD,        tier: 3 },
-        ],
-        services: THEMED_SERVICES,
-        upgrades: {
-            2: { food: [I(Resource.COCOA_DRINK, 8)], daily: [I(Resource.PALM_OIL, 6)], luxury: [], build: [I(Resource.TIMBER, 10)] },
-            3: { food: [I(Resource.PORK, 10)], daily: [I(Resource.BRONZE, 8)], luxury: [I(Resource.INCENSE, 8)], build: [I(Resource.BRICK, 15)] },
-        },
-    },
-    [CityName.MINTAKA]: {
-        maxTier: 3,
-        needs: [
-            { resource: Resource.SMOKED_FISH,   tier: 1 },
-            { resource: Resource.REINDEER_MEAT, tier: 2 },
-            { resource: Resource.CHEESE,        tier: 3 },
-            { resource: Resource.FUR_COAT,      tier: 1 },
-            { resource: Resource.WHALE_OIL,     tier: 2 },
-            { resource: Resource.TOOL,          tier: 3 },
-            { resource: Resource.RUM,           tier: 2 },
-            { resource: Resource.AMBER,         tier: 3 },
-        ],
-        services: THEMED_SERVICES,
-        upgrades: {
-            2: { food: [I(Resource.SMOKED_FISH, 8)], daily: [I(Resource.FUR_COAT, 6)], luxury: [], build: [I(Resource.TIMBER, 10)] },
-            3: { food: [I(Resource.REINDEER_MEAT, 10)], daily: [I(Resource.WHALE_OIL, 8)], luxury: [I(Resource.RUM, 8)], build: [I(Resource.BRICK, 15)] },
-        },
-    },
-}
+// House-upgrade baskets & per-city profiles live in ./config/cities.config.
 
 function profileFor(cityType?: CityName): CityProfile {
     return CITY_PROFILES[cityType ?? CityName.ANRELIA] ?? CITY_PROFILES[CityName.ANRELIA]
@@ -1098,5 +752,57 @@ export function GetUpgradeCost(targetTier: number, cityType?: CityName): Upgrade
 export function GetUpgradeItems(targetTier: number, cityType?: CityName): Item[] {
     let b = GetUpgradeCost(targetTier, cityType)
     return [...b.food, ...b.daily, ...b.luxury, ...b.build]
+}
+
+
+// --- Dev-time config validation ----------------------------------------------
+// Catches the common ways the building/city tables drift out of sync as content
+// is added: a recipe ingredient nothing produces, a house need / upgrade good
+// nothing produces, a BuildingType with no def, or a def with no icon. Returns a
+// list of human-readable problems (empty when the config is sound). Call once at
+// startup in dev (see StateService) — it's pure and side-effect free.
+export function ValidateConfig(): string[] {
+    const problems: string[] = []
+
+    // Every resource produced by some building recipe (raw extractors included —
+    // they have an `out` and no `in`).
+    const produced = new Set<Resource>()
+    for (const [, def] of DEF_ENTRIES) {
+        for (const p of def.recipe?.out ?? []) produced.add(p.type)
+    }
+
+    // Recipe ingredients (plus coal for coal-fired recipes) must have a producer.
+    for (const [type, def] of DEF_ENTRIES) {
+        const ins = [
+            ...(def.recipe?.in ?? []).map(i => i.type),
+            ...(def.recipe?.coal ? [Resource.COAL] : []),
+        ]
+        for (const r of ins) {
+            if (!produced.has(r)) problems.push(`${type}: ingredient "${r}" is produced by no building`)
+        }
+    }
+
+    // House consumption needs and upgrade-basket goods must have a producer.
+    for (const cityType of Object.values(CityName)) {
+        const profile = CITY_PROFILES[cityType]
+        for (const n of profile.needs) {
+            if (!produced.has(n.resource)) problems.push(`${cityType}: need "${n.resource}" is produced by no building`)
+        }
+        for (const [tier, basket] of Object.entries(profile.upgrades)) {
+            for (const it of [...basket.food, ...basket.daily, ...basket.luxury, ...basket.build]) {
+                if (!produced.has(it.type)) problems.push(`${cityType} upgrade T${tier}: good "${it.type}" is produced by no building`)
+            }
+        }
+    }
+
+    // Every BuildingType (except the Delete tool) needs a def with an icon.
+    for (const type of Object.values(BuildingType)) {
+        if (type === BuildingType.DELETE) continue
+        const def = BUILDING_DEFS[type]
+        if (!def) { problems.push(`${type}: has no BUILDING_DEFS entry`); continue }
+        if (!def.icon) problems.push(`${type}: has no icon`)
+    }
+
+    return problems
 }
 

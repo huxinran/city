@@ -10,7 +10,7 @@ export const BUILDING_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.ORANGE_ORCHARD]:        'lucideApple',
     [BuildingType.CABBAGE_PATCH]:         'lucideSalad',
     [BuildingType.PIG_FARM]:              'lucidePiggyBank',
-    [BuildingType.DIARY_FARM]:            'lucideMilk',
+    [BuildingType.DAIRY_FARM]:            'lucideMilk',
     [BuildingType.SHEEP_FARM]:            'lucideScissors',
     [BuildingType.FISHERY]:               'lucideHook',
     [BuildingType.POTATO_FARM]:           'lucideShovel',
@@ -55,12 +55,12 @@ export const BUILDING_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.CREAMERY]:              'lucideMilk',
     [BuildingType.POTTERY_SHOP]:          'lucideWeight',
     [BuildingType.BRANDY_DISTILLERY]:     'lucideFlaskConical',
-    [BuildingType.CANDLE_Manufactory]:    'lucideSparkle',
+    [BuildingType.CANDLE_MANUFACTORY]:    'lucideSparkle',
     [BuildingType.GLASSWORK]:             'lucideGlassWater',
     [BuildingType.GLAZIER]:               'lucideAppWindow',
     [BuildingType.STEELWORK]:             'lucideHammer',
     [BuildingType.SAWMILL]:               'lucideAxe',
-    [BuildingType.BRICKYARY]:             'lucideFactory',
+    [BuildingType.BRICKYARD]:             'lucideFactory',
     [BuildingType.MASON_SHOP]:            'lucideMountain',
     [BuildingType.CONCRETE_PLANT]:        'lucideFactory',
     [BuildingType.SCULPTOR]:              'lucideAxe',
@@ -115,12 +115,12 @@ export const WORKSHOP_PRODUCT_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.CREAMERY]:           'lucideEggFried',      // dairy product
     [BuildingType.POTTERY_SHOP]:       'lucideCookingPot',    // pottery vessel
     [BuildingType.BRANDY_DISTILLERY]:  'lucideWine',          // brandy glass
-    [BuildingType.CANDLE_Manufactory]: 'lucideWandSparkles',  // lit candle
+    [BuildingType.CANDLE_MANUFACTORY]: 'lucideWandSparkles',  // lit candle
     [BuildingType.GLASSWORK]:          'lucideGlasses',       // glass product
     [BuildingType.GLAZIER]:            'lucideAppWindow',     // window
     [BuildingType.STEELWORK]:          'lucideWeight',        // steel ingot
     [BuildingType.SAWMILL]:            'lucideTreeDeciduous', // timber
-    [BuildingType.BRICKYARY]:          'lucideBrickWall',     // fired brick
+    [BuildingType.BRICKYARD]:          'lucideBrickWall',     // fired brick
     [BuildingType.MASON_SHOP]:         'lucideMountainSnow',  // hewn slate
     [BuildingType.CONCRETE_PLANT]:     'lucideBrickWall',     // concrete
     [BuildingType.SCULPTOR]:           'lucideCrown',         // statue
@@ -158,7 +158,7 @@ const BUILDING_IMAGE_SLUGS: { [key: string]: string } = {
     [BuildingType.ORANGE_ORCHARD]:        'orange-orchard',
     [BuildingType.CABBAGE_PATCH]:         'cabbage-patch',
     [BuildingType.PIG_FARM]:              'pig-farm',
-    [BuildingType.DIARY_FARM]:            'dairy-farm',
+    [BuildingType.DAIRY_FARM]:            'dairy-farm',
     [BuildingType.SHEEP_FARM]:            'sheep-farm',
     [BuildingType.FISHERY]:               'fishery',
     [BuildingType.POTATO_FARM]:           'potato-farm',
@@ -203,12 +203,12 @@ const BUILDING_IMAGE_SLUGS: { [key: string]: string } = {
     [BuildingType.CREAMERY]:              'creamery',
     [BuildingType.POTTERY_SHOP]:          'pottery-shop',
     [BuildingType.BRANDY_DISTILLERY]:     'brandy-distillery',
-    [BuildingType.CANDLE_Manufactory]:    'candle-manufactory',
+    [BuildingType.CANDLE_MANUFACTORY]:    'candle-manufactory',
     [BuildingType.GLASSWORK]:             'glassworks',
     [BuildingType.GLAZIER]:               'glazier',
     [BuildingType.STEELWORK]:             'steelworks',
     [BuildingType.SAWMILL]:               'sawmill',
-    [BuildingType.BRICKYARY]:             'brickyard',
+    [BuildingType.BRICKYARD]:             'brickyard',
     [BuildingType.MASON_SHOP]:            'mason-shop',
     [BuildingType.CONCRETE_PLANT]:        'concrete-plant',
     [BuildingType.SCULPTOR]:              'sculptor',
@@ -251,7 +251,7 @@ const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
     [BuildingType.ORANGE_ORCHARD]: 'orange.png',
     [BuildingType.CABBAGE_PATCH]: 'lettuce.png',
     [BuildingType.PIG_FARM]: 'pig.png',
-    [BuildingType.DIARY_FARM]: 'cow.png',
+    [BuildingType.DAIRY_FARM]: 'cow.png',
     [BuildingType.SHEEP_FARM]: 'sheep.png',
     [BuildingType.FISHERY]: 'fish.png',
     [BuildingType.POTATO_FARM]: 'potato.png',
@@ -294,12 +294,12 @@ const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
     [BuildingType.CREAMERY]: 'cheese.png',
     [BuildingType.POTTERY_SHOP]: 'pottery.png',
     [BuildingType.BRANDY_DISTILLERY]: 'brandy.png',
-    [BuildingType.CANDLE_Manufactory]: 'candle.png',
+    [BuildingType.CANDLE_MANUFACTORY]: 'candle.png',
     [BuildingType.GLASSWORK]: 'glass.png',
     [BuildingType.GLAZIER]: 'window.png',
     [BuildingType.STEELWORK]: 'steel.png',
     [BuildingType.SAWMILL]: 'timber.png',
-    [BuildingType.BRICKYARY]: 'brick.png',
+    [BuildingType.BRICKYARD]: 'brick.png',
     [BuildingType.MASON_SHOP]: 'slate.png',
     [BuildingType.CONCRETE_PLANT]: 'concrete.png',
     [BuildingType.SCULPTOR]: 'marble-statue.png',
