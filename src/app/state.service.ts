@@ -141,6 +141,19 @@ export class StateService {
     this.ClearFeatureType()
   }
 
+  // Cancel everything currently selected: the active build/terrain/feature paint
+  // tool, an in-progress road draw, a pending building move, and the focused-tile
+  // outline. Bound to right-click on the map so one click clears any selection.
+  public Deselect() {
+    this.state.build_type = undefined
+    this.state.terrain_type = undefined
+    this.state.feature_type = undefined
+    this.road_start = undefined
+    this.move_source = undefined
+    if (this.state.current_city) this.state.current_city.focus_tile = undefined
+    this.bumpMap()
+  }
+
   // Handle a click on a map tile, applying whichever paint mode is active
   // (build / feature / terrain) or selecting the tile. Relocated here from the
   // per-tile component so the canvas map can drive it from a single hit test.

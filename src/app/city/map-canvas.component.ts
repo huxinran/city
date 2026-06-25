@@ -26,6 +26,13 @@ const MINE_CAMP_ICON = 'assets/used/buildings/mine-camp.png';
 const MAP_TILE_BASE = 'assets/used/map-tiles/';
 const TERRAIN_OBJECT_BASE = 'assets/used/terrain/';
 
+// Cursor shown while the Delete tool is active: the shovel icon, hinting "dig
+// this out". The hotspot (6 34) is the blade tip at the bottom-left, so the tile
+// that gets removed is the one under the blade. The 40px PNG is a downscale of
+// the Delete tool icon (assets/used/buildings/delete.png) — browsers cap cursor
+// images at ~128px, so the full-size art can't be used directly.
+const SHOVEL_CURSOR = `url("assets/used/cursors/shovel.png") 6 34, crosshair`;
+
 // Road auto-tiling. A road's look depends on which of its 4 orthogonal
 // neighbours are also roads, encoded as a bitmask N=1, E=2, S=4, W=8. Rather
 // than draw all 16 combinations, six base sprites (in a fixed canonical
@@ -110,7 +117,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   constructor() {
     // Repaint whenever a user edit or a camera pan/zoom happens. (Reading the
     // signals inside the effect is what subscribes us to them.)
-    effect(() => { this.state.mapVersion(); this.state.cameraVersion(); this.requestRedraw(); });
+    effect(() => { this.state.mapVersion(); this.state.cameraVersion(); this.requestRedraw(); this.updateCursor(); });
   }
 
   ngOnInit() {
@@ -128,6 +135,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     });
     this.ctx = this.canvas.getContext('2d')!;
     this.canvas.addEventListener('click', e => this.onClick(e));
+    this.canvas.addEventListener('contextmenu', e => this.onContextMenu(e));
     this.canvas.addEventListener('dragstart', e => this.onDragStart(e));
     this.canvas.addEventListener('dragend', () => this.onDragEnd());
     this.canvas.addEventListener('wheel', e => this.onWheel(e), { passive: false });
@@ -164,6 +172,15 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     this.state.bumpCamera();
   }
 
+  // Show the shovel cursor while the Delete tool is selected, plain otherwise.
+  // Driven by the same effect as the repaint, since selecting a tool bumps
+  // mapVersion. Guarded because the effect can fire before the canvas exists.
+  private updateCursor() {
+    if (!this.canvas) return;
+    const del = this.state.state.build_type === BuildingType.DELETE;
+    this.canvas.style.cursor = del ? SHOVEL_CURSOR : '';
+  }
+
   private updateDraggable(e: MouseEvent) {
     const movable = !!this.movableAnchor(e.clientX, e.clientY);
     if (this.canvas.draggable !== movable) this.canvas.draggable = movable;
@@ -194,6 +211,14 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     const pos = this.tileAt(e.clientX, e.clientY);
     if (!pos) return;
     this.state.HandleTileClick(this.state.GetTile(this.city, pos.i, pos.j));
+  }
+
+  // Right-click anywhere on the map cancels whatever is selected (build tool,
+  // in-progress road, pending move, focused building) and suppresses the
+  // browser's context menu.
+  private onContextMenu(e: MouseEvent) {
+    e.preventDefault();
+    this.state.Deselect();
   }
 
   // Start moving an already-placed building. Mirrors the old per-tile
