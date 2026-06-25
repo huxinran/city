@@ -141,7 +141,7 @@ Columns: `core name` | `actual filename` | `in use?` | `note`
 |-----------|----------------|--------------|--------|
 | avocado | avocado.png | reserve/avocado/ | new |
 | black-bean | black-bean.png | reserve/black-bean/ | new |
-| blackberry | blackberry-detailed-v2.png | reserve/blackberry/ | revised berry cluster, 3 berries, no leaves, white background |
+| blackberry | blackberry-detailed-v4.png | reserve/blackberry/ | revised clear blackberry cluster, 3 berries, no leaves, white background |
 | black-pepper | black-pepper-v3.png | reserve/black-pepper/ | new (v1–v3) |
 | blueberry | blueberry-detailed-v1.png | reserve/blueberry/ | existing berry cluster reference |
 | bok-choy | bok-choy.png | reserve/bok-choy/ | new |
@@ -182,7 +182,7 @@ Columns: `core name` | `actual filename` | `in use?` | `note`
 | seaweed | seaweed-v2.png | reserve/seaweed/ | new (v2 = no rope) |
 | sorghum | sorghum-v2.png | reserve/sorghum/ | new (v2 = right-pointing sheaf) |
 | spinach | spinach.png | reserve/spinach/ | new |
-| strawberry | strawberry-detailed-v2.png | reserve/strawberry/ | revised berry pair, 2 berries, no leaves, white background |
+| strawberry | strawberry-detailed-v3.png | reserve/strawberry/ | revised single classic strawberry with leafy cap, white background |
 | sugar-beet | sugar-beet-v2.png | reserve/sugar-beet/ | new (v2 = red beet root) |
 | sunflower | sunflower.png | reserve/sunflower/ | new |
 | taro | taro.png | reserve/taro/ | new |

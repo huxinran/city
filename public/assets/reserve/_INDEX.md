@@ -586,13 +586,19 @@ Flattened backup assets grouped by object. `new path` ← `original path`.
 - `strawberry/strawberry-detailed-v1-source.png` <- generated 4-berry cluster original, white background
 - `strawberry/strawberry-detailed-v1.png` <- generated 4-berry cluster project copy, white background
 - `strawberry/strawberry-detailed-v2-source.png` <- generated revised 2-berry pair original, no leaves, white background
-- `strawberry/strawberry-detailed-v2.png` <- generated revised 2-berry pair project copy, no leaves, white background; accepted/latest
+- `strawberry/strawberry-detailed-v2.png` <- generated revised 2-berry pair project copy, no leaves, white background
+- `strawberry/strawberry-detailed-v3-source.png` <- generated single classic strawberry original, leafy cap, white background
+- `strawberry/strawberry-detailed-v3.png` <- generated single classic strawberry project copy, leafy cap, white background; accepted/latest
 - `blueberry/blueberry-detailed-v1-source.png` <- existing generated blueberry cluster source
 - `blueberry/blueberry-detailed-v1.png` <- existing generated blueberry cluster reference; accepted/latest
 - `blackberry/blackberry-detailed-v1-source.png` <- generated 4-berry cluster original, white background
 - `blackberry/blackberry-detailed-v1.png` <- generated 4-berry cluster project copy, white background
 - `blackberry/blackberry-detailed-v2-source.png` <- generated revised 3-berry cluster original, no leaves, white background
-- `blackberry/blackberry-detailed-v2.png` <- generated revised 3-berry cluster project copy, no leaves, white background; accepted/latest
+- `blackberry/blackberry-detailed-v2.png` <- generated revised 3-berry cluster project copy, no leaves, white background
+- `blackberry/blackberry-detailed-v3-source.png` <- generated single elongated blackberry attempt, no leaves, white background
+- `blackberry/blackberry-detailed-v3.png` <- generated single elongated blackberry attempt, no leaves, white background
+- `blackberry/blackberry-detailed-v4-source.png` <- generated clearer 3-blackberry cluster original, no leaves, white background
+- `blackberry/blackberry-detailed-v4.png` <- generated clearer 3-blackberry cluster project copy, no leaves, white background; accepted/latest
 - `raspberry/raspberry-detailed-v1-source.png` <- generated 4-berry cluster original, white background
 - `raspberry/raspberry-detailed-v1.png` <- generated 4-berry cluster project copy, white background
 - `raspberry/raspberry-detailed-v2-source.png` <- generated revised 3-berry cluster original, no leaves, white background

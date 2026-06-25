@@ -585,7 +585,7 @@ export class StateService {
   public UpdateService(city: City) {
     for (let t of city.services) {
       let service = t.building!.service!
-      let neighbours = FindNeighbours(city, t, t.building!.service!.radius)
+      let neighbours = FindNeighbours(city, t, service.radius)
       for (let n of neighbours) {
         ProvideService(n, service.need_provided)
       }
@@ -643,7 +643,7 @@ export class StateService {
         }
         let techMult = this.getTechSpeedMultiplier(city, t.building!.type)
         production.progress = Math.min(
-          production.progress + production.full_efficiency * production.worker / production.worker_needed * (production.boost_multiplier ?? 1.0) * techMult * BALANCE.productionSpeed,
+          production.progress + production.full_efficiency * production.worker / production.worker_needed * production.boost_multiplier * techMult * BALANCE.productionSpeed,
           100.0
         )
         if (production.progress == 100.0) {
@@ -660,11 +660,11 @@ export class StateService {
   public UpdateHouses(city: City) {
     for (let t of city.houses) {
       let house = t.building!.house!
-      for (let n of house.resource_needs!) {
+      for (let n of house.resource_needs) {
         let cnt = CountItem(house.storage, n.type)
         // Only pull from city storage when nearly empty, and only a small top-up
         // so city stock spreads evenly across many houses rather than first-come gets all.
-        if (cnt! <= 0.1) {
+        if (cnt <= 0.1) {
           Transfer(city.storage, house.storage, [new Item(n.type, 0.2)])
         }
         n.satisfied = TakeItems(house.storage, [new Item(n.type, 0.002)])
@@ -726,55 +726,54 @@ export class StateService {
   }
 
   public HandleShipTasks(city: City) {
-    let i = 0
-    while (i < city.shipping_tasks.length) {
-      if (city.carts.length == 0) {
-        break
-      }
+    if (city.carts.length === 0) return
 
-      let task = city.shipping_tasks[i]
+    // One road BFS per distinct destination per tick — a single building often
+    // queues several tasks (deliver / pick-up / stock) to the same tile.
+    const fieldCache = new Map<Tile, ReturnType<typeof RoadDistanceField>>()
+    const fieldFor = (dst: Tile) => {
+      let field = fieldCache.get(dst)
+      if (!field) {
+        field = RoadDistanceField(city, dst)
+        fieldCache.set(dst, field)
+      }
+      return field
+    }
+
+    // Assign each task to the nearest idle cart; tasks that can't be served this
+    // tick are carried over. Single rebuild of the list instead of O(n²) splices.
+    const remaining: ShippingTask[] = []
+    for (const task of city.shipping_tasks) {
       // Drop tasks whose destination building has been removed.
-      if (!task.dst.building) {
-        city.shipping_tasks = [...city.shipping_tasks.slice(0, i), ...city.shipping_tasks.slice(i + 1)]
-        continue
-      }
+      if (!task.dst.building) continue
+      // Out of idle carts: carry this and every later task to the next tick.
+      if (city.carts.length === 0) { remaining.push(task); continue }
 
-      // Find the closest warehouse reachable by road.
-      let field = RoadDistanceField(city, task.dst)
+      const field = fieldFor(task.dst)
       let min_dist = Infinity
-      let min_idx = undefined
+      let min_idx = -1
       for (let j = 0; j < city.carts.length; ++j) {
-        let dist = WarehouseRoadDistance(city, field, city.carts[j])
-        if (dist < min_dist) {
-          min_dist = dist
-          min_idx = j
-        }
+        const dist = WarehouseRoadDistance(city, field, city.carts[j])
+        if (dist < min_dist) { min_dist = dist; min_idx = j }
       }
       // No road path to any warehouse yet: leave the task pending.
-      if (min_idx == undefined || min_dist == Infinity) {
-        ++i
-        continue
+      if (min_idx < 0 || min_dist === Infinity) { remaining.push(task); continue }
+
+      // Outbound tasks must pull their cargo from city storage first.
+      if (task.type === ShippingTaskType.DELIVERING || task.type === ShippingTaskType.STOCKING) {
+        if (!TakeItems(city.storage, task.cargo)) { remaining.push(task); continue }
       }
 
-      if (task.type == ShippingTaskType.DELIVERING || task.type == ShippingTaskType.STOCKING) {
-        if (!TakeItems(city.storage, task.cargo)) {
-          ++i
-          continue
-        }
-      }
-      let cart = city.carts[min_idx]
+      const warehouse = city.carts[min_idx]
       task.distance = min_dist
       task.progress = 0
-      task.path = BuildRoadPath(city, field, cart, task.dst)
-      for (let c of cart.building!.warehouse!.carts) {
-        if (c.task == undefined) {
-          c.task = task
-          break
-        }
+      task.path = BuildRoadPath(city, field, warehouse, task.dst)
+      for (const c of warehouse.building!.warehouse!.carts) {
+        if (c.task === undefined) { c.task = task; break }
       }
-      city.shipping_tasks = [...city.shipping_tasks.slice(0, i), ...city.shipping_tasks.slice(i + 1)]
-      city.carts = [...city.carts.slice(0, min_idx), ...city.carts.slice(min_idx + 1)]
+      city.carts.splice(min_idx, 1)
     }
+    city.shipping_tasks = remaining
   }
 
   public UpdatePopulation(city: City) {
@@ -867,15 +866,6 @@ public GetCity(cities: City[], city_name: CityName) {
 }
 
 
-
-public GetWorkerNeeded(population: Population, tier: Resident, num: number) {
-    for (let t of population.tiers) {
-        if (t.tier == tier) {
-           return t.needed
-        }
-    }
-    return 0
-}
 
   public UpdateEmployment(city: City) {
     let population = new Population()

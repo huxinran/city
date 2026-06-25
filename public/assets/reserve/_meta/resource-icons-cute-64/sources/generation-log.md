@@ -205,3 +205,43 @@ Notes for v4 batch: latest horse generation was intentionally not copied into th
   - Source copy: `public/assets/reserve/cobblestone-road/cobblestone-road-light-source-v3.png`
   - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019ef24f-2029-7ff0-8a80-079f3d1492a3/ig_0f2ec3cee29dffba016a39fde8396c8190a63df05980d33149.png`
   - Notes: output tile verified at 48x48 pixels. No app mapping, runtime manifest wiring, or code integration.
+
+- `knight-armor-v1.png`
+  - Request: create a resource of armor, like knight armor.
+  - Saved path: `public/assets/reserve/knight-armor/knight-armor-v1.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019efced-b6da-74b1-8196-dfdc7a5e0685/ig_00ffe6ddb9953064016a3ca7999b3481939bcb147c87f03f10.png`
+  - Prompt: cute cartoon-ish pixel art knight armor resource asset for an old-time cozy farming/city-building game; one empty suit torso armor/breastplate with rounded shoulder pauldrons, leather straps, tiny brass rivets, silver-blue steel, warm cream highlights, dark brown outline, no person, no sword, no shield, no text.
+  - Notes: saved as generated; visually inspected after copy. Output is 1254x1254 RGB with a baked checkerboard background rather than true alpha. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `cotton-cloth-v2.png`
+  - Request: create cotton cloth in a reel; revised after feedback to remove the wood thing and make it just fabric in a roll.
+  - Saved path: `public/assets/reserve/cotton-cloth/cotton-cloth-v2.png`
+  - Rejected/generated earlier candidate: `C:/Users/Xinran/.codex/generated_images/019efced-b6da-74b1-8196-dfdc7a5e0685/ig_0ce1d9329f66a528016a3ca91d67b8819499cc62c825e51c1c.png` - had visible wooden spool ends.
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019efced-b6da-74b1-8196-dfdc7a5e0685/ig_0a7511fd4b406677016a3ca9f064a08194ab9091e25b65243b.png`
+  - Prompt: cute cartoon-ish pixel art cotton cloth roll resource asset; one matte off-white cotton fabric roll/bolt only, soft cylinder with loose cloth flap, woven cotton texture, folded cloth edges, no wood, no wooden spool, no visible core, no extra objects.
+  - Notes: saved as generated; visually inspected after copy. Output is 1254x1254 RGB with a baked checkerboard background rather than true alpha. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `silk-v2.png`
+  - Request: create silk in a reel; revised after feedback to remove the wood thing and make it just fabric in a roll.
+  - Saved path: `public/assets/reserve/silk/silk-v2.png`
+  - Rejected/generated earlier candidate: `C:/Users/Xinran/.codex/generated_images/019efced-b6da-74b1-8196-dfdc7a5e0685/ig_0ce1d9329f66a528016a3ca96f5358819480bfa7db501c2057.png` - had visible wooden spool ends.
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019efced-b6da-74b1-8196-dfdc7a5e0685/ig_0a7511fd4b406677016a3caa27577881948a42d581775c34e0.png`
+  - Prompt: cute cartoon-ish pixel art silk roll resource asset; one glossy pearl pink/champagne silk fabric roll/bolt only, soft cylinder with loose flowing cloth flap, smooth satin folds, no wood, no wooden spool, no visible core, no extra objects.
+  - Notes: saved as generated; visually inspected after copy. Output is 1254x1254 RGB with a baked checkerboard background rather than true alpha. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `cotton-cloth-v3.png`
+  - Request: make the roll flatter so it looks real, use a solid contrast color background, then revise cotton because the draped cloth attempt was clearly bad.
+  - Saved path: `public/assets/reserve/cotton-cloth/cotton-cloth-v3.png`
+  - Rejected/generated candidates:
+    - `C:/Users/Xinran/.codex/generated_images/019efced-b6da-74b1-8196-dfdc7a5e0685/ig_0cb0de0100934c0b016a3cacf7d3708195b16a53e6b5776288.png` - flatter but lumpy cotton with awkward drape.
+    - `C:/Users/Xinran/.codex/generated_images/019efced-b6da-74b1-8196-dfdc7a5e0685/ig_01940b7cf575bc40016a3cadf642cc819481e62282b27d5345.png` - better drape but still had hollow curled flap openings.
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019efced-b6da-74b1-8196-dfdc7a5e0685/ig_01940b7cf575bc40016a3cae4926988194907eb987dc3ff9f4.png`
+  - Prompt: clean low broad cotton fabric bolt, flattened oval rolled end, simple flat loose flap, matte off-white woven cotton, no puffy stacked upper roll, no hollow flap openings, no yellow/gold color, no wood, solid muted teal contrast background.
+  - Notes: saved as generated; visually inspected after copy. Output is 1254x1254 RGB. Generator rendered a teal contrast background with slight painted falloff despite solid-background prompting. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- `silk-v3.png`
+  - Request: make the roll flatter, use a solid contrast color background, then keep the silk roll because it was accepted as good.
+  - Saved path: `public/assets/reserve/silk/silk-v3.png`
+  - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019efced-b6da-74b1-8196-dfdc7a5e0685/ig_0cb0de0100934c0b016a3cad3bf9248195a588265c216a43d2.png`
+  - Prompt: flatter realistic low silk fabric bolt, flattened oval rolled end, visible soft draping like fabric hanging forward in smooth folded layers, glossy pale pink/champagne silk, no wood, solid muted teal contrast background.
+  - Notes: user accepted this silk direction. Saved as generated; visually inspected after copy. Output is 1254x1254 RGB. Generator rendered a teal contrast background with slight painted falloff despite solid-background prompting. No background cleanup, app mapping, runtime manifest wiring, or code integration.

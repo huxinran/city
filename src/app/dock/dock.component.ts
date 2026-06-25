@@ -6,13 +6,16 @@ import { Resource } from '../sim/types'
 import { Route, Ship } from '../sim/building';
 import { City } from '../sim/city';
 import { repaintOn } from '../live';
+import { GetCityCrestSrc } from '../city-icons';
+import { GetResourceIconSrc, GetResourceEmoji } from '../resource-icons';
+import { IconComponent } from '../icon/icon.component';
 
 import { FormsModule } from '@angular/forms';
 
 
 @Component({
   selector: 'app-dock',
-  imports: [FormsModule],
+  imports: [FormsModule, IconComponent],
   templateUrl: './dock.component.html',
   styleUrl: './dock.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -66,4 +69,8 @@ export class DockComponent {
   progressPct(route: Route): number {
     return Math.round(route.progress * 100)
   }
+
+  crest(name: string): string | undefined { return GetCityCrestSrc(name) }
+  resSrc(type: Resource): string | undefined { return GetResourceIconSrc(type) }
+  resEmoji(type: Resource): string { return GetResourceEmoji(type) }
 }

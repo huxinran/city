@@ -22,9 +22,20 @@
   <tbody>
     @for (entry of allRoutes; track $index) {
       <tr>
-        <td>{{entry.route.from}}</td>
-        <td>{{entry.route.to}}</td>
-        <td>{{entry.route.resource}}</td>
+        <td [title]="entry.route.from">
+          @if (crest(entry.route.from); as src) {
+            <img class="route-crest" [src]="src" [alt]="entry.route.from">
+          } @else { {{entry.route.from}} }
+        </td>
+        <td [title]="entry.route.to">
+          @if (crest(entry.route.to); as src) {
+            <img class="route-crest" [src]="src" [alt]="entry.route.to">
+          } @else { {{entry.route.to}} }
+        </td>
+        <td [title]="entry.route.resource">
+          <app-icon [src]="resSrc(entry.route.resource)" [fallback]="resEmoji(entry.route.resource)"
+                    [alt]="entry.route.resource" [size]="20"></app-icon>
+        </td>
         <td>{{entry.route.amount}}</td>
         <td>
           @if (entry.route.ship) {

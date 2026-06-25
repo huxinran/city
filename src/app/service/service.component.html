@@ -1,6 +1,10 @@
 <div class="row">
     <span class="key">Provides</span>
-    <span class="badge on">{{tile.building!.service!.need_provided}}</span>
+    <span class="val" [title]="tile.building!.service!.need_provided">
+        <app-icon [src]="serviceSrc(tile.building!.service!.need_provided)"
+                  [fallback]="serviceEmoji(tile.building!.service!.need_provided)"
+                  [alt]="tile.building!.service!.need_provided" [size]="22"></app-icon>
+    </span>
 </div>
 <div class="row">
     <span class="key">Radius</span>

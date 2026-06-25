@@ -283,3 +283,27 @@ Validation:
 - Visually inspected all three v2 generated assets.
 - Verified all three v2 project copies are 1254x1254.
 - Verified the v2 project copies are RGB with opaque white corners; no alpha was generated.
+
+## Berry revision follow-up 20260624
+
+Follow-up feedback: raspberry v2 is accepted; strawberry v2 was poor and should become
+one cute typical strawberry with a leafy cap; blackberry v3 was not acceptable and
+needed to read more clearly as blackberry.
+
+Generated project copies:
+
+- Strawberry: `public/assets/reserve/strawberry/strawberry-detailed-v3-source.png`, `public/assets/reserve/strawberry/strawberry-detailed-v3.png` - accepted/latest single classic strawberry with leafy cap.
+- Blackberry: `public/assets/reserve/blackberry/blackberry-detailed-v3-source.png`, `public/assets/reserve/blackberry/blackberry-detailed-v3.png` - rejected single elongated attempt, too monolithic.
+- Blackberry: `public/assets/reserve/blackberry/blackberry-detailed-v4-source.png`, `public/assets/reserve/blackberry/blackberry-detailed-v4.png` - current preferred 3-blackberry cluster, no leaves.
+
+Source cache originals:
+
+- Strawberry v3: `C:/Users/Xinran/.codex/generated_images/019efcd2-7e97-7881-a680-7c32ac2b5be7/ig_0910c3b92d05bde1016a3ca47bc71881978ce2f384c2f70f64.png`
+- Blackberry v3: `C:/Users/Xinran/.codex/generated_images/019efcd2-7e97-7881-a680-7c32ac2b5be7/ig_0910c3b92d05bde1016a3ca43b6dd08197a435ce088f7ccec6.png`
+- Blackberry v4: `C:/Users/Xinran/.codex/generated_images/019efcd2-7e97-7881-a680-7c32ac2b5be7/ig_0ee6fe1f93a1d82b016a3ca642ef7c8194a6815fa817e097bc.png`
+
+Validation:
+
+- Visually inspected strawberry v3 and blackberry v4 after saving project copies.
+- Verified strawberry v3, blackberry v4, and accepted raspberry v2 are each 1254x1254.
+- Verified these preferred project copies are RGB with opaque white corners; no alpha was generated.

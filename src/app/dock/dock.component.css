@@ -45,6 +45,14 @@
     white-space: nowrap;
 }
 
+.route-crest {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    vertical-align: middle;
+    display: inline-block;
+}
+
 .btn-danger {
     background: #e53935;
     color: white;

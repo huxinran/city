@@ -24,8 +24,54 @@ const WORKSHOP_ICON = 'assets/used/buildings/workshop.png';
 const MINE_CAMP_ICON = 'assets/used/buildings/mine-camp.png';
 
 const MAP_TILE_BASE = 'assets/used/map-tiles/';
-const ROAD_TILE_ASSET = MAP_TILE_BASE + 'cobblestone-road-light-48-v3.png';
 const TERRAIN_OBJECT_BASE = 'assets/used/terrain/';
+
+// Road auto-tiling. A road's look depends on which of its 4 orthogonal
+// neighbours are also roads, encoded as a bitmask N=1, E=2, S=4, W=8. Rather
+// than draw all 16 combinations, six base sprites (in a fixed canonical
+// orientation) are reused for every combination via 90° clockwise rotation.
+// Drop transparent PNGs here so the road sits ON TOP of the terrain:
+//   isolated.png  no connections (a lone node / patch)
+//   end.png       connects N only  — road reaches the TOP edge, capped
+//   straight.png  connects N+S     — vertical road, top edge to bottom edge
+//   corner.png    connects N+E     — elbow from the TOP edge to the RIGHT edge
+//   tee.png       connects N+E+S   — T-junction, flat (closed) side on the LEFT
+//   cross.png     connects N+E+S+W — four-way
+// Each sprite's road should reach the tile edge at the midpoint so neighbours
+// line up seamlessly. Square + transparent (e.g. 64x64, like the terrain set).
+const ROAD_BASE = 'assets/used/map-tiles/road/';
+const ROAD_SHAPES = {
+  isolated: ROAD_BASE + 'isolated.png',
+  end:      ROAD_BASE + 'end.png',
+  straight: ROAD_BASE + 'straight.png',
+  corner:   ROAD_BASE + 'corner.png',
+  tee:      ROAD_BASE + 'tee.png',
+  cross:    ROAD_BASE + 'cross.png',
+};
+
+// neighbour-mask -> { src, rot } where rot is the number of 90° CW rotations to
+// apply. Built once from the six canonical shapes; rotating a shape through its
+// distinct orientations covers all 16 masks.
+const ROAD_TILE_BY_MASK = ((): Map<number, { src: string, rot: number }> => {
+  const rotCW = (m: number) => ((m << 1) | (m >> 3)) & 0xF; // N->E->S->W->N
+  const bases: [number, string][] = [
+    [0b0000, ROAD_SHAPES.isolated], // -
+    [0b0001, ROAD_SHAPES.end],      // N
+    [0b0101, ROAD_SHAPES.straight], // N+S
+    [0b0011, ROAD_SHAPES.corner],   // N+E
+    [0b0111, ROAD_SHAPES.tee],      // N+E+S
+    [0b1111, ROAD_SHAPES.cross],    // N+E+S+W
+  ];
+  const table = new Map<number, { src: string, rot: number }>();
+  for (const [canon, src] of bases) {
+    let m = canon;
+    for (let rot = 0; rot < 4; rot++) {
+      if (!table.has(m)) table.set(m, { src, rot });
+      m = rotCW(m);
+    }
+  }
+  return table;
+})();
 
 const MAP_TILE_ASSETS: { [key: string]: { file: string, color: string } } = {
   [Terrain.WATER]: { file: 'sea.png',   color: '#47c9ff' },
@@ -256,10 +302,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     const x = t.j * TILE, y = t.i * TILE, W = size * TILE, H = size * TILE;
 
     if (type === BuildingType.ROAD) {
-      this.ctx.fillStyle = '#b9b3a4';
-      this.ctx.fillRect(x, y, TILE, TILE);
-      const im = this.img(ROAD_TILE_ASSET);
-      if (ready(im)) this.ctx.drawImage(im!, x, y, TILE, TILE);
+      this.drawRoad(t, x, y);
       return;
     }
     if (IsFarmBuilding(type) && size > 1) {
@@ -278,6 +321,32 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     const im = this.img(this.artSrc(b));
     if (ready(im)) this.drawContain(im!, x + 1, y + 1, W - 2, H - 2, true);
     else this.drawEmoji(GetBuildingIcon(type), x + W / 2, y + H / 2, size * 16);
+  }
+
+  // Auto-tiled road overlay. No opaque fill — a transparent sprite is drawn over
+  // the already-painted terrain, picked + rotated from which neighbours are road
+  // so the network connects (straights, corners, T-junctions, crossroads).
+  private drawRoad(t: Tile, x: number, y: number) {
+    const pick = ROAD_TILE_BY_MASK.get(this.roadMask(t.i, t.j))!;
+    const im = this.img(pick.src);
+    if (!ready(im)) return; // terrain shows through until the sprite loads
+    const ctx = this.ctx;
+    if (pick.rot === 0) { ctx.drawImage(im!, x, y, TILE, TILE); return; }
+    ctx.save();
+    ctx.translate(x + TILE / 2, y + TILE / 2);
+    ctx.rotate(pick.rot * Math.PI / 2);
+    ctx.drawImage(im!, -TILE / 2, -TILE / 2, TILE, TILE);
+    ctx.restore();
+  }
+
+  // Bitmask of which orthogonal neighbours are also roads: N=1, E=2, S=4, W=8.
+  private roadMask(i: number, j: number): number {
+    const city = this.city;
+    const isRoad = (ii: number, jj: number) =>
+      ii >= 0 && jj >= 0 && ii < city.h && jj < city.w &&
+      city.tiles[ii * city.w + jj].building?.type === BuildingType.ROAD;
+    return (isRoad(i - 1, j) ? 1 : 0) | (isRoad(i, j + 1) ? 2 : 0)
+         | (isRoad(i + 1, j) ? 4 : 0) | (isRoad(i, j - 1) ? 8 : 0);
   }
 
   // Background art filling the footprint, with product icon(s) overlaid:
