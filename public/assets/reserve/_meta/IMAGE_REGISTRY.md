@@ -131,6 +131,99 @@ Columns: `core name` | `actual filename` | `in use?` | `note`
 | wine-barrel-dark | wine-barrel-v3.png | reserve/wine-barrel/ | barrel depiction v3 |
 | wine-classic | wine-v1.png | reserve/wine/ | earlier bottle design |
 
+### Produce/Resource batch 2026-06-24 — `reserve/<slug>/` (chunky pixel art, not yet in use)
+
+47 large pixel-art resource icons generated 2026-06-24. Each `<slug>/` folder also keeps a
+`*-before-white-bg-removal-20260624.png` raw original alongside the keyed PNG.
+"Preferred file" is the accepted/latest version per the generation log.
+
+| Core name | Preferred file | Reserve path | Status |
+|-----------|----------------|--------------|--------|
+| avocado | avocado.png | reserve/avocado/ | new |
+| black-bean | black-bean.png | reserve/black-bean/ | new |
+| black-pepper | black-pepper-v3.png | reserve/black-pepper/ | new (v1–v3) |
+| bok-choy | bok-choy.png | reserve/bok-choy/ | new |
+| cabbage | cabbage.png | reserve/cabbage/ | recreation of lettuce.png (CABBAGE) |
+| cardamom | cardamom.png | reserve/cardamom/ | new |
+| carrot | carrot.png | reserve/carrot/ | new |
+| chickpea | chickpea.png | reserve/chickpea/ | new |
+| chili-pepper | chili-pepper.png | reserve/chili-pepper/ | new |
+| cinnamon | cinnamon.png | reserve/cinnamon/ | new |
+| coconut | coconut-v2.png | reserve/coconut/ | new (v2 = no leaf) |
+| coffee | coffee-v3.png | reserve/coffee/ | new (v1–v3, v3 = raw coffee berries) |
+| date | date.png | reserve/date/ | new |
+| eggplant | eggplant-v3.png | reserve/eggplant/ | new (v1–v3, whole only) |
+| fig | fig-v2.png | reserve/fig/ | new (v2) |
+| flax | flax.png | reserve/flax/ | new |
+| garlic | garlic-v2.png | reserve/garlic/ | new (v2 = no roots) |
+| grape | grape-v2.png | reserve/grape/ | recreation of grape.png |
+| hemp | hemp.png | reserve/hemp/ | new |
+| honey | honey.png | reserve/honey/ | new |
+| jute | jute.png | reserve/jute/ | new |
+| lemon | lemon-v2.png | reserve/lemon/ | new (v2) |
+| lentil | lentil.png | reserve/lentil/ | new |
+| mango | mango-v4.png | reserve/mango/ | new (v1–v4) |
+| millet | millet-v2.png | reserve/millet/ | new (v2 = right-pointing sheaf) |
+| oats | oats-v2.png | reserve/oats/ | new (v2 = right-pointing sheaf) |
+| okra | okra-v3.png | reserve/okra/ | new (v1–v3, two pods one cut) |
+| olive | olive.png | reserve/olive/ | recreation of olive.png |
+| papaya | papaya-v2.png | reserve/papaya/ | new (v2) |
+| peanut | peanut.png | reserve/peanut/ | new |
+| pineapple | pineapple-v2.png | reserve/pineapple/ | new (v2 = slight tilt) |
+| quinoa | quinoa.png | reserve/quinoa/ | new |
+| rice-plant | rice-plant-v2.png | reserve/rice-plant/ | recreation/variant of rice.png |
+| rubber | rubber-v2.png | reserve/rubber/ | recreation of rubber.png (sap bucket) |
+| saffron | saffron-v2.png | reserve/saffron/ | new (v2 = crimson threads) |
+| salmon | salmon.png | reserve/salmon/ | recreation of fish.png (FISH) |
+| seaweed | seaweed-v2.png | reserve/seaweed/ | new (v2 = no rope) |
+| sorghum | sorghum-v2.png | reserve/sorghum/ | new (v2 = right-pointing sheaf) |
+| spinach | spinach.png | reserve/spinach/ | new |
+| sugar-beet | sugar-beet-v2.png | reserve/sugar-beet/ | new (v2 = red beet root) |
+| sunflower | sunflower.png | reserve/sunflower/ | new |
+| taro | taro.png | reserve/taro/ | new |
+| tea | tea-v3.png | reserve/tea/ | new (v1–v3, fresh leaves) |
+| tofu | tofu-v4.png | reserve/tofu/ | new (v1–v4, one soft block) |
+| vanilla | vanilla.png | reserve/vanilla/ | new |
+| watermelon | watermelon-v2.png | reserve/watermelon/ | recreation of melon.png (MELON) |
+| yam | yam-v2.png | reserve/yam/ | new (v2 = full retry) |
+
+### Food/Resource batch 2026-06-24 (round 2) — `reserve/<slug>/` (chunky pixel art, not yet in use)
+
+27 more pixel-art resource icons — chain-completion and gap-fill items (proteins, baked
+goods, processed foods, missing fruit/veg/nuts). Each `<slug>/` folder also keeps a
+`*-before-white-bg-removal-20260624.png` raw original. "Preferred file" is the
+accepted/latest version per the food-resource revision log. All new (no recreations).
+
+| Core name | Preferred file | Reserve path | Note |
+|-----------|----------------|--------------|------|
+| barley | barley.png | reserve/barley/ | wheat-sheaf structure |
+| beer | beer-v2.png | reserve/beer/ | v2 = ornate mug |
+| butter | butter.png | reserve/butter/ | no board |
+| cake | cake-v2.png | reserve/cake/ | v2 = whole cake |
+| cherry | cherry.png | reserve/cherry/ | twig/stem silhouette |
+| chestnut | chestnut.png | reserve/chestnut/ | |
+| chocolate | chocolate-v2.png | reserve/chocolate/ | v2 = segmented bar |
+| crab | crab-v2.png | reserve/crab/ | v2 = less cartoon |
+| cucumber | cucumber.png | reserve/cucumber/ | |
+| hops | hops.png | reserve/hops/ | feeds beer |
+| leek | leek.png | reserve/leek/ | |
+| lime | lime.png | reserve/lime/ | |
+| lobster | lobster-v2.png | reserve/lobster/ | |
+| mushroom | mushroom.png | reserve/mushroom/ | |
+| noodles | noodles.png | reserve/noodles/ | |
+| oyster | oyster-v3.png | reserve/oyster/ | v3 = elongated shape |
+| pasta | pasta.png | reserve/pasta/ | |
+| pastry | pastry.png | reserve/pastry/ | |
+| peach | peach.png | reserve/peach/ | seam, blush, texture |
+| pear | pear.png | reserve/pear/ | speckles/detail |
+| pearl | pearl-v2.png | reserve/pearl/ | v2 = clam shell + pearl |
+| pie | pie.png | reserve/pie/ | |
+| shrimp | shrimp-v3.png | reserve/shrimp/ | v3 = curled shrimp |
+| sugar | sugar-v2.png | reserve/sugar/ | v2 = granules + cubes |
+| vinegar | vinegar.png | reserve/vinegar/ | corked amber cruet |
+| walnut | walnut.png | reserve/walnut/ | |
+| yogurt | yogurt-v2.png | reserve/yogurt/ | v2 = plain, no garnish |
+
 ---
 
 ## Building Icons — `used/buildings/`

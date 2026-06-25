@@ -400,3 +400,171 @@ Flattened backup assets grouped by object. `new path` ← `original path`.
 - `workshop/workshop-2x2-square-perspective-v1-before-white-bg-removal-202606222246.png` ← `icons/buildings/old_versions/workshop-2x2-square-perspective-v1-before-white-bg-removal-202606222246.png`
 - `workshop/workshop-2x2-square-perspective-v1.png` ← `icons/buildings/workshop-2x2-square-perspective-v1.png`
 - `workshop/workshop-2x2-stone-yard-v1.png` ← `icons/buildings/workshop-2x2-stone-yard-v1.png`
+
+## Generated produce/resource icons 20260624
+
+- `quinoa/quinoa-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `quinoa/quinoa.png` <- generated resource icon transparent final
+- `oats/oats-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `oats/oats.png` <- generated resource icon transparent final
+- `sorghum/sorghum-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `sorghum/sorghum.png` <- generated resource icon transparent final
+- `millet/millet-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `millet/millet.png` <- generated resource icon transparent final
+- `taro/taro-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `taro/taro.png` <- generated resource icon transparent final
+- `yam/yam-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `yam/yam.png` <- generated resource icon transparent final
+- `mango/mango-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `mango/mango.png` <- generated resource icon transparent final
+- `avocado/avocado-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `avocado/avocado.png` <- generated resource icon transparent final
+- `coconut/coconut-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `coconut/coconut.png` <- generated resource icon transparent final
+- `pineapple/pineapple-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `pineapple/pineapple.png` <- generated resource icon transparent final
+- `lemon/lemon-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `lemon/lemon.png` <- generated resource icon transparent final
+- `papaya/papaya-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `papaya/papaya.png` <- generated resource icon transparent final
+- `date/date-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `date/date.png` <- generated resource icon transparent final
+- `fig/fig-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `fig/fig.png` <- generated resource icon transparent final
+- `chili-pepper/chili-pepper-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `chili-pepper/chili-pepper.png` <- generated resource icon transparent final
+- `lentil/lentil-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `lentil/lentil.png` <- generated resource icon transparent final
+- `chickpea/chickpea-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `chickpea/chickpea.png` <- generated resource icon transparent final
+- `black-bean/black-bean-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `black-bean/black-bean.png` <- generated resource icon transparent final
+- `peanut/peanut-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `peanut/peanut.png` <- generated resource icon transparent final
+- `garlic/garlic-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `garlic/garlic.png` <- generated resource icon transparent final
+- `bok-choy/bok-choy-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `bok-choy/bok-choy.png` <- generated resource icon transparent final
+- `eggplant/eggplant-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `eggplant/eggplant.png` <- generated resource icon transparent final
+- `okra/okra-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `okra/okra.png` <- generated resource icon transparent final
+- `spinach/spinach-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `spinach/spinach.png` <- generated resource icon transparent final
+- `carrot/carrot-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `carrot/carrot.png` <- generated resource icon transparent final
+- `honey/honey-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `honey/honey.png` <- generated resource icon transparent final
+- `tofu/tofu-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `tofu/tofu.png` <- generated resource icon transparent final
+- `seaweed/seaweed-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `seaweed/seaweed.png` <- generated resource icon transparent final
+- `coffee/coffee-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `coffee/coffee.png` <- generated resource icon transparent final
+- `tea/tea-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `tea/tea.png` <- generated resource icon transparent final
+- `jute/jute-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `jute/jute.png` <- generated resource icon transparent final
+- `flax/flax-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `flax/flax.png` <- generated resource icon transparent final
+- `hemp/hemp-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `hemp/hemp.png` <- generated resource icon transparent final
+- `sugar-beet/sugar-beet-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `sugar-beet/sugar-beet.png` <- generated resource icon transparent final
+- `sunflower/sunflower-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `sunflower/sunflower.png` <- generated resource icon transparent final
+- `vanilla/vanilla-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `vanilla/vanilla.png` <- generated resource icon transparent final
+- `black-pepper/black-pepper-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `black-pepper/black-pepper.png` <- generated resource icon transparent final
+- `saffron/saffron-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `saffron/saffron.png` <- generated resource icon transparent final
+- `cinnamon/cinnamon-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `cinnamon/cinnamon.png` <- generated resource icon transparent final
+- `cardamom/cardamom-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `cardamom/cardamom.png` <- generated resource icon transparent final
+
+## Generated produce/resource v2 revisions 20260624
+
+- `coconut/coconut-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `coconut/coconut-v2.png` <- generated resource icon v2 transparent final
+- `pineapple/pineapple-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `pineapple/pineapple-v2.png` <- generated resource icon v2 transparent final
+- `papaya/papaya-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `papaya/papaya-v2.png` <- generated resource icon v2 transparent final
+- `fig/fig-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `fig/fig-v2.png` <- generated resource icon v2 transparent final
+- `garlic/garlic-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `garlic/garlic-v2.png` <- generated resource icon v2 transparent final
+- `okra/okra-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `okra/okra-v2.png` <- generated resource icon v2 transparent final
+- `tofu/tofu-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `tofu/tofu-v2.png` <- generated resource icon v2 transparent final
+- `seaweed/seaweed-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `seaweed/seaweed-v2.png` <- generated resource icon v2 transparent final
+- `tea/tea-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `tea/tea-v2.png` <- generated resource icon v2 transparent final
+- `sugar-beet/sugar-beet-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `sugar-beet/sugar-beet-v2.png` <- generated resource icon v2 transparent final
+- `black-pepper/black-pepper-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `black-pepper/black-pepper-v2.png` <- generated resource icon v2 transparent final
+- `saffron/saffron-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `saffron/saffron-v2.png` <- generated resource icon v2 transparent final
+- `oats/oats-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `oats/oats-v2.png` <- generated resource icon v2 transparent final
+- `sorghum/sorghum-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `sorghum/sorghum-v2.png` <- generated resource icon v2 transparent final
+- `millet/millet-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `millet/millet-v2.png` <- generated resource icon v2 transparent final
+- `yam/yam-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `yam/yam-v2.png` <- generated resource icon v2 transparent final
+- `mango/mango-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `mango/mango-v2.png` <- generated resource icon v2 transparent final
+- `lemon/lemon-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `lemon/lemon-v2.png` <- generated resource icon v2 transparent final
+- `eggplant/eggplant-v2-before-white-bg-removal-20260624.png` <- generated resource icon v2 original
+- `eggplant/eggplant-v2.png` <- generated resource icon v2 transparent final
+
+## Generated produce/resource second-pass revisions and additions 20260624
+
+- `okra/okra-v3-before-white-bg-removal-20260624.png` <- generated resource icon v3 original
+- `okra/okra-v3.png` <- generated resource icon v3 transparent final
+- `tofu/tofu-v3-before-white-bg-removal-20260624.png` <- generated resource icon v3 original
+- `tofu/tofu-v3.png` <- generated resource icon v3 transparent final
+- `black-pepper/black-pepper-v3-before-white-bg-removal-20260624.png` <- generated resource icon v3 original
+- `black-pepper/black-pepper-v3.png` <- generated resource icon v3 transparent final
+- `tea/tea-v3-before-white-bg-removal-20260624.png` <- generated resource icon v3 original
+- `tea/tea-v3.png` <- generated resource icon v3 transparent final
+- `mango/mango-v3-before-white-bg-removal-20260624.png` <- generated resource icon v3 original
+- `mango/mango-v3.png` <- generated resource icon v3 transparent final
+- `eggplant/eggplant-v3-before-white-bg-removal-20260624.png` <- generated resource icon v3 original
+- `eggplant/eggplant-v3.png` <- generated resource icon v3 transparent final
+- `rice-plant/rice-plant-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `rice-plant/rice-plant.png` <- generated resource icon transparent final
+- `olive/olive-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `olive/olive.png` <- generated resource icon transparent final
+- `grape/grape-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `grape/grape.png` <- generated resource icon transparent final
+- `watermelon/watermelon-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `watermelon/watermelon.png` <- generated resource icon transparent final
+- `cabbage/cabbage-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `cabbage/cabbage.png` <- generated resource icon transparent final
+- `salmon/salmon-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `salmon/salmon.png` <- generated resource icon transparent final
+- `rubber/rubber-before-white-bg-removal-20260624.png` <- generated resource icon original
+- `rubber/rubber.png` <- generated resource icon transparent final
+
+## Generated produce/resource final-fix revisions 20260624
+
+- `tofu/tofu-v4-before-white-bg-removal-20260624.png` <- generated resource icon final-fix original
+- `tofu/tofu-v4.png` <- generated resource icon final-fix transparent final
+- `mango/mango-v4-before-white-bg-removal-20260624.png` <- generated resource icon final-fix original
+- `mango/mango-v4.png` <- generated resource icon final-fix transparent final
+- `rice-plant/rice-plant-v2-before-white-bg-removal-20260624.png` <- generated resource icon final-fix original
+- `rice-plant/rice-plant-v2.png` <- generated resource icon final-fix transparent final
+- `grape/grape-v2-before-white-bg-removal-20260624.png` <- generated resource icon final-fix original
+- `grape/grape-v2.png` <- generated resource icon final-fix transparent final
+- `watermelon/watermelon-v2-before-white-bg-removal-20260624.png` <- generated resource icon final-fix original
+- `watermelon/watermelon-v2.png` <- generated resource icon final-fix transparent final
+- `rubber/rubber-v2-before-white-bg-removal-20260624.png` <- generated resource icon final-fix original
+- `rubber/rubber-v2.png` <- generated resource icon final-fix transparent final
