@@ -76,6 +76,8 @@ Constraints: no text, no watermark, no UI frame, no extra objects.
 
 For animals, ask for a full-body side/front three-quarter view with a friendly expression. For crops, produce, and inventory resources, ask for one clear readable item silhouette with leaves/stems only when they help recognition.
 
+For buildings, use a classic isometric view: camera positioned at 45° rotation and roughly 30° elevation (2:1 pixel-ratio isometric), showing the front face and one side face simultaneously. The base footprint should read clearly on an isometric grid. Keep the same isometric angle consistent across all building tiers and types in the set.
+
 For building materials, use old-time hand-crafted forms and avoid modern industrial cues: logs, planks, clay lumps, bricks, ingots, rough stone blocks, simple glass windows, carved marble statues, cloth, parchment, wood, and iron are good references.
 
 For terrain tiles, sprites, building art, character busts, and terrain object overlays, do not force the inventory asset template. Ask for the requested game-rendered dimensions, role, background requirement, and scale constraints from `references/style.md`.
