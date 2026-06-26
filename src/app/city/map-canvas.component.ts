@@ -80,51 +80,52 @@ const ROAD_TILE_BY_MASK = ((): Map<number, { src: string, rot: number }> => {
   return table;
 })();
 
-const MAP_TILE_ASSETS: { [key: string]: { file: string, color: string } } = {
-  [Terrain.WATER]: { file: 'sea.png',   color: '#47c9ff' },
-  [Terrain.GRASS]: { file: 'grass.png', color: '#a9d86b' },
-  [Terrain.SAND]:  { file: 'sand.png',  color: '#ffe48b' },
-  [Terrain.DIRT]:  { file: 'dirt.png',  color: '#c4956a' },
+// Solid fallback colour per terrain, painted under a render tile only until its
+// blend sprite has streamed in.
+const TERRAIN_COLOR: { [key: string]: string } = {
+  [Terrain.WATER]: '#47c9ff',
+  [Terrain.GRASS]: '#a9d86b',
+  [Terrain.SAND]:  '#ffe48b',
+  [Terrain.DIRT]:  '#c4956a',
 };
 
-// Terrain blending: a fixed LAYER STACK sea → sand → grass → dirt. A tile paints
-// its own texture, then any neighbour whose terrain is HIGHER in the stack
-// feathers its edge inward over this tile — so the higher layer bleeds onto the
-// lower (one-sided), blending instead of meeting at a hard grid edge. Only
-// ACTUALLY-adjacent terrains blend (===).
+// Terrain blending via DUAL-GRID corner-Wang (marching-squares) tile sets, one
+// per boundary in the layer stack sea → sand → grass → dirt. The render grid is
+// offset half a tile from the data grid, so each render tile sits on a shared
+// corner of four data tiles and is chosen by which of those four are the higher
+// terrain (NW=1, NE=2, SE=4, SW=8 → a 0..F hex mask matching the filenames).
 const TERRAIN_PRECEDENCE: { [key: string]: number } = {
-  [Terrain.WATER]: 0, // base, never overlays
+  [Terrain.WATER]: 0, // sea, the base
   [Terrain.SAND]:  1,
   [Terrain.GRASS]: 2,
-  [Terrain.DIRT]:  3, // top: dirt patches feather onto grass
+  [Terrain.DIRT]:  3, // top
 };
-// Overlaying layers in ASCENDING order so the highest paints last (on top).
-const TERRAIN_OVERLAY_ORDER = [Terrain.SAND, Terrain.GRASS, Terrain.DIRT];
 
-// The boundary SHAPE is the same for every layer, so each layer's flat texture
-// is stamped through reusable alpha MASKS at load time. Directional masks keep
-// each authored tileable axis intact instead of rotating one canonical source.
-// Edges are ordered N,E,S,W. Corners are ordered NE,SE,SW,NW.
-const BLEND_EDGE_MASKS = [
-  MAP_TILE_BASE + 'blend/edge-n.png',
-  MAP_TILE_BASE + 'blend/edge-e.png',
-  MAP_TILE_BASE + 'blend/edge-s.png',
-  MAP_TILE_BASE + 'blend/edge-w.png',
-] as const;
-const BLEND_CORNER_MASKS = [
-  MAP_TILE_BASE + 'blend/corner-ne.png',
-  MAP_TILE_BASE + 'blend/corner-se.png',
-  MAP_TILE_BASE + 'blend/corner-sw.png',
-  MAP_TILE_BASE + 'blend/corner-nw.png',
-] as const;
-const TERRAIN_BLEND_TEXTURE: { [key: string]: string } = {
-  [Terrain.SAND]:  MAP_TILE_BASE + 'sand.png',
-  [Terrain.GRASS]: MAP_TILE_BASE + 'grass.png',
-  [Terrain.DIRT]:  MAP_TILE_BASE + 'dirt.png',
+// One opaque 16-tile set per ADJACENT pair, keyed by the higher terrain of the
+// pair. `bit1` decides which corners set their mask bit; per each set's README:
+//   sand-sea   bit 1 = SEA  (the lower)  — a corner is "bit 1" when it is sea
+//   grass-sand bit 1 = GRASS (the higher)
+//   dirt-grass bit 1 = DIRT  (the higher)
+// `atLeast` collapses any terrain at/above that precedence to the bit-1 side, so
+// a dirt corner reads as grass at the grass/sand boundary, etc.
+// Each set lives in blend/<pair>/ as 0.png .. F.png (the hex corner mask).
+const TERRAIN_BLEND_BASE = MAP_TILE_BASE + 'blend/';
+const TERRAIN_SETS: { [higher: string]: { dir: string, bit1: 'low' | 'high', atLeast: number } } = {
+  [Terrain.SAND]:  { dir: 'sand-sea/',   bit1: 'low',  atLeast: 1 },
+  [Terrain.GRASS]: { dir: 'grass-sand/', bit1: 'high', atLeast: 2 },
+  [Terrain.DIRT]:  { dir: 'dirt-grass/', bit1: 'high', atLeast: 3 },
 };
-// Shrink factor for the convex-corner nub (authored masks are ~85% radius, which
-// bulges coastline corners). Lower = smaller nub. Tune to taste.
-const CORNER_SCALE = 0.55;
+// Resolved image path per set per mask, built once: TERRAIN_TILE_SRC[higher][0..15].
+// Avoids rebuilding the same 48 path strings every render tile, every repaint.
+const HEX = '0123456789ABCDEF';
+const TERRAIN_TILE_SRC: { [higher: string]: string[] } = (() => {
+  const table: { [higher: string]: string[] } = {};
+  for (const higher of Object.keys(TERRAIN_SETS)) {
+    table[higher] = [];
+    for (let m = 0; m < 16; m++) table[higher][m] = TERRAIN_BLEND_BASE + TERRAIN_SETS[higher].dir + HEX[m] + '.png';
+  }
+  return table;
+})();
 
 // The whole map (terrain + features + buildings) is drawn onto a single
 // viewport-sized <canvas>, replacing ~one Angular component per tile. It
@@ -320,8 +321,11 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     const i1 = Math.min(city.h - 1, Math.floor((cam.y + cssH / cam.zoom) / TILE) + CULL_PAD);
     const at = (i: number, j: number) => city.tiles[i * city.w + j];
 
-    // 1) terrain under every tile (including tiles a building covers).
-    for (let i = i0; i <= i1; ++i) for (let j = j0; j <= j1; ++j) this.drawTerrain(at(i, j));
+    // 1) terrain, drawn on the DUAL grid: render tiles are offset half a tile so
+    // each sits on a corner shared by four data tiles. Range extends one tile
+    // past the visible data range (a render tile covers data rows/cols ri-1..ri).
+    const ri1 = Math.min(city.h, i1 + 1), rj1 = Math.min(city.w, j1 + 1);
+    for (let ri = i0; ri <= ri1; ++ri) for (let rj = j0; rj <= rj1; ++rj) this.drawTerrainCorner(ri, rj);
     // 2) removable tree/rock/bush decorations on bare land.
     for (let i = i0; i <= i1; ++i) for (let j = j0; j <= j1; ++j) {
       const t = at(i, j);
@@ -342,81 +346,47 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     }
   }
 
-  private drawTerrain(t: Tile) {
-    const asset = MAP_TILE_ASSETS[t.terrain] ?? MAP_TILE_ASSETS[Terrain.GRASS];
-    const x = t.j * TILE, y = t.i * TILE;
-    this.ctx.fillStyle = asset.color;
+  // One dual-grid render tile, anchored on the corner shared by the four data
+  // tiles NW=(ri-1,rj-1) NE=(ri-1,rj) SE=(ri,rj) SW=(ri,rj-1) and drawn offset
+  // half a tile up/left of that corner. The corner-Wang set for the HIGHEST
+  // terrain present is picked, and the 0..F mask says which corners are on that
+  // set's bit-1 side — so the seam between the two terrains lands mid-tile.
+  private drawTerrainCorner(ri: number, rj: number) {
+    // Four data tiles sharing this corner (NW, NE, SE, SW); off-grid clamps to edge.
+    const nw = this.terrainAtClamped(ri - 1, rj - 1), ne = this.terrainAtClamped(ri - 1, rj);
+    const se = this.terrainAtClamped(ri, rj),         sw = this.terrainAtClamped(ri, rj - 1);
+    const pnw = TERRAIN_PRECEDENCE[nw] ?? 0, pne = TERRAIN_PRECEDENCE[ne] ?? 0;
+    const pse = TERRAIN_PRECEDENCE[se] ?? 0, psw = TERRAIN_PRECEDENCE[sw] ?? 0;
+    // Highest-precedence terrain present picks the boundary set. Sea is the base,
+    // so default to SAND → an all-sea tile uses sand-sea's all-sea mask.
+    let higher: string = Terrain.SAND, hPrec = 1;
+    if (pnw > hPrec) { hPrec = pnw; higher = nw; }
+    if (pne > hPrec) { hPrec = pne; higher = ne; }
+    if (pse > hPrec) { hPrec = pse; higher = se; }
+    if (psw > hPrec) { hPrec = psw; higher = sw; }
+    // Mask bit per corner (NW=1, NE=2, SE=4, SW=8): set when the corner is on the
+    // set's bit-1 side — sea for sand-sea (bit1 'low'), the higher terrain otherwise.
+    const set = TERRAIN_SETS[higher], lo = set.bit1 === 'low', a = set.atLeast;
+    let mask = 0;
+    if (lo ? pnw < a : pnw >= a) mask |= 1;
+    if (lo ? pne < a : pne >= a) mask |= 2;
+    if (lo ? pse < a : pse >= a) mask |= 4;
+    if (lo ? psw < a : psw >= a) mask |= 8;
+    const x = rj * TILE - TILE / 2, y = ri * TILE - TILE / 2;
+    const im = this.img(TERRAIN_TILE_SRC[higher][mask]);
+    if (ready(im)) { this.ctx.drawImage(im!, x, y, TILE, TILE); return; }
+    // Solid placeholder (the anchor/SE tile's colour) until the sprite streams in.
+    this.ctx.fillStyle = TERRAIN_COLOR[se] ?? TERRAIN_COLOR[Terrain.GRASS];
     this.ctx.fillRect(x, y, TILE, TILE);
-    const im = this.img(MAP_TILE_BASE + asset.file);
-    if (ready(im)) this.ctx.drawImage(im!, x, y, TILE, TILE);
-    this.drawBlend(t, x, y);
   }
 
-  // Feather any higher-layer neighbouring terrain inward over this tile so
-  // adjacent terrains blend. For each layer (low→high) that outranks ours, draw
-  // its EDGE toward every side that touches it, and its CORNER at any diagonal
-  // that touches it where neither framing side does (the convex-corner case).
-  private drawBlend(t: Tile, x: number, y: number) {
-    const city = this.city, i = t.i, j = t.j;
-    const myPrec = TERRAIN_PRECEDENCE[t.terrain] ?? 0;
-    // Off-grid neighbours read as our own terrain, so the map border never feathers.
-    const terrAt = (ii: number, jj: number) =>
-      (ii < 0 || jj < 0 || ii >= city.h || jj >= city.w) ? t.terrain : city.tiles[ii * city.w + jj].terrain;
-    // Sides N,E,S,W and diagonals NE,SE,SW,NW.
-    const side = [terrAt(i - 1, j), terrAt(i, j + 1), terrAt(i + 1, j), terrAt(i, j - 1)];
-    const diag = [terrAt(i - 1, j + 1), terrAt(i + 1, j + 1), terrAt(i + 1, j - 1), terrAt(i - 1, j - 1)];
-    // The two sides framing each diagonal (NE↔N,E  SE↔E,S  SW↔S,W  NW↔W,N).
-    const framing = [[0, 1], [1, 2], [2, 3], [3, 0]];
-    for (const X of TERRAIN_OVERLAY_ORDER) {
-      if ((TERRAIN_PRECEDENCE[X] ?? 0) <= myPrec) continue;
-      for (let d = 0; d < 4; d++) {
-        if (side[d] === X) this.drawRotated(this.blendSprite(X, BLEND_EDGE_MASKS[d]), x, y, 0);
-      }
-      for (let c = 0; c < 4; c++) {
-        const [a, b] = framing[c];
-        if (diag[c] === X && side[a] !== X && side[b] !== X) {
-          this.drawRotated(this.blendSprite(X, BLEND_CORNER_MASKS[c], c), x, y, 0);
-        }
-      }
-    }
-  }
-
-  // The blend sprite for one layer = that layer's flat terrain texture stamped
-  // through an alpha mask, baked once into an offscreen canvas and cached. The
-  // organic mask set is reused by every terrain layer. Returns undefined until
-  // both the texture and mask have loaded.
-  private blendCache = new Map<string, HTMLCanvasElement>();
-  private blendSprite(terrain: string, maskSrc: string, corner?: number): HTMLCanvasElement | undefined {
-    const key = terrain + '|' + maskSrc;
-    const hit = this.blendCache.get(key);
-    if (hit) return hit;
-    const tex = this.img(TERRAIN_BLEND_TEXTURE[terrain]);
-    const mask = this.img(maskSrc);
-    if (!ready(tex) || !ready(mask)) return undefined;
-    const c = document.createElement('canvas');
-    c.width = c.height = TILE;
-    const cx = c.getContext('2d')!;
-    // Smooth the mask's alpha when scaling it down to TILE: the masks are 64px
-    // with SOFT feathered edges, and nearest-neighbour downscaling crushes that
-    // feather into hard jagged steps. The 48px texture draws 1:1 so it stays crisp.
-    cx.imageSmoothingEnabled = true;
-    cx.imageSmoothingQuality = 'high';
-    cx.drawImage(tex!, 0, 0, TILE, TILE);
-    cx.globalCompositeOperation = 'destination-in'; // keep texture only where the mask is opaque
-    if (corner === undefined) {
-      cx.drawImage(mask!, 0, 0, TILE, TILE);
-    } else {
-      // Convex-corner masks are authored very large (≈85% radius), which bulges
-      // every coastline corner. Shrink the nub toward its anchor corner so it
-      // reads as a small bit of the higher terrain peeking in. corner index:
-      // 0=NE, 1=SE, 2=SW, 3=NW.
-      const s = TILE * CORNER_SCALE;
-      const ax = (corner === 0 || corner === 1) ? TILE - s : 0; // E side for NE/SE
-      const ay = (corner === 1 || corner === 2) ? TILE - s : 0; // S side for SE/SW
-      cx.drawImage(mask!, ax, ay, s, s);
-    }
-    this.blendCache.set(key, c);
-    return c;
+  // Terrain of the data tile at (ii,jj), clamped to the grid edge so dual-grid
+  // render tiles straddling the border read the edge tile rather than off-grid.
+  private terrainAtClamped(ii: number, jj: number): Terrain {
+    const city = this.city;
+    const ci = ii < 0 ? 0 : ii >= city.h ? city.h - 1 : ii;
+    const cj = jj < 0 ? 0 : jj >= city.w ? city.w - 1 : jj;
+    return city.tiles[ci * city.w + cj].terrain;
   }
 
   // Draw a tile-sized sprite at (x,y), rotated `rot` × 90° clockwise about its

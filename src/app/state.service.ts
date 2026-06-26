@@ -4,11 +4,11 @@ import { Item, Storage } from './sim/storage';
 import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, CountItem, TakeItemsAsPossible, StorageItems} from './sim/utils';
 import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, ExtraSource, CreateBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, CanPlaceOnFeature, GetRequiredNearbyFeature, GetRequiredNearbyTerrain, Technology, ALL_RESEARCH, FARM_BUILDINGS, MINE_CAMP_BUILDINGS, ComputeBaseHappiness, ValidateConfig } from './sim/building'
 import { BALANCE } from './sim/balance';
-import { City } from './sim/city';
+import { City, GenerateCityMap } from './sim/city';
 import { Population,  } from './sim/population';
 import { Resident, ProductionStatus, ShippingTaskType, BuildingType, Terrain, Feature, CityName } from './sim/types'
 import { Tile } from './sim/tile';
-import { SaveState, LoadState, SaveMaps, LoadMaps } from './sim/persistence';
+import { SaveState, LoadState, SaveMaps, LoadMaps, HasSavedMap } from './sim/persistence';
 import { RoadDistanceField, BuildRoadPath, WarehouseRoadDistance } from './sim/pathfinding';
 import { Camera } from './camera';
 
@@ -78,7 +78,7 @@ export class StateService {
     if (loaded) {
       this.state = loaded
     }
-    this.LoadMap()
+    this.LoadOrGenerateMaps()
     // Seed building lists from the grid: a save restores buildings onto tiles,
     // but its serialized lists hold stale (post-JSON) tile references. From here
     // the lists are maintained incrementally on place/delete/move.
@@ -86,6 +86,20 @@ export class StateService {
       this.RebuildBuildingLists(city)
     }
     this.bumpMap()
+  }
+
+  // Restore each city's locked-in map, then generate (and lock) only the cities
+  // that don't have one saved yet. So terrain is generated on the first ever load
+  // and on Reset — never re-rolled on an ordinary reload.
+  private LoadOrGenerateMaps() {
+    this.LoadMap()
+    let generated = false
+    for (let city of this.state.cities) {
+      if (!HasSavedMap(city.name)) { GenerateCityMap(city); generated = true }
+    }
+    // Only write back when something was actually generated — a plain reload
+    // restored every map unchanged and needs no save.
+    if (generated) this.SaveMap()
   }
 
   public SaveMap() {
@@ -97,12 +111,16 @@ export class StateService {
   }
   public Restart() {
     this.state = new State()
-    this.LoadMap()
+    this.LoadOrGenerateMaps()
     this.bumpMap()
   }
 
+  // Wipe the game and roll fresh maps. This is the ONLY path that regenerates an
+  // existing city's terrain; SaveState then locks the new maps in for reloads.
   public Reset() {
     this.state = new State()
+    for (let city of this.state.cities) GenerateCityMap(city)
+    this.Save()
     this.bumpMap()
   }
   

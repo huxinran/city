@@ -40,18 +40,28 @@ export function SaveMaps(cities: City[]) {
   }
 }
 
+// True if a map has been persisted for this city — used to decide whether a
+// city needs a fresh GenerateTerrain or can reuse its locked-in map.
+export function HasSavedMap(name: string): boolean {
+  return localStorage.getItem(MAP_KEY_PREFIX + name) != null
+}
+
+// Restore each city's locked-in map (terrain AND features) from localStorage,
+// overwriting whatever the City constructor generated. This is what keeps the
+// map stable across reloads — it only changes again on an explicit Reset (which
+// regenerates and re-saves).
 export function LoadMaps(cities: City[]) {
   for (let city of cities) {
     let saved_map = localStorage.getItem(MAP_KEY_PREFIX + city.name)
-    if (saved_map && city.name == 'Anrelia') {
-      let saved_map_obj = JSON.parse(saved_map)
-      // Only restore if the saved map matches the current grid dimensions.
-      if (saved_map_obj.tiles && saved_map_obj.tiles.length == city.tiles.length) {
-        city.h = saved_map_obj.h
-        city.w = saved_map_obj.w
-        for (let i = 0; i < city.tiles.length; ++i) {
-          city.tiles[i].terrain = saved_map_obj.tiles[i].terrain
-        }
+    if (!saved_map) continue
+    let saved_map_obj = JSON.parse(saved_map)
+    // Only restore if the saved map matches the current grid dimensions.
+    if (saved_map_obj.tiles && saved_map_obj.tiles.length == city.tiles.length) {
+      city.h = saved_map_obj.h
+      city.w = saved_map_obj.w
+      for (let i = 0; i < city.tiles.length; ++i) {
+        city.tiles[i].terrain = saved_map_obj.tiles[i].terrain
+        city.tiles[i].feature = saved_map_obj.tiles[i].feature
       }
     }
   }
