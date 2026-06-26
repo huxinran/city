@@ -15,13 +15,14 @@ Create polished, cute, cartoon-ish pixel-art visual assets that match the saved 
 4. Ask for transparent backgrounds for sprite-like project assets. Use a clean plain white background when matching the source-art/reference-sheet look. If the generator returns a non-transparent or white-background image, save it as-is and explain the limitation instead of removing the background.
 5. Focus only on image generation, saving, and bookkeeping. Do not remove backgrounds, chroma-key, alpha-clean, crop, resize, or otherwise post-process generated images unless the user explicitly asks for that specific operation.
 6. Do not integrate generated assets into the codebase. Do not update app mappings, imports, manifests used by runtime code, build files, or other source files.
-7. Save generated image assets into the active project under `public/assets/reserve/...` only, using the repo's existing reserve naming/location conventions when they are obvious. Treat `public/assets/used/...` as a curated runtime/published area, not a work area.
-8. Do not write, overwrite, revise, recolor, regenerate, copy, promote, or stage files in `public/assets/used/...`. The user handles all deletion, replacement, and promotion into `used`.
+7. Save generated image assets into the active project under `public/assets/lib/...` only, using the repo's category/subject/filename convention when it is obvious. Treat `public/assets/used/...` as a curated runtime pointer area, not an image work area.
+8. Do not write, overwrite, revise, recolor, regenerate, copy, promote, or stage real image files in `public/assets/used/...`. `used/` entries should be symlinks pointing to real files in `lib/`.
+8a. Exception: if the user says to swap, replace, or try a specific asset, repoint the relevant `public/assets/used/...` symlink to the chosen `public/assets/lib/...` file with `node tools/swap-asset.mjs <used-relative-path> <lib-relative-path>` — no need to ask why or confirm.
 9. Preserve generated originals under Codex's generated image cache; copy into the project instead of moving.
-10. Never delete or replace existing image assets anywhere in the project. When recreating, revising, or iterating on one asset, always save the new result in `public/assets/reserve/...` as a new version with a versioned/descriptive filename such as `<name>-v2.png` or `<name>-blue.png`; do not overwrite the old image.
+10. Never delete or replace existing image assets anywhere in the project. When recreating, revising, or iterating on one asset, always save the new result in `public/assets/lib/<category>/<subject>/...` as a new version with a versioned/descriptive filename such as `<name>-v2.png` or `<name>-blue.png`; do not overwrite the old image.
 11. When revising an existing generated asset, inspect the old version first and compare it against the user's feedback before writing the new prompt.
 12. When creating an asset that belongs to a family or tier set, inspect existing sibling assets first and keep the family coherent.
-13. Keep lightweight bookkeeping for generated batches, such as a local notes file or generation log that records asset names, saved reserve paths, source-cache paths, prompts, feedback, family/tier notes, and version notes. This bookkeeping must not wire assets into runtime code.
+13. Keep lightweight bookkeeping for generated batches, such as a local notes file or generation log that records asset names, saved lib paths, source-cache paths, prompts, feedback, family/tier notes, and version notes. This bookkeeping must not wire assets into runtime code.
 
 ## Style
 
@@ -76,7 +77,7 @@ Constraints: no text, no watermark, no UI frame, no extra objects.
 
 For animals, ask for a full-body side/front three-quarter view with a friendly expression. For crops, produce, and inventory resources, ask for one clear readable item silhouette with leaves/stems only when they help recognition.
 
-For buildings, use a classic isometric view: camera positioned at 45° rotation and roughly 30° elevation (2:1 pixel-ratio isometric), showing the front face and one side face simultaneously. The base footprint should read clearly on an isometric grid. Keep the same isometric angle consistent across all building tiers and types in the set.
+For buildings, use a classic isometric view: camera positioned at 45° rotation and roughly 30° elevation (2:1 pixel-ratio isometric), showing the front face and one side face simultaneously. The ground/base footprint should read clearly on an isometric grid and align to the intended map footprint diamond. Vertical structures, roofs, chimneys, trees, signs, and similar upright details may protrude above or outside that ground footprint; do not force the whole building silhouette inside the diamond. Keep the same isometric angle consistent across all building tiers and types in the set.
 
 For building materials, use old-time hand-crafted forms and avoid modern industrial cues: logs, planks, clay lumps, bricks, ingots, rough stone blocks, simple glass windows, carved marble statues, cloth, parchment, wood, and iron are good references.
 

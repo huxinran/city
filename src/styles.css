@@ -213,7 +213,7 @@ details.collapsible[open] > summary::before { content: "▾ "; }
 /* Cobblestone texture for roads (used on the map and in the palette). */
 .cobble {
   background-color: #b9b3a4;
-  background-image: url("/assets/used/map-tiles/cobblestone-road.png");
+  background-image: url("../public/assets/used/buildings/road.png");
   background-size: 100% 100%;
   background-repeat: no-repeat;
   image-rendering: pixelated;

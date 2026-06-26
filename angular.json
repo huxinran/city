@@ -22,9 +22,24 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
-                "glob": "**/*",
+                "glob": "favicon.ico",
                 "input": "public",
-                "ignore": ["assets/reserve/**"]
+                "output": "/"
+              },
+              {
+                "glob": "gallery.html",
+                "input": "public/assets",
+                "output": "/assets/"
+              },
+              {
+                "glob": "INDEX.md",
+                "input": "public/assets",
+                "output": "/assets/"
+              },
+              {
+                "glob": "**/*",
+                "input": "public/assets/used",
+                "output": "/assets/used/"
               }
             ],
             "styles": [
@@ -81,8 +96,24 @@
             "tsConfig": "tsconfig.spec.json",
             "assets": [
               {
+                "glob": "favicon.ico",
+                "input": "public",
+                "output": "/"
+              },
+              {
+                "glob": "gallery.html",
+                "input": "public/assets",
+                "output": "/assets/"
+              },
+              {
+                "glob": "INDEX.md",
+                "input": "public/assets",
+                "output": "/assets/"
+              },
+              {
                 "glob": "**/*",
-                "input": "public"
+                "input": "public/assets/used",
+                "output": "/assets/used/"
               }
             ],
             "styles": [

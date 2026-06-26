@@ -207,8 +207,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     this.resizeObserver?.disconnect();
   }
 
-  private worldW() { return isoWorldSize(this.city.w, this.city.h).width; }
-  private worldH() { return isoWorldSize(this.city.w, this.city.h).height; }
+  private worldSize() { return isoWorldSize(this.city.w, this.city.h); }
 
   // Mouse-wheel zoom, anchored on the point under the cursor (it stays put).
   private onWheel(e: WheelEvent) {
@@ -218,10 +217,11 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     const cam = this.state.camera;
     const anchor = screenToWorld(cam, sx, sy); // world point under the cursor
     cam.zoom *= e.deltaY < 0 ? 1.1 : 1 / 1.1;
-    clampCamera(cam, rect.width, rect.height, this.worldW(), this.worldH()); // clamps zoom
+    const world = this.worldSize();
+    clampCamera(cam, rect.width, rect.height, world.width, world.height); // clamps zoom
     cam.x = anchor.x - sx / cam.zoom; // keep that world point under the cursor
     cam.y = anchor.y - sy / cam.zoom;
-    clampCamera(cam, rect.width, rect.height, this.worldW(), this.worldH()); // clamps pan
+    clampCamera(cam, rect.width, rect.height, world.width, world.height); // clamps pan
     this.state.bumpCamera();
   }
 
@@ -321,7 +321,8 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     const cssW = this.host.clientWidth, cssH = this.host.clientHeight;
     this.ensureInitialCamera(cssW, cssH);
     // Keep the camera valid (covers viewport resizes that shrink the world view).
-    clampCamera(cam, cssW, cssH, this.worldW(), this.worldH());
+    const { width: worldW, height: worldH } = this.worldSize();
+    clampCamera(cam, cssW, cssH, worldW, worldH);
 
     // Clear in device space, then switch to world space via the camera transform.
     ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -360,7 +361,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     if (f) {
       const size = f.building ? GetBuildingSize(f.building.type) : 1;
       ctx.strokeStyle = '#ff3b3b';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2 / (cam.zoom * dpr);
       this.strokeFootprint(f.i, f.j, size);
     }
   }
@@ -485,7 +486,12 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       return;
     }
     if (IsFarmBuilding(type) && size > 1) {
-      this.drawComposite(b, this.img(IsAnimalFarm(type) ? ANIMAL_FARM_ICON : CROP_FARM_ICON), x, y, W, H, 'farm');
+      const farmW = size * ISO_TILE_W * 0.95;
+      const farmH = Math.max(size * ISO_TILE_H * 3.0, size * TILE * 1.6);
+      const farmX = base.x - farmW / 2;
+      const farmY = base.y - farmH * 0.70;
+      this.drawComposite(b, this.img(IsAnimalFarm(type) ? ANIMAL_FARM_ICON : CROP_FARM_ICON),
+                         farmX, farmY, farmW, farmH, 'farm');
       return;
     }
     if (IsMineCampBuilding(type) && size > 1) {
@@ -548,11 +554,13 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     const prod = this.img(this.artSrc(b));
     const emoji = GetBuildingIcon(b.type);
     if (kind === 'farm') {
-      const isz = W * 0.24, padX = W * 0.08, usable = W - 2 * padX, cy = y + H * 0.66;
+      const isz = W * 0.14;
+      const cx = x + W / 2, cy = y + H * 0.60;
+      const gap = isz * 1.1;
       for (let k = 0; k < 3; ++k) {
-        const cx = x + padX + usable * (k + 0.5) / 3;
-        if (ready(prod)) this.drawContain(prod!, cx - isz / 2, cy - isz / 2, isz, isz, true);
-        else this.drawEmoji(emoji, cx, cy, isz);
+        const px = cx + (k - 1) * gap;
+        if (ready(prod)) this.drawContain(prod!, px - isz / 2, cy - isz / 2, isz, isz, true);
+        else this.drawEmoji(emoji, px, cy, isz);
       }
     } else {
       const isz = W * 0.38, px = x + W * 0.92 - isz, py = y + H * 0.80 - isz;

@@ -79,13 +79,11 @@ export function applyIsoGridCameraTransform(
 
 export function isoCameraCssTransform(cam: Camera, rows: number): string {
   const origin = isoOrigin(rows);
-  const a = ISO_X * cam.zoom;
-  const b = ISO_Y * cam.zoom;
-  const c = -ISO_X * cam.zoom;
-  const d = ISO_Y * cam.zoom;
+  const ix = ISO_X * cam.zoom;
+  const iy = ISO_Y * cam.zoom;
   const e = (origin.x - cam.x) * cam.zoom;
   const f = (origin.y - cam.y) * cam.zoom;
-  return `matrix(${a}, ${b}, ${c}, ${d}, ${e}, ${f})`;
+  return `matrix(${ix}, ${iy}, ${-ix}, ${iy}, ${e}, ${f})`;
 }
 
 export function tileFootprintPolygon(rows: number, i: number, j: number, size: number): Point[] {
