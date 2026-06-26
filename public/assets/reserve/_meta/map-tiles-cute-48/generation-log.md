@@ -281,3 +281,21 @@ Replaced the placeholder runtime terrain blend masks with real 64x64 white-on-tr
 | Placeholder backups | `public/assets/reserve/map-tile-blend-masks/` |
 
 Notes: `edge-mask.png` is fully opaque across the entire top edge, spans both side borders, and reaches just past the centerline with an organic dithered boundary and small alpha specks below it. `corner-mask.png` is fully opaque in the top-right corner and uses the same organic feathering style for the rounded convex corner. No code changes were made; the existing terrain blend code already consumes these filenames.
+
+## 2026-06-26 - directional runtime organic terrain alpha masks
+
+Added explicit directional variants of the runtime blend masks and updated the canvas renderer to consume them without rotating a canonical source.
+
+| Asset | Path |
+|------|------|
+| North edge mask | `public/assets/used/map-tiles/blend/edge-n.png` |
+| East edge mask | `public/assets/used/map-tiles/blend/edge-e.png` |
+| South edge mask | `public/assets/used/map-tiles/blend/edge-s.png` |
+| West edge mask | `public/assets/used/map-tiles/blend/edge-w.png` |
+| Northeast corner mask | `public/assets/used/map-tiles/blend/corner-ne.png` |
+| Southeast corner mask | `public/assets/used/map-tiles/blend/corner-se.png` |
+| Southwest corner mask | `public/assets/used/map-tiles/blend/corner-sw.png` |
+| Northwest corner mask | `public/assets/used/map-tiles/blend/corner-nw.png` |
+| Reproducible generator | `scripts/generate-organic-blend-masks.mjs` |
+
+Notes: all 8 masks are 64x64 white-on-transparent PNGs. Edge masks reach just past the centerline with a shallow periodic wavy boundary and small alpha specks beyond it; north/south are horizontally tileable, and east/west are vertically tileable. Corner masks fill only their named outer corner with a rounded organic wedge reaching about 85% along both named edges. The old generic `edge-mask.png` and `corner-mask.png` remain in place, but runtime blending now uses the directional files.

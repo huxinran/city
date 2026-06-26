@@ -101,22 +101,30 @@ const TERRAIN_PRECEDENCE: { [key: string]: number } = {
 // Overlaying layers in ASCENDING order so the highest paints last (on top).
 const TERRAIN_OVERLAY_ORDER = [Terrain.SAND, Terrain.GRASS, Terrain.DIRT];
 
-// The boundary SHAPE is the same for every layer, so it's authored once as two
-// reusable alpha MASKS and each layer's own flat texture is stamped through them
-// at load time — 2 sprites total, not 2 per layer.
-//   edge-mask    opaque along the TOP edge, feathering to transparent around the
-//                vertical centre. Two perpendicular edges union into a clean
-//                inner (concave) corner, so no inner-corner mask is needed.
-//   corner-mask  opaque in the TOP-RIGHT corner only — the outer (convex) corner,
-//                used when only a diagonal neighbour is the higher layer.
-// Canonical orientation (top / top-right); code rotates 90° CW for all sides.
-const BLEND_EDGE_MASK = MAP_TILE_BASE + 'blend/edge-mask.png';
-const BLEND_CORNER_MASK = MAP_TILE_BASE + 'blend/corner-mask.png';
+// The boundary SHAPE is the same for every layer, so each layer's flat texture
+// is stamped through reusable alpha MASKS at load time. Directional masks keep
+// each authored tileable axis intact instead of rotating one canonical source.
+// Edges are ordered N,E,S,W. Corners are ordered NE,SE,SW,NW.
+const BLEND_EDGE_MASKS = [
+  MAP_TILE_BASE + 'blend/edge-n.png',
+  MAP_TILE_BASE + 'blend/edge-e.png',
+  MAP_TILE_BASE + 'blend/edge-s.png',
+  MAP_TILE_BASE + 'blend/edge-w.png',
+] as const;
+const BLEND_CORNER_MASKS = [
+  MAP_TILE_BASE + 'blend/corner-ne.png',
+  MAP_TILE_BASE + 'blend/corner-se.png',
+  MAP_TILE_BASE + 'blend/corner-sw.png',
+  MAP_TILE_BASE + 'blend/corner-nw.png',
+] as const;
 const TERRAIN_BLEND_TEXTURE: { [key: string]: string } = {
   [Terrain.SAND]:  MAP_TILE_BASE + 'sand.png',
   [Terrain.GRASS]: MAP_TILE_BASE + 'grass.png',
   [Terrain.DIRT]:  MAP_TILE_BASE + 'dirt.png',
 };
+// Shrink factor for the convex-corner nub (authored masks are ~85% radius, which
+// bulges coastline corners). Lower = smaller nub. Tune to taste.
+const CORNER_SCALE = 0.55;
 
 // The whole map (terrain + features + buildings) is drawn onto a single
 // viewport-sized <canvas>, replacing ~one Angular component per tile. It
@@ -354,29 +362,31 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     // Off-grid neighbours read as our own terrain, so the map border never feathers.
     const terrAt = (ii: number, jj: number) =>
       (ii < 0 || jj < 0 || ii >= city.h || jj >= city.w) ? t.terrain : city.tiles[ii * city.w + jj].terrain;
-    // Sides N,E,S,W (rotation 0..3) and diagonals NE,SE,SW,NW (rotation 0..3).
+    // Sides N,E,S,W and diagonals NE,SE,SW,NW.
     const side = [terrAt(i - 1, j), terrAt(i, j + 1), terrAt(i + 1, j), terrAt(i, j - 1)];
     const diag = [terrAt(i - 1, j + 1), terrAt(i + 1, j + 1), terrAt(i + 1, j - 1), terrAt(i - 1, j - 1)];
     // The two sides framing each diagonal (NE↔N,E  SE↔E,S  SW↔S,W  NW↔W,N).
     const framing = [[0, 1], [1, 2], [2, 3], [3, 0]];
     for (const X of TERRAIN_OVERLAY_ORDER) {
       if ((TERRAIN_PRECEDENCE[X] ?? 0) <= myPrec) continue;
-      const edge = this.blendSprite(X, BLEND_EDGE_MASK);
-      const corner = this.blendSprite(X, BLEND_CORNER_MASK);
-      for (let d = 0; d < 4; d++) if (side[d] === X) this.drawRotated(edge, x, y, d);
+      for (let d = 0; d < 4; d++) {
+        if (side[d] === X) this.drawRotated(this.blendSprite(X, BLEND_EDGE_MASKS[d]), x, y, 0);
+      }
       for (let c = 0; c < 4; c++) {
         const [a, b] = framing[c];
-        if (diag[c] === X && side[a] !== X && side[b] !== X) this.drawRotated(corner, x, y, c);
+        if (diag[c] === X && side[a] !== X && side[b] !== X) {
+          this.drawRotated(this.blendSprite(X, BLEND_CORNER_MASKS[c], c), x, y, 0);
+        }
       }
     }
   }
 
   // The blend sprite for one layer = that layer's flat terrain texture stamped
-  // through an alpha mask, baked once into an offscreen canvas and cached. So the
-  // organic boundary is authored a single time (the mask) and reused by every
-  // layer. Returns undefined until both the texture and mask have loaded.
+  // through an alpha mask, baked once into an offscreen canvas and cached. The
+  // organic mask set is reused by every terrain layer. Returns undefined until
+  // both the texture and mask have loaded.
   private blendCache = new Map<string, HTMLCanvasElement>();
-  private blendSprite(terrain: string, maskSrc: string): HTMLCanvasElement | undefined {
+  private blendSprite(terrain: string, maskSrc: string, corner?: number): HTMLCanvasElement | undefined {
     const key = terrain + '|' + maskSrc;
     const hit = this.blendCache.get(key);
     if (hit) return hit;
@@ -386,10 +396,25 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     const c = document.createElement('canvas');
     c.width = c.height = TILE;
     const cx = c.getContext('2d')!;
-    cx.imageSmoothingEnabled = false;
+    // Smooth the mask's alpha when scaling it down to TILE: the masks are 64px
+    // with SOFT feathered edges, and nearest-neighbour downscaling crushes that
+    // feather into hard jagged steps. The 48px texture draws 1:1 so it stays crisp.
+    cx.imageSmoothingEnabled = true;
+    cx.imageSmoothingQuality = 'high';
     cx.drawImage(tex!, 0, 0, TILE, TILE);
     cx.globalCompositeOperation = 'destination-in'; // keep texture only where the mask is opaque
-    cx.drawImage(mask!, 0, 0, TILE, TILE);
+    if (corner === undefined) {
+      cx.drawImage(mask!, 0, 0, TILE, TILE);
+    } else {
+      // Convex-corner masks are authored very large (≈85% radius), which bulges
+      // every coastline corner. Shrink the nub toward its anchor corner so it
+      // reads as a small bit of the higher terrain peeking in. corner index:
+      // 0=NE, 1=SE, 2=SW, 3=NW.
+      const s = TILE * CORNER_SCALE;
+      const ax = (corner === 0 || corner === 1) ? TILE - s : 0; // E side for NE/SE
+      const ay = (corner === 1 || corner === 2) ? TILE - s : 0; // S side for SE/SW
+      cx.drawImage(mask!, ax, ay, s, s);
+    }
     this.blendCache.set(key, c);
     return c;
   }

@@ -45,6 +45,8 @@ Auto-generated map of `public/assets/`. Two trees:
 
 ### `map-tiles/blend/`  ·  terrain auto-tiling (dual-grid corner-Wang)
 
+Runtime blend masks live beside the boundary folders: `edge-n.png`, `edge-e.png`, `edge-s.png`, `edge-w.png`, `corner-ne.png`, `corner-se.png`, `corner-sw.png`, `corner-nw.png`. These are 64x64 white-on-transparent alpha masks used by the canvas renderer.
+
 Three 16-tile sets, one per layer boundary. Files are `0.png`–`F.png` = the 4-corner mask (`NW=1, NE=2, SE=4, SW=8`). See each folder’s `README.md` for source/version.
 
 | folder | boundary | bit 1 = |

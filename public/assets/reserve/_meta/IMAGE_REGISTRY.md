@@ -378,6 +378,14 @@ accepted/latest version per the food-resource revision log. All new (no recreati
 | sea-tile | sea.png | yes | 48px active set; updated 2026-06-23 |
 | dirt-tile | dirt.png | yes | 48px active set |
 | cobblestone-road-tile | cobblestone-road.png | yes | 48px active set; core name disambiguated from road building icon |
+| blend-edge-n | blend/edge-n.png | yes | 64px white alpha mask for north terrain blending |
+| blend-edge-e | blend/edge-e.png | yes | 64px white alpha mask for east terrain blending |
+| blend-edge-s | blend/edge-s.png | yes | 64px white alpha mask for south terrain blending |
+| blend-edge-w | blend/edge-w.png | yes | 64px white alpha mask for west terrain blending |
+| blend-corner-ne | blend/corner-ne.png | yes | 64px white alpha mask for northeast outer-corner terrain blending |
+| blend-corner-se | blend/corner-se.png | yes | 64px white alpha mask for southeast outer-corner terrain blending |
+| blend-corner-sw | blend/corner-sw.png | yes | 64px white alpha mask for southwest outer-corner terrain blending |
+| blend-corner-nw | blend/corner-nw.png | yes | 64px white alpha mask for northwest outer-corner terrain blending |
 
 ### Map Tile alternates
 
