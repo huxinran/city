@@ -4,8 +4,9 @@ import { Cart } from '../sim/building';
 import { ShippingTaskType } from '../sim/types';
 import { StateService } from '../state.service';
 import { applyCameraTransform } from '../camera';
+import { GRID_TILE, gridToIso } from '../isometric';
 
-const TILE = 48;
+const TILE = GRID_TILE;
 // Matches the old DOM `transition: left/top 0.2s linear`. The sim updates a
 // cart's progress ~5x/sec; we tween between those samples over this window so
 // the canvas draws smooth 60fps motion instead of stepping 5x/sec.
@@ -135,8 +136,9 @@ export class CartLayerComponent implements OnInit, OnDestroy {
     const img = this.image(SHIP_ICON);
     if (!img.complete || img.naturalWidth === 0) return;
 
-    const cx = this.shipX * TILE;
-    const cy = (SHIP_ROW + 0.5) * TILE + Math.sin(now / 650) * 3;  // bob
+    const p = gridToIso(this.city.h, this.shipX * TILE, (SHIP_ROW + 0.5) * TILE);
+    const cx = p.x;
+    const cy = p.y + Math.sin(now / 650) * 3;  // bob
     const ctx = this.ctx;
     ctx.save();
     ctx.translate(cx, cy);
@@ -198,9 +200,10 @@ export class CartLayerComponent implements OnInit, OnDestroy {
     const frac = pos - idx;
     const a = path[idx];
     const b = path[Math.min(idx + 1, path.length - 1)];
-    const x = (a.j + (b.j - a.j) * frac + 0.5) * TILE;
-    const y = (a.i + (b.i - a.i) * frac + 0.5) * TILE;
-    return [x, y];
+    const gridX = (a.j + (b.j - a.j) * frac + 0.5) * TILE;
+    const gridY = (a.i + (b.i - a.i) * frac + 0.5) * TILE;
+    const p = gridToIso(this.city.h, gridX, gridY);
+    return [p.x, p.y];
   }
 
   private image(src: string): HTMLImageElement {

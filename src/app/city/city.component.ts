@@ -8,9 +8,9 @@ import { GetBuildingSize } from '../sim/building';
 import { StateService } from '../state.service';
 import { BuildingType } from '../sim/types';
 import { repaintOn } from '../live';
-import { cameraCssTransform } from '../camera';
+import { GRID_TILE, isoCameraCssTransform } from '../isometric';
 
-const TILE = 48;
+const TILE = GRID_TILE;
 
 @Component({
   selector: 'app-city',
@@ -36,7 +36,7 @@ export class CityComponent {
   // CSS transform mapping the world-coordinate overlay layer onto the screen,
   // sharing the single camera-math source so it can't drift from the canvases.
   public worldTransform(): string {
-    return cameraCssTransform(this.state.camera)
+    return isoCameraCssTransform(this.state.camera, this.city.h)
   }
 
   private tileFromEvent(event: DragEvent): { i: number, j: number } | undefined {

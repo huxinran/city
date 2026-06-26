@@ -10,11 +10,23 @@ import {
 } from '../sim/building';
 import { GetBuildingMapIconSrc, GetHouseMapIconSrc } from '../building-icons';
 import { clampCamera, screenToWorld, applyCameraTransform } from '../camera';
+import {
+  GRID_TILE, ISO_TILE_W, ISO_TILE_H, applyIsoGridCameraTransform,
+  gridToIso, isoToGrid, isoVisibleGridRange, isoWorldSize, tileFootprintPolygon,
+} from '../isometric';
 
-const TILE = 48;
+const TILE = GRID_TILE;
 // Buildings anchor up to (maxSize-1) tiles outside the visible range can still
 // poke into view; pad the culled range so their footprints draw. Max size is 3.
 const CULL_PAD = 3;
+
+type MapObjectDraw = {
+  kind: 'feature' | 'building';
+  tile: Tile;
+  building?: Building;
+  depth: number;
+  order: number;
+};
 
 // Composite background art for multi-tile buildings (same assets the old DOM
 // tile used).
@@ -153,6 +165,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   private images = new Map<string, HTMLImageElement>();
   private redrawScheduled = false;
   private resizeObserver?: ResizeObserver;
+  private cameraInitialized = false;
 
   constructor() {
     // Repaint whenever a user edit or a camera pan/zoom happens. (Reading the
@@ -194,8 +207,8 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     this.resizeObserver?.disconnect();
   }
 
-  private worldW() { return this.city.w * TILE; }
-  private worldH() { return this.city.h * TILE; }
+  private worldW() { return isoWorldSize(this.city.w, this.city.h).width; }
+  private worldH() { return isoWorldSize(this.city.w, this.city.h).height; }
 
   // Mouse-wheel zoom, anchored on the point under the cursor (it stays put).
   private onWheel(e: WheelEvent) {
@@ -241,7 +254,8 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   // Inverts the camera transform. Used by CityComponent for drag hit-testing too.
   public tileAt(clientX: number, clientY: number): { i: number, j: number } | undefined {
     const rect = this.canvas.getBoundingClientRect();
-    const w = screenToWorld(this.state.camera, clientX - rect.left, clientY - rect.top);
+    const iso = screenToWorld(this.state.camera, clientX - rect.left, clientY - rect.top);
+    const w = isoToGrid(this.city.h, iso.x, iso.y);
     const j = Math.floor(w.x / TILE), i = Math.floor(w.y / TILE);
     if (i < 0 || j < 0 || i >= this.city.h || j >= this.city.w) return undefined;
     return { i, j };
@@ -305,36 +319,41 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     this.ensureSize();
     const dpr = window.devicePixelRatio || 1;
     const cssW = this.host.clientWidth, cssH = this.host.clientHeight;
+    this.ensureInitialCamera(cssW, cssH);
     // Keep the camera valid (covers viewport resizes that shrink the world view).
     clampCamera(cam, cssW, cssH, this.worldW(), this.worldH());
 
     // Clear in device space, then switch to world space via the camera transform.
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    applyCameraTransform(ctx, cam, dpr);
     ctx.imageSmoothingEnabled = false;
 
     // Visible tile range (padded so off-screen building anchors still draw).
-    const j0 = Math.max(0, Math.floor(cam.x / TILE) - CULL_PAD);
-    const i0 = Math.max(0, Math.floor(cam.y / TILE) - CULL_PAD);
-    const j1 = Math.min(city.w - 1, Math.floor((cam.x + cssW / cam.zoom) / TILE) + CULL_PAD);
-    const i1 = Math.min(city.h - 1, Math.floor((cam.y + cssH / cam.zoom) / TILE) + CULL_PAD);
+    const { i0, i1, j0, j1 } = isoVisibleGridRange(cam, cssW, cssH, city.w, city.h, CULL_PAD);
     const at = (i: number, j: number) => city.tiles[i * city.w + j];
+
+    applyIsoGridCameraTransform(ctx, cam, dpr, city.h);
 
     // 1) terrain, drawn on the DUAL grid: render tiles are offset half a tile so
     // each sits on a corner shared by four data tiles. Range extends one tile
     // past the visible data range (a render tile covers data rows/cols ri-1..ri).
     const ri1 = Math.min(city.h, i1 + 1), rj1 = Math.min(city.w, j1 + 1);
     for (let ri = i0; ri <= ri1; ++ri) for (let rj = j0; rj <= rj1; ++rj) this.drawTerrainCorner(ri, rj);
-    // 2) removable tree/rock/bush decorations on bare land.
+    // 2) roads are flat tile overlays, so they use the same grid->iso transform
+    // as terrain and can keep reusing the current square auto-tile sprites.
     for (let i = i0; i <= i1; ++i) for (let j = j0; j <= j1; ++j) {
       const t = at(i, j);
-      if (t.feature && !t.building && !t.covered) this.drawFeature(t);
+      if (t.building?.type === BuildingType.ROAD) this.drawRoad(t, t.j * TILE, t.i * TILE);
     }
-    // 3) buildings (anchor tiles only — covered tiles carry no building).
-    for (let i = i0; i <= i1; ++i) for (let j = j0; j <= j1; ++j) {
-      const t = at(i, j);
-      if (t.building) this.drawBuilding(t, t.building);
+
+    applyCameraTransform(ctx, cam, dpr);
+    ctx.imageSmoothingEnabled = false;
+
+    // 3) upright world objects, back-to-front by grid depth. They are positioned
+    // in projected iso space so existing building art remains readable.
+    for (const item of this.objectDrawList(i0, i1, j0, j1)) {
+      if (item.kind === 'feature') this.drawFeature(item.tile);
+      else this.drawBuilding(item.tile, item.building!);
     }
     // 4) selection outline.
     const f = city.focus_tile;
@@ -342,7 +361,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       const size = f.building ? GetBuildingSize(f.building.type) : 1;
       ctx.strokeStyle = '#ff3b3b';
       ctx.lineWidth = 2;
-      ctx.strokeRect(f.j * TILE + 1, f.i * TILE + 1, size * TILE - 2, size * TILE - 2);
+      this.strokeFootprint(f.i, f.j, size);
     }
   }
 
@@ -389,6 +408,44 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     return city.tiles[ci * city.w + cj].terrain;
   }
 
+  private ensureInitialCamera(viewportW: number, viewportH: number) {
+    if (this.cameraInitialized || viewportW <= 0 || viewportH <= 0) return;
+    const cam = this.state.camera;
+    const world = isoWorldSize(this.city.w, this.city.h);
+    cam.x = Math.max(0, (world.width - viewportW / cam.zoom) / 2);
+    cam.y = Math.max(0, (world.height - viewportH / cam.zoom) / 2);
+    clampCamera(cam, viewportW, viewportH, world.width, world.height);
+    this.cameraInitialized = true;
+    this.state.bumpCamera();
+  }
+
+  private objectDrawList(i0: number, i1: number, j0: number, j1: number): MapObjectDraw[] {
+    const city = this.city;
+    const items: MapObjectDraw[] = [];
+    for (let i = i0; i <= i1; ++i) for (let j = j0; j <= j1; ++j) {
+      const tile = city.tiles[i * city.w + j];
+      if (tile.feature && !tile.building && !tile.covered) {
+        items.push({ kind: 'feature', tile, depth: i + j, order: i * city.w + j });
+      }
+      if (tile.building && tile.building.type !== BuildingType.ROAD) {
+        items.push({
+          kind: 'building',
+          tile,
+          building: tile.building,
+          depth: this.buildingDepth(tile, tile.building),
+          order: i * city.w + j,
+        });
+      }
+    }
+    items.sort((a, b) => a.depth - b.depth || a.order - b.order);
+    return items;
+  }
+
+  private buildingDepth(t: Tile, b: Building): number {
+    const size = GetBuildingSize(b.type);
+    return (t.i + size - 1) + (t.j + size - 1);
+  }
+
   // Draw a tile-sized sprite at (x,y), rotated `rot` × 90° clockwise about its
   // centre. Shared by the road and terrain-blend auto-tiling. Accepts a still-
   // loading <img> (skipped) or a ready offscreen canvas.
@@ -409,16 +466,22 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       : t.feature === Feature.BUSH ? 'bush.png' : undefined;
     if (!file) return;
     const im = this.img(TERRAIN_OBJECT_BASE + file);
-    if (ready(im)) this.drawContain(im!, t.j * TILE, t.i * TILE, TILE, TILE);
+    if (ready(im)) {
+      const p = this.tileObjectBase(t.i, t.j, 1);
+      const w = ISO_TILE_W * 0.72, h = ISO_TILE_H * 1.7;
+      this.drawContain(im!, p.x - w / 2, p.y - h, w, h);
+    }
   }
 
   private drawBuilding(t: Tile, b: Building) {
     const type = b.type;
     const size = GetBuildingSize(type);
-    const x = t.j * TILE, y = t.i * TILE, W = size * TILE, H = size * TILE;
+    const base = this.tileObjectBase(t.i, t.j, size);
+    const W = size * ISO_TILE_W * 0.96;
+    const H = Math.max(size * ISO_TILE_H * 1.8, size * TILE * 0.96);
+    const x = base.x - W / 2, y = base.y - H;
 
     if (type === BuildingType.ROAD) {
-      this.drawRoad(t, x, y);
       return;
     }
     if (IsFarmBuilding(type) && size > 1) {
@@ -437,6 +500,21 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     const im = this.img(this.artSrc(b));
     if (ready(im)) this.drawContain(im!, x + 1, y + 1, W - 2, H - 2, true);
     else this.drawEmoji(GetBuildingIcon(type), x + W / 2, y + H / 2, size * 16);
+  }
+
+  private tileObjectBase(i: number, j: number, size: number): { x: number, y: number } {
+    const center = gridToIso(this.city.h, (j + size / 2) * TILE, (i + size / 2) * TILE);
+    return { x: center.x, y: center.y + size * ISO_TILE_H / 2 };
+  }
+
+  private strokeFootprint(i: number, j: number, size: number) {
+    const pts = tileFootprintPolygon(this.city.h, i, j, size);
+    const ctx = this.ctx;
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let k = 1; k < pts.length; k++) ctx.lineTo(pts[k].x, pts[k].y);
+    ctx.closePath();
+    ctx.stroke();
   }
 
   // Auto-tiled road overlay. No opaque fill — a transparent sprite is drawn over

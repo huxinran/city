@@ -8,6 +8,7 @@ import { StatusSummaryComponent } from './status-summary/status-summary.componen
 import { TileDetailComponent } from './tile-detail/tile-detail.component';
 import { StateService } from './state.service';
 import { repaintOn } from './live';
+import { isoWorldSize } from './isometric';
 @Component({
   selector: 'app-root',
   imports: [CityComponent, TileDetailComponent, MenuComponent, PaletteComponent, ResourceSummaryComponent, StatusSummaryComponent],
@@ -55,7 +56,8 @@ export class AppComponent {
     const city = this.state.state.current_city!
     cam.x = this.panStart.camX - dx / cam.zoom
     cam.y = this.panStart.camY - dy / cam.zoom
-    clampCamera(cam, this.panBox.clientWidth, this.panBox.clientHeight, city.w * 48, city.h * 48)
+    const world = isoWorldSize(city.w, city.h)
+    clampCamera(cam, this.panBox.clientWidth, this.panBox.clientHeight, world.width, world.height)
     this.state.bumpCamera()
   }
 
