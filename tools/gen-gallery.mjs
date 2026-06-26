@@ -10,8 +10,9 @@ import path from 'path';
 const ROOT = process.argv[2] || 'public/assets';
 
 const IMG = /\.(png|jpg|jpeg|gif|webp|svg)$/i;
+const SKIP_DIRS = new Set(['_meta']);
 const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => {
-  if (e.name.startsWith('.')) return [];
+  if (e.name.startsWith('.') || SKIP_DIRS.has(e.name)) return [];
   const p = path.join(d, e.name);
   return e.isDirectory() ? walk(p) : [p];
 });
