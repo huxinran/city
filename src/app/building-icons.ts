@@ -277,7 +277,7 @@ const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
     [BuildingType.LUMBER_HUT]: 'wood.png',
     [BuildingType.STONE_QUARRY]: 'stone.png',
     [BuildingType.CLAY_PIT]: 'clay.png',
-    [BuildingType.SAND_PIT]: 'sand-pile-v2.png',
+    [BuildingType.SAND_PIT]: 'sand.png',
     [BuildingType.COAL_KILN]: 'coal.png',
     [BuildingType.IRON_MINE]: 'iron-ore.png',
     [BuildingType.GOLD_MINE]: 'gold-ore.png',

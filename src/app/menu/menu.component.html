@@ -1,6 +1,6 @@
 <div class="menu-wrap">
   <button class="menu-btn" (click)="toggle()" title="Menu">
-    <img src="assets/reserve/main-menu/main-menu-button-v1.png" alt="Menu" class="menu-icon">
+    <img src="assets/reserve/ui/button-v1.png" alt="Menu" class="menu-icon">
   </button>
 
   @if (open()) {
@@ -10,6 +10,8 @@
       <button class="menu-item" (click)="save()">Save</button>
       <button class="menu-item" (click)="load()">Load</button>
       <button class="menu-item" (click)="restart()">Restart</button>
+
+      <button class="menu-item" (click)="imageDirectory()">Image Directory</button>
 
       <button class="menu-item danger" [class.active]="submenu() === 'reset'" (click)="showSub('reset')">Reset ▸</button>
       @if (submenu() === 'reset') {

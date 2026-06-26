@@ -44,12 +44,23 @@ md += 'Three 16-tile sets, one per layer boundary. Files are `0.png`–`F.png` =
 md += '| folder | boundary | bit 1 = |\n|---|---|---|\n';
 md += '| `sand-sea/` | sand ↔ sea | sea |\n| `grass-sand/` | grass ↔ sand | grass |\n| `dirt-grass/` | dirt ↔ grass | dirt |\n\n';
 
-const reserveDirs = fs.readdirSync('reserve', { withFileTypes: true })
+// reserve/ is grouped into category folders (mirroring used/), each holding
+// one folder per item (plus a few leaf categories like coat-of-arms).
+const reserveCats = fs.readdirSync('reserve', { withFileTypes: true })
   .filter(e => e.isDirectory() && !e.name.startsWith('_')).map(e => e.name).sort();
 md += '---\n\n## `reserve/` — staging library\n\n';
-md += reserveDirs.length + ' item folders (plus `_meta/`, `_sheets/`). Each holds variants of one icon/sprite.\n\n';
-md += '<details><summary>All ' + reserveDirs.length + ' items</summary>\n\n';
-md += reserveDirs.map(d => '`' + d + '`').join(', ') + '\n\n</details>\n';
+md += 'Generated source art, grouped into ' + reserveCats.length + ' categories (mirroring `used/`). '
+   + 'Each item folder holds variants of one icon/sprite. Not referenced by code (except the menu '
+   + 'button); promote into `used/` when needed.\n\n';
+let reserveTotal = 0;
+for (const cat of reserveCats) {
+  const items = fs.readdirSync('reserve/' + cat, { withFileTypes: true })
+    .filter(e => e.isDirectory() && !e.name.startsWith('_')).map(e => e.name).sort();
+  if (!items.length) continue; // leaf category (files directly under it)
+  reserveTotal += items.length;
+  md += '<details><summary><code>' + cat + '/</code> · ' + items.length + ' items</summary>\n\n';
+  md += items.map(d => '`' + d + '`').join(', ') + '\n\n</details>\n\n';
+}
 
 fs.writeFileSync('INDEX.md', md);
-console.log('wrote ' + ROOT + '/INDEX.md (' + md.length + ' bytes, ' + usedFiles.length + ' used files, ' + reserveDirs.length + ' reserve items)');
+console.log('wrote ' + ROOT + '/INDEX.md (' + md.length + ' bytes, ' + usedFiles.length + ' used files, ' + reserveTotal + ' reserve items in ' + reserveCats.length + ' categories)');

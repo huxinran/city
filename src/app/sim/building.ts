@@ -71,12 +71,12 @@ export function GetResidentIcon(tier: Resident): string {
 }
 
 const RESIDENT_ICON_ASSETS: { [key: string]: string } = {
-    [Resident.FARMER]:       'assets/used/population/busts/farmer-bust.png',
-    [Resident.WORKER]:       'assets/used/population/busts/worker-bust.png',
-    [Resident.ARTISAN]:      'assets/used/population/busts/artisan-bust.png',
-    [Resident.SCHOLAR]:      'assets/used/population/busts/scholar-bust.png',
-    [Resident.ENTREPRENEUR]: 'assets/used/population/busts/entrepreneur-bust.png',
-    [Resident.MAGNATE]:      'assets/used/population/busts/magnate-bust.png',
+    [Resident.FARMER]:       'assets/used/population/busts/farmer-bust-v2-clean-alpha.png',
+    [Resident.WORKER]:       'assets/used/population/busts/worker-bust-v2-clean-alpha.png',
+    [Resident.ARTISAN]:      'assets/used/population/busts/artisan-bust-v2-clean-alpha.png',
+    [Resident.SCHOLAR]:      'assets/used/population/busts/scholar-bust-v2-clean-alpha.png',
+    [Resident.ENTREPRENEUR]: 'assets/used/population/busts/entrepreneur-bust-v2-clean-alpha.png',
+    [Resident.MAGNATE]:      'assets/used/population/busts/magnate-bust-v2-clean-alpha.png',
 }
 export function GetResidentIconAsset(tier: Resident): string {
     return RESIDENT_ICON_ASSETS[tier] ?? 'assets/used/population/farmer.png'
@@ -805,4 +805,3 @@ export function ValidateConfig(): string[] {
 
     return problems
 }
-

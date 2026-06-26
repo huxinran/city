@@ -134,6 +134,9 @@ export class StateService {
     }
   }
 
+  // Auto-save every 1500 ticks (~5 min at 200 ms/tick).
+  private readonly AUTO_SAVE_INTERVAL = 1500
+
   public Tick() {
     this.state.time += 1
     this.ShuffleBuildingLists(this.state.current_city!)
@@ -148,6 +151,7 @@ export class StateService {
     this.UpdateService(this.state.current_city!)
     this.UpdateRoutes()
     this.UpdateGold(this.state.current_city!)
+    if (this.state.time % this.AUTO_SAVE_INTERVAL === 0) this.Save()
     // Drive OnPush rendering of live data. Bump inside the zone so change
     // detection runs (the tick itself ran outside Angular).
     this.zone.run(() => this.frame.update(f => f + 1))

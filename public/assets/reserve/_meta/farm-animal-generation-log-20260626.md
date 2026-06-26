@@ -27,6 +27,20 @@
 - Final review sheet: `public/assets/reserve/farm-animals-20260626/contact-sheet-v2.png`
 - Best consistency anchors: pig, sheep, chicken, duck, goose.
 - Main correction made: replaced the first horse pass with `horse-v2.png` because the original horse direction still leaned too realistic compared with the round cow, pig, sheep, and chicken style.
+- Asset-library cleanup: promoted the live `pig-v2.png` and `horse-v2.png` art into the canonical
+  `public/assets/used/resources/pig.png` and `public/assets/used/resources/horse.png` filenames.
+  The previous live pig and horse files were moved to `public/assets/reserve/pig/` and
+  `public/assets/reserve/horse/` as `*-before-v2-swap-20260626.png`.
+- Unused new animal variants that were temporarily in `public/assets/used/resources/` were moved back
+  under their matching reserve folders: donkey, duck, goose, llama, turkey, and water-buffalo.
+- Created higher-resolution granular animal variants in
+  `public/assets/reserve/highres-animals-20260626/`. These preserve the original full-canvas
+  composition, subject proportions, and frame position, output at `2508x2508`, with mild sharpening
+  and subtle deterministic pixel texture on non-background pixels. Preview: `contact-sheet.png`.
+- Added a second image-generated redo pass for `pig`, `water-buffalo`, `donkey`, `turkey`, and
+  `goose` in `public/assets/reserve/highres-animals-20260626/`, using the cow, chicken, and sheep as
+  the primary style anchors. Files are named `*-redo-cuter.png`; preview:
+  `redo-cuter-contact-sheet.png`.
 - Remaining watch item: water buffalo horns are naturally large and detailed. They still read friendly, but future versions should keep horn shapes rounded and avoid making them sharper or more realistic.
 
 ## Prompt Pattern

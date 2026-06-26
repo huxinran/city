@@ -79,6 +79,8 @@ Revision:
   which maps to about 36px wide at 48px.
 - Previous direct image-gen active cuts were preserved as
   `*-direct-imagegen-before-production-mask-20260625.png`.
+- Shifted the active curb palette from warm yellow/gold to light gray while preserving the existing
+  transparent masks, cobblestone interiors, and connected-edge geometry.
 
 Connection rules:
 

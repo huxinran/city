@@ -55,7 +55,7 @@ const RESOURCE_ICON_FILES: { [key: string]: string } = {
   [Resource.POTTERY]: 'pottery.png',
   [Resource.PUMPKIN]: 'pumpkin.png',
   [Resource.SALT]: 'salt.png',
-  [Resource.SAND]: 'sand-pile-v2.png',
+  [Resource.SAND]: 'sand.png',
   [Resource.SAUSAGE]: 'sausage.png',
   [Resource.SLATE]: 'slate.png',
   [Resource.SOYBEAN]: 'soybean.png',

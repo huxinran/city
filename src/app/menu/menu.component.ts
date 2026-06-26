@@ -32,6 +32,10 @@ export class MenuComponent {
     this.submenu.update(s => s === name ? null : name)
   }
 
+  // Open the generated image gallery (public/assets/gallery.html) in a new tab.
+  // Regenerate it with: node tools/gen-gallery.mjs public/assets
+  imageDirectory() { window.open('assets/gallery.html', '_blank'); this.close() }
+
   save() { this.state.Save(); this.close() }
   load() { this.state.Load(); this.close() }
   restart() { this.state.Restart(); this.close() }
