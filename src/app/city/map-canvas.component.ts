@@ -87,6 +87,37 @@ const MAP_TILE_ASSETS: { [key: string]: { file: string, color: string } } = {
   [Terrain.DIRT]:  { file: 'dirt.png',  color: '#c4956a' },
 };
 
+// Terrain blending: a fixed LAYER STACK sea → sand → grass → dirt. A tile paints
+// its own texture, then any neighbour whose terrain is HIGHER in the stack
+// feathers its edge inward over this tile — so the higher layer bleeds onto the
+// lower (one-sided), blending instead of meeting at a hard grid edge. Only
+// ACTUALLY-adjacent terrains blend (===).
+const TERRAIN_PRECEDENCE: { [key: string]: number } = {
+  [Terrain.WATER]: 0, // base, never overlays
+  [Terrain.SAND]:  1,
+  [Terrain.GRASS]: 2,
+  [Terrain.DIRT]:  3, // top: dirt patches feather onto grass
+};
+// Overlaying layers in ASCENDING order so the highest paints last (on top).
+const TERRAIN_OVERLAY_ORDER = [Terrain.SAND, Terrain.GRASS, Terrain.DIRT];
+
+// The boundary SHAPE is the same for every layer, so it's authored once as two
+// reusable alpha MASKS and each layer's own flat texture is stamped through them
+// at load time — 2 sprites total, not 2 per layer.
+//   edge-mask    opaque along the TOP edge, feathering to transparent around the
+//                vertical centre. Two perpendicular edges union into a clean
+//                inner (concave) corner, so no inner-corner mask is needed.
+//   corner-mask  opaque in the TOP-RIGHT corner only — the outer (convex) corner,
+//                used when only a diagonal neighbour is the higher layer.
+// Canonical orientation (top / top-right); code rotates 90° CW for all sides.
+const BLEND_EDGE_MASK = MAP_TILE_BASE + 'blend/edge-mask.png';
+const BLEND_CORNER_MASK = MAP_TILE_BASE + 'blend/corner-mask.png';
+const TERRAIN_BLEND_TEXTURE: { [key: string]: string } = {
+  [Terrain.SAND]:  MAP_TILE_BASE + 'sand.png',
+  [Terrain.GRASS]: MAP_TILE_BASE + 'grass.png',
+  [Terrain.DIRT]:  MAP_TILE_BASE + 'dirt.png',
+};
+
 // The whole map (terrain + features + buildings) is drawn onto a single
 // viewport-sized <canvas>, replacing ~one Angular component per tile. It
 // repaints only when `mapVersion` or the camera changes — never on the per-tick
@@ -310,6 +341,71 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     this.ctx.fillRect(x, y, TILE, TILE);
     const im = this.img(MAP_TILE_BASE + asset.file);
     if (ready(im)) this.ctx.drawImage(im!, x, y, TILE, TILE);
+    this.drawBlend(t, x, y);
+  }
+
+  // Feather any higher-layer neighbouring terrain inward over this tile so
+  // adjacent terrains blend. For each layer (low→high) that outranks ours, draw
+  // its EDGE toward every side that touches it, and its CORNER at any diagonal
+  // that touches it where neither framing side does (the convex-corner case).
+  private drawBlend(t: Tile, x: number, y: number) {
+    const city = this.city, i = t.i, j = t.j;
+    const myPrec = TERRAIN_PRECEDENCE[t.terrain] ?? 0;
+    // Off-grid neighbours read as our own terrain, so the map border never feathers.
+    const terrAt = (ii: number, jj: number) =>
+      (ii < 0 || jj < 0 || ii >= city.h || jj >= city.w) ? t.terrain : city.tiles[ii * city.w + jj].terrain;
+    // Sides N,E,S,W (rotation 0..3) and diagonals NE,SE,SW,NW (rotation 0..3).
+    const side = [terrAt(i - 1, j), terrAt(i, j + 1), terrAt(i + 1, j), terrAt(i, j - 1)];
+    const diag = [terrAt(i - 1, j + 1), terrAt(i + 1, j + 1), terrAt(i + 1, j - 1), terrAt(i - 1, j - 1)];
+    // The two sides framing each diagonal (NE↔N,E  SE↔E,S  SW↔S,W  NW↔W,N).
+    const framing = [[0, 1], [1, 2], [2, 3], [3, 0]];
+    for (const X of TERRAIN_OVERLAY_ORDER) {
+      if ((TERRAIN_PRECEDENCE[X] ?? 0) <= myPrec) continue;
+      const edge = this.blendSprite(X, BLEND_EDGE_MASK);
+      const corner = this.blendSprite(X, BLEND_CORNER_MASK);
+      for (let d = 0; d < 4; d++) if (side[d] === X) this.drawRotated(edge, x, y, d);
+      for (let c = 0; c < 4; c++) {
+        const [a, b] = framing[c];
+        if (diag[c] === X && side[a] !== X && side[b] !== X) this.drawRotated(corner, x, y, c);
+      }
+    }
+  }
+
+  // The blend sprite for one layer = that layer's flat terrain texture stamped
+  // through an alpha mask, baked once into an offscreen canvas and cached. So the
+  // organic boundary is authored a single time (the mask) and reused by every
+  // layer. Returns undefined until both the texture and mask have loaded.
+  private blendCache = new Map<string, HTMLCanvasElement>();
+  private blendSprite(terrain: string, maskSrc: string): HTMLCanvasElement | undefined {
+    const key = terrain + '|' + maskSrc;
+    const hit = this.blendCache.get(key);
+    if (hit) return hit;
+    const tex = this.img(TERRAIN_BLEND_TEXTURE[terrain]);
+    const mask = this.img(maskSrc);
+    if (!ready(tex) || !ready(mask)) return undefined;
+    const c = document.createElement('canvas');
+    c.width = c.height = TILE;
+    const cx = c.getContext('2d')!;
+    cx.imageSmoothingEnabled = false;
+    cx.drawImage(tex!, 0, 0, TILE, TILE);
+    cx.globalCompositeOperation = 'destination-in'; // keep texture only where the mask is opaque
+    cx.drawImage(mask!, 0, 0, TILE, TILE);
+    this.blendCache.set(key, c);
+    return c;
+  }
+
+  // Draw a tile-sized sprite at (x,y), rotated `rot` × 90° clockwise about its
+  // centre. Shared by the road and terrain-blend auto-tiling. Accepts a still-
+  // loading <img> (skipped) or a ready offscreen canvas.
+  private drawRotated(im: CanvasImageSource | undefined, x: number, y: number, rot: number) {
+    if (!im || (im instanceof HTMLImageElement && !ready(im))) return;
+    const ctx = this.ctx;
+    if (rot === 0) { ctx.drawImage(im, x, y, TILE, TILE); return; }
+    ctx.save();
+    ctx.translate(x + TILE / 2, y + TILE / 2);
+    ctx.rotate(rot * Math.PI / 2);
+    ctx.drawImage(im, -TILE / 2, -TILE / 2, TILE, TILE);
+    ctx.restore();
   }
 
   private drawFeature(t: Tile) {
@@ -353,15 +449,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   // so the network connects (straights, corners, T-junctions, crossroads).
   private drawRoad(t: Tile, x: number, y: number) {
     const pick = ROAD_TILE_BY_MASK.get(this.roadMask(t.i, t.j))!;
-    const im = this.img(pick.src);
-    if (!ready(im)) return; // terrain shows through until the sprite loads
-    const ctx = this.ctx;
-    if (pick.rot === 0) { ctx.drawImage(im!, x, y, TILE, TILE); return; }
-    ctx.save();
-    ctx.translate(x + TILE / 2, y + TILE / 2);
-    ctx.rotate(pick.rot * Math.PI / 2);
-    ctx.drawImage(im!, -TILE / 2, -TILE / 2, TILE, TILE);
-    ctx.restore();
+    this.drawRotated(this.img(pick.src), x, y, pick.rot); // terrain shows through until the sprite loads
   }
 
   // Bitmask of which orthogonal neighbours are also roads: N=1, E=2, S=4, W=8.

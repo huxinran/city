@@ -196,3 +196,88 @@ Preview files:
 - `public/assets/reserve/_meta/map-tiles-cute-48/terrain-grid-preview-v16-base-only.png`
 
 Notes: these are feature-free terrain fields intended for cleaner repeated map rendering.
+
+## 2026-06-25 - 32px sand/sea shoreline blend Wang set
+
+Created a smaller 32x32 marching-squares / corner-Wang blend set for natural sand-to-sea shorelines.
+
+| Asset | Path |
+|------|------|
+| v1 blend set | `public/assets/used/map-tiles/blend/sand-sea-32/` |
+| v2 blend set | `public/assets/used/map-tiles/blend/sand-sea-32-v2/` |
+| v2 manifest | `public/assets/used/map-tiles/blend/sand-sea-32-v2/manifest.json` |
+| v2 usage notes | `public/assets/used/map-tiles/blend/sand-sea-32-v2/README.md` |
+| v2 tile sheet preview | `public/assets/used/map-tiles/blend/sand-sea-32-v2/_preview-4x4.png` |
+| v2 sample map preview | `public/assets/used/map-tiles/blend/sand-sea-32-v2/_preview-sample-map.png` |
+
+Notes: the v2 set uses mask bit order `NW=1`, `NE=2`, `SE=4`, `SW=8`, where bit value `1` means sea and `0` means sand. It adds a soft wet-sand / shallow-water band and cream foam pixels along the shore. Compatible Wang/marching-squares edges were checked pixel-for-pixel and match exactly. These assets are not wired into runtime code yet.
+
+## 2026-06-25 - style-matched 32px sand/sea shoreline blend set
+
+Created a revised 32x32 sand/sea marching-squares set matched to the large reserve references instead of the simplified active 48px base tiles.
+
+| Asset | Path |
+|------|------|
+| Source sand style reference | `public/assets/reserve/sand/sand-2.png` |
+| Source sea style reference | `public/assets/reserve/sea/sea-2.png` |
+| v4 style-match attempt | `public/assets/used/map-tiles/blend/sand-sea-32-v4-stylematch/` |
+| v5 style-match candidate | `public/assets/used/map-tiles/blend/sand-sea-32-v5-stylematch/` |
+| v5 manifest | `public/assets/used/map-tiles/blend/sand-sea-32-v5-stylematch/manifest.json` |
+| v5 usage notes | `public/assets/used/map-tiles/blend/sand-sea-32-v5-stylematch/README.md` |
+| v5 tile sheet preview | `public/assets/used/map-tiles/blend/sand-sea-32-v5-stylematch/_preview-4x4.png` |
+| v5 sample map preview | `public/assets/used/map-tiles/blend/sand-sea-32-v5-stylematch/_preview-sample-map.png` |
+
+Notes: v5 keeps the same mask bit order as v2: `NW=1`, `NE=2`, `SE=4`, `SW=8`, where bit value `1` means sea and `0` means sand. The style target is golden dappled sand, dark teal sea with small turquoise wave/glint accents, and a soft wet-sand / shallow-water / cream-foam shoreline. High-contrast border accents were muted after v4 showed visible vertical tile-boundary stripes. Compatible Wang/marching-squares edges were checked pixel-for-pixel and match exactly. These assets are not wired into runtime code yet.
+
+## 2026-06-25 - reference-sampled 64px grass/sand and dirt/grass blend sets
+
+Created two 64x64 corner-Wang transition sets by sampling the large reserve texture references directly. This version is intended to match the actual cozy pixel-art detail level more closely than the earlier procedural 32px attempts.
+
+| Asset | Path |
+|------|------|
+| Grass on sand final set | `public/assets/used/map-tiles/blend/grass-sand-64-v4-reference-sampled-edgefixed/` |
+| Grass on sand preview | `public/assets/used/map-tiles/blend/grass-sand-64-v4-reference-sampled-edgefixed/_preview-sample-map.png` |
+| Dirt on grass final set | `public/assets/used/map-tiles/blend/dirt-grass-64-v4-reference-sampled-edgefixed/` |
+| Dirt on grass preview | `public/assets/used/map-tiles/blend/dirt-grass-64-v4-reference-sampled-edgefixed/_preview-sample-map.png` |
+
+Notes: both sets use mask bit order `NW=1`, `NE=2`, `SE=4`, `SW=8`, where bit value `1` means the patch terrain (`grass` for grass/sand, `dirt` for dirt/grass). Interiors are sampled from the large reserve references, then the outermost borders are normalized for exact Wang compatibility. Compatible edges were checked pixel-for-pixel and match exactly. These assets are not wired into runtime code yet.
+
+## 2026-06-25 - edge-detail 64px terrain blend sets
+
+Revised the terrain transition sets to make the boundaries more visually interesting while keeping the reference-sampled texture style.
+
+| Asset | Path |
+|------|------|
+| Grass on sand edge-detail set | `public/assets/used/map-tiles/blend/grass-sand-64-v7-edge-detail-bold-edgefixed/` |
+| Dirt on grass edge-detail set | `public/assets/used/map-tiles/blend/dirt-grass-64-v7-edge-detail-bold-edgefixed/` |
+| Sand/sea edge-detail set | `public/assets/used/map-tiles/blend/sand-sea-64-v7-edge-detail-edgefixed/` |
+
+Notes: all three sets are 64x64 corner-Wang/marching-squares tile sets using mask bit order `NW=1`, `NE=2`, `SE=4`, `SW=8`. Edge details include grass tufts/leaves, dirt clods, pebbles, foam, shallow-water tint, and small wave glints depending on the terrain pair. Final v7 copies preserve the interior decoration and normalize the outermost borders so compatible edges match pixel-for-pixel. These assets are not wired into runtime code yet.
+
+## 2026-06-25 - high-resolution feature-forward terrain source sheet
+
+Generated a high-resolution 2x2 terrain source sheet using the Cute Pixel Game Assets style direction. The sheet is intended as reserve/source art for later slicing or repainting, not a runtime mapping update.
+
+| Asset | Path |
+|------|------|
+| High-resolution source sheet | `public/assets/reserve/_meta/map-tiles-cute-48/terrain-source-sheet-v17-highres-feature.png` |
+| 48px downscale proof | `public/assets/reserve/_meta/map-tiles-cute-48/terrain-source-sheet-v17-48px-proof.png` |
+| Enlarged 48px proof | `public/assets/reserve/_meta/map-tiles-cute-48/terrain-source-sheet-v17-48px-proof-4x.png` |
+| Generated source cache | `C:/Users/Xinran/.codex/generated_images/019effac-e6e3-7b11-a2e7-fd1d7001c8d5/ig_0fa979a1e09e8479016a3d5c1e1cfc819481179c5608bd0c95.png` |
+
+Notes: prompted for four large square source tiles: grass, sand, sea, and dirt. Each tile keeps one prominent terrain feature designed to survive downscaling to 48px: grass tuft, sand shell, sea foam crest, and dirt clod/sprout. A 48px proof was created from the generated sheet; the main feature remains legible in each tile. These assets are not wired into runtime code yet.
+
+Prompt summary: high-resolution 2x2 cute pixel-art terrain tile sheet for a cozy old-time city-builder, plain white gutters, top-left grass, top-right sand, bottom-left sea, bottom-right dirt, chunky pixels, warm highlights, dark brown/olive accents, mostly flat terrain fields, one bold feature occupying about 25-35% of each tile, calm low-contrast edges for repeated tiling, no text, no watermark, no dense speckled noise, and readable after downscaling to 48x48 pixels.
+
+## 2026-06-25 - runtime organic terrain alpha masks
+
+Replaced the placeholder runtime terrain blend masks with real 64x64 white-on-transparent alpha masks.
+
+| Asset | Path |
+|------|------|
+| Edge mask | `public/assets/used/map-tiles/blend/edge-mask.png` |
+| Corner mask | `public/assets/used/map-tiles/blend/corner-mask.png` |
+| Dark preview | `tmp/blend-alpha-masks-preview.png` |
+| Placeholder backups | `public/assets/reserve/map-tile-blend-masks/` |
+
+Notes: `edge-mask.png` is fully opaque across the entire top edge, spans both side borders, and reaches just past the centerline with an organic dithered boundary and small alpha specks below it. `corner-mask.png` is fully opaque in the top-right corner and uses the same organic feathering style for the rounded convex corner. No code changes were made; the existing terrain blend code already consumes these filenames.
