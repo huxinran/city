@@ -126,19 +126,6 @@ const TERRAIN_BLEND_TEXTURE: { [key: string]: string } = {
 // bulges coastline corners). Lower = smaller nub. Tune to taste.
 const CORNER_SCALE = 0.55;
 
-const TERRAIN_DETAIL_COLORS: { [key: string]: string[] } = {
-  [Terrain.WATER]: ['#2cb8df', '#6fe6ff', '#1e94c4'],
-  [Terrain.SAND]: ['#f8d07a', '#fff0aa', '#d9ad57'],
-  [Terrain.GRASS]: ['#79b84f', '#b6e978', '#5d9d3f'],
-  [Terrain.DIRT]: ['#a96f48', '#d09a62', '#7f533a'],
-};
-
-const TERRAIN_BOUNDARY_COLORS: { [key: string]: string[] } = {
-  [`${Terrain.WATER}|${Terrain.SAND}`]: ['#6cced6', '#fff1b7', '#d9b264'],
-  [`${Terrain.SAND}|${Terrain.GRASS}`]: ['#9bc864', '#f1d58a', '#6fab47'],
-  [`${Terrain.GRASS}|${Terrain.DIRT}`]: ['#9d744e', '#75af4c', '#c7925f'],
-};
-
 // The whole map (terrain + features + buildings) is drawn onto a single
 // viewport-sized <canvas>, replacing ~one Angular component per tile. It
 // repaints only when `mapVersion` or the camera changes — never on the per-tick
@@ -163,9 +150,6 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
   private images = new Map<string, HTMLImageElement>();
-  private imageVersion = 0;
-  private terrainSurface?: HTMLCanvasElement;
-  private terrainSurfaceKey = '';
   private redrawScheduled = false;
   private resizeObserver?: ResizeObserver;
 
@@ -337,7 +321,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     const at = (i: number, j: number) => city.tiles[i * city.w + j];
 
     // 1) terrain under every tile (including tiles a building covers).
-    this.drawTerrainSurface(i0, j0, i1, j1);
+    for (let i = i0; i <= i1; ++i) for (let j = j0; j <= j1; ++j) this.drawTerrain(at(i, j));
     // 2) removable tree/rock/bush decorations on bare land.
     for (let i = i0; i <= i1; ++i) for (let j = j0; j <= j1; ++j) {
       const t = at(i, j);
@@ -366,193 +350,6 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     const im = this.img(MAP_TILE_BASE + asset.file);
     if (ready(im)) this.ctx.drawImage(im!, x, y, TILE, TILE);
     this.drawBlend(t, x, y);
-  }
-
-  private drawTerrainSurface(i0: number, j0: number, i1: number, j1: number) {
-    const surface = this.getTerrainSurface();
-    const sx = j0 * TILE, sy = i0 * TILE;
-    const sw = (j1 - j0 + 1) * TILE, sh = (i1 - i0 + 1) * TILE;
-    this.ctx.drawImage(surface, sx, sy, sw, sh, sx, sy, sw, sh);
-  }
-
-  // Experimental terrain pass: render a continuous-looking painted surface once
-  // per terrain edit, then crop from it during normal camera draws. Gameplay
-  // remains tile-based; only the visual surface is richer.
-  private getTerrainSurface(): HTMLCanvasElement {
-    const city = this.city;
-    const terrainKey = city.tiles.map(t => t.terrain.charAt(0)).join('');
-    const key = `${city.w}x${city.h}|${this.imageVersion}|${terrainKey}`;
-    if (this.terrainSurface && this.terrainSurfaceKey === key) return this.terrainSurface;
-
-    const c = document.createElement('canvas');
-    c.width = city.w * TILE;
-    c.height = city.h * TILE;
-    const cx = c.getContext('2d')!;
-    cx.imageSmoothingEnabled = false;
-
-    this.paintTerrainBase(cx);
-    this.paintTerrainBoundaries(cx);
-    this.paintTerrainDetails(cx);
-
-    this.terrainSurface = c;
-    this.terrainSurfaceKey = key;
-    return c;
-  }
-
-  private paintTerrainBase(ctx: CanvasRenderingContext2D) {
-    const order = [Terrain.WATER, Terrain.SAND, Terrain.GRASS, Terrain.DIRT];
-    for (const terrain of order) this.paintTerrainLayer(ctx, terrain, terrain === Terrain.WATER ? 0 : 9);
-  }
-
-  private paintTerrainLayer(ctx: CanvasRenderingContext2D, terrain: Terrain, blurPx: number) {
-    const city = this.city;
-    const layer = document.createElement('canvas');
-    layer.width = city.w * TILE;
-    layer.height = city.h * TILE;
-    const lx = layer.getContext('2d')!;
-    lx.imageSmoothingEnabled = false;
-
-    const mask = document.createElement('canvas');
-    mask.width = layer.width;
-    mask.height = layer.height;
-    const mx = mask.getContext('2d')!;
-    mx.fillStyle = '#fff';
-
-    const asset = MAP_TILE_ASSETS[terrain] ?? MAP_TILE_ASSETS[Terrain.GRASS];
-    const im = this.img(MAP_TILE_BASE + asset.file);
-    for (const t of city.tiles) {
-      if (t.terrain !== terrain) continue;
-      const x = t.j * TILE, y = t.i * TILE;
-      lx.fillStyle = asset.color;
-      lx.fillRect(x, y, TILE, TILE);
-      if (ready(im)) lx.drawImage(im!, x, y, TILE, TILE);
-      mx.fillRect(x, y, TILE, TILE);
-    }
-
-    const alpha = blurPx > 0 ? document.createElement('canvas') : mask;
-    if (blurPx > 0) {
-      alpha.width = mask.width;
-      alpha.height = mask.height;
-      const ax = alpha.getContext('2d')!;
-      ax.filter = `blur(${blurPx}px)`;
-      ax.drawImage(mask, 0, 0);
-      ax.filter = 'none';
-    }
-    lx.globalCompositeOperation = 'destination-in';
-    lx.drawImage(alpha, 0, 0);
-    ctx.drawImage(layer, 0, 0);
-  }
-
-  private paintTerrainBoundaries(ctx: CanvasRenderingContext2D) {
-    const city = this.city;
-    const at = (i: number, j: number) => city.tiles[i * city.w + j];
-    for (let i = 0; i < city.h; i++) {
-      for (let j = 0; j < city.w; j++) {
-        const t = at(i, j);
-        if (j < city.w - 1) {
-          const e = at(i, j + 1);
-          if (e.terrain !== t.terrain) this.paintBoundaryEdge(ctx, (j + 1) * TILE, i * TILE, true, t.terrain, e.terrain, i * 928371 + j * 19237 + 17);
-        }
-        if (i < city.h - 1) {
-          const s = at(i + 1, j);
-          if (s.terrain !== t.terrain) this.paintBoundaryEdge(ctx, j * TILE, (i + 1) * TILE, false, t.terrain, s.terrain, i * 83719 + j * 53189 + 43);
-        }
-      }
-    }
-  }
-
-  private paintBoundaryEdge(ctx: CanvasRenderingContext2D, x: number, y: number, vertical: boolean,
-                            a: Terrain, b: Terrain, seed: number) {
-    const colors = this.boundaryColors(a, b);
-    const step = 8;
-    const segments = Math.ceil(TILE / step);
-    const points: { x: number, y: number }[] = [];
-    for (let n = 0; n <= segments; n++) {
-      const u = Math.min(TILE, n * step);
-      const wobble = Math.round(this.signedNoise(seed, n, 5.5));
-      points.push(vertical ? { x: x + wobble, y: y + u } : { x: x + u, y: y + wobble });
-    }
-    ctx.save();
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    this.strokeBoundaryPath(ctx, points, colors[0], 15, 0.48);
-    this.strokeBoundaryPath(ctx, points, colors[1], 5, 0.78);
-    for (let n = 0; n < segments; n++) {
-      if (this.noise(seed, n, 3) > 0.45) {
-        const dot = 2 + Math.floor(this.noise(seed, n, 4) * 3);
-        const u = n * step + this.noise(seed, n, 5) * step;
-        const drift = Math.round(this.signedNoise(seed, n, 6.5));
-        ctx.globalAlpha = 0.8;
-        ctx.fillStyle = colors[2];
-        ctx.fillRect(
-          Math.round(vertical ? x + drift : x + u),
-          Math.round(vertical ? y + u : y + drift),
-          dot,
-          dot
-        );
-      }
-    }
-    ctx.restore();
-    ctx.globalAlpha = 1;
-  }
-
-  private strokeBoundaryPath(ctx: CanvasRenderingContext2D, points: { x: number, y: number }[],
-                             color: string, width: number, alpha: number) {
-    if (points.length === 0) return;
-    ctx.beginPath();
-    ctx.moveTo(points[0].x, points[0].y);
-    for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
-    ctx.globalAlpha = alpha;
-    ctx.strokeStyle = color;
-    ctx.lineWidth = width;
-    ctx.stroke();
-  }
-
-  private paintTerrainDetails(ctx: CanvasRenderingContext2D) {
-    for (const t of this.city.tiles) {
-      const colors = TERRAIN_DETAIL_COLORS[t.terrain] ?? TERRAIN_DETAIL_COLORS[Terrain.GRASS];
-      const seed = t.i * 73856093 ^ t.j * 19349663;
-      const count = t.terrain === Terrain.WATER ? 2 : t.terrain === Terrain.GRASS ? 3 : 2;
-      for (let k = 0; k < count; k++) {
-        if (this.noise(seed, k, 0) < 0.35) continue;
-        const x = t.j * TILE + 5 + Math.floor(this.noise(seed, k, 1) * (TILE - 10));
-        const y = t.i * TILE + 5 + Math.floor(this.noise(seed, k, 2) * (TILE - 10));
-        ctx.globalAlpha = 0.38 + this.noise(seed, k, 3) * 0.28;
-        ctx.fillStyle = colors[k % colors.length];
-        if (t.terrain === Terrain.WATER) {
-          ctx.fillRect(x, y, 8, 2);
-          ctx.fillRect(x + 3, y + 2, 5, 1);
-        } else if (t.terrain === Terrain.GRASS) {
-          ctx.fillRect(x, y + 3, 2, 4);
-          ctx.fillRect(x + 2, y + 1, 2, 6);
-          ctx.fillRect(x + 4, y + 4, 2, 3);
-        } else {
-          ctx.fillRect(x, y, 4, 3);
-          ctx.fillRect(x + 4, y + 1, 2, 2);
-        }
-      }
-    }
-    ctx.globalAlpha = 1;
-  }
-
-  private boundaryColors(a: Terrain, b: Terrain): string[] {
-    const pa = TERRAIN_PRECEDENCE[a] ?? 0;
-    const pb = TERRAIN_PRECEDENCE[b] ?? 0;
-    const lower = pa <= pb ? a : b;
-    const upper = pa <= pb ? b : a;
-    return TERRAIN_BOUNDARY_COLORS[`${lower}|${upper}`]
-      ?? [TERRAIN_DETAIL_COLORS[upper]?.[0] ?? '#ffffff', TERRAIN_DETAIL_COLORS[lower]?.[1] ?? '#ffffff', TERRAIN_DETAIL_COLORS[upper]?.[1] ?? '#ffffff'];
-  }
-
-  private noise(seed: number, a: number, b = 0): number {
-    let x = (seed ^ (a * 374761393) ^ (b * 668265263)) | 0;
-    x = Math.imul(x ^ (x >>> 15), 2246822519);
-    x = Math.imul(x ^ (x >>> 13), 3266489917);
-    return ((x ^ (x >>> 16)) >>> 0) / 4294967295;
-  }
-
-  private signedNoise(seed: number, a: number, amplitude: number): number {
-    return (this.noise(seed, a) * 2 - 1) * amplitude;
   }
 
   // Feather any higher-layer neighbouring terrain inward over this tile so
@@ -748,11 +545,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     let im = this.images.get(src);
     if (!im) {
       im = new Image();
-      im.onload = () => {
-        this.imageVersion++;
-        this.terrainSurfaceKey = '';
-        this.requestRedraw();
-      };
+      im.onload = () => this.requestRedraw();
       im.src = src;
       this.images.set(src, im);
     }
