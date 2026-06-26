@@ -97,3 +97,84 @@ Used-resource staging copies:
 - Tin v2: `public/assets/used/resources/tin-ore-from-iron-template-v2.png`
 
 Integration notes: no app mappings, imports, manifests used by runtime code, or build files were updated.
+
+## Steel ingot 1-over-2 iron-perspective candidate - 2026-06-26
+
+- Asset: `public/assets/reserve/resources/steel/steel-ingot-1over2-iron-perspective-v1.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f04e2-e996-79d0-9f36-5394897cb985/ig_0251852b0c20d03e016a3eb50cfe908190a25283ba9940b26a.png`
+- Prompt intent: regenerate steel ingot as a 1-over-2 stack like the current steel icon, but with the lower, more physically plausible perspective of the current iron ingot icon.
+- Notes: reserve-only candidate; no `public/assets/used` files edited.
+
+## Steel ingot 1-over-2 iron-perspective candidate v2 - 2026-06-26
+
+- Asset: `public/assets/reserve/resources/steel/steel-ingot-1over2-iron-perspective-v2.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f04e2-e996-79d0-9f36-5394897cb985/ig_0cecc11da07c826c016a3eb5a17c10819493d08803b3b1d3fb.png`
+- Prompt intent: stricter revision of the steel ingot stack with lower iron-like perspective, shorter/chunkier bars, more prominent front faces, and the same one-over-two arrangement.
+- Notes: reserve-only candidate; no `public/assets/used` files edited.
+
+## Steel ingot 1-over-2 iron-perspective candidate v3 - 2026-06-26
+
+- Asset: `public/assets/reserve/resources/steel/steel-ingot-1over2-iron-perspective-v3.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f04e2-e996-79d0-9f36-5394897cb985/ig_0da85e1d03dbfbdd016a3eb5f16e448196a307a22d3bccd4ce.png`
+- Prompt intent: redo with a much lower iron-like perspective: flatter longer steel bars, broad front faces, shallow top planes, while preserving the one-over-two stack arrangement.
+- Notes: reserve-only candidate; no `public/assets/used` files edited.
+
+## Selected steel ingot candidate - 2026-06-26
+
+- Selected asset: `public/assets/reserve/resources/steel/steel-ingot-1over2-iron-perspective-v2.png`
+- User feedback: v2 is the best candidate to use.
+- Notes: selection recorded only; no `public/assets/used` files edited, copied, promoted, deleted, or replaced.
+
+## Ingot material set from selected steel v2 - 2026-06-26
+
+- Source geometry: `public/assets/reserve/resources/steel/steel-ingot-1over2-iron-perspective-v2.png`
+- Gold: `public/assets/reserve/resources/gold-ingot/gold-ingot-1over2-steel-v2-v1.png`
+- Silver: `public/assets/reserve/resources/silver-ingot/silver-ingot-1over2-steel-v2-v1.png`
+- Copper: `public/assets/reserve/resources/copper-ingot/copper-ingot-1over2-steel-v2-v1.png`
+- Iron: `public/assets/reserve/resources/iron-ingot/iron-ingot-1over2-steel-v2-v1.png`
+- Steel: `public/assets/reserve/resources/steel/steel-ingot-1over2-material-set-v1.png`
+- Preview: `public/assets/reserve/_meta/ingot-material-set-from-steel-v2-preview.png`
+- Notes: reserve-only material set; no `public/assets/used` files edited, copied, promoted, deleted, or replaced.
+
+## Ore baseline cluster prime v1 - 2026-06-26
+
+- Asset: `public/assets/reserve/resources/ore-baseline/ore-baseline-cluster-prime-v1.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f04e2-e996-79d0-9f36-5394897cb985/ig_0ca98712aec16b9a016a3ebba65f788193a3114c714994ec90.png`
+- Prompt intent: create a neutral ore-family baseline inspired by gold ore's appealing vein style, but fuller like iron ore with a 4-5 rock cluster instead of a single sparse boulder.
+- Notes: reserve-only candidate; no `public/assets/used` files edited, copied, promoted, deleted, or replaced.
+
+## Ore baseline goldlike prime v2 - 2026-06-26
+
+- Asset: `public/assets/reserve/resources/ore-baseline/ore-baseline-goldlike-prime-v2.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f04e2-e996-79d0-9f36-5394897cb985/ig_0830bce3fe0c1c08016a3ebdb727488193a72e74078322e0de.png`
+- Prompt intent: revise ore baseline toward the current gold ore composition with fewer pieces: one dominant boulder plus two attached chunks, fuller than a single sparse rock but less busy than v1.
+- Notes: reserve-only candidate; no `public/assets/used` files edited, copied, promoted, deleted, or replaced.
+
+## Ore baseline goldlike obvious veins v3 - 2026-06-26
+
+- Asset: `public/assets/reserve/resources/ore-baseline/ore-baseline-goldlike-obvious-veins-v3.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f04e2-e996-79d0-9f36-5394897cb985/ig_09d43ebbffa302bf016a3ebe7cb4188193b19beabc7d678418.png`
+- Prompt intent: keep the v2 gold-ore-like massing with one main boulder plus two attached chunks, but make the mineral veins wider, brighter, and higher contrast for small-icon readability.
+- Notes: reserve-only candidate; no `public/assets/used` files edited, copied, promoted, deleted, or replaced.
+
+## Ore material set from selected goldlike prime v2 - 2026-06-26
+
+- Source geometry: `public/assets/reserve/resources/ore-baseline/ore-baseline-goldlike-prime-v2.png`
+- Gold: `public/assets/reserve/resources/gold-ore/gold-ore-goldlike-prime-v2-v1.png`
+- Silver: `public/assets/reserve/resources/silver-ore/silver-ore-goldlike-prime-v2-v1.png`
+- Copper: `public/assets/reserve/resources/copper-ore/copper-ore-goldlike-prime-v2-v1.png`
+- Iron: `public/assets/reserve/resources/iron-ore/iron-ore-goldlike-prime-v2-v1.png`
+- Tin: `public/assets/reserve/resources/tin-ore/tin-ore-goldlike-prime-v2-v1.png`
+- Preview: `public/assets/reserve/_meta/ore-material-set-from-goldlike-prime-v2-preview.png`
+- Notes: reserve-only material set; no `public/assets/used` files edited, copied, promoted, deleted, or replaced.
+
+## Ore material set from old gold ore base - 2026-06-26
+
+- Source geometry: `public/assets/used/resources/gold-ore.png` read only
+- Gold: `public/assets/reserve/resources/gold-ore/gold-ore-old-gold-base-v1.png`
+- Silver: `public/assets/reserve/resources/silver-ore/silver-ore-old-gold-base-v1.png`
+- Copper: `public/assets/reserve/resources/copper-ore/copper-ore-old-gold-base-v1.png`
+- Iron: `public/assets/reserve/resources/iron-ore/iron-ore-old-gold-base-red-vein-v1.png`
+- Tin: `public/assets/reserve/resources/tin-ore/tin-ore-old-gold-base-v1.png`
+- Preview: `public/assets/reserve/_meta/ore-material-set-from-old-gold-ore-preview.png`
+- Notes: reserve-only material set; iron veins were made redder than copper; no `public/assets/used` files edited, copied, promoted, deleted, or replaced.

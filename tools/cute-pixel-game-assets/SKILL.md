@@ -14,13 +14,14 @@ Create polished, cute, cartoon-ish pixel-art visual assets that match the saved 
 3. Generate one asset per image for best consistency and easier review, unless the user explicitly asks for a sheet.
 4. Ask for transparent backgrounds for sprite-like project assets. Use a clean plain white background when matching the source-art/reference-sheet look. If the generator returns a non-transparent or white-background image, save it as-is and explain the limitation instead of removing the background.
 5. Focus only on image generation, saving, and bookkeeping. Do not remove backgrounds, chroma-key, alpha-clean, crop, resize, or otherwise post-process generated images unless the user explicitly asks for that specific operation.
-6. Do not integrate generated assets into the codebase. Do not update app mappings, imports, manifests used by runtime code, build files, or other source files unless the user explicitly asks for integration.
-7. Save generated image assets into the active project in an appropriate asset/source folder, using the repo's existing naming/location conventions when they are obvious.
-8. Preserve generated originals under Codex's generated image cache; copy into the project instead of moving.
-9. Never delete generated image assets during iteration. When recreating, revising, or iterating on one asset, always save the new result as a new version with a versioned/descriptive filename such as `<name>-v2.png` or `<name>-blue.png`; do not overwrite the old image.
-10. When revising an existing generated asset, inspect the old version first and compare it against the user's feedback before writing the new prompt.
-11. When creating an asset that belongs to a family or tier set, inspect existing sibling assets first and keep the family coherent.
-12. Keep lightweight bookkeeping for generated batches, such as a local notes file or generation log that records asset names, saved paths, source-cache paths, prompts, feedback, family/tier notes, and version notes. This bookkeeping must not wire assets into runtime code.
+6. Do not integrate generated assets into the codebase. Do not update app mappings, imports, manifests used by runtime code, build files, or other source files.
+7. Save generated image assets into the active project under `public/assets/reserve/...` only, using the repo's existing reserve naming/location conventions when they are obvious. Treat `public/assets/used/...` as a curated runtime/published area, not a work area.
+8. Do not write, overwrite, revise, recolor, regenerate, copy, promote, or stage files in `public/assets/used/...`. The user handles all deletion, replacement, and promotion into `used`.
+9. Preserve generated originals under Codex's generated image cache; copy into the project instead of moving.
+10. Never delete or replace existing image assets anywhere in the project. When recreating, revising, or iterating on one asset, always save the new result in `public/assets/reserve/...` as a new version with a versioned/descriptive filename such as `<name>-v2.png` or `<name>-blue.png`; do not overwrite the old image.
+11. When revising an existing generated asset, inspect the old version first and compare it against the user's feedback before writing the new prompt.
+12. When creating an asset that belongs to a family or tier set, inspect existing sibling assets first and keep the family coherent.
+13. Keep lightweight bookkeeping for generated batches, such as a local notes file or generation log that records asset names, saved reserve paths, source-cache paths, prompts, feedback, family/tier notes, and version notes. This bookkeeping must not wire assets into runtime code.
 
 ## Style
 
