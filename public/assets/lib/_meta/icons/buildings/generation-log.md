@@ -75,9 +75,9 @@
   - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019eed85-ad70-76f0-b90e-7f2011969d0c/ig_0a6751b6ab721319016a39549b2e40819698f345e582b7778b.png`
   - Notes: saved as generated; standalone wooden merchant ship with three masts, cream sails, rigging, cargo crates/barrels, and no dock/building. No background cleanup, app mapping, runtime manifest wiring, or code integration.
 
-- `dock-v4-with-3-mast-ship.png`
+- `dock-v4.png`
   - Request: make the dock use the same ship style as the accepted standalone ship.
-  - Saved path: `public/assets/icons/buildings/dock-v4-with-3-mast-ship.png`
+  - Saved path: `public/assets/icons/buildings/dock-v4.png`
   - Generated source cache: `C:/Users/Xinran/.codex/generated_images/019eed85-ad70-76f0-b90e-7f2011969d0c/ig_0cc251f1d0ad4dcb016a39566651b08197823ca36a5502a78b.png`
   - Notes: saved as generated; dock site with dock house, cargo platform, crane hook, crates/barrels, and a prominent three-mast wooden merchant ship matching `ship-3-mast.png`. No background cleanup, app mapping, runtime manifest wiring, or code integration.
 
@@ -248,7 +248,7 @@
   - Request: tier 5 should have no tower, a mirrored/symmetrical side wing, and an orange roof. Tier 6 should keep matching round towers, move the right tower forward for symmetry, and preserve a strict isometric view.
   - Saved paths:
     - `public/assets/lib/buildings/house-tier-5/house-tier-5-v3-no-tower-orange-white.png`
-    - `public/assets/lib/buildings/house-tier-6/house-tier-6-v3-isometric-forward-round-tower-white.png`
+    - `public/assets/lib/buildings/house-tier-6/v3.png`
   - Generated source cache:
     - Tier 5: `/Users/xinranhu/.codex/generated_images/019f066f-147c-7640-a4f7-2bc3b7ba610f/ig_0d73776353546bbd016a3f1ac01cb08195b5eb5ca15359d054.png`
     - Tier 6: `/Users/xinranhu/.codex/generated_images/019f066f-147c-7640-a4f7-2bc3b7ba610f/ig_0b3dd08466442919016a3f1be3b26481938f82891795ccc147.png`
@@ -256,6 +256,6 @@
 
 - Housing tier 5 orange integrated tower revision candidate
   - Request: redo tier 5 to stay close to the old fancy design, below tier 6 but above tier 4, with the tower part of the building and clearly three stories; corrected follow-up: roof color should be orange.
-  - Saved path: `public/assets/lib/buildings/house-tier-5/house-tier-5-v4-orange-integrated-3-story-tower-white.png`
+  - Saved path: `public/assets/lib/buildings/house-tier-5/v4.png`
   - Generated source cache: `/Users/xinranhu/.codex/generated_images/019f066f-147c-7640-a4f7-2bc3b7ba610f/ig_0cdd5f68fde26e55016a3f20bf3b3881978c89cb97c386c81f.png`
   - Notes: saved as generated review candidate on a plain white RGB background. Keeps the old tier 5 manor massing and fanciness, changes the roof to warm orange/terracotta, and integrates one right-side round tower down to the base with three stacked window levels. No background cleanup, app mapping, runtime manifest wiring, or code integration.

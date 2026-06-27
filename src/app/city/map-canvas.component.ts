@@ -163,6 +163,9 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
   private images = new Map<string, HTMLImageElement>();
+  private visualHitTiles: Tile[] = [];
+  private visualHitVersion = -1;
+  private visualHitCity?: City;
   private redrawScheduled = false;
   private resizeObserver?: ResizeObserver;
   private cameraInitialized = false;
@@ -231,7 +234,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   private updateCursor() {
     if (!this.canvas) return;
     const del = this.state.state.build_type === BuildingType.DELETE;
-    this.canvas.style.cursor = del ? SHOVEL_CURSOR : '';
+    this.canvas.style.cursor = this.state.poodle.mode ? 'crosshair' : del ? SHOVEL_CURSOR : '';
   }
 
   private updateDraggable(e: MouseEvent) {
@@ -243,10 +246,13 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   // tiles), or undefined for empty land / roads — which can't be moved.
   private movableAnchor(clientX: number, clientY: number): Tile | undefined {
     const pos = this.tileAt(clientX, clientY);
-    if (!pos) return undefined;
-    const tile = this.state.GetTile(this.city, pos.i, pos.j);
-    const anchor = tile.covered ? this.state.GetTile(this.city, tile.anchor_i, tile.anchor_j) : tile;
-    if (!anchor.building || anchor.building.type === BuildingType.ROAD) return undefined;
+    let anchor: Tile | undefined;
+    if (pos) {
+      const tile = this.state.GetTile(this.city, pos.i, pos.j);
+      anchor = tile.covered ? this.state.GetTile(this.city, tile.anchor_i, tile.anchor_j) : tile;
+    }
+    if (!anchor?.building) anchor = this.visualBuildingAt(clientX, clientY);
+    if (!anchor?.building || anchor.building.type === BuildingType.ROAD) return undefined;
     return anchor;
   }
 
@@ -263,8 +269,54 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
 
   private onClick(e: MouseEvent) {
     const pos = this.tileAt(e.clientX, e.clientY);
-    if (!pos) return;
-    this.state.HandleTileClick(this.state.GetTile(this.city, pos.i, pos.j));
+    const visualAnchor = this.visualBuildingAt(e.clientX, e.clientY);
+    if (!pos && !visualAnchor) return;
+    let tile = pos ? this.state.GetTile(this.city, pos.i, pos.j) : visualAnchor!;
+    if (this.state.poodle.mode) {
+      if (!pos) return;
+      this.state.SendPoodleTo(tile);
+      return;
+    }
+    if (visualAnchor && (this.state.state.build_type === BuildingType.DELETE || !this.state.state.build_type)) {
+      tile = visualAnchor;
+    }
+    this.state.HandleTileClick(tile);
+  }
+
+  private visualBuildingAt(clientX: number, clientY: number): Tile | undefined {
+    const rect = this.canvas.getBoundingClientRect();
+    const p = screenToWorld(this.state.camera, clientX - rect.left, clientY - rect.top);
+    let hit: { tile: Tile, depth: number, order: number } | undefined;
+    for (const tile of this.visualBuildingHitTiles()) {
+      const building = tile.building;
+      if (!building || building.type === BuildingType.ROAD) continue;
+      const b = this.buildingVisualBounds(tile, building);
+      if (p.x < b.x || p.x > b.x + b.w || p.y < b.y || p.y > b.y + b.h) continue;
+      const depth = this.buildingDepth(tile, building);
+      const order = tile.i * this.city.w + tile.j;
+      if (!hit || depth > hit.depth || (depth === hit.depth && order > hit.order)) {
+        hit = { tile, depth, order };
+      }
+    }
+    return hit?.tile;
+  }
+
+  private visualBuildingHitTiles(): Tile[] {
+    const version = this.state.mapVersion();
+    if (this.visualHitCity === this.city && this.visualHitVersion === version) return this.visualHitTiles;
+
+    this.visualHitTiles = [
+      ...this.city.houses,
+      ...this.city.productions,
+      ...this.city.services,
+      ...this.city.warehouses,
+      ...this.city.shipyards,
+      ...this.city.docks,
+      ...this.city.universities,
+    ].filter(t => !!t.building && t.building.type !== BuildingType.ROAD);
+    this.visualHitVersion = version;
+    this.visualHitCity = this.city;
+    return this.visualHitTiles;
   }
 
   // Right-click anywhere on the map cancels whatever is selected (build tool,
@@ -447,6 +499,33 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     return (t.i + size - 1) + (t.j + size - 1);
   }
 
+  private buildingVisualBounds(t: Tile, b: Building): { x: number, y: number, w: number, h: number } {
+    const type = b.type;
+    const size = GetBuildingSize(type);
+    const base = this.tileObjectBase(t.i, t.j, size);
+    const W = size * ISO_TILE_W * 0.96;
+    const H = Math.max(size * ISO_TILE_H * 1.8, size * TILE * 0.96);
+    const x = base.x - W / 2, y = base.y - H;
+
+    if (IsFarmBuilding(type) && size > 1) {
+      const animal = IsAnimalFarm(type);
+      const w = size * ISO_TILE_W * (animal ? 0.94 : 0.98);
+      const h = animal
+        ? Math.max(size * ISO_TILE_H * 3.0, size * TILE * 1.6)
+        : Math.max(size * ISO_TILE_H * 3.08, size * TILE * 1.64);
+      return { x: base.x - w / 2, y: base.y - h * (animal ? 0.71 : 0.69), w, h };
+    }
+    if (IsMineCampBuilding(type) && size > 1) {
+      const w = W * 0.91, h = H * 0.91;
+      return { x: base.x - w / 2, y: y + H * 0.20, w, h };
+    }
+    if (IsWorkshopBuilding(type) && size > 1) {
+      const w = W * 0.90, h = H * 0.90;
+      return { x: base.x - w / 2, y: y + H * 0.22, w, h };
+    }
+    return { x, y, w: W, h: H };
+  }
+
   // Draw a tile-sized sprite at (x,y), rotated `rot` × 90° clockwise about its
   // centre. Shared by the road and terrain-blend auto-tiling. Accepts a still-
   // loading <img> (skipped) or a ready offscreen canvas.
@@ -486,22 +565,25 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       return;
     }
     if (IsFarmBuilding(type) && size > 1) {
-      const farmW = size * ISO_TILE_W * 0.94;
-      const farmH = Math.max(size * ISO_TILE_H * 3.0, size * TILE * 1.6);
+      const animal = IsAnimalFarm(type);
+      const farmW = size * ISO_TILE_W * (animal ? 0.94 : 0.98);
+      const farmH = animal
+        ? Math.max(size * ISO_TILE_H * 3.0, size * TILE * 1.6)
+        : Math.max(size * ISO_TILE_H * 3.08, size * TILE * 1.64);
       const farmX = base.x - farmW / 2;
-      const farmY = base.y - farmH * 0.71;
-      this.drawComposite(b, this.img(IsAnimalFarm(type) ? ANIMAL_FARM_ICON : CROP_FARM_ICON),
-                         farmX, farmY, farmW, farmH, 'farm');
+      const farmY = base.y - farmH * (animal ? 0.71 : 0.69);
+      this.drawComposite(b, this.img(animal ? ANIMAL_FARM_ICON : CROP_FARM_ICON),
+                         farmX, farmY, farmW, farmH, animal ? 'animalFarm' : 'cropFarm');
       return;
     }
     if (IsMineCampBuilding(type) && size > 1) {
-      const scaledW = W * 0.94, scaledH = H * 0.94;
-      this.drawComposite(b, this.img(MINE_CAMP_ICON), base.x - scaledW / 2, y + H * 0.18, scaledW, scaledH, 'workshop');
+      const scaledW = W * 0.91, scaledH = H * 0.91;
+      this.drawComposite(b, this.img(MINE_CAMP_ICON), base.x - scaledW / 2, y + H * 0.20, scaledW, scaledH, 'workshop');
       return;
     }
     if (IsWorkshopBuilding(type) && size > 1) {
-      const scaledW = W * 0.94, scaledH = H * 0.94;
-      this.drawComposite(b, this.img(WORKSHOP_ICON), base.x - scaledW / 2, y + H * 0.18, scaledW, scaledH, 'workshop');
+      const scaledW = W * 0.90, scaledH = H * 0.90;
+      this.drawComposite(b, this.img(WORKSHOP_ICON), base.x - scaledW / 2, y + H * 0.22, scaledW, scaledH, 'workshop');
       return;
     }
     // Single icon filling the footprint (houses use tier art via artSrc).
@@ -544,18 +626,20 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   }
 
   // Background art filling the footprint, with product icon(s) overlaid:
-  // farms show a row of three produce icons; workshops/mine camps show one
-  // product pinned bottom-right.
+  // crop farms show a row of three produce icons; animal farms get their moving
+  // sprites from the live overlay canvas; workshops/mine camps show one product
+  // pinned bottom-right.
   private drawComposite(b: Building, bg: HTMLImageElement | undefined,
-                        x: number, y: number, W: number, H: number, kind: 'farm' | 'workshop') {
+                        x: number, y: number, W: number, H: number, kind: 'cropFarm' | 'animalFarm' | 'workshop') {
     if (ready(bg)) {
       // Workshops overscan slightly (the old CSS inset:-4%); farms fill exactly.
       const o = kind === 'workshop' ? 0.04 : 0;
       this.drawContain(bg!, x - W * o, y - H * o, W * (1 + 2 * o), H * (1 + 2 * o), true);
     }
+    if (kind === 'animalFarm') return;
     const prod = this.img(this.artSrc(b));
     const emoji = GetBuildingIcon(b.type);
-    if (kind === 'farm') {
+    if (kind === 'cropFarm') {
       const isz = W * 0.16;
       const cx = x + W / 2, cy = y + H * 0.60;
       const gap = isz * 1.1;
@@ -567,7 +651,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
         else this.drawEmoji(emoji, px, py, isz);
       }
     } else {
-      const isz = W * 0.38, px = x + W * 0.92 - isz, py = y + H * 0.80 - isz;
+      const isz = W * 0.22, px = x + W * 0.64 - isz, py = y + H * 0.76 - isz;
       if (ready(prod)) this.drawContain(prod!, px, py, isz, isz, true);
       else this.drawEmoji(emoji, px + isz / 2, py + isz / 2, isz);
     }

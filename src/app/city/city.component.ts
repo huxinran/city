@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { MapCanvasComponent } from './map-canvas.component';
 import { CartLayerComponent } from './cart-layer.component';
+import { PoodleLayerComponent } from './poodle-layer.component';
 import { City } from '../sim/city';
 import { GetBuildingSize } from '../sim/building';
 import { StateService } from '../state.service';
@@ -14,7 +15,7 @@ const TILE = GRID_TILE;
 
 @Component({
   selector: 'app-city',
-  imports: [MapCanvasComponent, CartLayerComponent, CommonModule],
+  imports: [MapCanvasComponent, CartLayerComponent, PoodleLayerComponent, CommonModule],
   templateUrl: './city.component.html',
   styleUrl: './city.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

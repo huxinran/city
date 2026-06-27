@@ -3,6 +3,7 @@
 # Compiled output
 /dist
 /tmp
+tmp-*.png
 /out-tsc
 /bazel-out
 

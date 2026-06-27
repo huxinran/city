@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Input, NgZone, OnDestroy, OnInit, inject } from '@angular/core';
 import { City } from '../sim/city';
 import { Cart } from '../sim/building';
+import { GetBuildingSize, IsAnimalFarm } from '../sim/building';
 import { ShippingTaskType } from '../sim/types';
 import { StateService } from '../state.service';
+import { GetBuildingMapIconSrc } from '../building-icons';
 import { applyCameraTransform } from '../camera';
-import { GRID_TILE, gridToIso } from '../isometric';
+import { GRID_TILE, ISO_TILE_H, ISO_TILE_W, gridToIso } from '../isometric';
 
 const TILE = GRID_TILE;
 // Matches the old DOM `transition: left/top 0.2s linear`. The sim updates a
@@ -32,6 +34,14 @@ const CART_VISUALS = {
 // Per-cart animation state. `to` is the latest position the sim implies; `cx/cy`
 // is where we actually drew last frame; on a new `to` we tween from cx/cy.
 interface CartAnim { fromX: number, fromY: number, toX: number, toY: number, start: number, cx: number, cy: number }
+interface AnimalAnim { x: number, y: number, tx: number, ty: number, nextAt: number, flip: boolean }
+interface AnimalSprite {
+  key: string;
+  img: HTMLImageElement;
+  x: number;
+  y: number;
+  size: number;
+}
 
 // Carts are drawn onto a single <canvas> from a requestAnimationFrame loop that
 // runs OUTSIDE Angular. This replaces a per-cart DOM element + Angular change
@@ -57,6 +67,10 @@ export class CartLayerComponent implements OnInit, OnDestroy {
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
   private anims = new Map<Cart, CartAnim>();
+  private animalAnims = new Map<string, AnimalAnim>();
+  private animalSprites: AnimalSprite[] = [];
+  private animalSpriteVersion = -1;
+  private animalSpriteCity?: City;
   private images = new Map<string, HTMLImageElement>();
 
   // Ambient ship state: x position (in tiles), travel direction, last timestamp.
@@ -100,6 +114,8 @@ export class CartLayerComponent implements OnInit, OnDestroy {
     ctx.shadowBlur = 3;
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 2;
+
+    this.drawAnimalFarms(now);
 
     const seen = new Set<Cart>();
     for (const t of this.city.warehouses) {
@@ -148,6 +164,86 @@ export class CartLayerComponent implements OnInit, OnDestroy {
     ctx.restore();
   }
 
+  private drawAnimalFarms(now: number) {
+    this.refreshAnimalSprites();
+    for (const sprite of this.animalSprites) {
+      this.drawAnimalSprite(sprite.key, sprite.img, sprite.x, sprite.y, sprite.size, now);
+    }
+  }
+
+  private refreshAnimalSprites() {
+    const version = this.state.mapVersion();
+    if (this.animalSpriteCity === this.city && this.animalSpriteVersion === version) return;
+
+    const sprites: AnimalSprite[] = [];
+    const liveKeys = new Set<string>();
+    for (const t of this.city.productions) {
+      if (!t.building || !IsAnimalFarm(t.building.type)) continue;
+      const src = GetBuildingMapIconSrc(t.building.type);
+      if (!src) continue;
+      const img = this.image(src);
+      const size = GetBuildingSize(t.building.type);
+      const base = this.tileObjectBase(t.i, t.j, size);
+      const farmW = size * ISO_TILE_W * 0.94;
+      const farmH = Math.max(size * ISO_TILE_H * 3.0, size * TILE * 1.6);
+      const farmX = base.x - farmW / 2;
+      const farmY = base.y - farmH * 0.71;
+      const isz = farmW * 0.16;
+      const cx = farmX + farmW / 2, cy = farmY + farmH * 0.60;
+      const gap = isz * 1.1;
+      const sideLift = isz * 0.45;
+      for (let k = 0; k < 3; ++k) {
+        const key = `${t.i}:${t.j}:${k}`;
+        liveKeys.add(key);
+        sprites.push({
+          key,
+          img,
+          x: cx + (k - 1) * gap,
+          y: cy - (k === 1 ? 0 : sideLift),
+          size: isz,
+        });
+      }
+    }
+    for (const key of this.animalAnims.keys()) {
+      if (!liveKeys.has(key)) this.animalAnims.delete(key);
+    }
+    this.animalSprites = sprites;
+    this.animalSpriteVersion = version;
+    this.animalSpriteCity = this.city;
+  }
+
+  private drawAnimalSprite(key: string, img: HTMLImageElement, px: number, py: number, size: number, now: number) {
+    let a = this.animalAnims.get(key);
+    if (!a) {
+      a = { x: 0, y: 0, tx: 0, ty: 0, nextAt: 0, flip: Math.random() < 0.5 };
+      this.animalAnims.set(key, a);
+    }
+    if (now >= a.nextAt) {
+      a.tx = (Math.random() - 0.5) * size * 0.42;
+      a.ty = (Math.random() - 0.5) * size * 0.30;
+      if (Math.abs(a.tx - a.x) > size * 0.08) a.flip = a.tx < a.x;
+      else if (Math.random() < 0.25) a.flip = !a.flip;
+      a.nextAt = now + 900 + Math.random() * 1500;
+    }
+    a.x += (a.tx - a.x) * 0.025;
+    a.y += (a.ty - a.y) * 0.025;
+
+    const bob = Math.sin(now / 420 + key.length) * size * 0.025;
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.translate(px + a.x, py + a.y + bob);
+    if (a.flip) ctx.scale(-1, 1);
+    if (img.complete && img.naturalWidth > 0) {
+      ctx.drawImage(img, -size / 2, -size / 2, size, size);
+    } else {
+      ctx.font = `${Math.round(size)}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🐾', 0, 0);
+    }
+    ctx.restore();
+  }
+
   // Size the backing store to the viewport (host) in device pixels. The camera
   // transform and smoothing flag are reapplied each frame in frame().
   private ensureSize() {
@@ -156,6 +252,11 @@ export class CartLayerComponent implements OnInit, OnDestroy {
     const bh = Math.max(1, Math.round(this.host.clientHeight * dpr));
     if (this.canvas.width !== bw) this.canvas.width = bw;
     if (this.canvas.height !== bh) this.canvas.height = bh;
+  }
+
+  private tileObjectBase(i: number, j: number, size: number): { x: number, y: number } {
+    const center = gridToIso(this.city.h, (j + size / 2) * TILE, (i + size / 2) * TILE);
+    return { x: center.x, y: center.y + size * ISO_TILE_H / 2 };
   }
 
   private drawCart(cart: Cart, now: number) {

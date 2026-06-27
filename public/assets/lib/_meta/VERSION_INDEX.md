@@ -24,7 +24,7 @@ Folders: `reserve/` = swappable alternates · `old_versions/` = pre-processing s
 | `dock.png` | root | **Active** |
 | `dock-v2-bigger-ship.png` | reserve/ | Bigger ship variant |
 | `dock-v3-large-real-ship.png` | reserve/ | Large realistic ship |
-| `dock-v4-with-3-mast-ship.png` | reserve/ | 3-mast ship style |
+| `dock-v4.png` | reserve/ | 3-mast ship style |
 
 ### Shipyard
 | File | Location | Notes |

@@ -12,6 +12,18 @@ ng serve
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
+## Codex skills
+
+This repo keeps project-specific Codex skills under `tools/` so they can be source controlled.
+
+After cloning the repo on a new machine, run:
+
+```bash
+npm run install:codex-skills
+```
+
+The installer links each `tools/*/SKILL.md` folder into `${CODEX_HOME:-~/.codex}/skills`, which lets Codex discover skills such as `$city-image-assets`. The default symlink install keeps the repo copy as the source of truth, so future Git updates are picked up automatically. If symlinks are not suitable on a machine, run `node scripts/install-codex-skills.mjs --copy` instead.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:

@@ -1,0 +1,4 @@
+interface:
+  display_name: "City Image Assets"
+  short_description: "Generate project image assets for this city game."
+  default_prompt: "Use $city-image-assets to generate or revise a project image asset matching this repo's saved game-art reference style."

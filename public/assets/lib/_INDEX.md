@@ -115,7 +115,7 @@ Flattened backup assets grouped by object. `new path` ← `original path`.
 - `dock/dock-before-v4-swap-20260622.png` ← `icons/buildings/old_versions/dock-before-v4-swap-20260622.png`
 - `dock/dock-v2-bigger-ship.png` ← `icons/buildings/reserve/dock-v2-bigger-ship.png`
 - `dock/dock-v3-large-real-ship.png` ← `icons/buildings/reserve/dock-v3-large-real-ship.png`
-- `dock/dock-v4-with-3-mast-ship.png` ← `icons/buildings/reserve/dock-v4-with-3-mast-ship.png`
+- `dock/dock-v4.png` ← `icons/buildings/reserve/dock-v4.png`
 - `egg-basket/egg-basket-v2.png` ← `resource-icons-cute-64/sources/egg-basket-v2.png`
 - `egg/egg-2.png` ← `resource-icons-cute-64/sources/egg.png`
 - `egg/egg-v1.png` ← `resource-icons-cute-64/reserve/egg-v1.png`

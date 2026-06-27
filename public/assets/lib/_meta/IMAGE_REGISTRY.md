@@ -293,7 +293,7 @@ accepted/latest version per the food-resource revision log. All new (no recreati
 | delete-old | delete-before-clean-shovel-20260621-210910.png | reserve/delete/ | pre-shovel design |
 | dock-large-ship | dock-v2-bigger-ship.png | reserve/dock/ | bigger ship variant |
 | dock-real-ship | dock-v3-large-real-ship.png | reserve/dock/ | realistic large ship |
-| dock-3-mast | dock-v4-with-3-mast-ship.png | reserve/dock/ | **preferred alternate** (marked latest in viewer) |
+| dock-3-mast | dock-v4.png | reserve/dock/ | **preferred alternate** (marked latest in viewer) |
 | engineer-station-v2 | engineer-station-v2.png | reserve/engineer-station/ | second design |
 | engineer-station-tools | engineer-station-v3-tools-same-size.png | reserve/engineer-station/ | **preferred alternate** (marked latest in viewer) |
 | horse-farm-alt | horse-farm.png | reserve/horse-farm/ | reserve copy |

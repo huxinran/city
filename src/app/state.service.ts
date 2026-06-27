@@ -14,6 +14,17 @@ import { Camera } from './camera';
 
 // How far (in tiles) a resource building may sit from the rock/tree it works.
 const FEATURE_RADIUS = 3
+const POODLE_DIRS = [[-1, 0], [1, 0], [0, -1], [0, 1]]
+
+export interface PoodleActor {
+  mode: boolean
+  i: number
+  j: number
+  x: number
+  y: number
+  facing: 'se' | 'sw' | 'ne' | 'nw'
+  path: { i: number, j: number }[]
+}
 
 @Injectable({
   providedIn: 'root'
@@ -43,6 +54,8 @@ export class StateService {
   public bumpCamera() {
     this.zone.run(() => this.cameraVersion.update(v => v + 1))
   }
+
+  public poodle: PoodleActor = { mode: false, i: 0, j: 0, x: 0, y: 0, facing: 'se', path: [] }
 
   private zone = inject(NgZone)
 
@@ -172,6 +185,8 @@ export class StateService {
     this.state.feature_type = undefined
     this.road_start = undefined
     this.move_source = undefined
+    this.poodle.mode = false
+    this.poodle.path = []
     if (this.state.current_city) this.state.current_city.focus_tile = undefined
     this.bumpMap()
   }
@@ -242,6 +257,7 @@ export class StateService {
     this.state.feature_type = undefined
     this.road_start = undefined
     this.move_source = undefined
+    this.poodle.mode = false
     this.bumpMap()
   }
   public ClearBuildType() {
@@ -254,6 +270,7 @@ export class StateService {
     this.state.terrain_type = type
     this.state.build_type = undefined
     this.state.feature_type = undefined
+    this.poodle.mode = false
     this.bumpMap()
   }
   public ClearTerrainType() {
@@ -265,7 +282,108 @@ export class StateService {
     this.state.feature_type = feature
     this.state.build_type = undefined
     this.state.terrain_type = undefined
+    this.poodle.mode = false
     this.bumpMap()
+  }
+
+  public TogglePoodleMode() {
+    this.poodle.mode = !this.poodle.mode
+    if (this.poodle.mode) {
+      this.ClearSelection()
+      this.EnsurePoodleOnCurrentCity()
+    } else {
+      this.poodle.path = []
+    }
+    this.bumpMap()
+  }
+
+  public EnsurePoodleOnCurrentCity() {
+    const city = this.state.current_city
+    if (!city) return
+    if (this.IsPoodleWalkable(city, Math.round(this.poodle.y), Math.round(this.poodle.x))) return
+    const start = this.FirstPoodleWalkableTile(city)
+    if (!start) return
+    this.poodle.i = start.i
+    this.poodle.j = start.j
+    this.poodle.x = start.j
+    this.poodle.y = start.i
+    this.poodle.path = []
+  }
+
+  public SendPoodleTo(tile: Tile): boolean {
+    const city = this.state.current_city!
+    this.EnsurePoodleOnCurrentCity()
+    const target = this.NearestPoodleWalkableTile(city, tile.i, tile.j)
+    if (!target) return false
+    const start = { i: Math.round(this.poodle.y), j: Math.round(this.poodle.x) }
+    const path = this.FindPoodlePath(city, start, target)
+    if (!path.length) return false
+    this.poodle.i = start.i
+    this.poodle.j = start.j
+    this.poodle.path = path.slice(1)
+    city.focus_tile = this.GetTile(city, target.i, target.j)
+    this.bumpMap()
+    return true
+  }
+
+  public IsPoodleWalkable(city: City, i: number, j: number): boolean {
+    if (i < 0 || j < 0 || i >= city.h || j >= city.w) return false
+    const t = this.GetTile(city, i, j)
+    if (t.terrain === Terrain.WATER || t.covered || t.feature) return false
+    return !t.building || t.building.type === BuildingType.ROAD
+  }
+
+  private FirstPoodleWalkableTile(city: City): { i: number, j: number } | undefined {
+    const ci = Math.floor(city.h / 2), cj = Math.floor(city.w / 2)
+    return this.NearestPoodleWalkableTile(city, ci, cj)
+  }
+
+  private NearestPoodleWalkableTile(city: City, i: number, j: number): { i: number, j: number } | undefined {
+    const seen = new Set<number>()
+    const queue = [{ i, j }]
+    let head = 0
+    while (head < queue.length) {
+      const p = queue[head++]
+      if (p.i < 0 || p.j < 0 || p.i >= city.h || p.j >= city.w) continue
+      const k = p.i * city.w + p.j
+      if (seen.has(k)) continue
+      seen.add(k)
+      if (this.IsPoodleWalkable(city, p.i, p.j)) return p
+      for (const [di, dj] of POODLE_DIRS) queue.push({ i: p.i + di, j: p.j + dj })
+    }
+    return undefined
+  }
+
+  private FindPoodlePath(city: City, start: { i: number, j: number }, target: { i: number, j: number }): { i: number, j: number }[] {
+    const startKey = start.i * city.w + start.j
+    const targetKey = target.i * city.w + target.j
+    const prev = new Map<number, number>()
+    const queue = [start]
+    const seen = new Set<number>([startKey])
+    let head = 0
+    while (head < queue.length) {
+      const p = queue[head++]
+      const pk = p.i * city.w + p.j
+      if (pk === targetKey) break
+      for (const [di, dj] of POODLE_DIRS) {
+        const ni = p.i + di, nj = p.j + dj
+        if (!this.IsPoodleWalkable(city, ni, nj)) continue
+        const nk = ni * city.w + nj
+        if (seen.has(nk)) continue
+        seen.add(nk)
+        prev.set(nk, pk)
+        queue.push({ i: ni, j: nj })
+      }
+    }
+    if (!seen.has(targetKey)) return []
+    const keys = [targetKey]
+    while (keys[keys.length - 1] !== startKey) {
+      const p = prev.get(keys[keys.length - 1])
+      if (p === undefined) return []
+      keys.push(p)
+    }
+    keys.reverse()
+    return keys.map(k => ({ i: Math.floor(k / city.w), j: k % city.w }))
   }
   public ClearFeatureType() {
     this.state.feature_type = undefined
@@ -1040,5 +1158,3 @@ public GetCity(cities: City[], city_name: CityName) {
     }
   }
 }
-
-

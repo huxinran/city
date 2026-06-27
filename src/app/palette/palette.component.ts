@@ -183,6 +183,10 @@ export class PaletteComponent {
     this.state.SetBuildType(type)
   }
 
+  public togglePoodleMode() {
+    this.state.TogglePoodleMode()
+  }
+
   public onDragStart(type: BuildingType) {
     this.state.dragging = true
     this.state.SetBuildType(type)

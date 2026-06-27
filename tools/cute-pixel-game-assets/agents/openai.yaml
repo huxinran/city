@@ -1,4 +1,0 @@
-interface:
-  display_name: "Cute Pixel Game Assets"
-  short_description: "Generate consistent cute pixel-art game assets."
-  default_prompt: "Use $cute-pixel-game-assets to generate cute cartoon-ish pixel-art game assets matching the saved farming-game reference style."
