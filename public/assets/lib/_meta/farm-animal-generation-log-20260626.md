@@ -59,3 +59,13 @@ Scene/backdrop: clean plain white background.
 Constraints: one animal only, no text, no watermark, no UI frame, no extra objects, no scenery.
 Avoid: realistic anatomy, thin legs, harsh black outline, modern props, flat app-icon style.
 ```
+
+## Building Revision - Animal Farm View Angle
+
+- Date: 2026-06-26
+- User feedback: the animal farm field looked a bit too square because the view angle was too high.
+- Old path: `public/assets/lib/buildings/animal-farm/animal-farm.png`
+- New path: `public/assets/lib/buildings/animal-farm/animal-farm-v2-lower-view-angle.png`
+- Source cache file: `/Users/xinranhu/.codex/generated_images/019f064b-f637-7f90-adb2-8c4de2541a06/ig_02b6cc7f5748e7cb016a3f106cb4f48197b3c3c8008488f545.png`
+- Change made: lowered the camera/view angle by about 5% so the fenced dirt field reads slightly flatter and less square, while preserving the red barn identity, fence, gate, props, warm palette, chunky pixel style, and white source-art background.
+- Carry-forward preference: for this farm building set, keep yard diamonds a little flatter when the field starts to feel square/top-down.

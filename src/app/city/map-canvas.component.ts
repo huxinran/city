@@ -486,10 +486,10 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       return;
     }
     if (IsFarmBuilding(type) && size > 1) {
-      const farmW = size * ISO_TILE_W * 0.95;
+      const farmW = size * ISO_TILE_W * 0.94;
       const farmH = Math.max(size * ISO_TILE_H * 3.0, size * TILE * 1.6);
       const farmX = base.x - farmW / 2;
-      const farmY = base.y - farmH * 0.70;
+      const farmY = base.y - farmH * 0.71;
       this.drawComposite(b, this.img(IsAnimalFarm(type) ? ANIMAL_FARM_ICON : CROP_FARM_ICON),
                          farmX, farmY, farmW, farmH, 'farm');
       return;
@@ -554,13 +554,15 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     const prod = this.img(this.artSrc(b));
     const emoji = GetBuildingIcon(b.type);
     if (kind === 'farm') {
-      const isz = W * 0.14;
+      const isz = W * 0.16;
       const cx = x + W / 2, cy = y + H * 0.60;
       const gap = isz * 1.1;
+      const sideLift = isz * 0.45;
       for (let k = 0; k < 3; ++k) {
         const px = cx + (k - 1) * gap;
-        if (ready(prod)) this.drawContain(prod!, px - isz / 2, cy - isz / 2, isz, isz, true);
-        else this.drawEmoji(emoji, px, cy, isz);
+        const py = cy - (k === 1 ? 0 : sideLift);
+        if (ready(prod)) this.drawContain(prod!, px - isz / 2, py - isz / 2, isz, isz, true);
+        else this.drawEmoji(emoji, px, py, isz);
       }
     } else {
       const isz = W * 0.38, px = x + W * 0.92 - isz, py = y + H * 0.80 - isz;
