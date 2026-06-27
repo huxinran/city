@@ -19,7 +19,7 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `corner`, `cross`, `end`, `isolated`, `straight`, `tee`
 
-### `buildings/`  ·  31 files  ·  1094×757, 1254×1254
+### `buildings/`  ·  31 files  ·  1094×757, 1254×1254, 1539×1022
 
 `animal-farm`, `cart-empty`, `cart-fetching`, `cart-loaded`, `chapel`, `clinic`, `courthouse`, `crop-farm`, `delete`, `dock`, `engineer-station`, `fire-station`, `house-tier-1`, `house-tier-2`, `house-tier-3`, `house-tier-4`, `house-tier-5`, `house-tier-6`, `house`, `marketplace`, `mine-camp`, `police-station`, `road`, `school`, `ship`, `shipyard`, `tavern`, `warehouse-map`, `warehouse`, `well`, `workshop`
 
@@ -67,9 +67,9 @@ Three 16-tile sets, one per layer boundary. Files are `0.png`–`F.png` = the 4-
 
 Real image files, grouped into 10 categories. For normal game assets, the folder is the subject and the filename is the variant. Runtime code should keep referencing `used/` symlinks.
 
-<details><summary><code>buildings/</code> · 45 items</summary>
+<details><summary><code>buildings/</code> · 44 items</summary>
 
-`animal-farm`, `cart`, `cart-empty`, `cart-fetching`, `cart-loaded`, `cart-with-cargo`, `chapel`, `clinic`, `courthouse`, `crop-farm`, `delete`, `dock`, `engineer-station`, `farm`, `farmer-hut`, `fire-station`, `house`, `house-tier-1`, `house-tier-2`, `house-tier-3`, `house-tier-4`, `house-tier-5`, `house-tier-6`, `housing-tier-01`, `housing-tier-02`, `housing-tier-03`, `housing-tier-04`, `housing-tier-05`, `housing-tier-06`, `marketplace`, `mine-camp`, `old_versions`, `plowed-barn-farm`, `police-station`, `road`, `school`, `ship`, `ship-3-mast`, `shipyard`, `tavern`, `town-objects-cute`, `warehouse`, `warehouse-map`, `well`, `workshop`
+`animal-farm`, `cart`, `cart-empty`, `cart-fetching`, `cart-loaded`, `cart-with-cargo`, `chapel`, `clinic`, `courthouse`, `crop-farm`, `delete`, `dock`, `engineer-station`, `farmer-hut`, `fire-station`, `house`, `house-tier-1`, `house-tier-2`, `house-tier-3`, `house-tier-4`, `house-tier-5`, `house-tier-6`, `housing-tier-01`, `housing-tier-02`, `housing-tier-03`, `housing-tier-04`, `housing-tier-05`, `housing-tier-06`, `marketplace`, `mine-camp`, `old_versions`, `plowed-barn-farm`, `police-station`, `road`, `school`, `ship`, `ship-3-mast`, `shipyard`, `tavern`, `town-objects-cute`, `warehouse`, `warehouse-map`, `well`, `workshop`
 
 </details>
 

@@ -233,3 +233,13 @@
     - Tier 5: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_0975805d92a35ba0016a39dd24ce688197a0c008b4929664e5.png`
     - Tier 6: `C:/Users/Xinran/.codex/generated_images/019ef144-07db-77c1-915f-df6e06507723/ig_0975805d92a35ba0016a39ddba4f688197a66cc97fcd8d8642.png`
   - Notes: saved as generated; tiers 1-3 are copied forward from v4, tier 4 is the sign-free merchant house, tier 5 has one tower and a purple roof, and tier 6 has two towers with a yellow roof and three-story massing. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- Housing tier 5/6 tower revision candidates
+  - Request: tier 6 should have two matching round towers and feel more symmetrical; tier 5 should either remove its tower or make the tower continue all the way to the ground like tier 6.
+  - Saved paths:
+    - `public/assets/lib/buildings/house-tier-5/house-tier-5-v2-full-height-tower-white.png`
+    - `public/assets/lib/buildings/house-tier-6/house-tier-6-v2-matched-round-towers-white.png`
+  - Generated source cache:
+    - Tier 5: `/Users/xinranhu/.codex/generated_images/019f066f-147c-7640-a4f7-2bc3b7ba610f/ig_027c78fcfe1c3393016a3f18c14aec819798183384e29e7a27.png`
+    - Tier 6: `/Users/xinranhu/.codex/generated_images/019f066f-147c-7640-a4f7-2bc3b7ba610f/ig_027c78fcfe1c3393016a3f190b374c819790b62f2accf0276b.png`
+  - Notes: saved as generated review candidates on plain white RGB backgrounds. Tier 5 keeps the purple-roof manor identity with one round tower continuing to the ground. Tier 6 uses two matching round towers with gold roofs and a more symmetrical estate silhouette. No background cleanup, app mapping, runtime manifest wiring, or code integration.

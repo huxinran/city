@@ -69,3 +69,33 @@ Avoid: realistic anatomy, thin legs, harsh black outline, modern props, flat app
 - Source cache file: `/Users/xinranhu/.codex/generated_images/019f064b-f637-7f90-adb2-8c4de2541a06/ig_02b6cc7f5748e7cb016a3f106cb4f48197b3c3c8008488f545.png`
 - Change made: lowered the camera/view angle by about 5% so the fenced dirt field reads slightly flatter and less square, while preserving the red barn identity, fence, gate, props, warm palette, chunky pixel style, and white source-art background.
 - Carry-forward preference: for this farm building set, keep yard diamonds a little flatter when the field starts to feel square/top-down.
+
+## Building Generation - Crop Farm Animal-Farm Angle
+
+- Date: 2026-06-26
+- User request: regenerate crop farm using the animal farm as the source, with the correct isometric view angle as the top priority.
+- Reference paths: `public/assets/lib/buildings/animal-farm/animal-farm.png`, `public/assets/lib/_meta/buildings/farm-red-diamond-20260626/animal-current-red-diamond.png`, `public/assets/lib/_meta/buildings/farm-red-diamond-20260626/crop-current-red-diamond.png`
+- New path: `public/assets/lib/buildings/crop-farm/crop-farm-v2-animal-farm-angle.png`
+- Source cache file: `/Users/xinranhu/.codex/generated_images/019f064b-f637-7f90-adb2-8c4de2541a06/ig_0c8740b896790df9016a3f14a5e8b88193b92d8ad4466331de.png`
+- Result note: crop farm background candidate with fence, field rows, and farmhouse aligned to the animal farm's flatter 2:1 isometric diamond; no product overlay icons baked in.
+
+## Building Revision - Crop Farm Clear Farm Building
+
+- Date: 2026-06-26
+- User feedback: minor update to make the crop-farm structure clearly read as a farm building.
+- Old path: `public/assets/lib/buildings/crop-farm/crop-farm-v2-animal-farm-angle.png`
+- New path: `public/assets/lib/buildings/crop-farm/crop-farm-v3-clear-farm-building.png`
+- Source cache file: `/Users/xinranhu/.codex/generated_images/019f064b-f637-7f90-adb2-8c4de2541a06/ig_0985f417800afebc016a3f15857c8481959fe60bceabed493f.png`
+- Change made: kept the animal-farm-like isometric footprint and crop rows, while revising the back structure toward a more explicit farm shed/barn silhouette with agricultural cues.
+
+## Building Generation - Workshop Mine Camp Warehouse Animal-Farm Angle
+
+- Date: 2026-06-26
+- User request: use the same animal-farm/red-diamond guide to redo workshop, mine-camp, and warehouse-map buildings.
+- Shared direction: preserve each building identity while switching the yard/base to the animal farm's flatter 2:1 isometric diamond, warm chunky pixel style, readable gate/fence perspective, and clean source-art presentation.
+- Workshop new path: `public/assets/lib/buildings/workshop/workshop-v2-animal-farm-angle.png`
+- Workshop source cache file: `/Users/xinranhu/.codex/generated_images/019f064b-f637-7f90-adb2-8c4de2541a06/ig_0e9ad3504f62c1d8016a3f16a2954c8197943a5a2c1576e195.png`
+- Mine-camp new path: `public/assets/lib/buildings/mine-camp/mine-camp-v2-animal-farm-angle.png`
+- Mine-camp source cache file: `/Users/xinranhu/.codex/generated_images/019f064b-f637-7f90-adb2-8c4de2541a06/ig_0e9ad3504f62c1d8016a3f16ef34a4819793545dd0839f9d9b.png`
+- Warehouse-map new path: `public/assets/lib/buildings/warehouse-map/warehouse-map-v2-animal-farm-angle.png`
+- Warehouse-map source cache file: `/Users/xinranhu/.codex/generated_images/019f064b-f637-7f90-adb2-8c4de2541a06/ig_0e9ad3504f62c1d8016a3f173d0f608197a39dc23905a4f48b.png`
