@@ -495,11 +495,13 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       return;
     }
     if (IsMineCampBuilding(type) && size > 1) {
-      this.drawComposite(b, this.img(MINE_CAMP_ICON), x, y, W, H, 'workshop');
+      const scaledW = W * 0.94, scaledH = H * 0.94;
+      this.drawComposite(b, this.img(MINE_CAMP_ICON), base.x - scaledW / 2, y + H * 0.18, scaledW, scaledH, 'workshop');
       return;
     }
     if (IsWorkshopBuilding(type) && size > 1) {
-      this.drawComposite(b, this.img(WORKSHOP_ICON), x, y, W, H, 'workshop');
+      const scaledW = W * 0.94, scaledH = H * 0.94;
+      this.drawComposite(b, this.img(WORKSHOP_ICON), base.x - scaledW / 2, y + H * 0.18, scaledW, scaledH, 'workshop');
       return;
     }
     // Single icon filling the footprint (houses use tier art via artSrc).

@@ -152,27 +152,16 @@ export const BUILDING_DEFS: Partial<Record<BuildingType, BuildingDef>> = {
     [BuildingType.KILN]:        { size: 2, material: [I(Resource.BRICK, 10)], icon: '🏺', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.CLAY)], out: [I(Resource.PORCELAIN)] } },
     [BuildingType.NOODLE_SHOP]: { size: 2, material: [I(Resource.BRICK, 10)], icon: '🍜', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.RICE)], out: [I(Resource.NOODLE)] } },
     // --- Columbia (American frontier) ---
-    [BuildingType.CATTLE_RANCH]:rawFarm('🐄', Resource.BEEF),
-    [BuildingType.CORN_MILL]:   { size: 2, material: [I(Resource.TIMBER, 10)], icon: '🌽', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.CORN)], out: [I(Resource.CORNBREAD)] } },
-    [BuildingType.TANNERY]:     { size: 2, material: [I(Resource.TIMBER, 10)], icon: '🥩', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.BEEF)], out: [I(Resource.LEATHER)] } },
-    [BuildingType.DENIM_MILL]:  { size: 2, material: [I(Resource.BRICK, 10)], icon: '🧵', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.COTTON)], out: [I(Resource.DENIM)] } },
-    [BuildingType.WHISKEY_DISTILLERY]:{ size: 2, material: [I(Resource.BRICK, 15)], icon: '🥃', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.CORN)], out: [I(Resource.WHISKEY)] } },
-    [BuildingType.RAIL_MILL]:   { size: 2, material: [I(Resource.STEEL, 20)], icon: '🛤️', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.STEEL)], out: [I(Resource.RAIL)] } },
+    [BuildingType.TANNERY]:     { size: 2, material: [I(Resource.TIMBER, 10)], icon: '🥩', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.DEER)], out: [I(Resource.LEATHER)] } },
     // --- Solara (African / tropical) ---
-    [BuildingType.PALM_GROVE]:  rawFarm('🌴', Resource.PALM_FRUIT),
     [BuildingType.INCENSE_GROVE]: rawFarm('🌿', Resource.INCENSE, { near: Feature.TREE }),
     [BuildingType.IVORY_CAMP]:  { size: 3, farm: true, near: Feature.TREE, material: [I(Resource.BRICK, 10)], icon: '🐘', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 8, in: [], out: [I(Resource.IVORY)] } },
-    [BuildingType.PALM_OIL_PRESS]:{ size: 2, material: [I(Resource.TIMBER, 10)], icon: '🫗', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.PALM_FRUIT)], out: [I(Resource.PALM_OIL)] } },
-    [BuildingType.COCOA_SHOP]:  { size: 2, material: [I(Resource.BRICK, 10)], icon: '🍫', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.COCOA)], out: [I(Resource.COCOA_DRINK)] } },
     [BuildingType.COPPER_MINE]: { size: 2, mine: true, near: Feature.ROCK, material: [I(Resource.BRICK, 20)], icon: '🪨', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 8, in: [], out: [I(Resource.COPPER)] } },
-    [BuildingType.BRONZE_FOUNDRY]:{ size: 2, material: [I(Resource.BRICK, 20)], icon: '🔶', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.COPPER)], out: [I(Resource.BRONZE)] } },
     // --- Mintaka (polar) ---
-    [BuildingType.REINDEER_FARM]: rawFarm('🦌', Resource.REINDEER_MEAT),
+    [BuildingType.REINDEER_FARM]: rawFarm('🦌', Resource.DEER),
     [BuildingType.FUR_WORKSHOP]:{ size: 2, material: [I(Resource.TIMBER, 10)], icon: '🧥', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.FUR)], out: [I(Resource.FUR_COAT)] } },
     [BuildingType.SMOKEHOUSE]:  { size: 2, material: [I(Resource.TIMBER, 10)], icon: '🐟', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.FISH), I(Resource.SALT)], out: [I(Resource.SMOKED_FISH)] } },
-    [BuildingType.WHALING_POST]:{ size: 1, sea: true, material: [I(Resource.TIMBER, 10)], icon: '🐋', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(Resource.BLUBBER)] } },
-    [BuildingType.BLUBBER_PRESS]:{ size: 2, material: [I(Resource.BRICK, 10)], icon: '🛢️', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.BLUBBER)], out: [I(Resource.WHALE_OIL)] } },
-    [BuildingType.AMBER_MINE]:  { size: 2, mine: true, near: Feature.ROCK, material: [I(Resource.BRICK, 20)], icon: '🟡', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 8, in: [], out: [I(Resource.AMBER)] } },
+    [BuildingType.WHALING_POST]:{ size: 1, sea: true, material: [I(Resource.TIMBER, 10)], icon: '🐋', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(Resource.WHALE_OIL)] } },
 }
 
 
@@ -190,11 +179,7 @@ export const BOOTSTRAP_MATERIAL: Partial<Record<BuildingType, Item[]>> = {
     // Themed-city workshops also bootstrap cheaply from timber.
     [BuildingType.TOFU_SHOP]:      [I(Resource.TIMBER, 5)],
     [BuildingType.NOODLE_SHOP]:    [I(Resource.TIMBER, 5)],
-    [BuildingType.CORN_MILL]:      [I(Resource.TIMBER, 5)],
     [BuildingType.TANNERY]:        [I(Resource.TIMBER, 5)],
-    [BuildingType.PALM_OIL_PRESS]: [I(Resource.TIMBER, 5)],
-    [BuildingType.COCOA_SHOP]:     [I(Resource.TIMBER, 5)],
     [BuildingType.FUR_WORKSHOP]:   [I(Resource.TIMBER, 5)],
     [BuildingType.SMOKEHOUSE]:     [I(Resource.TIMBER, 5)],
-    [BuildingType.BLUBBER_PRESS]:  [I(Resource.TIMBER, 5)],
 }

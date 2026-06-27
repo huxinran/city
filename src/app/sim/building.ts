@@ -659,27 +659,16 @@ const BUILDING_TIER_OVERRIDE: { [key: string]: number } = {
     [BuildingType.KILN]:        2,  // porcelain is tier-2 daily need in Jinlin
     [BuildingType.NOODLE_SHOP]: 2,  // noodles are tier-2 food in Jinlin
     // --- Columbia buildings ---
-    [BuildingType.CATTLE_RANCH]:      1,  // beef is the basic food source
-    [BuildingType.CORN_MILL]:         1,  // cornbread is tier-1 food in Columbia
     [BuildingType.TANNERY]:           1,  // leather is tier-1 daily need
-    [BuildingType.DENIM_MILL]:        2,  // denim is tier-2 daily need
-    [BuildingType.WHISKEY_DISTILLERY]:2,  // whiskey is tier-2 luxury
-    [BuildingType.RAIL_MILL]:         3,  // rail is tier-3 industrial good
     // --- Solara buildings ---
-    [BuildingType.PALM_GROVE]:      1,  // palm fruit is raw material
-    [BuildingType.PALM_OIL_PRESS]:  1,  // palm oil is tier-1 daily need
-    [BuildingType.COCOA_SHOP]:      2,  // cocoa drink is tier-2 food
-    [BuildingType.COPPER_MINE]:     2,  // copper feeds bronze (tier-2 daily)
-    [BuildingType.BRONZE_FOUNDRY]:  2,  // bronze is tier-2 daily need
+    [BuildingType.COPPER_MINE]:     2,  // copper is tier-2 daily need
     [BuildingType.INCENSE_GROVE]:   2,  // incense is tier-2 luxury
     [BuildingType.IVORY_CAMP]:      3,  // ivory is a tier-3 luxury good
     // --- Mintaka buildings ---
-    [BuildingType.REINDEER_FARM]:   2,  // reindeer meat is tier-2 food
+    [BuildingType.REINDEER_FARM]:   2,  // deer is tier-2 food
     [BuildingType.FUR_WORKSHOP]:    1,  // fur coat is tier-1 daily need
     [BuildingType.SMOKEHOUSE]:      1,  // smoked fish is tier-1 food
-    [BuildingType.WHALING_POST]:    2,  // blubber feeds whale oil (tier-2)
-    [BuildingType.BLUBBER_PRESS]:   2,  // whale oil is tier-2 daily need
-    [BuildingType.AMBER_MINE]:      3,  // amber is a tier-3 luxury good
+    [BuildingType.WHALING_POST]:    2,  // whale oil is tier-2 daily need
     // --- Shared utility ---
     [BuildingType.COMPOST_PIT]: 1,      // fertilizer boosts tier-1+ farms
     [BuildingType.UNIVERSITY]:  4,      // unlocks after Scholars (tier 4)

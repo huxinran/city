@@ -103,27 +103,16 @@ export enum Resource {
     PORCELAIN = "Porcelain",
     NOODLE = "Noodle",
     // --- Columbia (American frontier city) ---
-    CORNBREAD = "Cornbread",
-    BEEF = "Beef",
     LEATHER = "Leather",
-    DENIM = "Denim",
-    WHISKEY = "Whiskey",
-    RAIL = "Rail",
     // --- Solara (African / tropical city) ---
-    PALM_FRUIT = "Palm Fruit",
-    PALM_OIL = "Palm Oil",
-    COCOA_DRINK = "Cocoa Drink",
     COPPER = "Copper",
-    BRONZE = "Bronze",
     INCENSE = "Incense",
     IVORY = "Ivory",
     // --- Mintaka (polar city) ---
     SMOKED_FISH = "Smoked Fish",
     FUR_COAT = "Fur Coat",
-    REINDEER_MEAT = "Reindeer Meat",
-    BLUBBER = "Blubber",
+    DEER = "Deer",
     WHALE_OIL = "Whale Oil",
-    AMBER = "Amber",
     // --- Shared agricultural input ---
     FERTILIZER = "Fertilizer",
 }
@@ -302,14 +291,14 @@ export enum ShipType {
 // Excluded from the resource panel and build palette when playing a different city.
 export const CITY_EXCLUSIVE_RESOURCES: Partial<Record<CityName, Resource[]>> = {
     [CityName.JINLIN]:   [Resource.TEA, Resource.SILK, Resource.TOFU, Resource.PORCELAIN, Resource.NOODLE],
-    [CityName.COLUMBIA]: [Resource.CORNBREAD, Resource.BEEF, Resource.LEATHER, Resource.DENIM, Resource.WHISKEY, Resource.RAIL],
-    [CityName.SOLARA]:   [Resource.PALM_FRUIT, Resource.PALM_OIL, Resource.COCOA_DRINK, Resource.COPPER, Resource.BRONZE, Resource.INCENSE, Resource.IVORY],
-    [CityName.MINTAKA]:  [Resource.SMOKED_FISH, Resource.FUR_COAT, Resource.REINDEER_MEAT, Resource.BLUBBER, Resource.WHALE_OIL, Resource.AMBER],
+    [CityName.COLUMBIA]: [Resource.LEATHER],
+    [CityName.SOLARA]:   [Resource.COPPER, Resource.INCENSE, Resource.IVORY],
+    [CityName.MINTAKA]:  [Resource.SMOKED_FISH, Resource.FUR_COAT, Resource.DEER, Resource.WHALE_OIL],
 }
 
 export const CITY_EXCLUSIVE_BUILDINGS: Partial<Record<CityName, BuildingType[]>> = {
     [CityName.JINLIN]:   [BuildingType.TEA_GARDEN, BuildingType.SILK_FARM, BuildingType.TOFU_SHOP, BuildingType.KILN, BuildingType.NOODLE_SHOP],
-    [CityName.COLUMBIA]: [BuildingType.CATTLE_RANCH, BuildingType.CORN_MILL, BuildingType.TANNERY, BuildingType.DENIM_MILL, BuildingType.WHISKEY_DISTILLERY, BuildingType.RAIL_MILL],
-    [CityName.SOLARA]:   [BuildingType.PALM_GROVE, BuildingType.PALM_OIL_PRESS, BuildingType.COCOA_SHOP, BuildingType.COPPER_MINE, BuildingType.BRONZE_FOUNDRY, BuildingType.INCENSE_GROVE, BuildingType.IVORY_CAMP],
-    [CityName.MINTAKA]:  [BuildingType.REINDEER_FARM, BuildingType.FUR_WORKSHOP, BuildingType.SMOKEHOUSE, BuildingType.WHALING_POST, BuildingType.BLUBBER_PRESS, BuildingType.AMBER_MINE],
+    [CityName.COLUMBIA]: [BuildingType.TANNERY],
+    [CityName.SOLARA]:   [BuildingType.COPPER_MINE, BuildingType.INCENSE_GROVE, BuildingType.IVORY_CAMP],
+    [CityName.MINTAKA]:  [BuildingType.REINDEER_FARM, BuildingType.FUR_WORKSHOP, BuildingType.SMOKEHOUSE, BuildingType.WHALING_POST],
 }

@@ -19,7 +19,7 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `corner`, `cross`, `end`, `isolated`, `straight`, `tee`
 
-### `buildings/`  ·  31 files  ·  1094×757, 1254×1254, 1539×1022
+### `buildings/`  ·  31 files  ·  1094×757, 1254×1254, 1536×1024, 1544×1018, 1521×1034
 
 `animal-farm`, `cart-empty`, `cart-fetching`, `cart-loaded`, `chapel`, `clinic`, `courthouse`, `crop-farm`, `delete`, `dock`, `engineer-station`, `fire-station`, `house-tier-1`, `house-tier-2`, `house-tier-3`, `house-tier-4`, `house-tier-5`, `house-tier-6`, `house`, `marketplace`, `mine-camp`, `police-station`, `road`, `school`, `ship`, `shipyard`, `tavern`, `warehouse-map`, `warehouse`, `well`, `workshop`
 

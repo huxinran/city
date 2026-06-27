@@ -10,7 +10,7 @@ const RESOURCE_ICON_FILES: { [key: string]: string } = {
   [Resource.BRANDY]: 'brandy.png',
   [Resource.BREAD]: 'bread.png',
   [Resource.BRICK]: 'brick.png',
-  [Resource.CABBAGE]: 'lettuce.png',
+  [Resource.CABBAGE]: 'cabbage.png',
   [Resource.CANDLE]: 'candle.png',
   [Resource.CHEESE]: 'cheese.png',
   [Resource.CIDER]: 'cider.png',
@@ -75,6 +75,15 @@ const RESOURCE_ICON_FILES: { [key: string]: string } = {
   [Resource.WINE]: 'wine.png',
   [Resource.WOOD]: 'wood.png',
   [Resource.WOOL]: 'wool.png',
+  [Resource.TEA]: 'tea.png',
+  [Resource.SILK]: 'silk.png',
+  [Resource.TOFU]: 'tofu.png',
+  [Resource.NOODLE]: 'noodle.png',
+  [Resource.COPPER]: 'copper.png',
+  [Resource.IVORY]: 'ivory.png',
+  [Resource.FUR_COAT]: 'fur-coat.png',
+  [Resource.WHALE_OIL]: 'whale-oil.png',
+  [Resource.FERTILIZER]: 'fertilizer.png',
 }
 
 const RESOURCE_EMOJI: { [key: string]: string } = {
@@ -103,6 +112,9 @@ const RESOURCE_EMOJI: { [key: string]: string } = {
   [Resource.TOOL]:       '🔧', [Resource.WAX]:        '🍯', [Resource.WEAPON]:     '⚔️', [Resource.WHEAT]:      '🌾',
   [Resource.WINDOW]:     '🪟', [Resource.WINE]:       '🍷', [Resource.WOOD]:       '🪵',
   [Resource.WOOL]:       '🐑',
+  [Resource.PORCELAIN]:  '🏺', [Resource.LEATHER]:    '👜', [Resource.INCENSE]:    '🌿',
+  [Resource.IVORY]:      '🦷', [Resource.SMOKED_FISH]:'🐟', [Resource.FUR_COAT]:   '🧥',
+  [Resource.DEER]:       '🦌', [Resource.WHALE_OIL]:  '🛢️',
   [Resource.FERTILIZER]: '🌱',
 }
 

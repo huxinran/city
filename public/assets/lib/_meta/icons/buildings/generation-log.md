@@ -243,3 +243,19 @@
     - Tier 5: `/Users/xinranhu/.codex/generated_images/019f066f-147c-7640-a4f7-2bc3b7ba610f/ig_027c78fcfe1c3393016a3f18c14aec819798183384e29e7a27.png`
     - Tier 6: `/Users/xinranhu/.codex/generated_images/019f066f-147c-7640-a4f7-2bc3b7ba610f/ig_027c78fcfe1c3393016a3f190b374c819790b62f2accf0276b.png`
   - Notes: saved as generated review candidates on plain white RGB backgrounds. Tier 5 keeps the purple-roof manor identity with one round tower continuing to the ground. Tier 6 uses two matching round towers with gold roofs and a more symmetrical estate silhouette. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- Housing tier 5/6 symmetry and isometric revision candidates
+  - Request: tier 5 should have no tower, a mirrored/symmetrical side wing, and an orange roof. Tier 6 should keep matching round towers, move the right tower forward for symmetry, and preserve a strict isometric view.
+  - Saved paths:
+    - `public/assets/lib/buildings/house-tier-5/house-tier-5-v3-no-tower-orange-white.png`
+    - `public/assets/lib/buildings/house-tier-6/house-tier-6-v3-isometric-forward-round-tower-white.png`
+  - Generated source cache:
+    - Tier 5: `/Users/xinranhu/.codex/generated_images/019f066f-147c-7640-a4f7-2bc3b7ba610f/ig_0d73776353546bbd016a3f1ac01cb08195b5eb5ca15359d054.png`
+    - Tier 6: `/Users/xinranhu/.codex/generated_images/019f066f-147c-7640-a4f7-2bc3b7ba610f/ig_0b3dd08466442919016a3f1be3b26481938f82891795ccc147.png`
+  - Notes: saved as generated review candidates on plain white RGB backgrounds. Tier 5 removes the tower, uses an orange tiled roof, and mirrors the building mass with side wings. Tier 6 keeps two matched round gold-roof towers, with the right tower shifted forward/down in isometric space and the main roof/base kept closer to the original 2:1 isometric angle. No background cleanup, app mapping, runtime manifest wiring, or code integration.
+
+- Housing tier 5 orange integrated tower revision candidate
+  - Request: redo tier 5 to stay close to the old fancy design, below tier 6 but above tier 4, with the tower part of the building and clearly three stories; corrected follow-up: roof color should be orange.
+  - Saved path: `public/assets/lib/buildings/house-tier-5/house-tier-5-v4-orange-integrated-3-story-tower-white.png`
+  - Generated source cache: `/Users/xinranhu/.codex/generated_images/019f066f-147c-7640-a4f7-2bc3b7ba610f/ig_0cdd5f68fde26e55016a3f20bf3b3881978c89cb97c386c81f.png`
+  - Notes: saved as generated review candidate on a plain white RGB background. Keeps the old tier 5 manor massing and fanciness, changes the roof to warm orange/terracotta, and integrates one right-side round tower down to the base with three stacked window levels. No background cleanup, app mapping, runtime manifest wiring, or code integration.

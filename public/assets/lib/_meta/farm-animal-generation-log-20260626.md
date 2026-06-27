@@ -99,3 +99,31 @@ Avoid: realistic anatomy, thin legs, harsh black outline, modern props, flat app
 - Mine-camp source cache file: `/Users/xinranhu/.codex/generated_images/019f064b-f637-7f90-adb2-8c4de2541a06/ig_0e9ad3504f62c1d8016a3f16ef34a4819793545dd0839f9d9b.png`
 - Warehouse-map new path: `public/assets/lib/buildings/warehouse-map/warehouse-map-v2-animal-farm-angle.png`
 - Warehouse-map source cache file: `/Users/xinranhu/.codex/generated_images/019f064b-f637-7f90-adb2-8c4de2541a06/ig_0e9ad3504f62c1d8016a3f173d0f608197a39dc23905a4f48b.png`
+
+## Building Revision - Warehouse Stockpile Yard
+
+- Date: 2026-06-26
+- User feedback: warehouse-map should remove perimeter walls and become a stockpile yard ground, using the standalone warehouse image as the structure.
+- Old path: `public/assets/lib/buildings/warehouse-map/warehouse-map-v2-animal-farm-angle.png`
+- Structure reference: `public/assets/lib/buildings/warehouse/warehouse.png`
+- New path: `public/assets/lib/buildings/warehouse-map/warehouse-map-v3-stockpile-yard.png`
+- Source cache file: `/Users/xinranhu/.codex/generated_images/019f064b-f637-7f90-adb2-8c4de2541a06/ig_0029fe0efc96cd09016a3f1995df008193b8c4a08e39edb7e6.png`
+- Change made: removed walls/fence/gate and revised the scene into an open stockpile yard on the same flatter isometric footprint, with crates, barrels, sacks, cart, and a warehouse-shed structure.
+
+## Background Removal - Active Building Candidates
+
+- Date: 2026-06-26
+- User request: remove background from the newly promoted building images.
+- Cutout paths: `public/assets/lib/buildings/crop-farm/crop-farm-v3-clear-farm-building.cutout.png`, `public/assets/lib/buildings/workshop/workshop-v2-animal-farm-angle.cutout.png`, `public/assets/lib/buildings/mine-camp/mine-camp-v2-animal-farm-angle.cutout.png`, `public/assets/lib/buildings/warehouse-map/warehouse-map-v3-stockpile-yard.cutout.png`
+- Runtime paths updated: `public/assets/used/buildings/crop-farm.png`, `public/assets/used/buildings/workshop.png`, `public/assets/used/buildings/mine-camp.png`, `public/assets/used/buildings/warehouse-map.png`
+
+## Building Revision - Crop Farm No Bottom Cutoff
+
+- Date: 2026-06-26
+- User feedback: crop farm was cut off at the bottom/front point.
+- Old path: `public/assets/lib/buildings/crop-farm/crop-farm-v3-clear-farm-building.png`
+- New white source path: `public/assets/lib/buildings/crop-farm/crop-farm-v4-no-bottom-cutoff-white.png`
+- New cutout path: `public/assets/lib/buildings/crop-farm/crop-farm-v4-no-bottom-cutoff-white.cutout.png`
+- Runtime path updated: `public/assets/used/buildings/crop-farm.png`
+- Source cache file: `/Users/xinranhu/.codex/generated_images/019f067e-8873-78c0-b0a2-6aa8bce544c0/ig_0865406f152daf80016a3f1f8572e8819780a523231bbdd28e.png`
+- Change made: preserved the v3 barn, fence, crop rows, warm pixel-art style, and isometric footprint while expanding the framing so the lower/front diamond point and bottom fence are fully visible with clean padding.
