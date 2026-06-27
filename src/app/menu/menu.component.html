@@ -11,6 +11,7 @@
       <button class="menu-item" (click)="load()">Load</button>
       <button class="menu-item" (click)="restart()">Restart</button>
 
+      <button class="menu-item" [class.active]="state.poodle.mode" (click)="actorWalking()">Actor Walking</button>
       <button class="menu-item" (click)="imageDirectory()">Image Directory</button>
 
       <button class="menu-item danger" [class.active]="submenu() === 'reset'" (click)="showSub('reset')">Reset ▸</button>

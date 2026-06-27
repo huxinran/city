@@ -85,6 +85,7 @@ export const BUILDING_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.CLINIC]:                'lucideStethoscope',
     [BuildingType.COURTHOUSE]:            'lucideGavel',
     [BuildingType.ENGINEER_STATION]:      'lucideWrench',
+    [BuildingType.UNIVERSITY]:            'lucideGraduationCap',
     [BuildingType.WAREHOUSE]:             'lucideWarehouse',
     [BuildingType.SHIPYARD]:              'lucideAnchor',
     [BuildingType.DOCK]:                  'lucideSailboat',
@@ -233,6 +234,7 @@ const BUILDING_IMAGE_SLUGS: { [key: string]: string } = {
     [BuildingType.CLINIC]:                'clinic',
     [BuildingType.COURTHOUSE]:            'courthouse',
     [BuildingType.ENGINEER_STATION]:      'engineer-station',
+    [BuildingType.UNIVERSITY]:            'university-map',
     [BuildingType.WAREHOUSE]:             'warehouse',
     [BuildingType.SHIPYARD]:              'shipyard',
     [BuildingType.DOCK]:                  'dock',
@@ -329,6 +331,7 @@ export function GetBuildingIconSrc(type: BuildingType): string | undefined {
 // Slugs for buildings that should render a different art asset on the map than
 // the icon shown in the building menu. Falls back to GetBuildingIconSrc.
 const BUILDING_MAP_IMAGE_SLUGS: { [key: string]: string } = {
+    [BuildingType.UNIVERSITY]: 'university-map',
     [BuildingType.WAREHOUSE]: 'warehouse-map',
 }
 

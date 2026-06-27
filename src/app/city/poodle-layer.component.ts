@@ -66,6 +66,7 @@ export class PoodleLayerComponent implements OnInit, OnDestroy {
     const ctx = this.ctx;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (!this.state.poodle.mode) return;
 
     const dt = this.last === 0 ? 0 : Math.min(0.05, (now - this.last) / 1000);
     this.last = now;

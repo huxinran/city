@@ -1,19 +1,4 @@
 <div class="palette">
-
-  <div class="group">
-    <div class="group-title">Actor</div>
-    <div class="icons">
-      <button class="pal-icon actor-icon" [class.sel]="state.poodle.mode"
-              draggable="false"
-              title="Send poodle"
-              (click)="togglePoodleMode()">
-        <div class="pal-icon-slot">
-          <img src="assets/used/actors/poodle-se.png" alt="Send poodle">
-        </div>
-      </button>
-    </div>
-  </div>
-
   @for (group of groups; track group.name) {
     <div class="group">
       <div class="group-title" [class.clickable]="group.name !== 'Basics'" (click)="toggleGroup(group.name)">

@@ -39,5 +39,6 @@ export class MenuComponent {
   save() { this.state.Save(); this.close() }
   load() { this.state.Load(); this.close() }
   restart() { this.state.Restart(); this.close() }
+  actorWalking() { this.state.TogglePoodleMode(); this.close() }
   reset() { this.state.Reset(); this.close() }
 }

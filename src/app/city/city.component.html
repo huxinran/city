@@ -11,5 +11,7 @@
         }
     </div>
     <app-cart-layer [city]="city"></app-cart-layer>
-    <app-poodle-layer [city]="city"></app-poodle-layer>
+    @if (state.poodle.mode) {
+        <app-poodle-layer [city]="city"></app-poodle-layer>
+    }
 </div>

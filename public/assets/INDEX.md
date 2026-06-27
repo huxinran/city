@@ -2,7 +2,7 @@
 
 Auto-generated map of `public/assets/`. Two trees:
 
-- **`used/`** — stable app-facing symlinks (240 image pointers). Repoint these to swap art.
+- **`used/`** — stable app-facing symlinks (237 image pointers). Repoint these to swap art.
 - **`lib/`** — unified image library. Category/subject folders hold real files; filenames distinguish variants.
 
 > Regenerate: `node tools/gen-asset-index.mjs`
@@ -19,9 +19,9 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `corner`, `cross`, `end`, `isolated`, `straight`, `tee`
 
-### `buildings/`  ·  31 files  ·  1094×757, 1254×1254, 1774×887, 1536×1024, 1544×1018, 1521×1034
+### `buildings/`  ·  32 files  ·  1094×757, 1254×1254, 1774×887, 1536×1024, 1513×1040, 1544×1018, 1521×1034
 
-`animal-farm`, `cart-empty`, `cart-fetching`, `cart-loaded`, `chapel`, `clinic`, `courthouse`, `crop-farm`, `delete`, `dock`, `engineer-station`, `fire-station`, `house-tier-1`, `house-tier-2`, `house-tier-3`, `house-tier-4`, `house-tier-5`, `house-tier-6`, `house`, `marketplace`, `mine-camp`, `police-station`, `road`, `school`, `ship`, `shipyard`, `tavern`, `warehouse-map`, `warehouse`, `well`, `workshop`
+`animal-farm`, `cart-empty`, `cart-fetching`, `cart-loaded`, `chapel`, `clinic`, `courthouse`, `crop-farm`, `delete`, `dock`, `engineer-station`, `fire-station`, `house-tier-1`, `house-tier-2`, `house-tier-3`, `house-tier-4`, `house-tier-5`, `house-tier-6`, `house`, `marketplace`, `mine-camp`, `police-station`, `road`, `school`, `ship`, `shipyard`, `tavern`, `university-map`, `warehouse-map`, `warehouse`, `well`, `workshop`
 
 ### `resources/`  ·  85 files  ·  1254×1254
 
@@ -46,14 +46,6 @@ Auto-generated map of `public/assets/`. Two trees:
 ### `actors/`  ·  5 files  ·  96×96, 384×96
 
 `poodle-se`, `poodle-walk-ne`, `poodle-walk-nw`, `poodle-walk-se`, `poodle-walk-sw`
-
-### `buildings/old_versions/`  ·  1 files  ·  1281×828
-
-`animal-farm-before-v9-rediamond-20260626`
-
-### `terrain/old_versions/`  ·  3 files  ·  48×48
-
-`bush-before-redraw-96-20260627`, `rock-before-redraw-96-20260627`, `tree-before-redraw-96-20260627`
 
 ### `ui/`  ·  1 files  ·  1254×1254
 
@@ -81,9 +73,9 @@ Real image files, grouped into 11 categories. For normal game assets, the folder
 
 </details>
 
-<details><summary><code>buildings/</code> · 40 items</summary>
+<details><summary><code>buildings/</code> · 39 items</summary>
 
-`animal-farm`, `cart`, `cart-empty`, `cart-fetching`, `cart-loaded`, `cart-with-cargo`, `chapel`, `clinic`, `courthouse`, `crop-farm`, `delete`, `dock`, `engineer-station`, `farmer-hut`, `fire-station`, `fishermen-wharf`, `food-processing-workshop`, `grove-farm`, `house`, `house-tier-1`, `house-tier-2`, `house-tier-3`, `house-tier-4`, `house-tier-5`, `house-tier-6`, `marketplace`, `mine-camp`, `police-station`, `road`, `school`, `ship`, `ship-3-mast`, `shipyard`, `tavern`, `town-objects-cute`, `university-map`, `warehouse`, `warehouse-map`, `well`, `workshop`
+`animal-farm`, `cart`, `cart-empty`, `cart-fetching`, `cart-loaded`, `cart-with-cargo`, `chapel`, `clinic`, `courthouse`, `crop-farm`, `delete`, `dock`, `engineer-station`, `farmer-hut`, `fire-station`, `fishermen-wharf`, `food-processing-workshop`, `grove-farm`, `house`, `house-tier-1`, `house-tier-2`, `house-tier-3`, `house-tier-4`, `house-tier-5`, `house-tier-6`, `marketplace`, `mine-camp`, `police-station`, `road`, `school`, `ship`, `shipyard`, `tavern`, `town-objects-cute`, `university-map`, `warehouse`, `warehouse-map`, `well`, `workshop`
 
 </details>
 
@@ -105,15 +97,15 @@ Real image files, grouped into 11 categories. For normal game assets, the folder
 
 </details>
 
-<details><summary><code>population/</code> · 13 items</summary>
+<details><summary><code>population/</code> · 12 items</summary>
 
-`artisan`, `artisan-bust`, `busts`, `entrepreneur`, `entrepreneur-bust`, `farmer`, `farmer-bust`, `magnate`, `magnate-bust`, `scholar`, `scholar-bust`, `worker`, `worker-bust`
+`artisan`, `artisan-bust`, `entrepreneur`, `entrepreneur-bust`, `farmer`, `farmer-bust`, `magnate`, `magnate-bust`, `scholar`, `scholar-bust`, `worker`, `worker-bust`
 
 </details>
 
-<details><summary><code>resources/</code> · 193 items</summary>
+<details><summary><code>resources/</code> · 183 items</summary>
 
-`apple`, `avocado`, `banana`, `barley`, `beer`, `bell-pepper`, `berry`, `black-bean`, `black-pepper`, `blackberry`, `blueberry`, `bok-choy`, `boot`, `brandy`, `bread`, `brick`, `broccoli`, `butter`, `cabbage`, `cake`, `candle`, `cantaloupe`, `cardamom`, `carrot`, `cauliflower`, `celestial-objects-20260626`, `cheese`, `cherry`, `chestnut`, `chicken`, `chickpea`, `chili-pepper`, `chocolate`, `cider`, `cigar`, `cinnamon`, `clam`, `clay`, `coal`, `cocoa`, `coconut`, `coffee`, `coin`, `concrete`, `corn`, `cotton`, `cotton-cloth`, `cotton-shirt`, `cow`, `crab`, `cucumber`, `date`, `deer`, `donkey`, `dragon-fruit`, `duck`, `egg`, `egg-basket`, `eggplant`, `feather-hat`, `fertilizer`, `fig`, `fish`, `flax`, `flour`, `fur`, `fur-boot`, `fur-coat`, `furniture`, `garlic`, `gem`, `glass`, `gold-ore`, `goose`, `grape`, `green-peas`, `hemp`, `honey`, `hops`, `horse`, `incense`, `ingots`, `iron-ingot`, `iron-ore`, `ivory`, `jam`, `jewelry`, `jute`, `knight-armor`, `leather`, `leek`, `lemon`, `lentil`, `lettuce`, `lime`, `llama`, `lobster`, `lychee`, `mango`, `marble`, `marble-block`, `marble-statue`, `melon`, `milk`, `millet`, `mushroom`, `noodles`, `oats`, `oil`, `okra`, `olive`, `olive-oil`, `onion`, `orange`, `ores`, `oyster`, `pant`, `papaya`, `pasta`, `pastry`, `peach`, `peanut`, `pear`, `pearl`, `pie`, `pig`, `pineapple`, `plum`, `pomegranate`, `porcelain`, `pork`, `potato`, `pottery`, `pottery-household`, `pumpkin`, `quinoa`, `raspberry`, `rice`, `rice-plant`, `rubber`, `rum`, `saffron`, `salmon`, `salt`, `sand`, `sand-pile`, `sausage`, `seaweed`, `sheep`, `shirt`, `shrimp`, `silk`, `slate`, `smoked-fish`, `sorghum`, `soybean`, `spinach`, `steel`, `stone`, `stone-block-stack`, `stone-slab`, `strawberry`, `sugar`, `sugar-beet`, `sugar-cane`, `sunflower`, `taro`, `tea`, `timber`, `tobacco`, `tofu`, `tomato`, `tool`, `turkey`, `vanilla`, `vinegar`, `walnut`, `water-buffalo`, `watermelon`, `wax`, `weapon`, `weapon-sword-shield`, `whale-oil`, `wheat-sheaf`, `window`, `wine`, `wine-barrel`, `wood`, `wool`, `yam`, `yellow-squash`, `yogurt`, `zucchini`
+`apple`, `avocado`, `banana`, `beer`, `bell-pepper`, `berry`, `black-bean`, `black-pepper`, `blackberry`, `blueberry`, `bok-choy`, `boot`, `brandy`, `bread`, `brick`, `broccoli`, `butter`, `cabbage`, `cake`, `candle`, `cantaloupe`, `cardamom`, `carrot`, `cauliflower`, `celestial-objects-20260626`, `cheese`, `cherry`, `chestnut`, `chicken`, `chickpea`, `chili-pepper`, `chocolate`, `cider`, `cigar`, `cinnamon`, `clam`, `clay`, `coal`, `cocoa`, `coconut`, `coffee-berry`, `coffee-drink`, `coin`, `concrete`, `corn`, `cotton`, `cotton-cloth`, `cotton-shirt`, `cow`, `crab`, `cucumber`, `date`, `deer`, `donkey`, `dragon-fruit`, `duck`, `egg`, `eggplant`, `feather-hat`, `fertilizer`, `fig`, `fish`, `flax`, `flour`, `fur`, `fur-boot`, `fur-coat`, `furniture`, `garlic`, `gem`, `glass`, `gold-ore`, `goose`, `grape`, `green-peas`, `hemp`, `honey`, `hops`, `horse`, `incense`, `ingots`, `iron-ore`, `ivory`, `jam`, `jewelry`, `jute`, `knight-armor`, `leather`, `leek`, `lemon`, `lettuce`, `lime`, `llama`, `lobster`, `lychee`, `mango`, `marble`, `marble-statue`, `melon`, `milk`, `millet`, `mushroom`, `noodles`, `oats`, `okra`, `olive`, `olive-oil`, `onion`, `orange`, `ores`, `oyster`, `pant`, `papaya`, `pasta`, `pastry`, `peach`, `peanut`, `pear`, `pearl`, `pie`, `pig`, `pineapple`, `plum`, `pomegranate`, `porcelain`, `pork`, `potato`, `pottery`, `pumpkin`, `quinoa`, `raspberry`, `rice`, `rice-plant`, `rubber`, `rum`, `saffron`, `salmon`, `salt`, `sand`, `sausage`, `seaweed`, `sheep`, `shirt`, `shrimp`, `silk`, `slate`, `smoked-fish`, `sorghum`, `soybean`, `spinach`, `steel`, `stone`, `stone-slab`, `strawberry`, `sugar`, `sugar-beet`, `sugar-cane`, `sunflower`, `taro`, `tea`, `timber`, `tobacco`, `tofu`, `tomato`, `tool`, `turkey`, `vanilla`, `vinegar`, `walnut`, `water-buffalo`, `watermelon`, `wax`, `weapon-sword-shield`, `whale-oil`, `wheat-sheaf`, `window`, `wine`, `wood`, `wool`, `yam`, `yellow-squash`, `yogurt`, `zucchini`
 
 </details>
 
