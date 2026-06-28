@@ -402,3 +402,23 @@
 - Source cache: `/Users/xinranhu/.codex/generated_images/019f0fc8-9a9c-7e83-a912-404cb6942456/ig_02a03c9aea68cb1e016a417dc41e08819088c0144a9ba51e4f.png`
 - Runtime copy: `public/assets/used/buildings/food-processing-workshop.png`
 - Result note: pulls the yard back from the over-flattened panorama toward a normal isometric square footprint: a clearer 1:2 diamond/parallelogram with about 30 degree edge direction, while preserving the open bakery courtyard and back-edge bakery/oven props.
+
+- Follow-up feedback: very close; make it just a bit more flat.
+- Saved processed revision: `public/assets/lib/buildings/food-processing-workshop/v5-slightly-flatter-1to2-diamond.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0fc8-9a9c-7e83-a912-404cb6942456/ig_0f64d7c857be1ccc016a417ef7aae48193a03bbdc9d4751633.png`
+- Runtime copy: `public/assets/used/buildings/food-processing-workshop.png`
+- Result note: preserves the v4 composition and bakery/oven placement while nudging the yard slightly flatter, keeping the footprint close to the intended 1:2 isometric diamond rather than returning to the earlier over-flattened panorama.
+
+- Follow-up feedback: v5 reads as a rectangle; make the yard a square.
+- Saved processed revision: `public/assets/lib/buildings/food-processing-workshop/v6-square-diamond-yard.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0fc8-9a9c-7e83-a912-404cb6942456/ig_06c3bbb8421c33c9016a4188e0142c8190808c6212f2b7edde.png`
+- Runtime copy: `public/assets/used/buildings/food-processing-workshop.png`
+- Result note: corrects the stretched rectangular courtyard back to a compact isometric square diamond footprint with equal-feeling side lengths, while preserving the bakery, oven, press, shelf, and open courtyard identity.
+
+## 2026-06-28 - Grove Farm Roomy Uncut Corners
+
+- User feedback: redraw the current grove farm and make sure no corner is cut off.
+- Saved processed revision: `public/assets/lib/buildings/grove-farm/v28-roomy-uncut-corners.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0fda-32e4-7572-82ed-a823dfda1f5c/ig_09db1c9af2fecdaa016a418062be048197b130ea1a6f8487ac.png`
+- Runtime copy: `public/assets/used/buildings/grove-farm.png`
+- Result note: preserves the v27 grove identity with the green-roof produce stand, three branch trees, front-right gate, and fenced dirt yard, but regenerates from a roomier white-background source. The background was removed to alpha, the visible asset was trimmed with a small transparent guard band, and all fence/footprint corners remain fully visible.

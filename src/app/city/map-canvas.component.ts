@@ -35,6 +35,14 @@ type TerrainObjectArt = {
   height: number;
 };
 
+type BuildingImageBox = {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  src?: string;
+};
+
 const terrainAlternates = (dir: string, count: number, width: number, height: number): TerrainObjectArt[] =>
   Array.from({ length: count }, (_, index) => ({
     file: `${dir}/alternative-${index + 1}.png`,
@@ -224,6 +232,8 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   private visualHitTiles: Tile[] = [];
   private visualHitVersion = -1;
   private visualHitCity?: City;
+  private hitCanvas?: HTMLCanvasElement;
+  private hitCtx?: CanvasRenderingContext2D;
   private hoverTile?: { i: number, j: number };
   private redrawScheduled = false;
   private resizeObserver?: ResizeObserver;
@@ -382,8 +392,9 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     for (const tile of this.visualBuildingHitTiles()) {
       const building = tile.building;
       if (!building || building.type === BuildingType.ROAD) continue;
-      const b = this.buildingVisualBounds(tile, building);
+      const b = this.buildingImageBox(tile, building);
       if (p.x < b.x || p.x > b.x + b.w || p.y < b.y || p.y > b.y + b.h) continue;
+      if (!this.imageBoxContainsOpaquePixel(b, p.x, p.y)) continue;
       const depth = this.buildingDepth(tile, building);
       const order = tile.i * this.city.w + tile.j;
       if (!hit || depth > hit.depth || (depth === hit.depth && order > hit.order)) {
@@ -660,7 +671,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     return (t.i + size - 1) + (t.j + size - 1);
   }
 
-  private buildingVisualBounds(t: Tile, b: Building): { x: number, y: number, w: number, h: number } {
+  private buildingImageBox(t: Tile, b: Building): BuildingImageBox {
     const type = b.type;
     const size = GetBuildingSize(type);
     const base = this.tileObjectBase(t.i, t.j, size);
@@ -670,28 +681,89 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
 
     if (IsFarmBuilding(type) && size > 1) {
       const animal = IsAnimalFarm(type);
-      const w = size * ISO_TILE_W * (animal ? 0.94 : 0.98);
+      const grove = type === BuildingType.APPLE_ORCHARD;
+      const w = size * ISO_TILE_W * (animal ? 0.94 : 0.95);
       const h = animal
         ? Math.max(size * ISO_TILE_H * 3.0, size * TILE * 1.6)
-        : Math.max(size * ISO_TILE_H * 3.08, size * TILE * 1.64);
-      return { x: base.x - w / 2, y: base.y - h * (animal ? 0.71 : 0.69), w, h };
+        : Math.max(size * ISO_TILE_H * 2.98, size * TILE * 1.58);
+      return {
+        x: base.x - w / 2,
+        y: base.y - h * (grove ? 0.69 : 0.71),
+        w,
+        h,
+        src: animal ? ANIMAL_FARM_ICON : grove ? GROVE_FARM_ICON : CROP_FARM_ICON,
+      };
     }
     if (IsSeaProductionBuilding(type)) {
       const wharfSize = 2;
       const wharfBase = this.tileObjectBase(t.i, t.j, wharfSize);
       const w = wharfSize * ISO_TILE_W * 0.94;
       const h = Math.max(wharfSize * ISO_TILE_H * 2.7, wharfSize * TILE * 1.44);
-      return { x: wharfBase.x - w / 2, y: wharfBase.y - h * 0.74, w, h };
+      const overscan = 0.04;
+      const x = wharfBase.x - w / 2;
+      const y = wharfBase.y - h * 0.74;
+      return { x: x - w * overscan, y: y - h * overscan, w: w * (1 + 2 * overscan), h: h * (1 + 2 * overscan), src: FISHERMEN_WHARF_ICON };
     }
     if (IsMineCampBuilding(type) && size > 1) {
       const w = W * 0.91, h = H * 0.91;
-      return { x: base.x - w / 2, y: y + H * 0.20, w, h };
+      const overscan = 0.04;
+      const bx = base.x - w / 2;
+      const by = y + H * 0.20;
+      return { x: bx - w * overscan, y: by - h * overscan, w: w * (1 + 2 * overscan), h: h * (1 + 2 * overscan), src: MINE_CAMP_ICON };
     }
     if (IsWorkshopBuilding(type) && size > 1) {
-      const w = W * 0.90, h = H * 0.90;
-      return { x: base.x - w / 2, y: y + H * 0.22, w, h };
+      const foodWorkshop = IsFoodWorkshopBuilding(type);
+      const scale = foodWorkshop ? 0.90 : 0.882;
+      const w = W * scale, h = H * scale;
+      const overscan = 0.04;
+      const bx = base.x - w / 2;
+      const by = y + H * (foodWorkshop ? 0.22 : 0.23);
+      return {
+        x: bx - w * overscan,
+        y: by - h * overscan,
+        w: w * (1 + 2 * overscan),
+        h: h * (1 + 2 * overscan),
+        src: foodWorkshop ? FOOD_WORKSHOP_ICON : WORKSHOP_ICON,
+      };
     }
-    return { x, y, w: W, h: H };
+    if (type === BuildingType.WAREHOUSE) {
+      const warehouseW = W * 0.98;
+      const warehouseH = H * 0.98;
+      const warehouseX = base.x - warehouseW / 2;
+      const lowerY = y + H * 0.16;
+      return { x: warehouseX + 1, y: lowerY + 1, w: warehouseW - 2, h: warehouseH - 2, src: this.artSrc(b) };
+    }
+    return { x: x + 1, y: y + 1, w: W - 2, h: H - 2, src: this.artSrc(b) };
+  }
+
+  private imageBoxContainsOpaquePixel(box: BuildingImageBox, worldX: number, worldY: number): boolean {
+    if (!box.src) return true;
+    const im = this.img(box.src);
+    if (!ready(im)) return true;
+
+    const s = Math.min(box.w / im!.naturalWidth, box.h / im!.naturalHeight);
+    const w = im!.naturalWidth * s;
+    const h = im!.naturalHeight * s;
+    const ox = box.x + (box.w - w) / 2;
+    const oy = box.y + (box.h - h) / 2;
+    if (worldX < ox || worldX > ox + w || worldY < oy || worldY > oy + h) return false;
+
+    const sx = Math.min(im!.naturalWidth - 1, Math.max(0, Math.floor((worldX - ox) / s)));
+    const sy = Math.min(im!.naturalHeight - 1, Math.max(0, Math.floor((worldY - oy) / s)));
+    const ctx = this.hitContext();
+    ctx.clearRect(0, 0, 1, 1);
+    ctx.drawImage(im!, sx, sy, 1, 1, 0, 0, 1, 1);
+    return ctx.getImageData(0, 0, 1, 1).data[3] > 12;
+  }
+
+  private hitContext(): CanvasRenderingContext2D {
+    if (!this.hitCanvas) {
+      this.hitCanvas = document.createElement('canvas');
+      this.hitCanvas.width = 1;
+      this.hitCanvas.height = 1;
+      this.hitCtx = this.hitCanvas.getContext('2d', { willReadFrequently: true })!;
+    }
+    return this.hitCtx!;
   }
 
   // Draw a tile-sized sprite at (x,y), rotated `rot` × 90° clockwise about its
@@ -762,7 +834,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
         ? Math.max(size * ISO_TILE_H * 3.0, size * TILE * 1.6)
         : Math.max(size * ISO_TILE_H * 2.98, size * TILE * 1.58);
       const farmX = base.x - farmW / 2;
-      const farmY = base.y - farmH * (animal ? 0.71 : 0.71);
+      const farmY = base.y - farmH * (grove ? 0.69 : 0.71);
       this.drawComposite(b, this.img(animal ? ANIMAL_FARM_ICON : grove ? GROVE_FARM_ICON : CROP_FARM_ICON),
                          farmX, farmY, farmW, farmH, animal ? 'animalFarm' : grove ? 'groveFarm' : 'cropFarm');
       return;
