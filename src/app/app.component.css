@@ -61,7 +61,7 @@
     min-width: 0;
     overflow-x: auto;
     overflow-y: hidden;
-    max-height: 76px;
+    max-height: 95px;
     background: var(--panel-2);
     border-top: 1px solid var(--border);
     box-shadow: 0 -2px 8px rgba(80, 50, 10, 0.08);
@@ -137,6 +137,6 @@
     }
 
     .bottom-menu {
-        max-height: calc(92px + env(safe-area-inset-bottom));
+        max-height: calc(115px + env(safe-area-inset-bottom));
     }
 }

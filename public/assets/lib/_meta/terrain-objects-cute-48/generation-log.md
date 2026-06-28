@@ -1,5 +1,29 @@
 # Terrain Object Generation Log
 
+## 2026-06-28 - Categorized terrain artifact names
+
+- Request: organize rock, tree, and bush artifacts by category with clean names.
+- Runtime copies:
+  - `public/assets/used/terrain/rock/main.png`
+  - `public/assets/used/terrain/rock/alternative-1.png`
+  - `public/assets/used/terrain/rock/alternative-2.png`
+  - `public/assets/used/terrain/rock/alternative-3.png`
+  - `public/assets/used/terrain/tree/main.png`
+  - `public/assets/used/terrain/tree/alternative-1.png` through `alternative-7.png`
+  - `public/assets/used/terrain/bush/main.png`
+  - `public/assets/used/terrain/bush/alternative-1.png` through `alternative-5.png`
+- Library copies mirror the same names under `public/assets/lib/terrain/<rock|tree|bush>/...`.
+- Notes: existing flat runtime files were preserved for compatibility.
+
+## 2026-06-28 - Categorized decoration terrain artifacts
+
+- Request: group the remaining decoration pieces into a new directory.
+- Runtime copies:
+  - `public/assets/used/terrain/decoration/main.png`
+  - `public/assets/used/terrain/decoration/alternative-1.png` through `alternative-5.png`
+- Library copies mirror the same names under `public/assets/lib/terrain/decoration/...`.
+- Notes: source flat runtime files were preserved for compatibility.
+
 ## 2026-06-27 - Main tree tall three-tree revision
 
 - Request: regenerate the active main tree as three trees of the same leafy species, replacing the odd narrow tree, and make the clump taller now that map z-sorting supports tile overhang.

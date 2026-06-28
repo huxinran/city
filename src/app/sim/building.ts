@@ -386,12 +386,15 @@ export const FARM_BUILDINGS = defsWhere(d => !!d.farm)
 export const ANIMAL_FARM_BUILDINGS = defsWhere(d => !!d.animal)
 // Raw resource extraction buildings that use the mine-camp art as background.
 export const MINE_CAMP_BUILDINGS = defsWhere(d => !!d.mine)
+// Production buildings that must be placed on water use wharf-style map art.
+export const SEA_PRODUCTION_BUILDINGS = defsWhere(d => !!d.recipe && !!d.sea)
 // Anything that runs a production recipe and isn't a farm is a "workshop".
 export const WORKSHOP_BUILDINGS = defsWhere(d => !!d.recipe && !d.farm)
 
 export function IsFarmBuilding(type: BuildingType): boolean { return FARM_BUILDINGS.has(type) }
 export function IsAnimalFarm(type: BuildingType): boolean { return ANIMAL_FARM_BUILDINGS.has(type) }
 export function IsMineCampBuilding(type: BuildingType): boolean { return MINE_CAMP_BUILDINGS.has(type) }
+export function IsSeaProductionBuilding(type: BuildingType): boolean { return SEA_PRODUCTION_BUILDINGS.has(type) }
 export function IsWorkshopBuilding(type: BuildingType): boolean { return WORKSHOP_BUILDINGS.has(type) }
 
 // Roads/houses/services are 1x1, workshops are 2x2, farms are 3x3.

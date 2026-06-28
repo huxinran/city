@@ -34,3 +34,12 @@ Regenerated upgrade, downgrade, and move as larger chunky image-generated UI sou
 | upgrade-arrow | `public/assets/lib/cursors/upgrade-arrow/v3-imagegen-chunky.png` | `public/assets/used/cursors/upgrade-arrow.png` | downscaled from the larger chunky green upgrade button source |
 | downgrade-arrow | `public/assets/lib/cursors/downgrade-arrow/v3-imagegen-chunky.png` | `public/assets/used/cursors/downgrade-arrow.png` | downscaled from the larger chunky red-orange downgrade button source |
 | move-arrows | `public/assets/lib/cursors/move-arrows/v7-imagegen-chunky.png` | `public/assets/used/cursors/move-arrows.png` | downscaled from the larger chunky yellow move button source |
+
+## 2026-06-28 - cropped side-bar artifacts from hand and hammer cursors
+
+Removed full-height side artifact strips from the active hand and build hammer cursor PNGs. Earlier recolor attempts turned the artifact grey; the final fix trims those columns to transparent and keeps the cursor canvas at 40x40.
+
+| Cursor | Library cursor | Runtime cursor | Note |
+|--------|----------------|----------------|------|
+| build-hammer | `public/assets/lib/cursors/build-hammer/build-hammer-v4-cropped-side-bars.png` | `public/assets/used/cursors/build-hammer.png` | cropped bad side columns while preserving 40x40 cursor canvas |
+| white-glove-pointer | `public/assets/lib/cursors/white-glove-pointer/v4-cropped-side-bars.png` | `public/assets/used/cursors/white-glove-pointer.png` | cropped bad side columns while preserving 40x40 cursor canvas |

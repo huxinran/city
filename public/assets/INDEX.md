@@ -2,7 +2,7 @@
 
 Auto-generated map of `public/assets/`. Two trees:
 
-- **`used/`** — stable app-facing symlinks (237 image pointers). Repoint these to swap art.
+- **`used/`** — stable app-facing symlinks (247 image pointers). Repoint these to swap art.
 - **`lib/`** — unified image library. Category/subject folders hold real files; filenames distinguish variants.
 
 > Regenerate: `node tools/gen-asset-index.mjs`
@@ -19,17 +19,13 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `corner`, `cross`, `end`, `isolated`, `straight`, `tee`
 
-### `buildings/`  ·  32 files  ·  1094×757, 1254×1254, 1774×887, 1536×1024, 1513×1040, 1544×1018, 1521×1034
+### `buildings/`  ·  33 files  ·  1094×757, 1127×903, 1184×1048, 896×1136, 1211×1178, 997×1142, 1213×818, 882×1108, 1183×1035, 1228×1172, 1213×1155, 1212×1086, 1063×1063, 1003×1057, 991×1154, 1027×1168, 1003×1160, 1064×1029, 1523×969, 1184×1155, 1180×929, 857×1083, 1004×1054, 1099×1063, 1115×1038, 1508×1010, 1534×983, 1088×1067, 933×1161, 1506×944
 
-`animal-farm`, `cart-empty`, `cart-fetching`, `cart-loaded`, `chapel`, `clinic`, `courthouse`, `crop-farm`, `delete`, `dock`, `engineer-station`, `fire-station`, `house-tier-1`, `house-tier-2`, `house-tier-3`, `house-tier-4`, `house-tier-5`, `house-tier-6`, `house`, `marketplace`, `mine-camp`, `police-station`, `road`, `school`, `ship`, `shipyard`, `tavern`, `university-map`, `warehouse-map`, `warehouse`, `well`, `workshop`
+`animal-farm`, `cart-empty`, `cart-fetching`, `cart-loaded`, `chapel`, `clinic`, `courthouse`, `crop-farm`, `delete`, `dock`, `engineer-station`, `fire-station`, `fishermen-wharf`, `house-tier-1`, `house-tier-2`, `house-tier-3`, `house-tier-4`, `house-tier-5`, `house-tier-6`, `house`, `marketplace`, `mine-camp`, `police-station`, `road`, `school`, `ship`, `shipyard`, `tavern`, `university-map`, `warehouse-map`, `warehouse`, `well`, `workshop`
 
 ### `resources/`  ·  85 files  ·  1254×1254
 
 `apple`, `banana`, `berry`, `boot`, `brandy`, `bread`, `brick`, `cabbage`, `candle`, `cheese`, `chicken`, `cider`, `cigar`, `clam`, `clay`, `coal`, `cocoa`, `coin`, `concrete`, `copper`, `corn`, `cotton`, `cow`, `egg`, `feather-hat`, `fertilizer`, `fish`, `flour`, `fur-coat`, `fur`, `furniture`, `gem`, `glass`, `gold-ore`, `grape`, `horse`, `iron-ingot`, `iron-ore`, `ivory`, `jam`, `jewelry`, `lettuce`, `marble-statue`, `marble`, `melon`, `milk`, `noodle`, `olive-oil`, `olive`, `onion`, `orange`, `pant`, `pig`, `pork`, `potato`, `pottery`, `pumpkin`, `rice`, `rubber`, `rum`, `salt`, `sand`, `sausage`, `sheep`, `shirt`, `silk`, `slate`, `soybean`, `steel`, `stone`, `sugar-cane`, `tea`, `timber`, `tobacco`, `tofu`, `tomato`, `tool`, `wax`, `weapon`, `whale-oil`, `wheat-sheaf-v3`, `window`, `wine`, `wood`, `wool`
-
-### `terrain/`  ·  26 files  ·  96×96, 96×160
-
-`bare-branch-tree-variant`, `bush-original-96-dirt`, `bush`, `fallen-log-variant`, `flowering-bush-variant`, `mushroom-patch-variant`, `reed-grass-variant`, `rock-original-96-dirt`, `rock-variant-1`, `rock-variant-2`, `rock-variant-3`, `rock`, `tall-autumn-tree`, `tall-bare-branch-tree`, `tall-birch-tree`, `tall-cypress-tree`, `tall-oak-tree`, `tall-pine-tree`, `tiny-pond-variant`, `tree-bush-autumn-variant`, `tree-bush-variant-1`, `tree-bush-variant-2`, `tree-bush-variant-3`, `tree-original-96-dirt`, `tree-stump-variant`, `tree`
 
 ### `population/busts/`  ·  6 files  ·  1254×1254
 
@@ -39,13 +35,45 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `anrelia`, `columbia`, `jinlin`, `mintaka`, `solara`
 
-### `cursors/`  ·  3 files  ·  40×40
+### `cursors/`  ·  6 files  ·  40×40
 
-`build-hammer`, `shovel`, `white-glove-pointer`
+`build-hammer`, `downgrade-arrow`, `move-arrows`, `shovel`, `upgrade-arrow`, `white-glove-pointer`
 
 ### `actors/`  ·  5 files  ·  96×96, 384×96
 
 `poodle-se`, `poodle-walk-ne`, `poodle-walk-nw`, `poodle-walk-se`, `poodle-walk-sw`
+
+### `map-tiles/surfaces/grass/`  ·  2 files  ·  64×64
+
+`alternative-1`, `main`
+
+### `map-tiles/surfaces/rock-grass/`  ·  2 files  ·  64×64
+
+`alternative-1`, `main`
+
+### `map-tiles/surfaces/sand/`  ·  2 files  ·  64×64
+
+`alternative-1`, `main`
+
+### `map-tiles/surfaces/sea/`  ·  2 files  ·  64×64
+
+`alternative-1`, `main`
+
+### `terrain/bush/`  ·  6 files  ·  96×96
+
+`alternative-1`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `main`
+
+### `terrain/decoration/`  ·  6 files  ·  96×96
+
+`alternative-1`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `main`
+
+### `terrain/rock/`  ·  4 files  ·  96×96
+
+`alternative-1`, `alternative-2`, `alternative-3`, `main`
+
+### `terrain/tree/`  ·  8 files  ·  96×160, 96×96
+
+`alternative-1`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `alternative-6`, `alternative-7`, `main`
 
 ### `ui/`  ·  1 files  ·  1254×1254
 
@@ -85,27 +113,27 @@ Real image files, grouped into 11 categories. For normal game assets, the folder
 
 </details>
 
-<details><summary><code>cursors/</code> · 3 items</summary>
+<details><summary><code>cursors/</code> · 6 items</summary>
 
-`build-hammer`, `shovel`, `white-glove-pointer`
-
-</details>
-
-<details><summary><code>map-tiles/</code> · 6 items</summary>
-
-`blend`, `dirt`, `grass`, `road`, `sand`, `sea`
+`build-hammer`, `downgrade-arrow`, `move-arrows`, `shovel`, `upgrade-arrow`, `white-glove-pointer`
 
 </details>
 
-<details><summary><code>population/</code> · 12 items</summary>
+<details><summary><code>map-tiles/</code> · 7 items</summary>
 
-`artisan`, `artisan-bust`, `entrepreneur`, `entrepreneur-bust`, `farmer`, `farmer-bust`, `magnate`, `magnate-bust`, `scholar`, `scholar-bust`, `worker`, `worker-bust`
+`blend`, `dirt`, `grass`, `road`, `sand`, `sea`, `surfaces`
 
 </details>
 
-<details><summary><code>resources/</code> · 183 items</summary>
+<details><summary><code>population/</code> · 6 items</summary>
 
-`apple`, `avocado`, `banana`, `beer`, `bell-pepper`, `berry`, `black-bean`, `black-pepper`, `blackberry`, `blueberry`, `bok-choy`, `boot`, `brandy`, `bread`, `brick`, `broccoli`, `butter`, `cabbage`, `cake`, `candle`, `cantaloupe`, `cardamom`, `carrot`, `cauliflower`, `celestial-objects-20260626`, `cheese`, `cherry`, `chestnut`, `chicken`, `chickpea`, `chili-pepper`, `chocolate`, `cider`, `cigar`, `cinnamon`, `clam`, `clay`, `coal`, `cocoa`, `coconut`, `coffee-berry`, `coffee-drink`, `coin`, `concrete`, `corn`, `cotton`, `cotton-cloth`, `cotton-shirt`, `cow`, `crab`, `cucumber`, `date`, `deer`, `donkey`, `dragon-fruit`, `duck`, `egg`, `eggplant`, `feather-hat`, `fertilizer`, `fig`, `fish`, `flax`, `flour`, `fur`, `fur-boot`, `fur-coat`, `furniture`, `garlic`, `gem`, `glass`, `gold-ore`, `goose`, `grape`, `green-peas`, `hemp`, `honey`, `hops`, `horse`, `incense`, `ingots`, `iron-ore`, `ivory`, `jam`, `jewelry`, `jute`, `knight-armor`, `leather`, `leek`, `lemon`, `lettuce`, `lime`, `llama`, `lobster`, `lychee`, `mango`, `marble`, `marble-statue`, `melon`, `milk`, `millet`, `mushroom`, `noodles`, `oats`, `okra`, `olive`, `olive-oil`, `onion`, `orange`, `ores`, `oyster`, `pant`, `papaya`, `pasta`, `pastry`, `peach`, `peanut`, `pear`, `pearl`, `pie`, `pig`, `pineapple`, `plum`, `pomegranate`, `porcelain`, `pork`, `potato`, `pottery`, `pumpkin`, `quinoa`, `raspberry`, `rice`, `rice-plant`, `rubber`, `rum`, `saffron`, `salmon`, `salt`, `sand`, `sausage`, `seaweed`, `sheep`, `shirt`, `shrimp`, `silk`, `slate`, `smoked-fish`, `sorghum`, `soybean`, `spinach`, `steel`, `stone`, `stone-slab`, `strawberry`, `sugar`, `sugar-beet`, `sugar-cane`, `sunflower`, `taro`, `tea`, `timber`, `tobacco`, `tofu`, `tomato`, `tool`, `turkey`, `vanilla`, `vinegar`, `walnut`, `water-buffalo`, `watermelon`, `wax`, `weapon-sword-shield`, `whale-oil`, `wheat-sheaf`, `window`, `wine`, `wood`, `wool`, `yam`, `yellow-squash`, `yogurt`, `zucchini`
+`artisan-bust`, `entrepreneur-bust`, `farmer-bust`, `magnate-bust`, `scholar-bust`, `worker-bust`
+
+</details>
+
+<details><summary><code>resources/</code> · 184 items</summary>
+
+`apple`, `avocado`, `banana`, `beer`, `bell-pepper`, `berry`, `black-bean`, `black-pepper`, `blackberry`, `blueberry`, `bok-choy`, `boot`, `brandy`, `bread`, `brick`, `broccoli`, `butter`, `cabbage`, `cake`, `candle`, `cantaloupe`, `cardamom`, `carrot`, `cauliflower`, `celestial-objects-20260626`, `cheese`, `cherry`, `chestnut`, `chicken`, `chickpea`, `chili-pepper`, `chocolate`, `cider`, `cigar`, `cinnamon`, `clam`, `clay`, `coal`, `cocoa`, `coconut`, `coffee-berry`, `coffee-drink`, `coin`, `concrete`, `corn`, `cotton`, `cotton-cloth`, `cotton-shirt`, `cow`, `crab`, `cucumber`, `date`, `deer`, `donkey`, `dragon-fruit`, `duck`, `egg`, `eggplant`, `feather-hat`, `feather-hat-female`, `fertilizer`, `fig`, `fish`, `flax`, `flour`, `fur`, `fur-boot`, `fur-coat`, `furniture`, `garlic`, `gem`, `glass`, `gold-ore`, `goose`, `grape`, `green-peas`, `hemp`, `honey`, `hops`, `horse`, `incense`, `ingots`, `iron-ore`, `ivory`, `jam`, `jewelry`, `jute`, `knight-armor`, `leather`, `leek`, `lemon`, `lettuce`, `lime`, `llama`, `lobster`, `lychee`, `mango`, `marble`, `marble-statue`, `melon`, `milk`, `millet`, `mushroom`, `noodles`, `oats`, `okra`, `olive`, `olive-oil`, `onion`, `orange`, `ores`, `oyster`, `pant`, `papaya`, `pasta`, `pastry`, `peach`, `peanut`, `pear`, `pearl`, `pie`, `pig`, `pineapple`, `plum`, `pomegranate`, `porcelain`, `pork`, `potato`, `pottery`, `pumpkin`, `quinoa`, `raspberry`, `rice`, `rice-plant`, `rubber`, `rum`, `saffron`, `salmon`, `salt`, `sand`, `sausage`, `seaweed`, `sheep`, `shirt`, `shrimp`, `silk`, `slate`, `smoked-fish`, `sorghum`, `soybean`, `spinach`, `steel`, `stone`, `stone-slab`, `strawberry`, `sugar`, `sugar-beet`, `sugar-cane`, `sunflower`, `taro`, `tea`, `timber`, `tobacco`, `tofu`, `tomato`, `tool`, `turkey`, `vanilla`, `vinegar`, `walnut`, `water-buffalo`, `watermelon`, `wax`, `weapon-sword-shield`, `whale-oil`, `wheat-sheaf`, `window`, `wine`, `wood`, `wool`, `yam`, `yellow-squash`, `yogurt`, `zucchini`
 
 </details>
 
@@ -115,15 +143,21 @@ Real image files, grouped into 11 categories. For normal game assets, the folder
 
 </details>
 
-<details><summary><code>terrain/</code> · 3 items</summary>
+<details><summary><code>terrain/</code> · 4 items</summary>
 
-`bush`, `rock`, `tree`
+`bush`, `decoration`, `rock`, `tree`
 
 </details>
 
 <details><summary><code>tiles/</code> · 7 items</summary>
 
 `boulder`, `bushes`, `dirt`, `grass`, `sand`, `sea`, `three-trees-large`
+
+</details>
+
+<details><summary><code>ui/</code> · 3 items</summary>
+
+`downgrade-button`, `move-button`, `upgrade-button`
 
 </details>
 

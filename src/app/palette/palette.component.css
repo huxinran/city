@@ -1,7 +1,7 @@
 .palette {
   display: flex;
   flex-direction: row;
-  padding: 2px 6px 4px;
+  padding: 3px 8px 5px;
   background: var(--panel-2);
   min-height: 0;
   width: 100%;
@@ -14,25 +14,25 @@
 .tier-strip {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
   overflow-x: auto;
-  height: 20px;
+  height: 25px;
 }
 
 .tier-tab {
   flex: 0 0 auto;
-  height: 20px;
+  height: 25px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  padding: 1px 5px;
+  padding: 1px 6px;
   background: transparent;
   border: 1px solid transparent;
   border-radius: 5px;
   color: var(--text-dim);
   font: inherit;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   line-height: 1;
   text-transform: uppercase;
@@ -53,7 +53,7 @@
 .build-row {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: 15px;
   overflow-x: auto;
   width: 100%;
   max-width: 100%;
@@ -65,18 +65,18 @@
 .build-block {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   flex: 0 0 auto;
   margin-bottom: 0;
 }
 
 .block-title {
-  height: 20px;
+  height: 25px;
   display: flex;
   align-items: center;
-  padding: 0 5px;
+  padding: 0 6px;
   color: var(--text-dim);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -85,13 +85,13 @@
 .icons {
   display: flex;
   flex-wrap: nowrap;
-  gap: 1px;
+  gap: 2px;
 }
 
 .pal-icon {
-  flex: 0 0 31px;
-  width: 31px;
-  height: 31px;
+  flex: 0 0 39px;
+  width: 39px;
+  height: 39px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -152,13 +152,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 35px;
+  height: 35px;
 }
 
 .pal-icon-slot img {
-  max-width: 28px;
-  max-height: 28px;
+  max-width: 35px;
+  max-height: 35px;
   object-fit: contain;
   image-rendering: pixelated;
   pointer-events: none;
@@ -166,7 +166,7 @@
 
 
 .pal-emoji {
-  font-size: 15px;
+  font-size: 19px;
   line-height: 1;
   pointer-events: none;
 }
@@ -187,42 +187,42 @@
 
 @media (pointer: coarse), (max-width: 700px) {
   .palette {
-    padding: 4px 8px 6px;
+    padding: 5px 10px 8px;
   }
 
   .build-row {
-    gap: 10px;
+    gap: 13px;
   }
 
   .tier-strip,
   .block-title {
-    height: 22px;
+    height: 28px;
   }
 
   .tier-tab {
-    min-width: 38px;
-    height: 22px;
-    font-size: 10px;
+    min-width: 48px;
+    height: 28px;
+    font-size: 12px;
   }
 
   .icons {
-    gap: 3px;
+    gap: 4px;
   }
 
   .pal-icon {
-    flex-basis: 40px;
-    width: 40px;
-    height: 40px;
+    flex-basis: 50px;
+    width: 50px;
+    height: 50px;
   }
 
   .pal-icon-slot {
-    width: 34px;
-    height: 34px;
+    width: 43px;
+    height: 43px;
   }
 
   .pal-icon-slot img {
-    max-width: 34px;
-    max-height: 34px;
+    max-width: 43px;
+    max-height: 43px;
   }
 }
 

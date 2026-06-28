@@ -314,6 +314,7 @@ const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
     [BuildingType.WINERY]: 'wine.png',
     [BuildingType.OIL_PRESS]: 'olive-oil.png',
     [BuildingType.RUM_DISTILLERY]: 'rum.png',
+    [BuildingType.WHALING_POST]: 'whale-oil.png',
 }
 
 // Returns a PNG URL for a building icon:

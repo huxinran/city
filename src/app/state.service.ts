@@ -526,14 +526,16 @@ export class StateService {
     } else {
       this.TryPlaceBuilding(tile, type)
     }
-    city.focus_tile = tile
+    // Building is a paint action, not an inspect action. Leaving focus empty
+    // keeps the info panel closed after placing a new building.
+    city.focus_tile = undefined
   }
 
   // Roads are drawn between two points: the first click sets the start, the
   // second lays an L-shaped path of road tiles to the end point.
   public RoadPoint(tile: Tile) {
     let city = this.state.current_city!
-    city.focus_tile = tile
+    city.focus_tile = undefined
     if (!this.road_start) {
       this.road_start = { i: tile.i, j: tile.j }
       return

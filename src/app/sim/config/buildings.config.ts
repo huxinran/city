@@ -126,7 +126,7 @@ export const BUILDING_DEFS: Partial<Record<BuildingType, BuildingDef>> = {
     [BuildingType.OIL_PRESS]:   { size: 2, material: [I(Resource.SLATE, 10)], icon: '🫒', productIcon: '🫗', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.OLIVE)], out: [I(Resource.OIL)] } },
     [BuildingType.RUM_DISTILLERY]:{ size: 2, material: [I(Resource.BRICK, 20)], icon: '🍬', productIcon: '🥃', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.SUGAR_CANE)], out: [I(Resource.RUM)] } },
     // --- Sea producers ---
-    [BuildingType.FISHERY]:     { size: 1, sea: true, material: [I(Resource.TIMBER, 10)], icon: '🎣', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(Resource.FISH)] } },
+    [BuildingType.FISHERY]:     { size: 2, sea: true, material: [I(Resource.TIMBER, 10)], icon: '🎣', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(Resource.FISH)] } },
     // --- Houses, services, infrastructure ---
     [BuildingType.HOUSE]:       { size: 1, gold: 20,  material: [I(Resource.TIMBER, 5)],  icon: '🏠', special: 'house' },
     [BuildingType.WELL]:        { size: 1, gold: 80,  noRoad: true, material: [I(Resource.TIMBER, 10)], icon: '🪣', service: { need: ServiceType.WATER, radius: 10 } },
@@ -161,7 +161,7 @@ export const BUILDING_DEFS: Partial<Record<BuildingType, BuildingDef>> = {
     [BuildingType.REINDEER_FARM]: rawFarm('🦌', Resource.DEER),
     [BuildingType.FUR_WORKSHOP]:{ size: 2, material: [I(Resource.TIMBER, 10)], icon: '🧥', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.FUR)], out: [I(Resource.FUR_COAT)] } },
     [BuildingType.SMOKEHOUSE]:  { size: 2, material: [I(Resource.TIMBER, 10)], icon: '🐟', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [I(Resource.FISH), I(Resource.SALT)], out: [I(Resource.SMOKED_FISH)] } },
-    [BuildingType.WHALING_POST]:{ size: 1, sea: true, material: [I(Resource.TIMBER, 10)], icon: '🐋', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(Resource.WHALE_OIL)] } },
+    [BuildingType.WHALING_POST]:{ size: 2, sea: true, material: [I(Resource.TIMBER, 10)], icon: '🐋', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(Resource.WHALE_OIL)] } },
 }
 
 

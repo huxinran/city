@@ -1,5 +1,18 @@
 # Map Tiles Cute 48 Generation Log
 
+## 2026-06-28 - surface tile categories
+
+Grouped homogeneous base map tiles under `public/assets/used/map-tiles/surfaces/<category>/` and mirrored them in `public/assets/lib/map-tiles/surfaces/<category>/`.
+
+| Category | Runtime files |
+|----------|---------------|
+| sea | `main.png`, `alternative-1.png` |
+| sand | `main.png`, `alternative-1.png` |
+| grass | `main.png`, `alternative-1.png` |
+| rock-grass | `main.png`, `alternative-1.png` |
+
+Notes: `alternative-1.png` currently matches `main.png` for every category. The renderer can deterministically choose alternates later without visual changes today.
+
 ## 2026-06-23 - cute light terrain tile refresh
 
 Created exact 48x48 PNG terrain tiles with light, low-saturation cute pixel styling and small readable features:
