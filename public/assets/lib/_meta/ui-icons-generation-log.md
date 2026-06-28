@@ -21,6 +21,16 @@ Created four cute pixel-art UI icons for game menu actions with the built-in ima
 
 Notes: generated files are RGB with baked checkerboard-style backgrounds, not true alpha.
 
+## 2026-06-27 - chunky generated action button refresh
+
+Created refreshed transparent upgrade, downgrade, and move button icons with the built-in image generator: regular larger chunky arrow sources intended to be downscaled for the live cursors.
+
+| Icon | Library path | Matching cursor | Note |
+|------|--------------|-----------------|------|
+| upgrade-button | `public/assets/lib/ui/upgrade-button/v2-imagegen-chunky.png` | `public/assets/lib/cursors/upgrade-arrow/v3-imagegen-chunky.png` | larger image-generated green up arrow with warm outline and gold bevel, then downscaled for cursor use |
+| downgrade-button | `public/assets/lib/ui/downgrade-button/v2-imagegen-chunky.png` | `public/assets/lib/cursors/downgrade-arrow/v3-imagegen-chunky.png` | larger image-generated red-orange down arrow with warm outline and gold bevel, then downscaled for cursor use |
+| move-button | `public/assets/lib/ui/move-button/v7-imagegen-chunky.png` | `public/assets/lib/cursors/move-arrows/v7-imagegen-chunky.png` | larger image-generated golden four-way arrows with warm brown outline, then downscaled for cursor use |
+
 ## 2026-06-27 - simplified upgrade and downgrade arrows
 
 Created separate single-arrow UI icons after feedback to keep upgrade/downgrade visually simple.
