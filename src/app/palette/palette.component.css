@@ -5,7 +5,10 @@
   background: var(--panel-2);
   min-height: 0;
   width: 100%;
-  min-width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .tier-strip {
@@ -53,6 +56,10 @@
   gap: 12px;
   overflow-x: auto;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
 }
 
 .build-block {
@@ -94,6 +101,7 @@
   cursor: grab;
   transition: transform 0.08s ease, border-color 0.12s ease, background 0.12s ease;
   user-select: none;
+  touch-action: manipulation;
 }
 
 .pal-icon:hover {
@@ -104,6 +112,30 @@
 
 .pal-icon:active {
   cursor: grabbing;
+}
+
+.pal-icon.move {
+  cursor: url("/assets/used/cursors/move-arrows.png") 20 20, pointer;
+}
+
+.pal-icon.upgrade-tool {
+  cursor: url("/assets/used/cursors/upgrade-arrow.png") 20 20, pointer;
+}
+
+.pal-icon.downgrade-tool {
+  cursor: url("/assets/used/cursors/downgrade-arrow.png") 20 20, pointer;
+}
+
+.pal-icon.move:active {
+  cursor: url("/assets/used/cursors/move-arrows.png") 20 20, pointer;
+}
+
+.pal-icon.upgrade-tool:active {
+  cursor: url("/assets/used/cursors/upgrade-arrow.png") 20 20, pointer;
+}
+
+.pal-icon.downgrade-tool:active {
+  cursor: url("/assets/used/cursors/downgrade-arrow.png") 20 20, pointer;
 }
 
 .pal-icon.sel {
@@ -151,6 +183,47 @@
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow);
+}
+
+@media (pointer: coarse), (max-width: 700px) {
+  .palette {
+    padding: 4px 8px 6px;
+  }
+
+  .build-row {
+    gap: 10px;
+  }
+
+  .tier-strip,
+  .block-title {
+    height: 22px;
+  }
+
+  .tier-tab {
+    min-width: 38px;
+    height: 22px;
+    font-size: 10px;
+  }
+
+  .icons {
+    gap: 3px;
+  }
+
+  .pal-icon {
+    flex-basis: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .pal-icon-slot {
+    width: 34px;
+    height: 34px;
+  }
+
+  .pal-icon-slot img {
+    max-width: 34px;
+    max-height: 34px;
+  }
 }
 
 .tip-name {

@@ -1,17 +1,12 @@
 <div class="row">
-    <span class="key">Cart Speed</span>
-    <span class="val">{{tile.building!.warehouse!.cart_speed}}</span>
+    <span class="key cart-ready-key">
+        <img class="cart-icon" src="assets/used/buildings/cart-empty.png" alt="Carts">
+        Ready
+    </span>
+    <span class="val">{{readyCarts()}} / {{tile.building!.warehouse!.carts.length}}</span>
 </div>
+
 <hr class="divider">
-@for (cart of tile.building!.warehouse!.carts; track $index) {
-    <div class="row">
-        <span class="key">Cart {{$index + 1}}</span>
-        @if (cart.task) {
-            <span class="badge on">{{cart.task.type}}</span>
-        } @else {
-            <span class="badge off">Ready</span>
-        }
-    </div>
-}
+<app-resource-summary></app-resource-summary>
 <hr class="divider">
-<button class="btn btn-sm btn-primary btn-block" [disabled]="tile.building?.warehouse?.tier == 3" (click)="Upgrade()">Upgrade</button>
+<button class="btn btn-sm btn-primary btn-block cursor-upgrade" [disabled]="tile.building?.warehouse?.tier == 3" (click)="Upgrade()">Upgrade</button>

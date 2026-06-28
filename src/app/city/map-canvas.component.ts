@@ -88,11 +88,16 @@ const TERRAIN_OTHER_ART: TerrainObjectArt[] = [
   { file: 'tiny-pond-variant.png', width: 0.68, height: 0.96 },
 ];
 
+// Browser cursor images need to stay small; these 40px transparent PNGs are the
+// active runtime copies from public/assets/used/cursors.
+const HAND_CURSOR = `url("assets/used/cursors/white-glove-pointer.png") 6 2, pointer`;
+const HAMMER_CURSOR = `url("assets/used/cursors/build-hammer.png") 7 33, crosshair`;
+const MOVE_CURSOR = `url("assets/used/cursors/move-arrows.png") 20 20, move`;
+const UPGRADE_CURSOR = `url("assets/used/cursors/upgrade-arrow.png") 20 20, pointer`;
+const DOWNGRADE_CURSOR = `url("assets/used/cursors/downgrade-arrow.png") 20 20, pointer`;
 // Cursor shown while the Delete tool is active: the shovel icon, hinting "dig
 // this out". The hotspot (6 34) is the blade tip at the bottom-left, so the tile
-// that gets removed is the one under the blade. The 40px PNG is a downscale of
-// the Delete tool icon (assets/used/buildings/delete.png) — browsers cap cursor
-// images at ~128px, so the full-size art can't be used directly.
+// that gets removed is the one under the blade.
 const SHOVEL_CURSOR = `url("assets/used/cursors/shovel.png") 6 34, crosshair`;
 
 // Road auto-tiling. A road's look depends on which of its 4 orthogonal
@@ -278,13 +283,25 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     this.state.bumpCamera();
   }
 
-  // Show tool cursors while Delete/Move are selected, plain otherwise.
+  // Show tool cursors while a map mode is selected.
   // Driven by the same effect as the repaint, since selecting a tool bumps
   // mapVersion. Guarded because the effect can fire before the canvas exists.
   private updateCursor() {
     if (!this.canvas) return;
-    const del = this.state.state.build_type === BuildingType.DELETE;
-    this.canvas.style.cursor = this.state.poodle.mode ? 'crosshair' : del ? SHOVEL_CURSOR : this.state.move_mode ? 'grab' : '';
+    const buildType = this.state.state.build_type;
+    this.canvas.style.cursor = this.state.poodle.mode
+      ? 'crosshair'
+      : buildType === BuildingType.DELETE
+        ? SHOVEL_CURSOR
+        : this.state.move_mode
+          ? MOVE_CURSOR
+          : this.state.upgrade_mode === 'upgrade'
+            ? UPGRADE_CURSOR
+            : this.state.upgrade_mode === 'downgrade'
+              ? DOWNGRADE_CURSOR
+              : buildType
+                ? HAMMER_CURSOR
+                : HAND_CURSOR;
   }
 
   private updateDraggable(e: MouseEvent) {

@@ -2,13 +2,13 @@ import { Injectable, NgZone, inject, signal, isDevMode } from '@angular/core';
 import { State } from './sim/state';
 import { Item, Storage } from './sim/storage';
 import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, CountItem, TakeItemsAsPossible, StorageItems} from './sim/utils';
-import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, ExtraSource, CreateBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, CanPlaceOnFeature, GetRequiredNearbyFeature, GetRequiredNearbyTerrain, Technology, ALL_RESEARCH, FARM_BUILDINGS, MINE_CAMP_BUILDINGS, ComputeBaseHappiness, ValidateConfig } from './sim/building'
+import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, ExtraSource, CreateBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, CanPlaceOnFeature, GetRequiredNearbyFeature, GetRequiredNearbyTerrain, Technology, ALL_RESEARCH, FARM_BUILDINGS, MINE_CAMP_BUILDINGS, ComputeBaseHappiness, ValidateConfig, CanUpgradeHouse, RefreshHouse, RefreshWarehouse } from './sim/building'
 import { BALANCE } from './sim/balance';
 import { City, GenerateCityMap } from './sim/city';
 import { Population,  } from './sim/population';
 import { Resident, ProductionStatus, ShippingTaskType, BuildingType, Terrain, Feature, CityName } from './sim/types'
 import { Tile } from './sim/tile';
-import { SaveState, LoadState, SaveMaps, LoadMaps, HasSavedMap } from './sim/persistence';
+import { SaveState, LoadState, LoadDefaultState, SaveMaps, LoadMaps, HasSavedMap } from './sim/persistence';
 import { RoadDistanceField, BuildRoadPath, WarehouseRoadDistance } from './sim/pathfinding';
 import { Camera } from './camera';
 
@@ -40,6 +40,8 @@ export class StateService {
   public move_source?: Tile
   // Buildings can only be dragged after the palette's Move tool is selected.
   public move_mode = false
+  // Click a building on the map to upgrade or downgrade it when possible.
+  public upgrade_mode: 'upgrade' | 'downgrade' | undefined
 
   // Render heartbeat: bumped every simulation tick so views showing live data
   // (carts, production progress, storage) re-check on an OnPush schedule.
@@ -125,7 +127,7 @@ export class StateService {
     LoadMaps(this.state.cities)
   }
   public Restart() {
-    this.state = new State()
+    this.state = LoadDefaultState() ?? new State()
     this.LoadOrGenerateMaps()
     this.bumpMap()
   }
@@ -188,6 +190,7 @@ export class StateService {
     this.road_start = undefined
     this.move_source = undefined
     this.move_mode = false
+    this.upgrade_mode = undefined
     this.poodle.mode = false
     this.poodle.path = []
     if (this.state.current_city) this.state.current_city.focus_tile = undefined
@@ -202,6 +205,11 @@ export class StateService {
     let building_type = this.state.build_type
     let terrain_type = this.state.terrain_type
     let feature_type = this.state.feature_type
+
+    if (this.upgrade_mode) {
+      this.ApplyUpgradeMode(tile, this.upgrade_mode)
+      return
+    }
 
     if (building_type) {
       // Clicking an occupied tile while a non-delete build tool is active:
@@ -252,6 +260,35 @@ export class StateService {
     this.bumpMap()
   }
 
+  private ApplyUpgradeMode(tile: Tile, mode: 'upgrade' | 'downgrade') {
+    let city = this.state.current_city!
+    let anchor = tile.covered
+      ? this.GetTile(city, tile.anchor_i, tile.anchor_j)
+      : tile
+    let building = anchor.building
+    city.focus_tile = anchor
+
+    if (!building) {
+      this.bumpMap()
+      return
+    }
+
+    if (mode === 'upgrade') {
+      if (building.house && CanUpgradeHouse(building.house)) {
+        building.house.tier += 1
+        RefreshHouse(building.house)
+      } else if (building.warehouse && building.warehouse.tier < BALANCE.warehouse.cartsByTier.length) {
+        building.warehouse.tier += 1
+        RefreshWarehouse(building.warehouse)
+      }
+    } else if (building.house && building.house.tier > 1) {
+      building.house.tier -= 1
+      RefreshHouse(building.house)
+    }
+
+    this.bumpMap()
+  }
+
   // The three paint modes (build / terrain / feature) are mutually exclusive:
   // selecting one clears the others so a click is never ambiguous.
   public SetBuildType(type: BuildingType) {
@@ -261,6 +298,7 @@ export class StateService {
     this.road_start = undefined
     this.move_source = undefined
     this.move_mode = false
+    this.upgrade_mode = undefined
     this.poodle.mode = false
     this.bumpMap()
   }
@@ -268,6 +306,7 @@ export class StateService {
     this.state.build_type = undefined
     this.road_start = undefined
     this.move_mode = false
+    this.upgrade_mode = undefined
     this.bumpMap()
   }
 
@@ -278,6 +317,19 @@ export class StateService {
     this.road_start = undefined
     this.move_source = undefined
     this.move_mode = true
+    this.upgrade_mode = undefined
+    this.poodle.mode = false
+    this.bumpMap()
+  }
+
+  public SetUpgradeMode(mode: 'upgrade' | 'downgrade') {
+    this.state.build_type = undefined
+    this.state.terrain_type = undefined
+    this.state.feature_type = undefined
+    this.road_start = undefined
+    this.move_source = undefined
+    this.move_mode = false
+    this.upgrade_mode = mode
     this.poodle.mode = false
     this.bumpMap()
   }
@@ -287,6 +339,7 @@ export class StateService {
     this.state.build_type = undefined
     this.state.feature_type = undefined
     this.move_mode = false
+    this.upgrade_mode = undefined
     this.poodle.mode = false
     this.bumpMap()
   }
@@ -300,6 +353,7 @@ export class StateService {
     this.state.build_type = undefined
     this.state.terrain_type = undefined
     this.move_mode = false
+    this.upgrade_mode = undefined
     this.poodle.mode = false
     this.bumpMap()
   }

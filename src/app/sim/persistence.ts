@@ -3,6 +3,7 @@ import { City } from './city'
 import { Tile } from './tile'
 import { Terrain, Feature, ProductionStatus } from './types'
 import { Population } from './population'
+import { DEFAULT_MAPS, DEFAULT_SAVE_VERSION, DEFAULT_STATE_JSON } from './config/default-save'
 
 // localStorage persistence for the game state and per-city terrain maps.
 // Pure functions that operate on the passed-in state/cities so the service
@@ -120,21 +121,7 @@ export function SaveState(state: State) {
 
 // Returns the persisted state (with current_city re-linked into cities[]), or
 // undefined if there is no save / the save is from an incompatible version.
-export function LoadState(): State | undefined {
-  const raw = localStorage.getItem(STATE_KEY)
-  if (!raw || localStorage.getItem(VERSION_KEY) !== SAVE_VERSION) return undefined
-
-  // A corrupt/truncated save must not throw out of the constructor (that would
-  // brick the app on load). Treat unparseable data as "no save" so the caller
-  // falls back to a fresh game rather than crashing.
-  let data: StateSave
-  try {
-    data = JSON.parse(raw)
-  } catch (e) {
-    console.error('Discarding corrupt save:', e)
-    return undefined
-  }
-
+function hydrateState(data: StateSave): State {
   const state = new State()
   state.time = data.time ?? 0
   state.gold = data.gold ?? 0
@@ -181,6 +168,35 @@ export function LoadState(): State | undefined {
   return state
 }
 
+function parseState(raw: string): State | undefined {
+  let data: StateSave
+  try {
+    data = JSON.parse(raw)
+  } catch (e) {
+    console.error('Discarding corrupt save:', e)
+    return undefined
+  }
+
+  return hydrateState(data)
+}
+
+export function LoadDefaultState(): State | undefined {
+  if (DEFAULT_SAVE_VERSION !== SAVE_VERSION) return undefined
+  return parseState(DEFAULT_STATE_JSON)
+}
+
+// Returns the persisted state (with current_city re-linked into cities[]), or
+// the bundled handcrafted city start if there is no compatible local save.
+export function LoadState(): State | undefined {
+  const raw = localStorage.getItem(STATE_KEY)
+  if (!raw || localStorage.getItem(VERSION_KEY) !== SAVE_VERSION) return LoadDefaultState()
+
+  // A corrupt/truncated save must not throw out of the constructor (that would
+  // brick the app on load). Treat unparseable data as "no save" so the caller
+  // falls back to the bundled default rather than crashing.
+  return parseState(raw) ?? LoadDefaultState()
+}
+
 // --- Compact map format (v2) ---
 // A city map only needs terrain + feature to round-trip (see LoadMaps). The old
 // format JSON-stringified the whole Tile[], which re-stored every tile's
@@ -214,7 +230,7 @@ export function SaveMaps(cities: City[]) {
 // True if a map has been persisted for this city — used to decide whether a
 // city needs a fresh GenerateTerrain or can reuse its locked-in map.
 export function HasSavedMap(name: string): boolean {
-  return localStorage.getItem(MAP_KEY_PREFIX + name) != null
+  return localStorage.getItem(MAP_KEY_PREFIX + name) != null || DEFAULT_MAPS[name] != null
 }
 
 // Restore each city's locked-in map (terrain AND features) from localStorage,
@@ -223,7 +239,7 @@ export function HasSavedMap(name: string): boolean {
 // regenerates and re-saves).
 export function LoadMaps(cities: City[]) {
   for (let city of cities) {
-    let saved_map = localStorage.getItem(MAP_KEY_PREFIX + city.name)
+    let saved_map = localStorage.getItem(MAP_KEY_PREFIX + city.name) ?? DEFAULT_MAPS[city.name]
     if (!saved_map) continue
     let obj = JSON.parse(saved_map)
 

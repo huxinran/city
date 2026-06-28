@@ -1,14 +1,12 @@
 .container {
     display: grid;
     grid-template-rows: min-content 1fr min-content;
-    grid-template-columns: 1fr minmax(104px, 128px);
+    grid-template-columns: 1fr;
     height: 100vh;
+    height: 100dvh;
     width: 100vw;
     overflow: hidden;
-}
-
-.container.right-collapsed {
-    grid-template-columns: 1fr 28px;
+    position: relative;
 }
 
 .top-menu {
@@ -17,12 +15,14 @@
     display: flex;
     align-items: center;
     gap: 5px;
-    padding: 3px 8px;
+    min-height: calc(70px + env(safe-area-inset-top));
+    box-sizing: border-box;
+    padding: calc(3px + env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) 3px max(8px, env(safe-area-inset-left));
     font-size: 12px;
     background: linear-gradient(90deg, #ede4d0, #f7f0e2);
     border-bottom: 1px solid var(--border-strong);
     box-shadow: 0 2px 8px rgba(80, 50, 10, 0.10);
-    z-index: 10;
+    z-index: 100;
     overflow-x: auto;
 }
 
@@ -34,44 +34,74 @@
 
 .top-menu app-menu {
     flex: none;
+    position: relative;
+    z-index: 102;
 }
 
 .top-spacer { flex: 0 0 2px; }
 
 .map-container {
     grid-row: 2;
-    grid-column: 1;
+    grid-column: 1 / -1;
     position: relative;
     overflow: hidden;
     background: radial-gradient(circle at 30% 20%, #b8d4e8, #7fb0cc 70%);
     padding: 0;
     box-sizing: border-box;
     cursor: grab;
+    touch-action: none;
+    min-width: 0;
+    min-height: 0;
 }
 
-.right-menu {
-    grid-row: 2;
-    grid-column: 2;
-    position: relative;
-    padding: 4px;
+.bottom-menu {
+    grid-row: 3;
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-height: 76px;
+    background: var(--panel-2);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -2px 8px rgba(80, 50, 10, 0.08);
+    padding-bottom: env(safe-area-inset-bottom);
     box-sizing: border-box;
+}
+
+.bottom-menu app-palette {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.info-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    background: rgba(45, 32, 16, 0.24);
+}
+
+.info-popover {
+    position: fixed;
+    z-index: 81;
+    top: 50%;
+    left: 50%;
+    width: min(360px, calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+    max-height: min(560px, calc(100dvh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
     overflow-y: auto;
-    background: var(--bg);
-    border-left: 1px solid var(--border);
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
 }
 
-.container.right-collapsed .right-menu {
-    overflow: hidden;
-    padding: 4px 2px;
-}
-
-.side-toggle {
+.info-close {
     position: absolute;
-    top: 4px;
-    z-index: 3;
-    width: 22px;
-    height: 28px;
-    display: flex;
+    top: 8px;
+    right: 8px;
+    z-index: 1;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 0;
@@ -79,38 +109,34 @@
     border: 1px solid var(--border-strong);
     border-radius: var(--radius-sm);
     color: var(--text-dim);
-    font: inherit;
-    font-size: 18px;
-    font-weight: 800;
-    line-height: 1;
     cursor: pointer;
-    box-shadow: var(--shadow-sm);
+    font: inherit;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
 }
 
-.side-toggle:hover {
+.info-close:hover {
     background: var(--elevated);
     color: var(--text);
 }
 
-.left-toggle {
-    right: 3px;
+.info-popover app-tile-detail {
+    display: block;
 }
 
-.right-toggle {
-    left: 3px;
+.info-popover ::ng-deep app-tile-detail .panel {
+    margin-bottom: 0;
+    padding-right: 46px;
 }
 
-.side-content {
-    padding-top: 34px;
-}
+@media (max-width: 700px) {
+    .top-menu {
+        gap: 4px;
+        padding-bottom: 2px;
+    }
 
-.bottom-menu {
-    grid-row: 3;
-    grid-column: 1 / -1;
-    overflow-x: auto;
-    overflow-y: hidden;
-    max-height: 76px;
-    background: var(--panel-2);
-    border-top: 1px solid var(--border);
-    box-shadow: 0 -2px 8px rgba(80, 50, 10, 0.08);
+    .bottom-menu {
+        max-height: calc(92px + env(safe-area-inset-bottom));
+    }
 }

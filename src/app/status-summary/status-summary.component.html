@@ -24,12 +24,12 @@
     <span class="pop-spacer"></span>
     @for (m of materials; track m) {
         <span class="stat" [title]="m">
-            <app-icon class="material-icon" [src]="resSrc(m)" [fallback]="resEmoji(m)" [alt]="m" [size]="30"></app-icon>
+            <app-icon class="material-icon" [src]="resSrc(m)" [fallback]="resEmoji(m)" [alt]="m" [size]="45"></app-icon>
             <span class="v">{{count(m) | number: '1.0-0'}}</span>
         </span>
     }
     <span class="stat" [title]="goldType">
-        <app-icon class="material-icon" [src]="resSrc(goldType)" [fallback]="'💰'" [alt]="goldType" [size]="30"></app-icon>
+        <app-icon class="material-icon" [src]="resSrc(goldType)" [fallback]="'💰'" [alt]="goldType" [size]="45"></app-icon>
         <span class="v gold">{{state.state.gold | number: '1.0-0'}}</span>
     </span>
     <span class="pop-spacer"></span>

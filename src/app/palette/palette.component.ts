@@ -12,9 +12,20 @@ import { repaintOn } from '../live';
 // Always-available buildings shown under "Basics" (and excluded from the
 // categorized tier groups so they aren't listed twice).
 const MOVE_TOOL = 'Move'
-type PaletteItem = BuildingType | typeof MOVE_TOOL
+const UPGRADE_TOOL = 'Upgrade'
+const DOWNGRADE_TOOL = 'Downgrade'
+type PaletteTool = typeof MOVE_TOOL | typeof UPGRADE_TOOL | typeof DOWNGRADE_TOOL
+type PaletteItem = BuildingType | PaletteTool
 
-const BASIC_BUILDINGS: PaletteItem[] = [BuildingType.ROAD, BuildingType.HOUSE, BuildingType.WAREHOUSE, MOVE_TOOL, BuildingType.DELETE]
+const BASIC_BUILDINGS: PaletteItem[] = [
+  BuildingType.ROAD,
+  BuildingType.HOUSE,
+  BuildingType.WAREHOUSE,
+  MOVE_TOOL,
+  UPGRADE_TOOL,
+  DOWNGRADE_TOOL,
+  BuildingType.DELETE,
+]
 
 const HIDDEN_BUILDINGS = new Set<BuildingType>([BuildingType.COMPOST_PIT, BuildingType.UNIVERSITY])
 
@@ -89,6 +100,8 @@ export class PaletteComponent {
 
   get Delete(): BuildingType { return BuildingType.DELETE }
   get MoveTool(): typeof MOVE_TOOL { return MOVE_TOOL }
+  get UpgradeTool(): typeof UPGRADE_TOOL { return UPGRADE_TOOL }
+  get DowngradeTool(): typeof DOWNGRADE_TOOL { return DOWNGRADE_TOOL }
 
   // "Basics" is pinned open. All other groups behave like an accordion: one
   // group is open at a time so the bottom dock stays compact.
@@ -180,7 +193,7 @@ export class PaletteComponent {
     this.tipY = Math.max(8, r.top - 132)
   }
   public showItem(type: PaletteItem, ev: MouseEvent) {
-    if (type === MOVE_TOOL) return
+    if (this.isPaletteTool(type)) return
     this.show(type, ev)
   }
   public hide() { this.hovered = undefined }
@@ -194,17 +207,23 @@ export class PaletteComponent {
   public workerIcon(type: Resident): string { return GetResidentIconAsset(type) }
 
   public iconSrc(type: PaletteItem): string | undefined {
-    if (type === MOVE_TOOL) return undefined
+    if (type === MOVE_TOOL) return 'assets/used/cursors/move-arrows.png'
+    if (type === UPGRADE_TOOL) return 'assets/used/cursors/upgrade-arrow.png'
+    if (type === DOWNGRADE_TOOL) return 'assets/used/cursors/downgrade-arrow.png'
     return GetBuildingIconSrc(type)
   }
 
   public iconFallback(type: PaletteItem): string {
     if (type === MOVE_TOOL) return '↔'
+    if (type === UPGRADE_TOOL) return '↑'
+    if (type === DOWNGRADE_TOOL) return '↓'
     return this.iconName(type)
   }
 
   public isSelected(type: PaletteItem): boolean {
     if (type === MOVE_TOOL) return this.state.move_mode
+    if (type === UPGRADE_TOOL) return this.state.upgrade_mode === 'upgrade'
+    if (type === DOWNGRADE_TOOL) return this.state.upgrade_mode === 'downgrade'
     return this.state.state.build_type == type
   }
 
@@ -213,11 +232,19 @@ export class PaletteComponent {
       this.state.SetMoveMode()
       return
     }
+    if (type === UPGRADE_TOOL) {
+      this.state.SetUpgradeMode('upgrade')
+      return
+    }
+    if (type === DOWNGRADE_TOOL) {
+      this.state.SetUpgradeMode('downgrade')
+      return
+    }
     this.state.SetBuildType(type)
   }
 
   public onDragStart(type: PaletteItem, ev: DragEvent) {
-    if (type === MOVE_TOOL) {
+    if (this.isPaletteTool(type)) {
       ev.preventDefault()
       return
     }
@@ -227,5 +254,13 @@ export class PaletteComponent {
 
   public onDragEnd() {
     this.state.dragging = false
+  }
+
+  public isDraggable(type: PaletteItem): boolean {
+    return !this.isPaletteTool(type)
+  }
+
+  private isPaletteTool(type: PaletteItem): type is PaletteTool {
+    return type === MOVE_TOOL || type === UPGRADE_TOOL || type === DOWNGRADE_TOOL
   }
 }

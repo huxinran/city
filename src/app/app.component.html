@@ -1,4 +1,4 @@
-<div class="container" [class.right-collapsed]="rightCollapsed()">
+<div class="container">
   <div class="top-menu">
     <app-status-summary></app-status-summary>
     <span class="top-spacer"></span>
@@ -7,23 +7,17 @@
   <div class="map-container"
        (pointerdown)="onMapPointerDown($event)"
        (pointermove)="onMapPointerMove($event)"
-       (pointerup)="onMapPointerUp()"
-       (pointercancel)="onMapPointerUp()">
+       (pointerup)="onMapPointerUp($event)"
+       (pointercancel)="onMapPointerUp($event)">
     <app-city [city]="state.state.current_city!"></app-city>
   </div>
-  <div class="right-menu">
-    <button class="side-toggle right-toggle"
-            type="button"
-            [attr.aria-label]="rightCollapsed() ? 'Show resource menu' : 'Hide resource menu'"
-            [title]="rightCollapsed() ? 'Show resource menu' : 'Hide resource menu'"
-            (click)="toggleRightMenu()">{{ rightCollapsed() ? '‹' : '›' }}</button>
-    @if (!rightCollapsed()) {
-      <div class="side-content">
-        <app-tile-detail [tile]="state.state.current_city!.focus_tile"></app-tile-detail>
-        <app-resource-summary></app-resource-summary>
-      </div>
-    }
-  </div>
+  @if (state.state.current_city!.focus_tile?.building) {
+    <div class="info-backdrop" (click)="closeInfoPopup()"></div>
+    <section class="info-popover" role="dialog" aria-modal="true" aria-label="Building details">
+      <button class="info-close" type="button" aria-label="Close" title="Close" (click)="closeInfoPopup()">×</button>
+      <app-tile-detail [tile]="state.state.current_city!.focus_tile"></app-tile-detail>
+    </section>
+  }
   <div class="bottom-menu">
     <app-palette></app-palette>
   </div>

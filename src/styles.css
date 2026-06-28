@@ -37,6 +37,9 @@ body {
   color: var(--text);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: manipulation;
 }
 
 * { scrollbar-width: thin; scrollbar-color: var(--elevated) transparent; }
@@ -149,6 +152,8 @@ body {
 .btn:hover { filter: brightness(0.94); }
 .btn:active { transform: translateY(1px); }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; filter: none; }
+.btn.cursor-upgrade:not(:disabled) { cursor: url("/assets/used/cursors/upgrade-arrow.png") 20 20, pointer; }
+.btn.cursor-downgrade:not(:disabled) { cursor: url("/assets/used/cursors/downgrade-arrow.png") 20 20, pointer; }
 
 .btn-primary { background: linear-gradient(180deg, #6ab845, #4e9030); border-color: #4e9030; color: #fff; }
 .btn-accent  { background: linear-gradient(180deg, #3a95d5, #2272aa); border-color: #2272aa; color: #fff; }

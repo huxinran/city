@@ -7,7 +7,9 @@
           @for (type of group.items; track $index) {
             <button class="pal-icon" [class.sel]="isSelected(type)" [class.danger]="type === Delete"
                     [class.move]="type === MoveTool"
-                    [draggable]="type !== MoveTool"
+                    [class.upgrade-tool]="type === UpgradeTool"
+                    [class.downgrade-tool]="type === DowngradeTool"
+                    [draggable]="isDraggable(type)"
                     (dragstart)="onDragStart(type, $event)" (dragend)="onDragEnd()"
                     (click)="select(type)"
                     (mouseenter)="showItem(type, $event)" (mouseleave)="hide()">

@@ -20,3 +20,25 @@ Created four cute pixel-art UI icons for game menu actions with the built-in ima
 | reset-button | `public/assets/reserve/ui/reset-button-v1.png` | `C:/Users/Xinran/.codex/generated_images/019ef6c1-0ddf-7791-b4d7-4307924d1c83/ig_0fc277fd554ac103016a3b2fde43308196a5ddb3a848449980.png` | broom sweeping dust from a wooden board |
 
 Notes: generated files are RGB with baked checkerboard-style backgrounds, not true alpha.
+
+## 2026-06-27 - simplified upgrade and downgrade arrows
+
+Created separate single-arrow UI icons after feedback to keep upgrade/downgrade visually simple.
+
+| Icon | Library path | Generated source | Note |
+|------|--------------|------------------|------|
+| upgrade-button | `public/assets/lib/ui/upgrade-button/v1.png` | `/Users/xinranhu/.codex/generated_images/019f0ba6-2c92-7a02-8acf-278d0e28702c/ig_0a1985d8107d0a22016a406d5fd8688195a4eee26091f51e8b.png` | single chunky green up arrow with gold bevel, no building or extra props |
+| downgrade-button | `public/assets/lib/ui/downgrade-button/v1.png` | `/Users/xinranhu/.codex/generated_images/019f0ba6-2c92-7a02-8acf-278d0e28702c/ig_0a1985d8107d0a22016a406d9ebd2c8195bb247722cfe8970b.png` | single chunky red-orange down arrow with gold bevel, no building or extra props |
+
+Notes: generated files are RGB with baked checkerboard-style backgrounds, not true alpha. These are the preferred simpler replacements for the combined `upgrade-downgrade-button` candidate when separate upgrade and downgrade controls are needed.
+
+## 2026-06-27 - building action buttons
+
+Created two cute pixel-art UI icons for building interaction actions with the built-in image generator.
+
+| Icon | Library path | Generated source | Note |
+|------|--------------|------------------|------|
+| move-button | `public/assets/lib/ui/move-button/v1.png` | `/Users/xinranhu/.codex/generated_images/019f0ba6-2c92-7a02-8acf-278d0e28702c/ig_00d1b38726b710f1016a406c74ce9c819786dae11b471f4eab.png` | cozy house on a small isometric base with four golden direction arrows for moving a building |
+| upgrade-downgrade-button | `public/assets/lib/ui/upgrade-downgrade-button/v1.png` | `/Users/xinranhu/.codex/generated_images/019f0ba6-2c92-7a02-8acf-278d0e28702c/ig_00d1b38726b710f1016a406c967f708197aede54edbd6d6ab0.png` | cozy building plaque with green up arrow, red-orange down arrow, planks, hammer, and stone upgrade materials |
+
+Notes: generated files are RGB with baked checkerboard-style backgrounds, not true alpha.
