@@ -2,23 +2,26 @@
   <button class="menu-btn" type="button" (click)="toggle()" title="Menu">
     <img [src]="'assets/used/ui/button.png'" alt="Menu" class="menu-icon">
   </button>
+  @if (message()) {
+    <div class="menu-toast" role="status">{{ message() }}</div>
+  }
 
   @if (open()) {
     <div class="menu-backdrop" (click)="close()"></div>
     <div class="menu-panel">
 
-      <button class="menu-item" (click)="save()">Save</button>
-      <button class="menu-item" (click)="load()">Load</button>
-      <button class="menu-item" (click)="restart()">Restart</button>
+      <button class="menu-item" (click)="save()"><ng-icon name="lucideSave"></ng-icon><span>Save</span></button>
+      <button class="menu-item" [disabled]="!state.HasSave()" (click)="load()"><ng-icon name="lucideFolderOpen"></ng-icon><span>Load</span></button>
+      <button class="menu-item" (click)="restart()"><ng-icon name="lucideRotateCcw"></ng-icon><span>Restart</span></button>
 
-      <button class="menu-item" [class.active]="state.poodle.mode" (click)="actorWalking()">Actor Walking</button>
-      <button class="menu-item" (click)="imageDirectory()">Image Directory</button>
+      <button class="menu-item" [class.active]="state.poodle.mode" (click)="actorWalking()"><ng-icon name="lucideFootprints"></ng-icon><span>Actor Walking</span></button>
+      <button class="menu-item" (click)="imageDirectory()"><ng-icon name="lucideImages"></ng-icon><span>Image Directory</span></button>
 
-      <button class="menu-item danger" [class.active]="submenu() === 'reset'" (click)="showSub('reset')">Reset ▸</button>
+      <button class="menu-item danger" [class.active]="submenu() === 'reset'" (click)="showSub('reset')"><ng-icon name="lucideTrash2"></ng-icon><span>Reset</span><ng-icon class="chevron" name="lucideChevronRight"></ng-icon></button>
       @if (submenu() === 'reset') {
         <div class="menu-sub">
-          <button class="menu-item" (click)="close()">Cancel</button>
-          <button class="menu-item danger" (click)="reset()">Confirm</button>
+          <button class="menu-item" (click)="close()"><ng-icon name="lucideX"></ng-icon><span>Cancel</span></button>
+          <button class="menu-item danger" (click)="reset()"><ng-icon name="lucideCheck"></ng-icon><span>Confirm</span></button>
         </div>
       }
 

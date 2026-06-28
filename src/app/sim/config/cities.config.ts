@@ -70,7 +70,7 @@ export const CITY_PROFILES: Record<CityName, CityProfile> = {
         ],
         upgrades: {
             // Cottage -> Tenement (Farmer -> Worker): first comforts.
-            2: { food: [I(Resource.BREAD, 10)], daily: [I(Resource.POTTERY, 8)], luxury: [], build: [I(Resource.TIMBER, 10)] },
+            2: { food: [I(Resource.BREAD, 10)], daily: [I(Resource.POTTERY, 8)], luxury: [], build: [I(Resource.STONE_BLOCKS, 10)] },
             // Tenement -> House (Worker -> Artisan): a furnished household.
             3: { food: [I(Resource.SAUSAGE, 10), I(Resource.CHEESE, 10)], daily: [I(Resource.PANT, 8)], luxury: [I(Resource.CIDER, 8)], build: [I(Resource.BRICK, 15)] },
             // House -> Villa (Artisan -> Scholar): a refined home.
@@ -96,7 +96,7 @@ export const CITY_PROFILES: Record<CityName, CityProfile> = {
         ],
         services: THEMED_SERVICES,
         upgrades: {
-            2: { food: [I(Resource.TOFU, 8)], daily: [I(Resource.SILK, 6)], luxury: [], build: [I(Resource.TIMBER, 10)] },
+            2: { food: [I(Resource.TOFU, 8)], daily: [I(Resource.SILK, 6)], luxury: [], build: [I(Resource.STONE_BLOCKS, 10)] },
             3: { food: [I(Resource.NOODLE, 10)], daily: [I(Resource.PORCELAIN, 8)], luxury: [I(Resource.TEA, 8)], build: [I(Resource.BRICK, 15)] },
         },
     },
@@ -113,7 +113,7 @@ export const CITY_PROFILES: Record<CityName, CityProfile> = {
         ],
         services: THEMED_SERVICES,
         upgrades: {
-            2: { food: [I(Resource.CORN, 8)], daily: [I(Resource.LEATHER, 6)], luxury: [], build: [I(Resource.TIMBER, 10)] },
+            2: { food: [I(Resource.CORN, 8)], daily: [I(Resource.LEATHER, 6)], luxury: [], build: [I(Resource.STONE_BLOCKS, 10)] },
             3: { food: [I(Resource.SAUSAGE, 10)], daily: [I(Resource.SHIRT, 8)], luxury: [I(Resource.CIDER, 8)], build: [I(Resource.BRICK, 15)] },
         },
     },
@@ -131,7 +131,7 @@ export const CITY_PROFILES: Record<CityName, CityProfile> = {
         ],
         services: THEMED_SERVICES,
         upgrades: {
-            2: { food: [I(Resource.COCOA, 8)], daily: [I(Resource.OIL, 6)], luxury: [], build: [I(Resource.TIMBER, 10)] },
+            2: { food: [I(Resource.COCOA, 8)], daily: [I(Resource.OIL, 6)], luxury: [], build: [I(Resource.STONE_BLOCKS, 10)] },
             3: { food: [I(Resource.PORK, 10)], daily: [I(Resource.COPPER, 8)], luxury: [I(Resource.INCENSE, 8)], build: [I(Resource.BRICK, 15)] },
         },
     },
@@ -149,7 +149,7 @@ export const CITY_PROFILES: Record<CityName, CityProfile> = {
         ],
         services: THEMED_SERVICES,
         upgrades: {
-            2: { food: [I(Resource.SMOKED_FISH, 8)], daily: [I(Resource.FUR_COAT, 6)], luxury: [], build: [I(Resource.TIMBER, 10)] },
+            2: { food: [I(Resource.SMOKED_FISH, 8)], daily: [I(Resource.FUR_COAT, 6)], luxury: [], build: [I(Resource.STONE_BLOCKS, 10)] },
             3: { food: [I(Resource.DEER, 10)], daily: [I(Resource.WHALE_OIL, 8)], luxury: [I(Resource.RUM, 8)], build: [I(Resource.BRICK, 15)] },
         },
     },

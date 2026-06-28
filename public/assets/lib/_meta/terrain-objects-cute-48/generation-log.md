@@ -1,5 +1,43 @@
 # Terrain Object Generation Log
 
+## 2026-06-28 - Rock runtime resolution normalization
+
+- Request: make rock alternatives similar to the main rock's resolution.
+- Runtime cleanup: resized `public/assets/used/terrain/rock/alternative-4.png` through `alternative-6.png` to `96x96`, matching `main.png` and the older rock alternatives.
+- Notes: library originals were preserved; only active runtime copies were normalized.
+
+## 2026-06-28 - Runtime pruning probability update
+
+- Request: after additional manual pruning, make sure deleted runtime files are not referenced; greatly reduce ambient decoration chance; replace 5% of tree/rock/bush feature tiles with decoration.
+- Runtime cleanup:
+  - Compacted surviving `public/assets/used/terrain/.../alternative-N.png` files.
+  - Runtime counts now match renderer config: tree 10, bush 10, rock 6, decoration 16 alternatives.
+- App wiring: feature tiles now reserve 5% for decoration; the remaining 95% keep a 65% main / 35% alternative split. Decoration no longer appears on empty land.
+
+## 2026-06-28 - Promoted terrain alternatives to runtime
+
+- Request: after manual pruning, rename the remaining files and make them used in the real app.
+- Cleanup:
+  - Compacted surviving `alternative-N.png` filenames so each terrain category has no numbering gaps.
+  - Synced library copies into `public/assets/used/terrain/...`.
+- Runtime counts:
+  - Tree: `main.png` plus `alternative-1.png` through `alternative-10.png`
+  - Bush: `main.png` plus `alternative-1.png` through `alternative-10.png`
+  - Rock: `main.png` plus `alternative-1.png` through `alternative-9.png`
+  - Decoration: `main.png` plus `alternative-1.png` through `alternative-19.png`
+- App wiring: `src/app/city/map-canvas.component.ts` now references these runtime counts and uses a higher terrain-object variant rate.
+
+## 2026-06-28 - Expanded terrain alternatives
+
+- Request: create more alternatives for trees, bushes, rocks, and decoration pieces; target 10 alternatives each for tree/bush/rock and 20 decoration alternatives.
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0f10-d101-75f0-8137-194d3853b686/`
+- Library assets:
+  - `public/assets/lib/terrain/tree/alternative-8.png` through `alternative-10.png`
+  - `public/assets/lib/terrain/bush/alternative-6.png` through `alternative-10.png`
+  - `public/assets/lib/terrain/rock/alternative-4.png` through `alternative-10.png`
+  - `public/assets/lib/terrain/decoration/alternative-6.png` through `alternative-20.png`
+- Notes: archived generated originals in the library only. Runtime copies under `public/assets/used/terrain/...` were not changed.
+
 ## 2026-06-28 - Categorized terrain artifact names
 
 - Request: organize rock, tree, and bush artifacts by category with clean names.

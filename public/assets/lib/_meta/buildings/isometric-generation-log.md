@@ -206,6 +206,69 @@
 - Source cache: `/Users/xinranhu/.codex/generated_images/019f0715-2bc4-7281-afe2-07c1704dd856/ig_0c1044883317b28b016a3fd82904e8819d8ffb54fd86ed51af.png`
 - Result note: keeps the no-open-water-poles layout while changing the water perimeter from a hard geometric tile edge to an irregular fuzzy/wave-broken edge closer to the existing dock asset.
 
+## 2026-06-28 - Grove Farm 3x3 Hut Regeneration
+
+- User feedback: grove farm has the wrong isometric view angle. Regenerate it using animal farm as the base, make it a full 3x3 grove tile, include a hut structure, clear tree tools, and a level open room/yard area to place produce.
+- Generation direction: animal-farm-style 3x3 fenced dirt-yard diamond footprint, true 2:1 isometric camera, rustic hut as the main structure, readable pruning/tree tools and orchard props around the edges, broad open center/front dirt area for future produce placement.
+
+- Saved revision: `public/assets/lib/buildings/grove-farm/v4.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0f1e-1e48-7771-98ec-1c75d91b5147/ig_0eeede356c4df1b2016a414fd440608193994a466f8f99643e.png`
+- Result note: replaces the previous square/front-facing grove yard with a cleaner animal-farm-aligned 3x3 isometric fenced base, centered hut, visible tree tools, small fruit trees at the edges, and an open front-center dirt yard for produce placement.
+
+- User feedback on v4/v5 direction: take animal farm as the base more directly, keep the yard clean, use only three branch trees, make the roof green, and make the structure not a house but more like a roof with shelves below.
+
+- Saved revision: `public/assets/lib/buildings/grove-farm/v5.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0f1e-1e48-7771-98ec-1c75d91b5147/ig_0f478be130f2fe19016a415180c04081938eb8d0ac30ace3f8.png`
+- Result note: cleaner animal-farm-like 3x3 fenced dirt yard with a green-roof open work shelter, shelves and tree tools below the roof, exactly three bare branch trees around the yard edges, and a large open center/front dirt area.
+
+- Saved processed revision: `public/assets/lib/buildings/grove-farm/v6-cutout-scaled.png`
+- Source asset: `public/assets/lib/buildings/grove-farm/v5.png`
+- Result note: keeps the accepted v5 composition, removes the plain white background to alpha, trims padding, and scales the render down from 1399x1124 RGB to 1094x812 RGBA so it is closer to the animal farm's active render width.
+
+- User feedback on v6: current look is good, but the view angle is too high. Regenerate with image generation using the reference files and lower the camera elevation by 5-10 degrees.
+
+- Saved revision: `public/assets/lib/buildings/grove-farm/v7-lower-angle.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0f1e-1e48-7771-98ec-1c75d91b5147/ig_0b37c7df126f12b0016a415440b6a481948ce71f0476dfc20e.png`
+- Result note: preserves the green-roof open shelter, clean animal-farm-like yard, three bare trees, and compact tool rack while lowering the isometric elevation slightly so the shelter and fence show more side.
+
+- Saved processed revision: `public/assets/lib/buildings/grove-farm/v8-lower-angle-cutout-scaled.png`
+- Source asset: `public/assets/lib/buildings/grove-farm/v7-lower-angle.png`
+- Result note: removes the generated checkerboard/plain background to alpha, trims padding, and scales the lower-angle render to 1094x767 RGBA for the active runtime copy.
+
+- Saved processed revision: `public/assets/lib/buildings/grove-farm/v9-lower-angle-95pct.png`
+- Source asset: `public/assets/lib/buildings/grove-farm/v8-lower-angle-cutout-scaled.png`
+- Result note: keeps the lower-angle transparent v8 artwork and scales the render to 95% of its previous dimensions, from 1094x767 to 1039x729 RGBA.
+
+- User feedback on v9: still needs regeneration and needs to be flatter.
+
+- Saved revision: `public/assets/lib/buildings/grove-farm/v10-flatter-angle.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0f1e-1e48-7771-98ec-1c75d91b5147/ig_071ae56f19c637c5016a41582ed040819781e65079e525c43d.png`
+- Result note: regenerates the same clean grove concept with a visibly flatter/lower isometric elevation, shallower green roof, lower shelter silhouette, and broad clean yard.
+
+- Saved processed revision: `public/assets/lib/buildings/grove-farm/v11-flatter-angle-cutout-scaled.png`
+- Source asset: `public/assets/lib/buildings/grove-farm/v10-flatter-angle.png`
+- Result note: removes the white background to alpha, trims padding, and scales the flatter regenerated asset to 1039x647 RGBA for the active runtime copy.
+
+- User feedback on v11: too flat, take the middle point.
+
+- Saved revision: `public/assets/lib/buildings/grove-farm/v12-mid-angle.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0f1e-1e48-7771-98ec-1c75d91b5147/ig_00e9b42894386f77016a415a795f70819596811614aadd563f.png`
+- Result note: regenerates the clean grove concept at a midpoint elevation between v9 and v11, keeping the open green-roof shelf shelter, three bare trees, compact tool rack, and broad clean yard.
+
+- Saved processed revision: `public/assets/lib/buildings/grove-farm/v13-mid-angle-cutout-scaled.png`
+- Source asset: `public/assets/lib/buildings/grove-farm/v12-mid-angle.png`
+- Result note: removes the generated checkerboard/plain background to alpha, crops to alpha bounds, and scales the midpoint asset to 1039x707 RGBA for the active runtime copy.
+
+- User feedback on v13: too square; field should be 30 degree angle, as well as the structure's roof line.
+
+- Saved revision: `public/assets/lib/buildings/grove-farm/v14-30deg-field-roof.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0f1e-1e48-7771-98ec-1c75d91b5147/ig_012960b92ecde06d016a415db872448190806f1cc226bb807b.png`
+- Result note: regenerates the grove with a broader/flatter field footprint and aligns the green roof, shelf, fence, and yard lines to the same approximate 30 degree isometric diagonal family.
+
+- Saved processed revision: `public/assets/lib/buildings/grove-farm/v15-30deg-field-roof-cutout-scaled.png`
+- Source asset: `public/assets/lib/buildings/grove-farm/v14-30deg-field-roof.png`
+- Result note: removes the generated checkerboard/plain background to alpha, crops to alpha bounds, and scales the corrected field/roof-angle asset to 1039x695 RGBA for the active runtime copy.
+
 ## 2026-06-27 - Service Building True Isometric Regeneration
 
 - User feedback: regenerate the four service buildings with image generation, explicitly asking for isometric view rather than mechanically adjusting the original images.
@@ -272,3 +335,70 @@
 - Saved revision: `public/assets/lib/buildings/engineer-station/v9.png`
 - Source cache: `/Users/xinranhu/.codex/generated_images/019f0976-b897-71e1-8064-9bb21b52d727/ig_0ae0ec634c28d006016a3fe617a4ec81a2afd5e37f5e5125c6.png`
 - Result note: yellow-roof engineer station with fuzzy natural grass perimeter and no clipped patch corners.
+
+## 2026-06-28 - Grove Farm Flat Parallel Field
+
+- User feedback: redo grove farm because the field was too square; make it flatter, with square edges and parallel isometric lines.
+- Revision direction: use the updated footprint-first farm rule. First create a wide, flat isometric diamond/parallelogram field, then place the shed, orchard rows, fences, tools, and bare branch-only trees on top. Do not use real vanishing-point perspective; keep parallel iso edges parallel.
+- Saved revision: `public/assets/lib/buildings/grove-farm/v18-flat-parallel-field.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0f66-482b-7ef1-b387-2a11936cdc91/ig_0ee78892b970b897016a41656418888190a5aed9b75687d97c.png`
+- Runtime copy: `public/assets/used/buildings/grove-farm.png`
+- Result note: flatter fenced grove footprint with straighter square/parallelogram edges, parallel fence rails and orchard rows, more branch-only trees, alpha cleanup, and crop to visible bounds.
+
+- Follow-up feedback: still too square; needs to be flatter with square edges and parallel lines.
+- Saved revision: `public/assets/lib/buildings/grove-farm/v19-extra-flat-parallel-field.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0f66-482b-7ef1-b387-2a11936cdc91/ig_0385f0754464c780016a4167e5dc2881939f94d4b4ec69b07b.png`
+- Runtime copy: `public/assets/used/buildings/grove-farm.png`
+- Result note: pushes the grove footprint flatter and more tile-like, with a smaller back shed, long straight fence edges, sharp square/parallelogram corners, parallel orchard rows, and branch-only trees.
+
+## 2026-06-28 - Workshop 2x2 Yard / 1x1 Building Revision
+
+- User feedback: current workshop image was good, but the yard shape needed regeneration to an isometric square. Follow-up clarified that the structure can stick out of the footprint, and that the yard is 2x2 while the building itself is 1x1.
+- Saved source: `public/assets/lib/buildings/workshop/iso-square-yard-2x2-building-1x1-source-v1.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0f6c-764c-7fa3-bdfa-29ec3281997e/ig_022776e8417d9d25016a4165139fd88195b9a7a3ec3409efd0.png`
+- Saved processed revision: `public/assets/lib/buildings/workshop/iso-square-yard-2x2-building-1x1-alpha-v1.png`
+- Result note: preserves the blue-roof timber workshop identity while making the yard a 2x2 isometric footprint and keeping the workshop building mass to roughly 1x1, with open work yard space visible around it. The generated checkerboard background was removed to alpha and the active runtime copy was swapped to this revision.
+
+- Follow-up feedback: yard still read too square, then an overcorrection made it rectangular. Correct target is a 2x2 isometric square footprint with height:width ratio 1:2, two pairs of parallel 30-degree edges, and a smaller 1x1 workshop occupying about 20-25% of the yard.
+- Saved source: `public/assets/lib/buildings/workshop/true-iso-square-1to2-yard-smaller-building-source-v1.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0f6c-764c-7fa3-bdfa-29ec3281997e/ig_03305970d9d920d6016a4168ce532c8195972b2810d55954cd.png`
+- Saved processed revision: `public/assets/lib/buildings/workshop/true-iso-square-1to2-yard-smaller-building-alpha-v1.png`
+- Result note: uses the updated prompt constraints, removes the generated checkerboard background to alpha, crops to visible bounds, and swaps the active runtime copy to this flatter 1:2 yard with reduced workshop scale.
+
+- Follow-up feedback: make the yard flatter and move the building into a corner.
+- Saved source: `public/assets/lib/buildings/workshop/flatter-yard-corner-building-source-v1.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0f6c-764c-7fa3-bdfa-29ec3281997e/ig_009a9b20c96bbd75016a4169eefbd48197a04b9d2055c035bd.png`
+- Saved processed revision: `public/assets/lib/buildings/workshop/flatter-yard-corner-building-alpha-v1.png`
+- Result note: pushes the workshop into the back-left corner and keeps most of the yard open in front/right, with a flatter isometric yard silhouette. The generated checkerboard background was removed to alpha and this revision was swapped into the active runtime copy.
+
+- Follow-up feedback: previous result still failed because the yard was not a true iso diamond. Revised direction: exactly four diamond points, no rectangular courtyard, no rear horizontal wall, and the workshop anchored to the top/back vertex with the fence tracing the diamond outline.
+- Saved source: `public/assets/lib/buildings/workshop/true-diamond-yard-back-vertex-building-source-v1.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0f6c-764c-7fa3-bdfa-29ec3281997e/ig_065e4c29db9d6de9016a416d14984c81908b0dd4d018af614c.png`
+- Saved processed revision: `public/assets/lib/buildings/workshop/true-diamond-yard-back-vertex-building-alpha-v1.png`
+- Result note: improves the yard read by restoring a pointed front vertex and diagonal fence runs, with the building sitting on the back/top end of the diamond. The generated checkerboard background was removed to alpha and this revision was swapped into the active runtime copy.
+
+- Follow-up feedback: make v1 flatter.
+- Saved source: `public/assets/lib/buildings/workshop/true-diamond-yard-back-vertex-building-flatter-source-v2.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0f6c-764c-7fa3-bdfa-29ec3281997e/ig_08ebb9a58f350e4e016a416f8672cc8197937a9021aa3737fd.png`
+- Saved processed revision: `public/assets/lib/buildings/workshop/true-diamond-yard-back-vertex-building-flatter-alpha-v2.png`
+- Result note: keeps the v1 back-vertex building composition and pushes the yard silhouette flatter, with alpha cleanup and active runtime swap.
+
+- Follow-up feedback: make v2 a little bit flatter and move the gate to the side.
+- Saved source: `public/assets/lib/buildings/workshop/true-diamond-yard-flatter-side-gate-source-v3.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0f6c-764c-7fa3-bdfa-29ec3281997e/ig_060e05289daa8592016a41713fe0b081949671c1ef0a28d4e3.png`
+- Saved processed revision: `public/assets/lib/buildings/workshop/true-diamond-yard-flatter-side-gate-alpha-v3.png`
+- Result note: makes the diamond yard slightly flatter, keeps the front point clean, and moves the wooden gate onto the lower-right side edge. The generated checkerboard background was removed to alpha and this revision was swapped into the active runtime copy.
+
+## 2026-06-28 - Food Processing Workshop / Bakery Flatter Isometric Yard
+
+- User feedback: redo the bakery because the current one is too square; flatten its view to isometric.
+- Saved processed revision: `public/assets/lib/buildings/food-processing-workshop/v3-flat-isometric.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0fc8-9a9c-7e83-a912-404cb6942456/ig_05564ccf3d780b2f016a417b4c30188194a842f0c98c2ab362.png`
+- Runtime copy: `public/assets/used/buildings/food-processing-workshop.png`
+- Result note: preserves the rustic bakery/workshop cues while making the yard much lower and wider, with a flatter 2:1 isometric footprint, back-edge bakery/oven placement, broad open center courtyard, alpha cleanup, and crop to visible bounds.
+
+- Follow-up feedback: previous revision was too flat; yard should be a 1:2 diamond with roughly 30 degree edges.
+- Saved processed revision: `public/assets/lib/buildings/food-processing-workshop/v4-1to2-diamond.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f0fc8-9a9c-7e83-a912-404cb6942456/ig_02a03c9aea68cb1e016a417dc41e08819088c0144a9ba51e4f.png`
+- Runtime copy: `public/assets/used/buildings/food-processing-workshop.png`
+- Result note: pulls the yard back from the over-flattened panorama toward a normal isometric square footprint: a clearer 1:2 diamond/parallelogram with about 30 degree edge direction, while preserving the open bakery courtyard and back-edge bakery/oven props.

@@ -122,7 +122,7 @@ export const WORKSHOP_PRODUCT_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.STEELWORK]:          'lucideWeight',        // steel ingot
     [BuildingType.SAWMILL]:            'lucideTreeDeciduous', // timber
     [BuildingType.BRICKYARD]:          'lucideBrickWall',     // fired brick
-    [BuildingType.MASON_SHOP]:         'lucideMountainSnow',  // hewn slate
+    [BuildingType.MASON_SHOP]:         'lucideMountainSnow',  // hewn stone blocks
     [BuildingType.CONCRETE_PLANT]:     'lucideBrickWall',     // concrete
     [BuildingType.SCULPTOR]:           'lucideCrown',         // statue
     [BuildingType.CANNERY]:            'lucideFlaskRound',    // jam jar
@@ -302,7 +302,7 @@ const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
     [BuildingType.STEELWORK]: 'steel.png',
     [BuildingType.SAWMILL]: 'timber.png',
     [BuildingType.BRICKYARD]: 'brick.png',
-    [BuildingType.MASON_SHOP]: 'slate.png',
+    [BuildingType.MASON_SHOP]: 'stone-blocks.png',
     [BuildingType.CONCRETE_PLANT]: 'concrete.png',
     [BuildingType.SCULPTOR]: 'marble-statue.png',
     [BuildingType.CANNERY]: 'jam.png',

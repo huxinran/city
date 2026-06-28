@@ -52,6 +52,22 @@
     display: inline-block;
 }
 
+.menu-toast {
+    position: absolute;
+    top: calc(100% + 5px);
+    right: 0;
+    z-index: 112;
+    padding: 5px 8px;
+    background: var(--panel-2);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+    color: var(--text);
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
 .menu-backdrop {
     position: fixed;
     inset: 0;
@@ -87,7 +103,10 @@
 }
 
 .menu-item {
-    display: block;
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    align-items: center;
+    gap: 8px;
     width: 100%;
     text-align: left;
     padding: 7px 10px;
@@ -100,9 +119,30 @@
     cursor: pointer;
 }
 
+.menu-item ng-icon {
+    width: 16px;
+    height: 16px;
+    color: currentColor;
+}
+
+.menu-item .chevron {
+    width: 14px;
+    height: 14px;
+}
+
 .menu-item:hover,
 .menu-item.active {
     background: var(--elevated);
+}
+
+.menu-item:disabled {
+    color: var(--text-dim);
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.menu-item:disabled:hover {
+    background: transparent;
 }
 
 .menu-item.danger {

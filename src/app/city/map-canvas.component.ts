@@ -7,6 +7,7 @@ import { BuildingType, Terrain, Feature } from '../sim/types';
 import {
   GetBuildingSize, GetBuildingIcon, IsFarmBuilding, IsAnimalFarm,
   IsWorkshopBuilding, IsMineCampBuilding, IsSeaProductionBuilding,
+  IsFoodWorkshopBuilding,
 } from '../sim/building';
 import { GetBuildingMapIconSrc, GetHouseMapIconSrc } from '../building-icons';
 import { clampCamera, screenToWorld, applyCameraTransform } from '../camera';
@@ -34,18 +35,27 @@ type TerrainObjectArt = {
   height: number;
 };
 
+const terrainAlternates = (dir: string, count: number, width: number, height: number): TerrainObjectArt[] =>
+  Array.from({ length: count }, (_, index) => ({
+    file: `${dir}/alternative-${index + 1}.png`,
+    width,
+    height,
+  }));
+
 // Composite background art for multi-tile buildings (same assets the old DOM
 // tile used).
 const CROP_FARM_ICON = 'assets/used/buildings/crop-farm.png';
+const GROVE_FARM_ICON = 'assets/used/buildings/grove-farm.png';
 const ANIMAL_FARM_ICON = 'assets/used/buildings/animal-farm.png';
 const WORKSHOP_ICON = 'assets/used/buildings/workshop.png';
+const FOOD_WORKSHOP_ICON = 'assets/used/buildings/food-processing-workshop.png';
 const MINE_CAMP_ICON = 'assets/used/buildings/mine-camp.png';
 const FISHERMEN_WHARF_ICON = 'assets/used/buildings/fishermen-wharf.png';
 
 const MAP_TILE_BASE = 'assets/used/map-tiles/';
 const TERRAIN_OBJECT_BASE = 'assets/used/terrain/';
-const TERRAIN_VARIANT_RATE = 0.20;
-const TERRAIN_OTHER_RATE = 0.05;
+const TERRAIN_VARIANT_RATE = 0.35;
+const TERRAIN_FEATURE_DECORATION_RATE = 0.05;
 const TERRAIN_SURFACE_BASE = MAP_TILE_BASE + 'surfaces/';
 const TERRAIN_SURFACE_VARIANT_RATE = 0.14;
 const MAP_GRID_STROKE = 'rgba(67, 82, 58, 0.16)';
@@ -53,43 +63,21 @@ const MAP_GRID_STROKE = 'rgba(67, 82, 58, 0.16)';
 const TERRAIN_FEATURE_ART: Record<Feature, { main: TerrainObjectArt, alternates: TerrainObjectArt[] }> = {
   [Feature.TREE]: {
     main: { file: 'tree/main.png', width: 1.02, height: 2.68 },
-    alternates: [
-      { file: 'tree/alternative-1.png', width: 0.82, height: 2.34 },
-      { file: 'tree/alternative-2.png', width: 0.78, height: 2.38 },
-      { file: 'tree/alternative-3.png', width: 0.78, height: 2.36 },
-      { file: 'tree/alternative-4.png', width: 0.76, height: 2.42 },
-      { file: 'tree/alternative-5.png', width: 0.82, height: 2.34 },
-      { file: 'tree/alternative-6.png', width: 0.78, height: 2.36 },
-      { file: 'tree/alternative-7.png', width: 0.82, height: 2.08 },
-    ],
+    alternates: terrainAlternates('tree', 10, 0.84, 2.42),
   },
   [Feature.ROCK]: {
     main: { file: 'rock/main.png', width: 0.72, height: 1.7 },
-    alternates: [
-      { file: 'rock/alternative-1.png', width: 0.72, height: 1.7 },
-      { file: 'rock/alternative-2.png', width: 0.72, height: 1.7 },
-      { file: 'rock/alternative-3.png', width: 0.72, height: 1.7 },
-    ],
+    alternates: terrainAlternates('rock', 6, 0.72, 1.7),
   },
   [Feature.BUSH]: {
     main: { file: 'bush/main.png', width: 0.72, height: 1.7 },
-    alternates: [
-      { file: 'bush/alternative-1.png', width: 0.76, height: 1.72 },
-      { file: 'bush/alternative-2.png', width: 0.76, height: 1.72 },
-      { file: 'bush/alternative-3.png', width: 0.76, height: 1.72 },
-      { file: 'bush/alternative-4.png', width: 0.76, height: 1.72 },
-      { file: 'bush/alternative-5.png', width: 0.76, height: 1.72 },
-    ],
+    alternates: terrainAlternates('bush', 10, 0.76, 1.72),
   },
 };
 
 const TERRAIN_OTHER_ART: TerrainObjectArt[] = [
   { file: 'decoration/main.png', width: 0.76, height: 1.72 },
-  { file: 'decoration/alternative-1.png', width: 0.58, height: 1.08 },
-  { file: 'decoration/alternative-2.png', width: 0.52, height: 1.16 },
-  { file: 'decoration/alternative-3.png', width: 0.66, height: 1.02 },
-  { file: 'decoration/alternative-4.png', width: 0.56, height: 1.02 },
-  { file: 'decoration/alternative-5.png', width: 0.68, height: 0.96 },
+  ...terrainAlternates('decoration', 16, 0.62, 1.12),
 ];
 
 // Browser cursor images need to stay small; these 40px transparent PNGs are the
@@ -205,6 +193,10 @@ const TERRAIN_SURFACE_ART: { [terrain: string]: { main: string, alternates: stri
   [Terrain.DIRT]: { main: 'rock-grass/main.png', alternates: ['rock-grass/alternative-1.png'] },
 };
 
+const POINTED_TILE_FILL = 'rgba(255, 244, 180, 0.34)';
+const POINTED_TILE_STROKE = 'rgba(255, 255, 255, 0.95)';
+const POINTED_TILE_ACCENT = 'rgba(28, 139, 255, 0.95)';
+
 // The whole map (terrain + features + buildings) is drawn onto a single
 // viewport-sized <canvas>, replacing ~one Angular component per tile. It
 // repaints only when `mapVersion` or the camera changes — never on the per-tick
@@ -232,6 +224,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   private visualHitTiles: Tile[] = [];
   private visualHitVersion = -1;
   private visualHitCity?: City;
+  private hoverTile?: { i: number, j: number };
   private redrawScheduled = false;
   private resizeObserver?: ResizeObserver;
   private cameraInitialized = false;
@@ -265,8 +258,8 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     // The canvas is draggable ONLY while hovering a movable building, so empty
     // and road tiles stay non-draggable and the click-drag panning (which skips
     // [draggable=true] targets) works there.
-    this.canvas.addEventListener('mousemove', e => this.updateDraggable(e));
-    this.canvas.addEventListener('mouseleave', () => { if (this.canvas.draggable) this.canvas.draggable = false; });
+    this.canvas.addEventListener('mousemove', e => this.onMouseMove(e));
+    this.canvas.addEventListener('mouseleave', () => this.onMouseLeave());
     this.host.appendChild(this.canvas);
     this.resizeObserver = new ResizeObserver(() => this.requestRedraw());
     this.resizeObserver.observe(this.host);
@@ -319,6 +312,26 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   private updateDraggable(e: MouseEvent) {
     const movable = this.state.move_mode && !!this.movableAnchor(e.clientX, e.clientY);
     if (this.canvas.draggable !== movable) this.canvas.draggable = movable;
+  }
+
+  private onMouseMove(e: MouseEvent) {
+    this.updateDraggable(e);
+    this.updateHoverTile(e.clientX, e.clientY);
+  }
+
+  private onMouseLeave() {
+    if (this.canvas.draggable) this.canvas.draggable = false;
+    if (this.hoverTile) {
+      this.hoverTile = undefined;
+      this.requestRedraw();
+    }
+  }
+
+  private updateHoverTile(clientX: number, clientY: number) {
+    const next = this.tileAt(clientX, clientY);
+    if (this.hoverTile?.i === next?.i && this.hoverTile?.j === next?.j) return;
+    this.hoverTile = next;
+    this.requestRedraw();
   }
 
   // The anchor tile of a movable building under the cursor (resolving covered
@@ -504,6 +517,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       ctx.lineWidth = 2 / (cam.zoom * dpr);
       this.strokeFootprint(f.i, f.j, size);
     }
+    this.drawPointedTileHighlight(cam.zoom, dpr);
   }
 
   private drawMapGrid(i0: number, i1: number, j0: number, j1: number, zoom: number, dpr: number) {
@@ -712,11 +726,15 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     const set = TERRAIN_FEATURE_ART[t.feature];
     if (!set) return undefined;
     const roll = this.tileHash01(t.i, t.j, 17);
-    if (roll < TERRAIN_OTHER_RATE && TERRAIN_OTHER_ART.length > 0) {
-      return TERRAIN_OTHER_ART[Math.floor(this.tileHash01(t.i, t.j, 19) * TERRAIN_OTHER_ART.length)];
-    }
-    if (roll >= TERRAIN_OTHER_RATE + TERRAIN_VARIANT_RATE || set.alternates.length === 0) return set.main;
+    if (roll < TERRAIN_FEATURE_DECORATION_RATE) return this.decorationArt(t);
+    const featureRoll = (roll - TERRAIN_FEATURE_DECORATION_RATE) / (1 - TERRAIN_FEATURE_DECORATION_RATE);
+    if (featureRoll >= TERRAIN_VARIANT_RATE || set.alternates.length === 0) return set.main;
     return set.alternates[Math.floor(this.tileHash01(t.i, t.j, 18) * set.alternates.length)];
+  }
+
+  private decorationArt(t: Tile): TerrainObjectArt | undefined {
+    if (TERRAIN_OTHER_ART.length === 0) return undefined;
+    return TERRAIN_OTHER_ART[Math.floor(this.tileHash01(t.i, t.j, 20) * TERRAIN_OTHER_ART.length)];
   }
 
   private tileHash01(i: number, j: number, salt: number): number {
@@ -738,14 +756,15 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     }
     if (IsFarmBuilding(type) && size > 1) {
       const animal = IsAnimalFarm(type);
+      const grove = type === BuildingType.APPLE_ORCHARD;
       const farmW = size * ISO_TILE_W * (animal ? 0.94 : 0.95);
       const farmH = animal
         ? Math.max(size * ISO_TILE_H * 3.0, size * TILE * 1.6)
         : Math.max(size * ISO_TILE_H * 2.98, size * TILE * 1.58);
       const farmX = base.x - farmW / 2;
       const farmY = base.y - farmH * (animal ? 0.71 : 0.71);
-      this.drawComposite(b, this.img(animal ? ANIMAL_FARM_ICON : CROP_FARM_ICON),
-                         farmX, farmY, farmW, farmH, animal ? 'animalFarm' : 'cropFarm');
+      this.drawComposite(b, this.img(animal ? ANIMAL_FARM_ICON : grove ? GROVE_FARM_ICON : CROP_FARM_ICON),
+                         farmX, farmY, farmW, farmH, animal ? 'animalFarm' : grove ? 'groveFarm' : 'cropFarm');
       return;
     }
     if (IsSeaProductionBuilding(type)) {
@@ -764,8 +783,11 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       return;
     }
     if (IsWorkshopBuilding(type) && size > 1) {
-      const scaledW = W * 0.90, scaledH = H * 0.90;
-      this.drawComposite(b, this.img(WORKSHOP_ICON), base.x - scaledW / 2, y + H * 0.22, scaledW, scaledH, 'workshop');
+      const foodWorkshop = IsFoodWorkshopBuilding(type);
+      const scale = foodWorkshop ? 0.90 : 0.882;
+      const scaledW = W * scale, scaledH = H * scale;
+      const icon = foodWorkshop ? FOOD_WORKSHOP_ICON : WORKSHOP_ICON;
+      this.drawComposite(b, this.img(icon), base.x - scaledW / 2, y + H * (foodWorkshop ? 0.22 : 0.23), scaledW, scaledH, 'workshop');
       return;
     }
     // Single icon filling the footprint (houses use tier art via artSrc).
@@ -798,6 +820,36 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     ctx.stroke();
   }
 
+  private drawPointedTileHighlight(zoom: number, dpr: number) {
+    const h = this.hoverTile;
+    if (!h || !this.state.state.build_type || this.state.dragging || this.state.move_mode || this.state.upgrade_mode) return;
+
+    const ctx = this.ctx;
+    const pts = tileFootprintPolygon(this.city.h, h.i, h.j, 1);
+    const px = 1 / (zoom * dpr);
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let k = 1; k < pts.length; k++) ctx.lineTo(pts[k].x, pts[k].y);
+    ctx.closePath();
+
+    ctx.fillStyle = POINTED_TILE_FILL;
+    ctx.fill();
+
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.38)';
+    ctx.shadowBlur = 5 * px;
+    ctx.strokeStyle = POINTED_TILE_STROKE;
+    ctx.lineWidth = 5 * px;
+    ctx.stroke();
+
+    ctx.shadowColor = 'transparent';
+    ctx.strokeStyle = POINTED_TILE_ACCENT;
+    ctx.lineWidth = 2 * px;
+    ctx.stroke();
+    ctx.restore();
+  }
+
   // Auto-tiled road overlay. No opaque fill — a transparent sprite is drawn over
   // the already-painted terrain, picked + rotated from which neighbours are road
   // so the network connects (straights, corners, T-junctions, crossroads).
@@ -821,7 +873,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   // sprites from the live overlay canvas; workshops/mine camps show one product
   // pinned bottom-right.
   private drawComposite(b: Building, bg: HTMLImageElement | undefined,
-                        x: number, y: number, W: number, H: number, kind: 'cropFarm' | 'animalFarm' | 'workshop' | 'seaProduction') {
+                        x: number, y: number, W: number, H: number, kind: 'cropFarm' | 'groveFarm' | 'animalFarm' | 'workshop' | 'seaProduction') {
     if (ready(bg)) {
       // Workshops overscan slightly (the old CSS inset:-4%); farms fill exactly.
       const o = kind === 'workshop' || kind === 'seaProduction' ? 0.04 : 0;
@@ -830,16 +882,19 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     if (kind === 'animalFarm') return;
     const prod = this.img(this.artSrc(b));
     const emoji = GetBuildingIcon(b.type);
-    if (kind === 'cropFarm') {
+    if (kind === 'cropFarm' || kind === 'groveFarm') {
       const isz = W * 0.16;
-      const cx = x + W / 2, cy = y + H * 0.60;
-      const gap = isz * 1.1;
-      const sideLift = isz * 0.45;
-      for (let k = 0; k < 3; ++k) {
-        const px = cx + (k - 1) * gap;
-        const py = cy - (k === 1 ? 0 : sideLift);
-        if (ready(prod)) this.drawContain(prod!, px - isz / 2, py - isz / 2, isz, isz, true);
-        else this.drawEmoji(emoji, px, py, isz);
+      const marks = [
+        [0.50 - 0.16 * 1.1, 0.60 - 0.16 * 0.45, 1],
+        [0.50, 0.60, 1],
+        [0.50 + 0.16 * 1.1, 0.60 - 0.16 * 0.45, 1],
+      ];
+      for (const [fx, fy, scale] of marks) {
+        const px = x + W * fx;
+        const py = y + H * fy;
+        const drawSize = isz * scale;
+        if (ready(prod)) this.drawContain(prod!, px - drawSize / 2, py - drawSize / 2, drawSize, drawSize, true);
+        else this.drawEmoji(emoji, px, py, drawSize);
       }
     } else {
       const isz = W * (kind === 'seaProduction' ? 0.24 : 0.22);

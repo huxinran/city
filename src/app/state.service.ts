@@ -8,7 +8,7 @@ import { City, GenerateCityMap } from './sim/city';
 import { Population,  } from './sim/population';
 import { Resident, ProductionStatus, ShippingTaskType, BuildingType, Terrain, Feature, CityName } from './sim/types'
 import { Tile } from './sim/tile';
-import { SaveState, LoadState, LoadDefaultState, SaveMaps, LoadMaps, HasSavedMap } from './sim/persistence';
+import { SaveState, LoadState, LoadDefaultState, SaveMaps, LoadMaps, HasSavedMap, HasSavedState } from './sim/persistence';
 import { RoadDistanceField, BuildRoadPath, WarehouseRoadDistance } from './sim/pathfinding';
 import { Camera } from './camera';
 
@@ -88,6 +88,10 @@ export class StateService {
 
   public Save() {
     SaveState(this.state)
+  }
+
+  public HasSave() {
+    return HasSavedState()
   }
 
   public Load() {

@@ -31,7 +31,7 @@ export class StatusSummaryComponent {
   // Primary construction materials shown in the top bar for quick reference.
   materials: Resource[] = [
     Resource.TIMBER,
-    Resource.SLATE,
+    Resource.STONE_BLOCKS,
     Resource.BRICK,
     Resource.STEEL,
     Resource.WINDOW,

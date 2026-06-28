@@ -45,7 +45,7 @@ const PALETTE_ORDER: BuildingType[] = [
   BuildingType.PANT_SHOP, // pant
   // Worker
   BuildingType.STONE_QUARRY,    // stone
-  BuildingType.MASON_SHOP,      // slate / stone block
+  BuildingType.MASON_SHOP,      // stone blocks
   BuildingType.CLAY_PIT,        // clay
   BuildingType.POTTERY_SHOP,    // pottery
   BuildingType.BRICKYARD,       // brick

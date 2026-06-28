@@ -93,6 +93,26 @@ function serializeCity(city: City): CitySave {
   }
 }
 
+function normalizeResourceNames(value: any): any {
+  if (value === 'Slate') return 'Stone Blocks'
+  if (Array.isArray(value)) return value.map(normalizeResourceNames)
+  if (value && typeof value === 'object') {
+    for (const key of Object.keys(value)) {
+      const normalizedKey = key === 'Slate' ? 'Stone Blocks' : key
+      const normalizedValue = normalizeResourceNames(value[key])
+      if (normalizedKey !== key) {
+        value[normalizedKey] = (typeof value[normalizedKey] === 'number' && typeof normalizedValue === 'number')
+          ? value[normalizedKey] + normalizedValue
+          : normalizedValue
+        delete value[key]
+      } else {
+        value[key] = normalizedValue
+      }
+    }
+  }
+  return value
+}
+
 // Guard a localStorage write so a QuotaExceededError (the save grew past the
 // ~5MB origin limit) is logged rather than thrown — an uncaught throw here would
 // abort the autosave mid-write and bubble out of the tick loop.
@@ -177,12 +197,17 @@ function parseState(raw: string): State | undefined {
     return undefined
   }
 
+  normalizeResourceNames(data)
   return hydrateState(data)
 }
 
 export function LoadDefaultState(): State | undefined {
   if (DEFAULT_SAVE_VERSION !== SAVE_VERSION) return undefined
   return parseState(DEFAULT_STATE_JSON)
+}
+
+export function HasSavedState(): boolean {
+  return localStorage.getItem(STATE_KEY) != null && localStorage.getItem(VERSION_KEY) === SAVE_VERSION
 }
 
 // Returns the persisted state (with current_city re-linked into cities[]), or

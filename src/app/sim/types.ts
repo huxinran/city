@@ -78,7 +78,7 @@ export enum Resource {
     SAND = "Sand",
     SAUSAGE = "Sausage",
     SHIRT = "Shirt",
-    SLATE = "Slate",
+    STONE_BLOCKS = "Stone Blocks",
     SOYBEAN = "Soybean",
     STATUE = "Statue",
     STEEL = "Steel",

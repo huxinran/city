@@ -28,13 +28,18 @@
 
 ## Isometric Map Fit
 
-- Building and map-placed assets must fit the game's 2:1 isometric diamond grid.
-- The visible base, yard, field, platform, dock, or ground contact area should read as a clean diamond/parallelogram footprint.
-- Left and right footprint edges should be parallel to the map grid diagonals; avoid arbitrary perspective angles.
-- Major base edges, fence lines, yard borders, crop rows, paths, plank directions, and roof ridge lines should follow the same isometric directions.
-- Upright structures may extend above the footprint, but the bottom contact shape should remain legible and grid-aligned.
+- Build every building or map-placed asset in two steps: first create the isometric square footprint, then add the structure on top.
+- The footprint should read as a clean diamond/parallelogram, width about twice its height, with left and right edges at roughly 30 degrees.
+- The base field must have four clear sides forming two sets of parallel edges: left side parallel to right side, and top/back side parallel to bottom/front side.
+- This is stylized isometric game art, not real-world camera perspective. Keep parallel iso edges parallel instead of using natural vanishing-point perspective.
+- The visible base, yard, field, platform, dock, or ground contact area should preserve that footprint clearly.
+- Major base edges, fence rails, wall tops, yard borders, crop rows, paths, plank directions, and roof ridge lines should follow the footprint's two isometric edge directions.
+- Fence and wall perimeters should trace the footprint geometry with four straight sides, crisp corner turns, and opposite sides parallel. Reject bowed, oval, wobbly, random, or perspective-converging fence/wall outlines.
+- Upright structures may stick out above or beyond the footprint, but the bottom contact shape should remain legible and grid-aligned.
 - Avoid front-facing, side-view, top-down, or three-quarter camera angles that differ from existing map buildings.
 - Prefer simpler decoration if it makes the footprint easier to read.
+- For farm buildings and farm yards, align crop rows, furrows, tree rows, fences, walls, pens, troughs, shed bases, paths, and yard borders to the footprint's two isometric edge directions.
+- Farm details should be chunky and readable at map scale: use a few clear crop clusters, animals, trees, sheds, and old-time props instead of dense tiny noise that hides the footprint.
 
 ## Asset Library And Runtime Copies
 
@@ -50,6 +55,7 @@ Use the bundled reference images under `assets/references/` as the source of tru
 - `assets/references/bok-choy.png`: produce/resource asset reference.
 - `assets/references/cake-v5.png`: prepared food/resource asset reference.
 - `assets/references/carrot.png`: produce/resource asset reference.
+- `assets/references/animal-farm.png`: isometric farm building/yard reference for footprint shape, fenced field scale, farm props, and old-time animal-farm material treatment.
 - `assets/references/mine-camp-2x2-dirt-yard-v1.png`: building/yard footprint reference.
 - `assets/references/ship-3-mast.png`: large vehicle/ship asset reference.
 

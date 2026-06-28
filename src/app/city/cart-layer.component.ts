@@ -30,6 +30,8 @@ const CART_VISUALS = {
   loaded:   { icon: 'assets/used/buildings/cart-loaded.png',   emoji: '📦' },
   empty:    { icon: 'assets/used/buildings/cart-empty.png',    emoji: '🛒' },
 } satisfies Record<string, CartVisual>
+const CART_SIZE = TILE * 0.72;
+const CART_Y_OFFSET = -TILE * 0.12;
 
 // Per-cart animation state. `to` is the latest position the sim implies; `cx/cy`
 // is where we actually drew last frame; on a new `to` we tween from cx/cy.
@@ -278,14 +280,18 @@ export class CartLayerComponent implements OnInit, OnDestroy {
     a.cy = a.fromY + (a.toY - a.fromY) * f;
 
     const img = this.image(visual.icon);
+    const drawY = a.cy + CART_Y_OFFSET;
     if (img.complete && img.naturalWidth > 0) {
-      this.ctx.drawImage(img, a.cx - TILE / 2, a.cy - TILE / 2, TILE, TILE);
+      const scale = CART_SIZE / Math.max(img.naturalWidth, img.naturalHeight);
+      const w = img.naturalWidth * scale;
+      const h = img.naturalHeight * scale;
+      this.ctx.drawImage(img, a.cx - w / 2, drawY - h / 2, w, h);
     } else {
       // Fallback to the emoji while the sprite loads or if it 404s.
-      this.ctx.font = '22px serif';
+      this.ctx.font = `${Math.round(CART_SIZE * 0.46)}px serif`;
       this.ctx.textAlign = 'center';
       this.ctx.textBaseline = 'middle';
-      this.ctx.fillText(visual.emoji, a.cx, a.cy);
+      this.ctx.fillText(visual.emoji, a.cx, drawY);
     }
   }
 

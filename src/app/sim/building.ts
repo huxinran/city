@@ -390,12 +390,25 @@ export const MINE_CAMP_BUILDINGS = defsWhere(d => !!d.mine)
 export const SEA_PRODUCTION_BUILDINGS = defsWhere(d => !!d.recipe && !!d.sea)
 // Anything that runs a production recipe and isn't a farm is a "workshop".
 export const WORKSHOP_BUILDINGS = defsWhere(d => !!d.recipe && !d.farm)
+const FOOD_WORKSHOP_OUTPUTS = new Set<Resource>([
+    Resource.BREAD,
+    Resource.SAUSAGE,
+    Resource.CHEESE,
+    Resource.JAM,
+    Resource.TOFU,
+    Resource.NOODLE,
+    Resource.SMOKED_FISH,
+])
+export const FOOD_WORKSHOP_BUILDINGS = defsWhere(d =>
+    !!d.recipe && !d.farm && d.recipe.out.some(item => FOOD_WORKSHOP_OUTPUTS.has(item.type))
+)
 
 export function IsFarmBuilding(type: BuildingType): boolean { return FARM_BUILDINGS.has(type) }
 export function IsAnimalFarm(type: BuildingType): boolean { return ANIMAL_FARM_BUILDINGS.has(type) }
 export function IsMineCampBuilding(type: BuildingType): boolean { return MINE_CAMP_BUILDINGS.has(type) }
 export function IsSeaProductionBuilding(type: BuildingType): boolean { return SEA_PRODUCTION_BUILDINGS.has(type) }
 export function IsWorkshopBuilding(type: BuildingType): boolean { return WORKSHOP_BUILDINGS.has(type) }
+export function IsFoodWorkshopBuilding(type: BuildingType): boolean { return FOOD_WORKSHOP_BUILDINGS.has(type) }
 
 // Roads/houses/services are 1x1, workshops are 2x2, farms are 3x3.
 export function GetBuildingSize(type: BuildingType): number {
@@ -496,8 +509,8 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
 }
 
 // Construction-material ladder, lowest tier first. A building's tier maps onto a
-// rung: tier 1 -> timber, 2 -> brick, 3 -> slate, 4+ -> steel (capped at the top).
-const BUILD_MATERIAL_LADDER = [Resource.TIMBER, Resource.BRICK, Resource.SLATE, Resource.STEEL]
+// rung: tier 1 -> timber, 2 -> stone blocks, 3 -> brick, 4+ -> steel (capped at the top).
+const BUILD_MATERIAL_LADDER = [Resource.TIMBER, Resource.STONE_BLOCKS, Resource.BRICK, Resource.STEEL]
 // Ladder position of a resource (1-based); 0 if it is not a construction material.
 function materialLevel(r: Resource): number { return BUILD_MATERIAL_LADDER.indexOf(r) + 1 }
 function materialForTier(tier: number): Resource {
@@ -511,7 +524,7 @@ function materialForTier(tier: number): Resource {
 //  - a building that PRODUCES a construction material is built from the rung
 //    just below its output (never its own output or higher);
 //  - every other building may use its own tier's material but nothing higher
-//    (e.g. a Well, a tier-1 service, never demands slate/steel).
+//    (e.g. a Well, a tier-1 service, never demands stone blocks/steel).
 function BuildMaterial(type: BuildingType, current: Item[]): Item[] {
     const override = BOOTSTRAP_MATERIAL[type]
     if (override) return cloneItems(override)
@@ -631,9 +644,9 @@ function resourceTierMap(): { [key: string]: number } {
 const BUILDING_TIER_OVERRIDE: { [key: string]: number } = {
     [BuildingType.LUMBER_HUT]: 1,   // wood   (Farmer)
     [BuildingType.SAWMILL]:    1,   // timber (Farmer)
-    [BuildingType.BRICKYARD]:  3,   // brick  (Artisan; brick itself is a tier-3 build good)
+    [BuildingType.BRICKYARD]:  3,   // brick  (Artisan; built from tier-2 stone blocks)
     [BuildingType.STONE_QUARRY]: 2, // stone       (Worker)
-    [BuildingType.MASON_SHOP]:   2, // slate/stone block (Worker)
+    [BuildingType.MASON_SHOP]:   2, // stone blocks (Worker)
     [BuildingType.VINEYARD]:     4, // grape (Scholar)
     [BuildingType.WINERY]:       4, // wine  (Scholar)
     [BuildingType.FIRE_STATION]: 2, // fire service (Worker; default service-unlock tier is 3)
