@@ -38,6 +38,8 @@ export class StateService {
   public road_start?: { i: number, j: number }
   // The anchor tile of a placed building being dragged to a new location.
   public move_source?: Tile
+  // Buildings can only be dragged after the palette's Move tool is selected.
+  public move_mode = false
 
   // Render heartbeat: bumped every simulation tick so views showing live data
   // (carts, production progress, storage) re-check on an OnPush schedule.
@@ -185,6 +187,7 @@ export class StateService {
     this.state.feature_type = undefined
     this.road_start = undefined
     this.move_source = undefined
+    this.move_mode = false
     this.poodle.mode = false
     this.poodle.path = []
     if (this.state.current_city) this.state.current_city.focus_tile = undefined
@@ -257,12 +260,25 @@ export class StateService {
     this.state.feature_type = undefined
     this.road_start = undefined
     this.move_source = undefined
+    this.move_mode = false
     this.poodle.mode = false
     this.bumpMap()
   }
   public ClearBuildType() {
     this.state.build_type = undefined
     this.road_start = undefined
+    this.move_mode = false
+    this.bumpMap()
+  }
+
+  public SetMoveMode() {
+    this.state.build_type = undefined
+    this.state.terrain_type = undefined
+    this.state.feature_type = undefined
+    this.road_start = undefined
+    this.move_source = undefined
+    this.move_mode = true
+    this.poodle.mode = false
     this.bumpMap()
   }
 
@@ -270,6 +286,7 @@ export class StateService {
     this.state.terrain_type = type
     this.state.build_type = undefined
     this.state.feature_type = undefined
+    this.move_mode = false
     this.poodle.mode = false
     this.bumpMap()
   }
@@ -282,6 +299,7 @@ export class StateService {
     this.state.feature_type = feature
     this.state.build_type = undefined
     this.state.terrain_type = undefined
+    this.move_mode = false
     this.poodle.mode = false
     this.bumpMap()
   }

@@ -1,49 +1,90 @@
 .palette {
-  padding: 3px;
+  display: flex;
+  flex-direction: row;
+  padding: 2px 6px 4px;
   background: var(--panel-2);
-  min-height: 100%;
+  min-height: 0;
+  width: 100%;
+  min-width: 100%;
 }
 
-.group {
-  margin-bottom: 4px;
-}
-
-.group-title {
+.tier-strip {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  gap: 2px;
+  overflow-x: auto;
+  height: 20px;
+}
+
+.tier-tab {
+  flex: 0 0 auto;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 1px 5px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
   color: var(--text-dim);
-  margin-bottom: 3px;
-  padding: 3px 1px;
-}
-
-.group-title.clickable {
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
   cursor: pointer;
-  user-select: none;
 }
 
-.group-title.clickable:hover {
+.tier-tab:hover {
+  background: var(--elevated);
   color: var(--text);
 }
 
-.caret {
-  font-size: 11px;
-  width: 11px;
-  display: inline-block;
+.tier-tab.active {
+  background: var(--panel);
+  border-color: var(--border-strong);
+  color: var(--accent);
+}
+
+.build-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.build-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 0 0 auto;
+  margin-bottom: 0;
+}
+
+.block-title {
+  height: 20px;
+  display: flex;
+  align-items: center;
+  padding: 0 5px;
+  color: var(--text-dim);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .icons {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-  gap: 3px;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 1px;
 }
 
 .pal-icon {
-  aspect-ratio: 1;
+  flex: 0 0 31px;
+  width: 31px;
+  height: 31px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -79,13 +120,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 58px;
-  height: 58px;
+  width: 28px;
+  height: 28px;
 }
 
 .pal-icon-slot img {
-  max-width: 58px;
-  max-height: 58px;
+  max-width: 28px;
+  max-height: 28px;
   object-fit: contain;
   image-rendering: pixelated;
   pointer-events: none;
@@ -93,7 +134,7 @@
 
 
 .pal-emoji {
-  font-size: 28px;
+  font-size: 15px;
   line-height: 1;
   pointer-events: none;
 }

@@ -11,7 +11,10 @@ import { repaintOn } from '../live';
 
 // Always-available buildings shown under "Basics" (and excluded from the
 // categorized tier groups so they aren't listed twice).
-const BASIC_BUILDINGS = [BuildingType.ROAD, BuildingType.HOUSE, BuildingType.WAREHOUSE, BuildingType.DELETE]
+const MOVE_TOOL = 'Move'
+type PaletteItem = BuildingType | typeof MOVE_TOOL
+
+const BASIC_BUILDINGS: PaletteItem[] = [BuildingType.ROAD, BuildingType.HOUSE, BuildingType.WAREHOUSE, MOVE_TOOL, BuildingType.DELETE]
 
 const HIDDEN_BUILDINGS = new Set<BuildingType>([BuildingType.COMPOST_PIT, BuildingType.UNIVERSITY])
 
@@ -60,7 +63,7 @@ function paletteOrder(t: BuildingType): number {
 
 interface PaletteGroup {
   name: string;
-  items: BuildingType[];
+  items: PaletteItem[];
 }
 
 // Cost + recipe shown in the hover tooltip for a building.
@@ -85,17 +88,29 @@ export class PaletteComponent {
   constructor() { repaintOn(s => [s.mapVersion]) }
 
   get Delete(): BuildingType { return BuildingType.DELETE }
+  get MoveTool(): typeof MOVE_TOOL { return MOVE_TOOL }
 
-  // Group sections are expanded by default; "Basics" is pinned open. We track
-  // which groups the user has collapsed.
-  private collapsed = new Set<string>()
+  // "Basics" is pinned open. All other groups behave like an accordion: one
+  // group is open at a time so the bottom dock stays compact.
+  private openGroup = Resident.FARMER as string
   public isCollapsed(name: string): boolean {
-    return name !== 'Basics' && this.collapsed.has(name)
+    return name !== 'Basics' && this.openGroup !== name
   }
   public toggleGroup(name: string) {
     if (name === 'Basics') return
-    if (this.collapsed.has(name)) this.collapsed.delete(name)
-    else this.collapsed.add(name)
+    this.openGroup = name
+  }
+
+  public tierGroups(): PaletteGroup[] {
+    return this.groups.filter(g => g.name !== 'Basics')
+  }
+
+  public basicsGroup(): PaletteGroup | undefined {
+    return this.groups.find(g => g.name === 'Basics')
+  }
+
+  public activeGroup(): PaletteGroup | undefined {
+    return this.groups.find(g => g.name === this.openGroup && g.name !== 'Basics')
   }
 
   // Building groups re-computed on every render so city switches take effect.
@@ -120,6 +135,9 @@ export class PaletteComponent {
     // Show the current city's exclusive buildings only if it has any.
     if (cityBuildings.length > 0) {
       groups.push({ name: cityName!, items: cityBuildings })
+    }
+    if (!groups.some(g => g.name === this.openGroup && g.name !== 'Basics')) {
+      this.openGroup = groups.find(g => g.name !== 'Basics')?.name ?? ''
     }
     return groups
   }
@@ -158,8 +176,12 @@ export class PaletteComponent {
   public show(type: BuildingType, ev: MouseEvent) {
     this.hovered = type
     let r = (ev.currentTarget as HTMLElement).getBoundingClientRect()
-    this.tipX = r.right + 8
-    this.tipY = r.top
+    this.tipX = Math.min(r.left, window.innerWidth - 248)
+    this.tipY = Math.max(8, r.top - 132)
+  }
+  public showItem(type: PaletteItem, ev: MouseEvent) {
+    if (type === MOVE_TOOL) return
+    this.show(type, ev)
   }
   public hide() { this.hovered = undefined }
 
@@ -171,19 +193,34 @@ export class PaletteComponent {
   public resEmoji(type: Resource): string { return GetResourceEmoji(type) }
   public workerIcon(type: Resident): string { return GetResidentIconAsset(type) }
 
-  public iconSrc(type: BuildingType): string | undefined {
+  public iconSrc(type: PaletteItem): string | undefined {
+    if (type === MOVE_TOOL) return undefined
     return GetBuildingIconSrc(type)
   }
 
-  public isSelected(type: BuildingType): boolean {
+  public iconFallback(type: PaletteItem): string {
+    if (type === MOVE_TOOL) return '↔'
+    return this.iconName(type)
+  }
+
+  public isSelected(type: PaletteItem): boolean {
+    if (type === MOVE_TOOL) return this.state.move_mode
     return this.state.state.build_type == type
   }
 
-  public select(type: BuildingType) {
+  public select(type: PaletteItem) {
+    if (type === MOVE_TOOL) {
+      this.state.SetMoveMode()
+      return
+    }
     this.state.SetBuildType(type)
   }
 
-  public onDragStart(type: BuildingType) {
+  public onDragStart(type: PaletteItem, ev: DragEvent) {
+    if (type === MOVE_TOOL) {
+      ev.preventDefault()
+      return
+    }
     this.state.dragging = true
     this.state.SetBuildType(type)
   }

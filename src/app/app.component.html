@@ -1,11 +1,8 @@
-<div class="container">
+<div class="container" [class.right-collapsed]="rightCollapsed()">
   <div class="top-menu">
     <app-status-summary></app-status-summary>
     <span class="top-spacer"></span>
     <app-menu class="sxs"></app-menu>
-  </div>
-  <div class="left-menu">
-    <app-palette></app-palette>
   </div>
   <div class="map-container"
        (pointerdown)="onMapPointerDown($event)"
@@ -15,7 +12,19 @@
     <app-city [city]="state.state.current_city!"></app-city>
   </div>
   <div class="right-menu">
-    <app-tile-detail [tile]="state.state.current_city!.focus_tile"></app-tile-detail>
-    <app-resource-summary></app-resource-summary>
+    <button class="side-toggle right-toggle"
+            type="button"
+            [attr.aria-label]="rightCollapsed() ? 'Show resource menu' : 'Hide resource menu'"
+            [title]="rightCollapsed() ? 'Show resource menu' : 'Hide resource menu'"
+            (click)="toggleRightMenu()">{{ rightCollapsed() ? '‹' : '›' }}</button>
+    @if (!rightCollapsed()) {
+      <div class="side-content">
+        <app-tile-detail [tile]="state.state.current_city!.focus_tile"></app-tile-detail>
+        <app-resource-summary></app-resource-summary>
+      </div>
+    }
+  </div>
+  <div class="bottom-menu">
+    <app-palette></app-palette>
   </div>
 </div>

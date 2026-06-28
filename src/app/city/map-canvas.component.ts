@@ -28,6 +28,12 @@ type MapObjectDraw = {
   order: number;
 };
 
+type TerrainObjectArt = {
+  file: string;
+  width: number;
+  height: number;
+};
+
 // Composite background art for multi-tile buildings (same assets the old DOM
 // tile used).
 const CROP_FARM_ICON = 'assets/used/buildings/crop-farm.png';
@@ -37,6 +43,50 @@ const MINE_CAMP_ICON = 'assets/used/buildings/mine-camp.png';
 
 const MAP_TILE_BASE = 'assets/used/map-tiles/';
 const TERRAIN_OBJECT_BASE = 'assets/used/terrain/';
+const TERRAIN_VARIANT_RATE = 0.20;
+const TERRAIN_OTHER_RATE = 0.05;
+
+const TERRAIN_FEATURE_ART: Record<Feature, { main: TerrainObjectArt, alternates: TerrainObjectArt[] }> = {
+  [Feature.TREE]: {
+    main: { file: 'tree.png', width: 1.02, height: 2.68 },
+    alternates: [
+      { file: 'tall-oak-tree.png', width: 0.82, height: 2.34 },
+      { file: 'tall-pine-tree.png', width: 0.78, height: 2.38 },
+      { file: 'tall-birch-tree.png', width: 0.78, height: 2.36 },
+      { file: 'tall-cypress-tree.png', width: 0.76, height: 2.42 },
+      { file: 'tall-autumn-tree.png', width: 0.82, height: 2.34 },
+      { file: 'tall-bare-branch-tree.png', width: 0.78, height: 2.36 },
+      { file: 'bare-branch-tree-variant.png', width: 0.82, height: 2.08 },
+    ],
+  },
+  [Feature.ROCK]: {
+    main: { file: 'rock.png', width: 0.72, height: 1.7 },
+    alternates: [
+      { file: 'rock-variant-1.png', width: 0.72, height: 1.7 },
+      { file: 'rock-variant-2.png', width: 0.72, height: 1.7 },
+      { file: 'rock-variant-3.png', width: 0.72, height: 1.7 },
+    ],
+  },
+  [Feature.BUSH]: {
+    main: { file: 'bush.png', width: 0.72, height: 1.7 },
+    alternates: [
+      { file: 'flowering-bush-variant.png', width: 0.76, height: 1.72 },
+      { file: 'tree-bush-variant-1.png', width: 0.76, height: 1.72 },
+      { file: 'tree-bush-variant-2.png', width: 0.76, height: 1.72 },
+      { file: 'tree-bush-variant-3.png', width: 0.76, height: 1.72 },
+      { file: 'tree-bush-autumn-variant.png', width: 0.76, height: 1.72 },
+    ],
+  },
+};
+
+const TERRAIN_OTHER_ART: TerrainObjectArt[] = [
+  { file: 'flowering-bush-variant.png', width: 0.76, height: 1.72 },
+  { file: 'mushroom-patch-variant.png', width: 0.58, height: 1.08 },
+  { file: 'reed-grass-variant.png', width: 0.52, height: 1.16 },
+  { file: 'fallen-log-variant.png', width: 0.66, height: 1.02 },
+  { file: 'tree-stump-variant.png', width: 0.56, height: 1.02 },
+  { file: 'tiny-pond-variant.png', width: 0.68, height: 0.96 },
+];
 
 // Cursor shown while the Delete tool is active: the shovel icon, hinting "dig
 // this out". The hotspot (6 34) is the blade tip at the bottom-left, so the tile
@@ -228,17 +278,17 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     this.state.bumpCamera();
   }
 
-  // Show the shovel cursor while the Delete tool is selected, plain otherwise.
+  // Show tool cursors while Delete/Move are selected, plain otherwise.
   // Driven by the same effect as the repaint, since selecting a tool bumps
   // mapVersion. Guarded because the effect can fire before the canvas exists.
   private updateCursor() {
     if (!this.canvas) return;
     const del = this.state.state.build_type === BuildingType.DELETE;
-    this.canvas.style.cursor = this.state.poodle.mode ? 'crosshair' : del ? SHOVEL_CURSOR : '';
+    this.canvas.style.cursor = this.state.poodle.mode ? 'crosshair' : del ? SHOVEL_CURSOR : this.state.move_mode ? 'grab' : '';
   }
 
   private updateDraggable(e: MouseEvent) {
-    const movable = !!this.movableAnchor(e.clientX, e.clientY);
+    const movable = this.state.move_mode && !!this.movableAnchor(e.clientX, e.clientY);
     if (this.canvas.draggable !== movable) this.canvas.draggable = movable;
   }
 
@@ -327,18 +377,16 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     this.state.Deselect();
   }
 
-  // Start moving an already-placed building. Mirrors the old per-tile
-  // draggable building element: grab the anchor (resolving covered tiles),
-  // skip roads and empty land. preventDefault() cancels the drag so a plain
-  // click on empty/road tiles still registers.
+  // Start moving an already-placed building only while the Move tool is active.
+  // Grab the anchor (resolving covered tiles), skip roads and empty land.
   private onDragStart(e: DragEvent) {
+    if (!this.state.move_mode) { e.preventDefault(); return; }
     const anchor = this.movableAnchor(e.clientX, e.clientY);
     if (!anchor) { e.preventDefault(); return; }
     e.dataTransfer?.setData('text/plain', 'move');
     // Suppress the full-map drag ghost the browser would otherwise snapshot.
     const ghost = document.createElement('canvas'); ghost.width = ghost.height = 1;
     e.dataTransfer?.setDragImage(ghost, 0, 0);
-    this.state.SetBuildType(anchor.building!.type); // clears move_source
     this.state.move_source = anchor;
     this.state.dragging = true;
   }
@@ -541,16 +589,34 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   }
 
   private drawFeature(t: Tile) {
-    const file = t.feature === Feature.TREE ? 'tree.png'
-      : t.feature === Feature.ROCK ? 'rock.png'
-      : t.feature === Feature.BUSH ? 'bush.png' : undefined;
-    if (!file) return;
-    const im = this.img(TERRAIN_OBJECT_BASE + file);
-    if (ready(im)) {
-      const p = this.tileObjectBase(t.i, t.j, 1);
-      const w = ISO_TILE_W * 0.72, h = ISO_TILE_H * 1.7;
-      this.drawContain(im!, p.x - w / 2, p.y - h, w, h);
+    const art = this.featureArt(t);
+    if (art) this.drawTerrainObject(t, art);
+  }
+
+  private drawTerrainObject(t: Tile, art: TerrainObjectArt) {
+    const im = this.img(TERRAIN_OBJECT_BASE + art.file);
+    if (!ready(im)) return;
+    const p = this.tileObjectBase(t.i, t.j, 1);
+    const w = ISO_TILE_W * art.width, h = ISO_TILE_H * art.height;
+    this.drawContain(im!, p.x - w / 2, p.y - h, w, h);
+  }
+
+  private featureArt(t: Tile): TerrainObjectArt | undefined {
+    if (!t.feature) return undefined;
+    const set = TERRAIN_FEATURE_ART[t.feature];
+    if (!set) return undefined;
+    const roll = this.tileHash01(t.i, t.j, 17);
+    if (roll < TERRAIN_OTHER_RATE && TERRAIN_OTHER_ART.length > 0) {
+      return TERRAIN_OTHER_ART[Math.floor(this.tileHash01(t.i, t.j, 19) * TERRAIN_OTHER_ART.length)];
     }
+    if (roll >= TERRAIN_OTHER_RATE + TERRAIN_VARIANT_RATE || set.alternates.length === 0) return set.main;
+    return set.alternates[Math.floor(this.tileHash01(t.i, t.j, 18) * set.alternates.length)];
+  }
+
+  private tileHash01(i: number, j: number, salt: number): number {
+    let x = Math.imul(i + 1, 374761393) ^ Math.imul(j + 1, 668265263) ^ Math.imul(salt + 1, 2246822519);
+    x = Math.imul(x ^ (x >>> 13), 1274126177);
+    return ((x ^ (x >>> 16)) >>> 0) / 0x100000000;
   }
 
   private drawBuilding(t: Tile, b: Building) {

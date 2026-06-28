@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { clampCamera } from './camera';
 import { CityComponent } from './city/city.component';
 import { MenuComponent } from './menu/menu.component';
@@ -19,7 +19,12 @@ import { isoWorldSize } from './isometric';
 export class AppComponent {
   title = 'city sim';
   public state  =  inject(StateService)
+  rightCollapsed = signal(false)
   constructor() { repaintOn(s => [s.mapVersion]) }
+
+  toggleRightMenu() {
+    this.rightCollapsed.update(v => !v)
+  }
 
   // --- Click-and-drag panning of the map ---
   // Left-drag on empty map space pans the camera. A real click (no drag) still

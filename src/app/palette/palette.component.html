@@ -1,29 +1,50 @@
 <div class="palette">
-  @for (group of groups; track group.name) {
-    <div class="group">
-      <div class="group-title" [class.clickable]="group.name !== 'Basics'" (click)="toggleGroup(group.name)">
-        @if (group.name !== 'Basics') {
-          <span class="caret">{{ isCollapsed(group.name) ? '▸' : '▾' }}</span>
-        }
-        {{group.name}}
-      </div>
-      @if (!isCollapsed(group.name)) {
+  <div class="build-row">
+    @if (basicsGroup(); as group) {
+      <div class="build-block basics-group" aria-label="Basic buildings">
+        <div class="block-title">Basic</div>
         <div class="icons">
           @for (type of group.items; track $index) {
             <button class="pal-icon" [class.sel]="isSelected(type)" [class.danger]="type === Delete"
-                    draggable="true"
-                    (dragstart)="onDragStart(type)" (dragend)="onDragEnd()"
+                    [class.move]="type === MoveTool"
+                    [draggable]="type !== MoveTool"
+                    (dragstart)="onDragStart(type, $event)" (dragend)="onDragEnd()"
                     (click)="select(type)"
-                    (mouseenter)="show(type, $event)" (mouseleave)="hide()">
+                    (mouseenter)="showItem(type, $event)" (mouseleave)="hide()">
                 <div class="pal-icon-slot">
-                  <app-icon [src]="iconSrc(type)" [fallback]="iconName(type)" [alt]="type" [size]="58"></app-icon>
+                  <app-icon [src]="iconSrc(type)" [fallback]="iconFallback(type)" [alt]="type" [size]="28"></app-icon>
                 </div>
             </button>
           }
         </div>
-      }
-    </div>
-  }
+      </div>
+    }
+
+    @if (activeGroup(); as group) {
+      <div class="build-block active-group" [attr.aria-label]="group.name + ' buildings'">
+        <div class="tier-strip" aria-label="Build tiers">
+          @for (tier of tierGroups(); track tier.name) {
+            <button class="tier-tab" [class.active]="!isCollapsed(tier.name)" type="button" (click)="toggleGroup(tier.name)">
+              {{tier.name}}
+            </button>
+          }
+        </div>
+        <div class="icons">
+          @for (type of group.items; track $index) {
+            <button class="pal-icon" [class.sel]="isSelected(type)" [class.danger]="type === Delete"
+                    draggable="true"
+                    (dragstart)="onDragStart(type, $event)" (dragend)="onDragEnd()"
+                    (click)="select(type)"
+                    (mouseenter)="showItem(type, $event)" (mouseleave)="hide()">
+                <div class="pal-icon-slot">
+                  <app-icon [src]="iconSrc(type)" [fallback]="iconFallback(type)" [alt]="type" [size]="28"></app-icon>
+                </div>
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
 
 </div>
 

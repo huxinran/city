@@ -237,18 +237,9 @@ export enum BuildingType {
     KILN = "Kiln",
     NOODLE_SHOP = "Noodle Shop",
     // --- Columbia (American frontier) buildings ---
-    CATTLE_RANCH = "Cattle Ranch",
-    CORN_MILL = "Corn Mill",
     TANNERY = "Tannery",
-    DENIM_MILL = "Denim Mill",
-    WHISKEY_DISTILLERY = "Whiskey Distillery",
-    RAIL_MILL = "Rail Mill",
     // --- Solara (African / tropical) buildings ---
-    PALM_GROVE = "Palm Grove",
-    PALM_OIL_PRESS = "Palm Oil Press",
-    COCOA_SHOP = "Cocoa Shop",
     COPPER_MINE = "Copper Mine",
-    BRONZE_FOUNDRY = "Bronze Foundry",
     INCENSE_GROVE = "Incense Grove",
     IVORY_CAMP = "Ivory Camp",
     // --- Mintaka (polar) buildings ---
@@ -256,8 +247,6 @@ export enum BuildingType {
     FUR_WORKSHOP = "Fur Workshop",
     SMOKEHOUSE = "Smokehouse",
     WHALING_POST = "Whaling Post",
-    BLUBBER_PRESS = "Blubber Press",
-    AMBER_MINE = "Amber Mine",
     // --- Shared utility ---
     COMPOST_PIT = "Compost Pit",
     UNIVERSITY = "University",
