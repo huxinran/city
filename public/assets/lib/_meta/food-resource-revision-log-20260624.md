@@ -94,6 +94,13 @@ Latest chocolate save sheet:
 
 - Chocolate v2: `public/assets/reserve/chocolate/chocolate-v2-before-white-bg-removal-20260624.png`, `public/assets/reserve/chocolate/chocolate-v2.png` - intact chocolate bar generated from the chocolate-v4 style direction.
 
+## Bread redo - 20260628
+
+- Bread v2: `tmp/asset-work/bread-redo/bread-v2-chromakey-source.png`, `public/assets/lib/resources/bread/v2.png`, promoted to `public/assets/used/resources/bread.png` - redone as a smaller handmade oval loaf with more padding, proper transparent background, warm brown pixel outline, three cream scoring cuts, and less oversized framing than the previous bread asset.
+- Bread v3 long round: `tmp/asset-work/bread-redo/bread-v3-long-round-chromakey-source.png`, `public/assets/lib/resources/bread/v3-long-round.png`, promoted to `public/assets/used/resources/bread.png` - revised per feedback to use a longer main loaf plus a smaller round bread companion in one cohesive resource icon.
+- Bread v4 baguette round: `tmp/asset-work/bread-redo/bread-v4-baguette-round-chromakey-source.png`, `public/assets/lib/resources/bread/v4-baguette-round.png`, promoted to `public/assets/used/resources/bread.png` - revised per feedback so the round bread is larger and the long bread is thinner, more like a baguette.
+- Bread v5 thicker baguette bigger round: `tmp/asset-work/bread-redo/bread-v5-thicker-baguette-bigger-round-chromakey-source.png`, `public/assets/lib/resources/bread/v5-thicker-baguette-bigger-round.png`, promoted to `public/assets/used/resources/bread.png` - revised per feedback so the long bread is thicker than v4 while staying baguette-like, and the round bread is larger and more dominant.
+
 ## Validation
 
 - Background removal: `node tools/remove-bg.mjs --write --no-backup`

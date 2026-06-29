@@ -415,6 +415,12 @@
 - Runtime copy: `public/assets/used/buildings/food-processing-workshop.png`
 - Result note: corrects the stretched rectangular courtyard back to a compact isometric square diamond footprint with equal-feeling side lengths, while preserving the bakery, oven, press, shelf, and open courtyard identity.
 
+- Follow-up feedback: the food production building is very good, but needs to be a little bit flat.
+- Saved source: `tmp/asset-work/food-processing-workshop-flat/v6-flatter-chromakey-source.png`
+- Source cache: `/Users/xinranhu/.codex/generated_images/019f10f0-47c2-7101-8bd5-2d3308266633/ig_01e096e70bc36f2f016a41c70a93e081939bafa0b5c38f3895.png`
+- Saved processed revision: `public/assets/lib/buildings/food-processing-workshop/v7-lower-flatter-building-alpha.png`
+- Result note: preserves the v5-style food workshop identity, stone courtyard, oven, press, shelves, sacks, bread crates, herbs, and fenced 1:2 diamond yard while lowering the workshop walls, roof pitch, and oven mass slightly so the asset reads flatter on the map. The generated chroma-key background was removed to alpha and the result was cropped to visible bounds.
+
 ## 2026-06-28 - Grove Farm Roomy Uncut Corners
 
 - User feedback: redraw the current grove farm and make sure no corner is cut off.

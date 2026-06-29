@@ -2,7 +2,7 @@ import { Injectable, NgZone, inject, signal, isDevMode } from '@angular/core';
 import { State } from './sim/state';
 import { Item, Storage } from './sim/storage';
 import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, CountItem, TakeItemsAsPossible, StorageItems} from './sim/utils';
-import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, ExtraSource, CreateBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, CanPlaceOnFeature, GetRequiredNearbyFeature, GetRequiredNearbyTerrain, Technology, ALL_RESEARCH, FARM_BUILDINGS, MINE_CAMP_BUILDINGS, ComputeBaseHappiness, ValidateConfig, CanUpgradeHouse, RefreshHouse, RefreshWarehouse } from './sim/building'
+import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, CreateBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, CanPlaceOnFeature, GetRequiredNearbyFeature, GetRequiredNearbyTerrain, Technology, ALL_RESEARCH, FARM_BUILDINGS, MINE_CAMP_BUILDINGS, ComputeBaseHappiness, ValidateConfig, CanUpgradeHouse, RefreshHouse, RefreshWarehouse } from './sim/building'
 import { BALANCE } from './sim/balance';
 import { City, GenerateCityMap } from './sim/city';
 import { Population,  } from './sim/population';
@@ -814,6 +814,9 @@ export class StateService {
   }
 
   public UpdateService(city: City) {
+    for (const t of city.houses) {
+      for (const n of t.building!.house!.service_needs) n.satisfied = false;
+    }
     for (let t of city.services) {
       let service = t.building!.service!
       let neighbours = FindNeighbours(city, t, service.radius)
@@ -821,16 +824,16 @@ export class StateService {
         ProvideService(n, service.need_provided)
       }
     }
-
   }
 
   public UpdateProduction(city: City) {
+    const unlockedTechs = city.unlocked_techs;
     for (let t of city.productions) {
       let production = t.building!.production!
 
       // Only consider extra sources whose required tech has been researched.
       let activeExtras = production.extra_sources.filter(
-        es => !es.required_tech || (city.unlocked_techs ?? []).includes(es.required_tech)
+        es => !es.required_tech || unlockedTechs.includes(es.required_tech)
       )
 
       // Proactively stock active extra sources into the building's local buffer.
@@ -904,7 +907,7 @@ export class StateService {
   }
   
   public UpdateWarehouses(city: City) {
-    let idle_carts = []
+    const idle_carts: Tile[] = []
     for (let t of city.warehouses) {
       for (let c of t.building!.warehouse!.carts) {
         if (c.task == undefined) {
@@ -1046,15 +1049,6 @@ export class StateService {
     }
   }
 
-public ResetPopulation(population: Population) {
-    for (let t of population.tiers) {
-        t.has = 0
-        t.needed = 0
-        t.houses = []
-        t.productions = []
-    }
-  }
-
  public AddUniversity(population: Population, tile: Tile) {
     let slots = tile.building!.university!.scholar_slots
     for (let t of population.tiers) {
@@ -1099,20 +1093,21 @@ public GetCity(cities: City[], city_name: CityName) {
 
 
   public UpdateEmployment(city: City) {
-    let population = new Population()
+    for (const tier of city.population.tiers) {
+      tier.has = 0; tier.needed = 0; tier.houses.length = 0; tier.productions.length = 0;
+    }
     for (let t of city.productions) {
-      this.AddProduction(population, t)
+      this.AddProduction(city.population, t)
     }
     for (let t of city.universities) {
-      this.AddUniversity(population, t)
+      this.AddUniversity(city.population, t)
     }
     for (let t of city.houses) {
-      this.AddHouse(population, t)
+      this.AddHouse(city.population, t)
     }
-    for (let tier of population.tiers) {
+    for (let tier of city.population.tiers) {
       this.UpdateEmploymentPerTier(tier.has, tier.needed, tier.productions)
     }
-    city.population = population
   }
 
 
@@ -1150,7 +1145,7 @@ public GetCity(cities: City[], city_name: CityName) {
   }
 
   private getTechSpeedMultiplier(city: City, type: BuildingType): number {
-    const unlocked = city.unlocked_techs ?? []
+    const unlocked = city.unlocked_techs
     let mult = 1.0
     if (FARM_BUILDINGS.has(type) && type !== BuildingType.COMPOST_PIT &&
         unlocked.includes(Technology.CROP_ROTATION)) {

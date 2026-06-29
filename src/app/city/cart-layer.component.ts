@@ -69,6 +69,7 @@ export class CartLayerComponent implements OnInit, OnDestroy {
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
   private anims = new Map<Cart, CartAnim>();
+  private activeCarts = new Set<Cart>();
   private animalAnims = new Map<string, AnimalAnim>();
   private animalSprites: AnimalSprite[] = [];
   private animalSpriteVersion = -1;
@@ -119,19 +120,19 @@ export class CartLayerComponent implements OnInit, OnDestroy {
 
     this.drawAnimalFarms(now);
 
-    const seen = new Set<Cart>();
+    this.activeCarts.clear();
     for (const t of this.city.warehouses) {
       const warehouse = t.building?.warehouse;
       if (!warehouse) continue;
       for (const c of warehouse.carts) {
         if (!c.task?.path || c.task.path.length <= 1) continue;
-        seen.add(c);
+        this.activeCarts.add(c);
         this.drawCart(c, now);
       }
     }
     // Drop animation state for carts that are no longer active.
     for (const cart of this.anims.keys()) {
-      if (!seen.has(cart)) this.anims.delete(cart);
+      if (!this.activeCarts.has(cart)) this.anims.delete(cart);
     }
 
     // Ambient sailing ship, drawn on top of the sea.

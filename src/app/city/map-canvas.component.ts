@@ -91,7 +91,7 @@ const TERRAIN_OTHER_ART: TerrainObjectArt[] = [
 // Browser cursor images need to stay small; these 40px transparent PNGs are the
 // active runtime copies from public/assets/used/cursors.
 const HAND_CURSOR = `url("assets/used/cursors/white-glove-pointer.png") 6 2, pointer`;
-const HAMMER_CURSOR = `url("assets/used/cursors/build-hammer.png") 7 33, crosshair`;
+const HAMMER_CURSOR = `url("assets/used/cursors/build-hammer.png") 9 8, crosshair`;
 const MOVE_CURSOR = `url("assets/used/cursors/move-arrows.png") 20 20, move`;
 const UPGRADE_CURSOR = `url("assets/used/cursors/upgrade-arrow.png") 20 20, pointer`;
 const DOWNGRADE_CURSOR = `url("assets/used/cursors/downgrade-arrow.png") 20 20, pointer`;
@@ -232,6 +232,9 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   private visualHitTiles: Tile[] = [];
   private visualHitVersion = -1;
   private visualHitCity?: City;
+  private drawList: MapObjectDraw[] = [];
+  private drawListVersion = -1;
+  private drawListBounds = { i0: -1, i1: -1, j0: -1, j1: -1 };
   private hitCanvas?: HTMLCanvasElement;
   private hitCtx?: CanvasRenderingContext2D;
   private hoverTile?: { i: number, j: number };
@@ -645,6 +648,11 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   }
 
   private objectDrawList(i0: number, i1: number, j0: number, j1: number): MapObjectDraw[] {
+    const version = this.state.mapVersion();
+    const b = this.drawListBounds;
+    if (version === this.drawListVersion && i0 === b.i0 && i1 === b.i1 && j0 === b.j0 && j1 === b.j1) {
+      return this.drawList;
+    }
     const city = this.city;
     const items: MapObjectDraw[] = [];
     for (let i = i0; i <= i1; ++i) for (let j = j0; j <= j1; ++j) {
@@ -663,6 +671,9 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       }
     }
     items.sort((a, b) => a.depth - b.depth || a.order - b.order);
+    this.drawList = items;
+    this.drawListVersion = version;
+    b.i0 = i0; b.i1 = i1; b.j0 = j0; b.j1 = j1;
     return items;
   }
 
@@ -713,11 +724,11 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     }
     if (IsWorkshopBuilding(type) && size > 1) {
       const foodWorkshop = IsFoodWorkshopBuilding(type);
-      const scale = foodWorkshop ? 0.90 : 0.882;
+      const scale = foodWorkshop ? 0.86 : 0.882;
       const w = W * scale, h = H * scale;
       const overscan = 0.04;
       const bx = base.x - w / 2;
-      const by = y + H * (foodWorkshop ? 0.22 : 0.23);
+      const by = y + H * (foodWorkshop ? 0.25 : 0.23);
       return {
         x: bx - w * overscan,
         y: by - h * overscan,
@@ -823,9 +834,6 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     const H = Math.max(size * ISO_TILE_H * 1.8, size * TILE * 0.96);
     const x = base.x - W / 2, y = base.y - H;
 
-    if (type === BuildingType.ROAD) {
-      return;
-    }
     if (IsFarmBuilding(type) && size > 1) {
       const animal = IsAnimalFarm(type);
       const grove = type === BuildingType.APPLE_ORCHARD;
@@ -856,10 +864,10 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     }
     if (IsWorkshopBuilding(type) && size > 1) {
       const foodWorkshop = IsFoodWorkshopBuilding(type);
-      const scale = foodWorkshop ? 0.90 : 0.882;
+      const scale = foodWorkshop ? 0.86 : 0.882;
       const scaledW = W * scale, scaledH = H * scale;
       const icon = foodWorkshop ? FOOD_WORKSHOP_ICON : WORKSHOP_ICON;
-      this.drawComposite(b, this.img(icon), base.x - scaledW / 2, y + H * (foodWorkshop ? 0.22 : 0.23), scaledW, scaledH, 'workshop');
+      this.drawComposite(b, this.img(icon), base.x - scaledW / 2, y + H * (foodWorkshop ? 0.25 : 0.23), scaledW, scaledH, 'workshop');
       return;
     }
     // Single icon filling the footprint (houses use tier art via artSrc).
