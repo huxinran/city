@@ -40,6 +40,11 @@
                 "glob": "**/*",
                 "input": "public/assets/used",
                 "output": "/assets/used/"
+              },
+              {
+                "glob": "**/*",
+                "input": "public/assets/lib",
+                "output": "/assets/lib/"
               }
             ],
             "styles": [
@@ -114,6 +119,11 @@
                 "glob": "**/*",
                 "input": "public/assets/used",
                 "output": "/assets/used/"
+              },
+              {
+                "glob": "**/*",
+                "input": "public/assets/lib",
+                "output": "/assets/lib/"
               }
             ],
             "styles": [
