@@ -3,13 +3,13 @@ import { City } from '../sim/city';
 import { Tile } from '../sim/tile';
 import { Building } from '../sim/building';
 import { StateService } from '../state.service';
-import { BuildingType, Terrain, Feature } from '../sim/types';
+import { BuildingType, Terrain, Feature, ProductionStatus } from '../sim/types';
 import {
   GetBuildingSize, GetBuildingIcon, IsFarmBuilding, IsAnimalFarm,
   IsWorkshopBuilding, IsMineCampBuilding, IsSeaProductionBuilding,
   IsFoodWorkshopBuilding,
 } from '../sim/building';
-import { GetBuildingMapIconSrc, GetHouseMapIconSrc } from '../building-icons';
+import { GetBuildingMapIconSrc, GetBuildingProductIconSrc, GetHouseMapIconSrc } from '../building-icons';
 import { clampCamera, screenToWorld, applyCameraTransform } from '../camera';
 import {
   GRID_TILE, ISO_TILE_W, ISO_TILE_H, applyIsoGridCameraTransform,
@@ -702,7 +702,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
         y: base.y - h * (grove ? 0.69 : 0.71),
         w,
         h,
-        src: animal ? ANIMAL_FARM_ICON : grove ? GROVE_FARM_ICON : CROP_FARM_ICON,
+        src: this.artSrc(b) ?? (animal ? ANIMAL_FARM_ICON : grove ? GROVE_FARM_ICON : CROP_FARM_ICON),
       };
     }
     if (IsSeaProductionBuilding(type)) {
@@ -713,14 +713,14 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       const overscan = 0.04;
       const x = wharfBase.x - w / 2;
       const y = wharfBase.y - h * 0.74;
-      return { x: x - w * overscan, y: y - h * overscan, w: w * (1 + 2 * overscan), h: h * (1 + 2 * overscan), src: FISHERMEN_WHARF_ICON };
+      return { x: x - w * overscan, y: y - h * overscan, w: w * (1 + 2 * overscan), h: h * (1 + 2 * overscan), src: this.artSrc(b) ?? FISHERMEN_WHARF_ICON };
     }
     if (IsMineCampBuilding(type) && size > 1) {
       const w = W * 0.91, h = H * 0.91;
       const overscan = 0.04;
       const bx = base.x - w / 2;
       const by = y + H * 0.20;
-      return { x: bx - w * overscan, y: by - h * overscan, w: w * (1 + 2 * overscan), h: h * (1 + 2 * overscan), src: MINE_CAMP_ICON };
+      return { x: bx - w * overscan, y: by - h * overscan, w: w * (1 + 2 * overscan), h: h * (1 + 2 * overscan), src: this.artSrc(b) ?? MINE_CAMP_ICON };
     }
     if (IsWorkshopBuilding(type) && size > 1) {
       const foodWorkshop = IsFoodWorkshopBuilding(type);
@@ -734,7 +734,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
         y: by - h * overscan,
         w: w * (1 + 2 * overscan),
         h: h * (1 + 2 * overscan),
-        src: foodWorkshop ? FOOD_WORKSHOP_ICON : WORKSHOP_ICON,
+        src: this.artSrc(b) ?? (foodWorkshop ? FOOD_WORKSHOP_ICON : WORKSHOP_ICON),
       };
     }
     if (type === BuildingType.WAREHOUSE) {
@@ -843,7 +843,9 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
         : Math.max(size * ISO_TILE_H * 2.98, size * TILE * 1.58);
       const farmX = base.x - farmW / 2;
       const farmY = base.y - farmH * (grove ? 0.69 : 0.71);
-      this.drawComposite(b, this.img(animal ? ANIMAL_FARM_ICON : grove ? GROVE_FARM_ICON : CROP_FARM_ICON),
+      const generic = animal ? ANIMAL_FARM_ICON : grove ? GROVE_FARM_ICON : CROP_FARM_ICON;
+      const dedicated = this.img(this.artSrc(b));
+      this.drawComposite(b, ready(dedicated) ? dedicated : this.img(generic),
                          farmX, farmY, farmW, farmH, animal ? 'animalFarm' : grove ? 'groveFarm' : 'cropFarm');
       return;
     }
@@ -854,12 +856,14 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       const wharfH = Math.max(wharfSize * ISO_TILE_H * 2.7, wharfSize * TILE * 1.44);
       const wharfX = wharfBase.x - wharfW / 2;
       const wharfY = wharfBase.y - wharfH * 0.74;
-      this.drawComposite(b, this.img(FISHERMEN_WHARF_ICON), wharfX, wharfY, wharfW, wharfH, 'seaProduction');
+      const dedicated = this.img(this.artSrc(b));
+      this.drawComposite(b, ready(dedicated) ? dedicated : this.img(FISHERMEN_WHARF_ICON), wharfX, wharfY, wharfW, wharfH, 'seaProduction');
       return;
     }
     if (IsMineCampBuilding(type) && size > 1) {
       const scaledW = W * 0.91, scaledH = H * 0.91;
-      this.drawComposite(b, this.img(MINE_CAMP_ICON), base.x - scaledW / 2, y + H * 0.20, scaledW, scaledH, 'workshop');
+      const dedicated = this.img(this.artSrc(b));
+      this.drawComposite(b, ready(dedicated) ? dedicated : this.img(MINE_CAMP_ICON), base.x - scaledW / 2, y + H * 0.20, scaledW, scaledH, 'workshop');
       return;
     }
     if (IsWorkshopBuilding(type) && size > 1) {
@@ -867,7 +871,8 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       const scale = foodWorkshop ? 0.86 : 0.882;
       const scaledW = W * scale, scaledH = H * scale;
       const icon = foodWorkshop ? FOOD_WORKSHOP_ICON : WORKSHOP_ICON;
-      this.drawComposite(b, this.img(icon), base.x - scaledW / 2, y + H * (foodWorkshop ? 0.25 : 0.23), scaledW, scaledH, 'workshop');
+      const dedicated = this.img(this.artSrc(b));
+      this.drawComposite(b, ready(dedicated) ? dedicated : this.img(icon), base.x - scaledW / 2, y + H * (foodWorkshop ? 0.25 : 0.23), scaledW, scaledH, 'workshop');
       return;
     }
     // Single icon filling the footprint (houses use tier art via artSrc).
@@ -960,8 +965,11 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       this.drawContain(bg!, x - W * o, y - H * o, W * (1 + 2 * o), H * (1 + 2 * o), true);
     }
     if (kind === 'animalFarm') return;
-    const prod = this.img(this.artSrc(b));
+    const prod = this.img(this.productSrc(b));
     const emoji = GetBuildingIcon(b.type);
+    const productReady = b.production?.status === ProductionStatus.FINISHED
+                      || b.production?.status === ProductionStatus.WAITING_PICK_UP;
+    if (!productReady) return;
     if (kind === 'cropFarm' || kind === 'groveFarm') {
       const isz = W * 0.16;
       const marks = [
@@ -988,6 +996,10 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   private artSrc(b: Building): string | undefined {
     if (b.house) return GetHouseMapIconSrc(b.house.tier);
     return GetBuildingMapIconSrc(b.type);
+  }
+
+  private productSrc(b: Building): string | undefined {
+    return GetBuildingProductIconSrc(b.type);
   }
 
   // Draw an image "object-fit: contain" within a box, optionally with the

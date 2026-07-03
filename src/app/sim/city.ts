@@ -3,16 +3,9 @@ import { Storage, Item } from "./storage"
 import { Tile} from "./tile"
 import { Population } from "./population"
 import { AddItem } from "./utils"
-import { CityName, Resource, Terrain, Feature } from "./types"
+import { CityName, Terrain, Feature } from "./types"
 import { BuildingType } from "./types"
-
-export class Map {
-    constructor (
-        public h: number,
-        public w: number,
-        public tiles : Tile[],
-    ) {}
-}
+import { CITY_PROFILES } from "./config/cities.config"
 
 // Build a terrain layout: ocean surrounding the land, a grassland interior,
 // with scattered rock outcrops (for mines) and stands of trees (for lumber).
@@ -182,6 +175,21 @@ export function GenerateTerrain(h: number, w: number): { terrain: Terrain[], fea
 }
 
 export class City {
+    // --- Transient derived caches (never serialized; rebuilt at runtime) ------
+    // Whether service coverage needs recomputing. Set true on any map edit or
+    // house-tier change; the services system recomputes only when dirty. Starts
+    // true so a freshly loaded city computes coverage once on its first tick.
+    coverage_dirty = true
+    // Bumped on any map edit that could change the road network, invalidating
+    // the per-destination road distance-field cache below.
+    road_version = 0
+    road_fields = new Map<Tile, { version: number, field: { [key: number]: number } }>()
+    // Derived from unlocked_techs for O(1) membership tests in the tick loop,
+    // plus a per-building-type production-speed multiplier memo (cleared when a
+    // tech unlocks). Rebuilt via RebuildTechCaches on load and on unlock.
+    tech_set = new Set<Technology>()
+    tech_mult_cache = new Map<BuildingType, number>()
+
     constructor(
         public name: CityName,
         public h: number,
@@ -212,19 +220,11 @@ export class City {
                 this.tiles.push(new Tile(i, j, Terrain.WATER))
             }
         }
-        AddItem(this.storage, new Item(Resource.TIMBER, 100))
-        // Each city starts with a small cache of its signature food so the first
-        // houses can be fed immediately while production gets established.
-        if (name === CityName.JINLIN) {
-            AddItem(this.storage, new Item(Resource.RICE,    50))
-            AddItem(this.storage, new Item(Resource.FISH,    30))
-        } else if (name === CityName.COLUMBIA) {
-            AddItem(this.storage, new Item(Resource.CORN,    50))
-        } else if (name === CityName.SOLARA) {
-            AddItem(this.storage, new Item(Resource.BANANA,  50))
-        } else if (name === CityName.MINTAKA) {
-            AddItem(this.storage, new Item(Resource.FISH,    50))
-            AddItem(this.storage, new Item(Resource.FUR,     20))
+        // Starting resources come from the city profile (timber to build, plus a
+        // small cache of the region's signature food so the first houses can be
+        // fed while production is established).
+        for (const item of CITY_PROFILES[name]?.startingStock ?? []) {
+            AddItem(this.storage, new Item(item.type, item.num))
         }
     }
 }

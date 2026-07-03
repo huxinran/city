@@ -5,7 +5,12 @@ description: Default image-asset workflow for this city game repo. Generate, rev
 
 # City Image Assets
 
-Create polished project image assets that match the saved game reference style. Treat inventory icons as only one asset category, not the default assumption.
+Create polished project image assets that match the saved game reference style. This is the legacy umbrella workflow. Prefer the focused sibling skills when they apply:
+
+- Use `../city-resource-image-assets/SKILL.md` for resource and inventory item icons.
+- Use `../city-isometric-building-assets/SKILL.md` for map-placed building, farm, mine, dock, road, yard, and isometric footprint assets.
+
+Treat inventory icons as only one asset category, not the default assumption.
 
 ## Workflow
 

@@ -2,7 +2,7 @@
 // and house-upgrade baskets, plus its tier cap. Pure data; edit here to retune a
 // region. Re-exported from building.ts so existing importers keep their paths.
 import { Item } from "../storage"
-import { Resource, ServiceType, CityName } from "../types"
+import { Resource, ServiceType, CityName, ShipType } from "../types"
 
 // Shorthand for the many Item literals below.
 const I = (type: Resource, num = 1) => new Item(type, num)
@@ -29,6 +29,54 @@ export interface CityProfile {
     needs: { resource: Resource, tier: number }[]
     services: { service: ServiceType, tier: number }[]
     upgrades: { [tier: number]: UpgradeBasket }
+    // Resources a freshly created city starts with, so its first houses can be
+    // fed while production is being set up. Every city gets timber to build.
+    startingStock: Item[]
+}
+
+// The regions that make up a new game, in display order. The first entry is the
+// starting/selected city. Sizes are square (h === w). Editing this roster is all
+// it takes to add or remove a playable city.
+export const CITY_ROSTER: { name: CityName, h: number, w: number }[] = [
+    { name: CityName.ANRELIA,  h: 80, w: 80 },  // CENTER — temperate capital, a balanced breadbasket.
+    { name: CityName.MINTAKA,  h: 80, w: 80 },  // NORTH — cold frontier of hardy crops, herding, mining.
+    { name: CityName.JINLIN,   h: 80, w: 80 },  // EAST — agrarian river delta of rice, soy, citrus.
+    { name: CityName.COLUMBIA, h: 80, w: 80 },  // WEST — frontier plains: corn, cotton, cattle, steel.
+    { name: CityName.SOLARA,   h: 80, w: 80 },  // SOUTH — tropical plantations: banana, sugar, cocoa.
+]
+
+// Gold the player starts a fresh game with.
+export const STARTING_GOLD = 3000
+
+// Ship blueprints offered at every shipyard. Build cost scales with cargo
+// capacity. Pure data; the building layer turns these into ShipBlueprint
+// instances so each shipyard owns its own objects.
+export interface ShipBlueprintDef {
+    type: ShipType
+    speed: number
+    max_cargo: number
+    cost: Item[]
+    build_time: number
+}
+export const SHIP_BLUEPRINTS: ShipBlueprintDef[] = [
+    { type: ShipType.CARGO,   speed: 1.5, max_cargo: 100, cost: [I(Resource.WOOD, 10)], build_time: 60 },
+    { type: ShipType.CLIPPER, speed: 2.0, max_cargo: 60,  cost: [I(Resource.WOOD, 15)], build_time: 90 },
+    { type: ShipType.GRAND,   speed: 1.0, max_cargo: 300, cost: [I(Resource.WOOD, 30)], build_time: 120 },
+]
+
+// The earliest house tier that requires each service. Used to group service
+// buildings in the build palette; shared across all cities.
+export const SERVICE_UNLOCK_TIER: { [key in ServiceType]: number } = {
+    [ServiceType.WATER]:    1,
+    [ServiceType.MARKET]:   2,
+    [ServiceType.FIRE]:     3,
+    [ServiceType.POLICE]:   3,
+    [ServiceType.SCHOOL]:   4,
+    [ServiceType.TAVERN]:   5,
+    [ServiceType.CHURCH]:   6,
+    [ServiceType.HEALTH]:   3,
+    [ServiceType.JUSTICE]:  4,
+    [ServiceType.ENGINEER]: 5,
 }
 
 // Services for the 3-tier themed regions (shared by all non-Anrelia cities).
@@ -43,6 +91,7 @@ const THEMED_SERVICES: { service: ServiceType, tier: number }[] = [
 export const CITY_PROFILES: Record<CityName, CityProfile> = {
     [CityName.ANRELIA]: {
         maxTier: 6,
+        startingStock: [I(Resource.TIMBER, 100)],
         needs: [
             { resource: Resource.FISH,      tier: 1 },
             { resource: Resource.SAUSAGE,   tier: 2 },
@@ -83,6 +132,7 @@ export const CITY_PROFILES: Record<CityName, CityProfile> = {
     },
     [CityName.JINLIN]: {
         maxTier: 3,
+        startingStock: [I(Resource.TIMBER, 100), I(Resource.RICE, 50), I(Resource.FISH, 30)],
         needs: [
             { resource: Resource.RICE,      tier: 1 },
             { resource: Resource.FISH,      tier: 1 },
@@ -102,6 +152,7 @@ export const CITY_PROFILES: Record<CityName, CityProfile> = {
     },
     [CityName.COLUMBIA]: {
         maxTier: 3,
+        startingStock: [I(Resource.TIMBER, 100), I(Resource.CORN, 50)],
         needs: [
             { resource: Resource.CORN,      tier: 1 },
             { resource: Resource.SAUSAGE,   tier: 3 },
@@ -119,6 +170,7 @@ export const CITY_PROFILES: Record<CityName, CityProfile> = {
     },
     [CityName.SOLARA]: {
         maxTier: 3,
+        startingStock: [I(Resource.TIMBER, 100), I(Resource.BANANA, 50)],
         needs: [
             { resource: Resource.BANANA,      tier: 1 },
             { resource: Resource.COCOA,       tier: 2 },
@@ -137,6 +189,7 @@ export const CITY_PROFILES: Record<CityName, CityProfile> = {
     },
     [CityName.MINTAKA]: {
         maxTier: 3,
+        startingStock: [I(Resource.TIMBER, 100), I(Resource.FISH, 50), I(Resource.FUR, 20)],
         needs: [
             { resource: Resource.SMOKED_FISH,   tier: 1 },
             { resource: Resource.DEER,          tier: 2 },

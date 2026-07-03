@@ -54,10 +54,21 @@ export const BUILDING_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.CIGAR_FACTORY]:         'lucideLeaf',
     [BuildingType.CREAMERY]:              'lucideMilk',
     [BuildingType.POTTERY_SHOP]:          'lucideWeight',
+    [BuildingType.PAPER_MILL]:            'lucideScrollText',
+    [BuildingType.INK_WORKSHOP]:          'lucidePenLine',
+    [BuildingType.DYE_WORKSHOP]:          'lucidePalette',
+    [BuildingType.PICKLERY]:              'lucideCookingPot',
+    [BuildingType.DUMPLING_KITCHEN]:      'lucideChefHat',
+    [BuildingType.SUSHI_BAR]:             'lucideUtensils',
+    [BuildingType.ICE_CREAMERY]:          'lucideMilk',
     [BuildingType.BRANDY_DISTILLERY]:     'lucideFlaskConical',
     [BuildingType.CANDLE_MANUFACTORY]:    'lucideSparkle',
+    [BuildingType.SOAP_WORKS]:            'lucideBubbles',
     [BuildingType.GLASSWORK]:             'lucideGlassWater',
+    [BuildingType.BOTTLEWORKS]:           'lucideWine',
     [BuildingType.GLAZIER]:               'lucideAppWindow',
+    [BuildingType.APOTHECARY]:            'lucideStethoscope',
+    [BuildingType.PERFUMERY]:             'lucideFlower2',
     [BuildingType.STEELWORK]:             'lucideHammer',
     [BuildingType.SAWMILL]:               'lucideAxe',
     [BuildingType.BRICKYARD]:             'lucideFactory',
@@ -68,8 +79,11 @@ export const BUILDING_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.FORGE]:                 'lucideFlame',
     [BuildingType.GOLDSMITH]:             'lucideCoins',
     [BuildingType.TOOLSMITH]:             'lucideWrench',
+    [BuildingType.MACHINE_SHOP]:          'lucideCog',
     [BuildingType.JEWELER]:               'lucideGem',
+    [BuildingType.WATCHMAKER]:            'lucideWatch',
     [BuildingType.CARPENTER_SHOP]:        'lucideAnvil',
+    [BuildingType.PAINTER_STUDIO]:        'lucidePalette',
     [BuildingType.WINERY]:                'lucideGrape',
     [BuildingType.OIL_PRESS]:             'lucideLeaf',
     [BuildingType.RUM_DISTILLERY]:        'lucideFlaskConical',
@@ -115,10 +129,21 @@ export const WORKSHOP_PRODUCT_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.CIGAR_FACTORY]:      'lucideFlameKindling', // lit cigar
     [BuildingType.CREAMERY]:           'lucideEggFried',      // dairy product
     [BuildingType.POTTERY_SHOP]:       'lucideCookingPot',    // pottery vessel
+    [BuildingType.PAPER_MILL]:         'lucideFileText',
+    [BuildingType.INK_WORKSHOP]:       'lucidePenTool',
+    [BuildingType.DYE_WORKSHOP]:       'lucidePaintbrush',
+    [BuildingType.PICKLERY]:           'lucideCookingPot',
+    [BuildingType.DUMPLING_KITCHEN]:   'lucideSoup',
+    [BuildingType.SUSHI_BAR]:          'lucideFish',
+    [BuildingType.ICE_CREAMERY]:       'lucideDessert',
     [BuildingType.BRANDY_DISTILLERY]:  'lucideWine',          // brandy glass
     [BuildingType.CANDLE_MANUFACTORY]: 'lucideWandSparkles',  // lit candle
+    [BuildingType.SOAP_WORKS]:         'lucideBubbles',
     [BuildingType.GLASSWORK]:          'lucideGlasses',       // glass product
+    [BuildingType.BOTTLEWORKS]:        'lucideWine',
     [BuildingType.GLAZIER]:            'lucideAppWindow',     // window
+    [BuildingType.APOTHECARY]:         'lucidePill',
+    [BuildingType.PERFUMERY]:          'lucideSprayCan',
     [BuildingType.STEELWORK]:          'lucideWeight',        // steel ingot
     [BuildingType.SAWMILL]:            'lucideTreeDeciduous', // timber
     [BuildingType.BRICKYARD]:          'lucideBrickWall',     // fired brick
@@ -129,8 +154,11 @@ export const WORKSHOP_PRODUCT_ICON_NAMES: { [key: string]: string } = {
     [BuildingType.FORGE]:              'lucideDumbbell',      // iron bar
     [BuildingType.GOLDSMITH]:          'lucideHandCoins',     // refined gold
     [BuildingType.TOOLSMITH]:          'lucideHammer',        // tool
+    [BuildingType.MACHINE_SHOP]:       'lucideCog',
     [BuildingType.JEWELER]:            'lucideCrown',         // jewelry
+    [BuildingType.WATCHMAKER]:         'lucideWatch',
     [BuildingType.CARPENTER_SHOP]:     'lucideArmchair',      // furniture
+    [BuildingType.PAINTER_STUDIO]:     'lucideImage',
     [BuildingType.WINERY]:             'lucideWine',          // wine
     [BuildingType.OIL_PRESS]:          'lucideDroplet',       // olive oil
     [BuildingType.RUM_DISTILLERY]:     'lucideMartini',       // rum
@@ -147,8 +175,8 @@ export function GetWorkshopProductIconName(type: BuildingType): string {
 // ---------------------------------------------------------------------------
 // Image-based icons
 // Each value is a filename slug (no extension, no path prefix).
-// The loader tries  assets/used/buildings/<slug>.png  then  .jpg  in order.
-// If neither exists the SVG fallback from BUILDING_ICON_NAMES is shown.
+// Map art uses assets/used/buildings/<slug>.png. Menu/product overlays prefer
+// resource output art where available so production state remains readable.
 // ---------------------------------------------------------------------------
 const BUILDING_IMAGE_SLUGS: { [key: string]: string } = {
     [BuildingType.ROAD]:                  'road',
@@ -203,10 +231,21 @@ const BUILDING_IMAGE_SLUGS: { [key: string]: string } = {
     [BuildingType.CIGAR_FACTORY]:         'cigar-factory',
     [BuildingType.CREAMERY]:              'creamery',
     [BuildingType.POTTERY_SHOP]:          'pottery-shop',
+    [BuildingType.PAPER_MILL]:            'paper-mill',
+    [BuildingType.INK_WORKSHOP]:          'ink-workshop',
+    [BuildingType.DYE_WORKSHOP]:          'dye-workshop',
+    [BuildingType.PICKLERY]:              'picklery',
+    [BuildingType.DUMPLING_KITCHEN]:      'dumpling-kitchen',
+    [BuildingType.SUSHI_BAR]:             'sushi-bar',
+    [BuildingType.ICE_CREAMERY]:          'ice-creamery',
     [BuildingType.BRANDY_DISTILLERY]:     'brandy-distillery',
     [BuildingType.CANDLE_MANUFACTORY]:    'candle-manufactory',
+    [BuildingType.SOAP_WORKS]:            'soap-works',
     [BuildingType.GLASSWORK]:             'glassworks',
+    [BuildingType.BOTTLEWORKS]:           'bottleworks',
     [BuildingType.GLAZIER]:               'glazier',
+    [BuildingType.APOTHECARY]:            'apothecary',
+    [BuildingType.PERFUMERY]:             'perfumery',
     [BuildingType.STEELWORK]:             'steelworks',
     [BuildingType.SAWMILL]:               'sawmill',
     [BuildingType.BRICKYARD]:             'brickyard',
@@ -217,8 +256,11 @@ const BUILDING_IMAGE_SLUGS: { [key: string]: string } = {
     [BuildingType.FORGE]:                 'forge',
     [BuildingType.GOLDSMITH]:             'goldsmith',
     [BuildingType.TOOLSMITH]:             'toolsmith',
+    [BuildingType.MACHINE_SHOP]:          'machine-shop',
     [BuildingType.JEWELER]:               'jeweler',
+    [BuildingType.WATCHMAKER]:            'watchmaker',
     [BuildingType.CARPENTER_SHOP]:        'carpenter-shop',
+    [BuildingType.PAINTER_STUDIO]:        'painter-studio',
     [BuildingType.WINERY]:                'winery',
     [BuildingType.OIL_PRESS]:             'oil-press',
     [BuildingType.RUM_DISTILLERY]:        'rum-distillery',
@@ -239,6 +281,21 @@ const BUILDING_IMAGE_SLUGS: { [key: string]: string } = {
     [BuildingType.SHIPYARD]:              'shipyard',
     [BuildingType.DOCK]:                  'dock',
     [BuildingType.DELETE]:                'delete',
+    // Themed-city and shared utility buildings
+    [BuildingType.TEA_GARDEN]:            'tea-garden',
+    [BuildingType.SILK_FARM]:             'silk-farm',
+    [BuildingType.TOFU_SHOP]:             'tofu-shop',
+    [BuildingType.KILN]:                  'kiln',
+    [BuildingType.NOODLE_SHOP]:           'noodle-shop',
+    [BuildingType.TANNERY]:               'tannery',
+    [BuildingType.COPPER_MINE]:           'copper-mine',
+    [BuildingType.INCENSE_GROVE]:         'incense-grove',
+    [BuildingType.IVORY_CAMP]:            'ivory-camp',
+    [BuildingType.REINDEER_FARM]:         'reindeer-farm',
+    [BuildingType.FUR_WORKSHOP]:          'fur-workshop',
+    [BuildingType.SMOKEHOUSE]:            'smokehouse',
+    [BuildingType.WHALING_POST]:          'whaling-post',
+    [BuildingType.COMPOST_PIT]:           'compost-pit',
 }
 
 const BUILDING_ICON_BASE = 'assets/used/buildings/'
@@ -295,10 +352,21 @@ const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
     [BuildingType.CIGAR_FACTORY]: 'cigar.png',
     [BuildingType.CREAMERY]: 'cheese.png',
     [BuildingType.POTTERY_SHOP]: 'pottery.png',
+    [BuildingType.PAPER_MILL]: 'paper.png',
+    [BuildingType.INK_WORKSHOP]: 'ink.png',
+    [BuildingType.DYE_WORKSHOP]: 'dye.png',
+    [BuildingType.PICKLERY]: 'pickles.png',
+    [BuildingType.DUMPLING_KITCHEN]: 'dumplings.png',
+    [BuildingType.SUSHI_BAR]: 'sushi.png',
+    [BuildingType.ICE_CREAMERY]: 'ice-cream.png',
     [BuildingType.BRANDY_DISTILLERY]: 'brandy.png',
     [BuildingType.CANDLE_MANUFACTORY]: 'candle.png',
+    [BuildingType.SOAP_WORKS]: 'soap.png',
     [BuildingType.GLASSWORK]: 'glass.png',
+    [BuildingType.BOTTLEWORKS]: 'glass-bottle.png',
     [BuildingType.GLAZIER]: 'window.png',
+    [BuildingType.APOTHECARY]: 'medicine.png',
+    [BuildingType.PERFUMERY]: 'perfume.png',
     [BuildingType.STEELWORK]: 'steel.png',
     [BuildingType.SAWMILL]: 'timber.png',
     [BuildingType.BRICKYARD]: 'brick.png',
@@ -309,24 +377,43 @@ const BUILDING_PRODUCT_ICONS: { [key: string]: string } = {
     [BuildingType.FORGE]: 'iron-ingot.png',
     [BuildingType.GOLDSMITH]: 'coin.png',
     [BuildingType.TOOLSMITH]: 'tool.png',
+    [BuildingType.MACHINE_SHOP]: 'machine-parts.png',
     [BuildingType.JEWELER]: 'jewelry.png',
+    [BuildingType.WATCHMAKER]: 'watch.png',
     [BuildingType.CARPENTER_SHOP]: 'furniture.png',
+    [BuildingType.PAINTER_STUDIO]: 'paintings.png',
     [BuildingType.WINERY]: 'wine.png',
     [BuildingType.OIL_PRESS]: 'olive-oil.png',
     [BuildingType.RUM_DISTILLERY]: 'rum.png',
+    [BuildingType.TEA_GARDEN]: 'tea.png',
+    [BuildingType.SILK_FARM]: 'silk.png',
+    [BuildingType.TOFU_SHOP]: 'tofu.png',
+    [BuildingType.KILN]: 'porcelain.png',
+    [BuildingType.NOODLE_SHOP]: 'noodle.png',
+    [BuildingType.TANNERY]: 'leather.png',
+    [BuildingType.COPPER_MINE]: 'copper.png',
+    [BuildingType.INCENSE_GROVE]: 'incense.png',
+    [BuildingType.IVORY_CAMP]: 'ivory.png',
+    [BuildingType.REINDEER_FARM]: 'deer.png',
+    [BuildingType.FUR_WORKSHOP]: 'fur-coat.png',
+    [BuildingType.SMOKEHOUSE]: 'smoked-fish.png',
     [BuildingType.WHALING_POST]: 'whale-oil.png',
+    [BuildingType.COMPOST_PIT]: 'fertilizer.png',
 }
 
-// Returns a PNG URL for a building icon:
-// 1. Dedicated building PNG in assets/used/buildings/ (preferred once art exists)
-// 2. Resource icon of its primary output product (available now)
-// 3. undefined → emoji fallback in IconComponent
+// Palette/menu icon: production buildings use their product art; service and
+// infrastructure buildings use their dedicated building art.
 export function GetBuildingIconSrc(type: BuildingType): string | undefined {
     const resourceFile = BUILDING_PRODUCT_ICONS[type]
     if (resourceFile) return `${RESOURCE_ICON_BASE}${resourceFile}`
     const slug = BUILDING_IMAGE_SLUGS[type]
     if (slug) return `${BUILDING_ICON_BASE}${slug}.png`
     return undefined
+}
+
+export function GetBuildingProductIconSrc(type: BuildingType): string | undefined {
+    const resourceFile = BUILDING_PRODUCT_ICONS[type]
+    return resourceFile ? `${RESOURCE_ICON_BASE}${resourceFile}` : undefined
 }
 
 // Slugs for buildings that should render a different art asset on the map than
@@ -337,11 +424,13 @@ const BUILDING_MAP_IMAGE_SLUGS: { [key: string]: string } = {
 }
 
 // Map-tile art for a placed building. Uses the map-specific override when one
-// exists, otherwise the same source as the menu icon.
+// exists, otherwise the dedicated building art.
 export function GetBuildingMapIconSrc(type: BuildingType): string | undefined {
     const slug = BUILDING_MAP_IMAGE_SLUGS[type]
     if (slug) return `${BUILDING_ICON_BASE}${slug}.png`
-    return GetBuildingIconSrc(type)
+    const buildingSlug = BUILDING_IMAGE_SLUGS[type]
+    if (buildingSlug) return `${BUILDING_ICON_BASE}${buildingSlug}.png`
+    return undefined
 }
 
 // Map-tile art for a house, chosen by its tier (1..6) so upgraded houses show

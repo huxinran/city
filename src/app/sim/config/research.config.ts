@@ -9,6 +9,16 @@ export enum Technology {
     ADVANCED_MINING = "Advanced Mining",
 }
 
+// A passive production-speed bonus a completed tech grants to a family of
+// buildings. `appliesTo` selects the family (farms / mine-camp extractors);
+// the production system multiplies matching buildings' speed by speedMultiplier.
+// Techs with no effects (e.g. Fertilizer, which instead unlocks an optional
+// extra source) simply leave this empty.
+export interface TechEffect {
+    appliesTo: 'farm' | 'mine'
+    speedMultiplier: number
+}
+
 export class ResearchProject {
     constructor(
         public tech: Technology,
@@ -16,6 +26,7 @@ export class ResearchProject {
         public description: string,
         public research_time: number,  // ticks at full staffing to complete
         public gold_cost: number,
+        public effects: TechEffect[] = [],
     ) {}
 }
 
@@ -31,11 +42,13 @@ export const ALL_RESEARCH: ResearchProject[] = [
         "Crop Rotation",
         "All farms produce 30% faster permanently.",
         600, 500,
+        [{ appliesTo: 'farm', speedMultiplier: 1.3 }],
     ),
     new ResearchProject(
         Technology.ADVANCED_MINING,
         "Advanced Mining",
         "All extraction buildings operate 30% faster.",
         500, 400,
+        [{ appliesTo: 'mine', speedMultiplier: 1.3 }],
     ),
 ]

@@ -40,6 +40,7 @@ const PALETTE_ORDER: BuildingType[] = [
   // Farmer
   BuildingType.LUMBER_HUT,      // wood
   BuildingType.SAWMILL,         // timber
+  BuildingType.DYE_WORKSHOP,    // dye
   BuildingType.FISHERY,         // fish
   BuildingType.SHEEP_FARM,      // sheep -> wool
   BuildingType.PANT_SHOP, // pant
@@ -52,6 +53,7 @@ const PALETTE_ORDER: BuildingType[] = [
   BuildingType.COTTON_FIELD,    // cotton
   BuildingType.SHIRT_SHOP,      // shirt
   BuildingType.CABBAGE_PATCH,   // cabbage
+  BuildingType.PICKLERY,        // pickles
   BuildingType.PIG_FARM,        // pig -> pork
   BuildingType.BUTCHERY,        // sausage
   // Artisan
@@ -61,11 +63,23 @@ const PALETTE_ORDER: BuildingType[] = [
   BuildingType.WHEAT_FARM,      // wheat
   BuildingType.WIND_MILL,       // flour
   BuildingType.BAKERY,          // bread
+  BuildingType.PAPER_MILL,      // paper
+  BuildingType.INK_WORKSHOP,    // ink
+  BuildingType.DUMPLING_KITCHEN,// dumplings
+  BuildingType.SUSHI_BAR,       // sushi
   BuildingType.TRAPLINE,        // fur
   BuildingType.BOOT_SHOP,       // boot
   BuildingType.OLIVE_GROVE,     // olive
   BuildingType.OIL_PRESS,       // oil
   BuildingType.TOOLSMITH,       // tool
+  BuildingType.BOTTLEWORKS,     // glass bottle
+  BuildingType.APOTHECARY,      // medicine
+  BuildingType.SOAP_WORKS,      // soap
+  BuildingType.PERFUMERY,       // perfume
+  BuildingType.PAINTER_STUDIO,  // paintings
+  BuildingType.MACHINE_SHOP,    // machine parts
+  BuildingType.ICE_CREAMERY,    // ice cream
+  BuildingType.WATCHMAKER,      // watch
 ]
 function paletteOrder(t: BuildingType): number {
   let i = PALETTE_ORDER.indexOf(t)

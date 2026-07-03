@@ -1,12 +1,10 @@
 .palette {
   display: flex;
   flex-direction: row;
-  padding: 3px 8px 5px;
-  background: var(--panel-2);
-  min-height: 0;
+  padding: 4px 9px 6px;
+  background: transparent;
   width: 100%;
   min-width: 0;
-  max-width: 100%;
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -26,9 +24,9 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  padding: 1px 6px;
-  background: transparent;
-  border: 1px solid transparent;
+  padding: 1px 7px;
+  background: rgba(255, 250, 236, 0.24);
+  border: 1px solid rgba(98, 65, 31, 0.10);
   border-radius: 5px;
   color: var(--text-dim);
   font: inherit;
@@ -40,25 +38,25 @@
 }
 
 .tier-tab:hover {
-  background: var(--elevated);
+  background: rgba(255, 250, 236, 0.58);
+  border-color: rgba(98, 65, 31, 0.20);
   color: var(--text);
 }
 
 .tier-tab.active {
-  background: var(--panel);
-  border-color: var(--border-strong);
-  color: var(--accent);
+  background: linear-gradient(180deg, rgba(255, 252, 241, 0.95), rgba(224, 204, 158, 0.88));
+  border-color: rgba(90, 130, 46, 0.38);
+  color: #3f7f25;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.58) inset, 0 1px 4px rgba(60, 40, 15, 0.10);
 }
 
 .build-row {
   display: flex;
   align-items: flex-start;
-  gap: 15px;
+  gap: 14px;
   overflow-x: auto;
   width: 100%;
-  max-width: 100%;
   min-width: 0;
-  box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -67,7 +65,6 @@
   flex-direction: column;
   gap: 3px;
   flex: 0 0 auto;
-  margin-bottom: 0;
 }
 
 .block-title {
@@ -75,11 +72,12 @@
   display: flex;
   align-items: center;
   padding: 0 6px;
-  color: var(--text-dim);
+  color: #6d5434;
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .icons {
@@ -95,18 +93,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--panel-2);
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(255, 249, 233, 0.94), rgba(226, 204, 162, 0.90));
+  border: 1px solid rgba(98, 65, 31, 0.20);
+  border-radius: 7px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.58) inset, 0 1px 2px rgba(67, 43, 18, 0.10);
   cursor: grab;
-  transition: transform 0.08s ease, border-color 0.12s ease, background 0.12s ease;
+  transition: transform 0.08s ease, border-color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
   user-select: none;
   touch-action: manipulation;
 }
 
 .pal-icon:hover {
-  background: var(--elevated);
-  border-color: var(--border-strong);
+  background: linear-gradient(180deg, #fffaf0, #ead8b2);
+  border-color: rgba(98, 65, 31, 0.32);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.70) inset, 0 2px 6px rgba(67, 43, 18, 0.14);
   transform: translateY(-1px);
 }
 
@@ -140,7 +140,8 @@
 
 .pal-icon.sel {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(90, 158, 58, 0.35);
+  background: linear-gradient(180deg, #fffbea, #ddefc9);
+  box-shadow: 0 0 0 2px rgba(90, 158, 58, 0.30), 0 2px 7px rgba(65, 108, 38, 0.18);
 }
 
 .pal-icon.danger.sel {
@@ -154,6 +155,7 @@
   justify-content: center;
   width: 35px;
   height: 35px;
+  border-radius: 5px;
 }
 
 .pal-icon-slot img {
@@ -164,14 +166,6 @@
   pointer-events: none;
 }
 
-
-.pal-emoji {
-  font-size: 19px;
-  line-height: 1;
-  pointer-events: none;
-}
-
-/* Floating hover tooltip (fixed so it escapes the scrollable column). */
 .build-tip {
   position: fixed;
   z-index: 100;
@@ -179,7 +173,10 @@
   min-width: 140px;
   max-width: 240px;
   padding: 8px 10px;
-  background: var(--panel);
+  background:
+    linear-gradient(180deg, rgba(255, 250, 239, 0.96), rgba(240, 224, 192, 0.96)),
+    url("/assets/used/ui/panel-parchment.png");
+  background-size: 100% 100%, cover;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow);
@@ -231,15 +228,6 @@
   font-weight: 800;
   color: var(--text);
   margin-bottom: 5px;
-}
-
-.tip-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 12px;
-  margin-bottom: 5px;
-  font-size: 13px;
-  font-weight: 700;
 }
 
 .tip-worker {

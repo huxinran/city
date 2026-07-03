@@ -11,6 +11,12 @@ import { Tile } from './sim/tile';
 import { SaveState, LoadState, LoadDefaultState, SaveMaps, LoadMaps, HasSavedMap, HasSavedState } from './sim/persistence';
 import { RoadDistanceField, BuildRoadPath, WarehouseRoadDistance } from './sim/pathfinding';
 import { Camera } from './camera';
+// Sim tick + per-city helpers now live under ./sim; StateService drives them and
+// keeps only the UI-facing state (selection, camera, placement, persistence).
+import { TickState } from './sim/tick';
+import { AddBuildingToLists, RemoveBuildingFromLists, RebuildBuildingLists } from './sim/building-lists';
+import { InvalidateMapCaches, RebuildTechCaches } from './sim/derived';
+import { StartResearch as StartResearchSystem } from './sim/systems/university.system';
 
 // How far (in tiles) a resource building may sit from the rock/tree it works.
 const FEATURE_RADIUS = 3
@@ -102,9 +108,11 @@ export class StateService {
     this.LoadOrGenerateMaps()
     // Seed building lists from the grid: a save restores buildings onto tiles,
     // but its serialized lists hold stale (post-JSON) tile references. From here
-    // the lists are maintained incrementally on place/delete/move.
+    // the lists are maintained incrementally on place/delete/move. Also rebuild
+    // the transient tech caches from the persisted unlocked_techs array.
     for (let city of this.state.cities) {
-      this.RebuildBuildingLists(city)
+      RebuildBuildingLists(city)
+      RebuildTechCaches(city)
     }
     this.bumpMap()
   }
@@ -160,18 +168,10 @@ export class StateService {
 
   public Tick() {
     this.state.time += 1
-    this.ShuffleBuildingLists(this.state.current_city!)
-    this.UpdatePopulation(this.state.current_city!)
-    this.UpdateProduction(this.state.current_city!)
-    this.UpdateWarehouses(this.state.current_city!)
-    this.UpdateHouses(this.state.current_city!)
-    this.UpdateShipyard(this.state.current_city!)
-    this.UpdateUniversity(this.state.current_city!)
-    this.UpdateEmployment(this.state.current_city!)
-    this.HandleShipTasks(this.state.current_city!)
-    this.UpdateService(this.state.current_city!)
-    this.UpdateRoutes()
-    this.UpdateGold(this.state.current_city!)
+    // Advance every city's economy plus sea trade (see sim/tick.ts). All cities
+    // simulate each tick, so background regions keep producing while the player
+    // is elsewhere.
+    TickState(this.state)
     if (this.state.time % this.AUTO_SAVE_INTERVAL === 0) this.Save()
     // Drive OnPush rendering of live data. Bump inside the zone so change
     // detection runs (the tick itself ran outside Angular).
@@ -290,6 +290,9 @@ export class StateService {
       RefreshHouse(building.house)
     }
 
+    // A house tier change rewrites its service_needs, so service coverage (and,
+    // for a warehouse tier change, cart routing) must be recomputed next tick.
+    InvalidateMapCaches(city)
     this.bumpMap()
   }
 
@@ -618,7 +621,8 @@ export class StateService {
       t.anchor_i = tile.i
       t.anchor_j = tile.j
     }
-    this.AddBuildingToLists(city, tile)
+    AddBuildingToLists(city, tile)
+    InvalidateMapCaches(city)
     return true
   }
 
@@ -635,7 +639,8 @@ export class StateService {
     }
     let isHouse = !!anchor.building.house
     let size = GetBuildingSize(anchor.building.type)
-    this.RemoveBuildingFromLists(city, anchor)
+    RemoveBuildingFromLists(city, anchor)
+    InvalidateMapCaches(city)
     for (let di = 0; di < size; ++di) {
       for (let dj = 0; dj < size; ++dj) {
         let t = this.GetTile(city, anchor.i + di, anchor.j + dj)
@@ -689,7 +694,7 @@ export class StateService {
     const isHouse = !!building.house
 
     // Clear source footprint (drop from lists first, while still categorisable).
-    this.RemoveBuildingFromLists(city, from)
+    RemoveBuildingFromLists(city, from)
     for (let di = 0; di < size; ++di) {
       for (let dj = 0; dj < size; ++dj) {
         let t = this.GetTile(city, from.i + di, from.j + dj)
@@ -714,7 +719,8 @@ export class StateService {
       t.anchor_i = to.i
       t.anchor_j = to.j
     }
-    this.AddBuildingToLists(city, to)
+    AddBuildingToLists(city, to)
+    InvalidateMapCaches(city)
 
     // Tasks hold a reference to their destination tile; after a move that tile
     // no longer carries the building, so the task is orphaned. Left alone it
@@ -751,483 +757,15 @@ export class StateService {
     return true
   }
 
-  // Add a building's anchor tile to its matching per-city list. The category is
-  // fixed by which sub-object the building carries; roads (and anything with no
-  // sub-object) belong to no list. Covered tiles carry no building, so passing
-  // one is a safe no-op.
-  public AddBuildingToLists(city: City, tile: Tile) {
-    let b = tile.building
-    if (!b) return
-    if (b.house) city.houses.push(tile)
-    else if (b.production) city.productions.push(tile)
-    else if (b.service) city.services.push(tile)
-    else if (b.warehouse) city.warehouses.push(tile)
-    else if (b.shipyard) city.shipyards.push(tile)
-    else if (b.dock) city.docks.push(tile)
-    else if (b.university) city.universities.push(tile)
-  }
-
-  // Remove a building's anchor tile from its list. Call before clearing
-  // tile.building so the category is still known.
-  public RemoveBuildingFromLists(city: City, tile: Tile) {
-    let b = tile.building
-    if (!b) return
-    let drop = (arr: Tile[]) => {
-      let idx = arr.indexOf(tile)
-      if (idx >= 0) arr.splice(idx, 1)
-    }
-    if (b.house) drop(city.houses)
-    else if (b.production) drop(city.productions)
-    else if (b.service) drop(city.services)
-    else if (b.warehouse) drop(city.warehouses)
-    else if (b.shipyard) drop(city.shipyards)
-    else if (b.dock) drop(city.docks)
-    else if (b.university) drop(city.universities)
-  }
-
-  // Seed the per-city building lists from a full grid scan. Used on load, where
-  // buildings are restored onto tiles but the serialized lists hold stale tile
-  // references. The lists are then maintained incrementally on place/delete/move.
-  public RebuildBuildingLists(city: City) {
-    city.houses = []
-    city.productions = []
-    city.services = []
-    city.warehouses = []
-    city.shipyards = []
-    city.docks = []
-    city.universities = []
-    for (let t of city.tiles) {
-      this.AddBuildingToLists(city, t)
-    }
-  }
-
-  // Re-randomise list order each tick so no building gets permanent priority in
-  // employment/logistics distribution (shuffle is in place).
-  public ShuffleBuildingLists(city: City) {
-    shuffle(city.houses)
-    shuffle(city.productions)
-    shuffle(city.services)
-    shuffle(city.warehouses)
-    shuffle(city.shipyards)
-    shuffle(city.docks)
-    shuffle(city.universities)
-  }
-
-  public UpdateService(city: City) {
-    for (const t of city.houses) {
-      for (const n of t.building!.house!.service_needs) n.satisfied = false;
-    }
-    for (let t of city.services) {
-      let service = t.building!.service!
-      let neighbours = FindNeighbours(city, t, service.radius)
-      for (let n of neighbours) {
-        ProvideService(n, service.need_provided)
-      }
-    }
-  }
-
-  public UpdateProduction(city: City) {
-    const unlockedTechs = city.unlocked_techs;
-    for (let t of city.productions) {
-      let production = t.building!.production!
-
-      // Only consider extra sources whose required tech has been researched.
-      let activeExtras = production.extra_sources.filter(
-        es => !es.required_tech || unlockedTechs.includes(es.required_tech)
-      )
-
-      // Proactively stock active extra sources into the building's local buffer.
-      if (activeExtras.length > 0 && !production.stocking_in_progress) {
-        for (let es of activeExtras) {
-          let stockpile = CountItem(production.storage, es.resource)
-          if (stockpile < es.max_stockpile) {
-            let need = es.max_stockpile - stockpile
-            let task = new ShippingTask(ShippingTaskType.STOCKING, t, [new Item(es.resource, need)])
-            city.shipping_tasks.push(task)
-            production.stocking_in_progress = true
-            break
-          }
-        }
-      }
-
-      if (production.status == ProductionStatus.READY) {
-        // Required active extra sources must be pre-stocked before starting
-        let requiredSatisfied = activeExtras
-          .filter(es => es.required)
-          .every(es => CountItem(production.storage, es.resource) >= es.amount)
-        if (!requiredSatisfied) continue
-
-        if (production.ingredient.length == 0) {
-          production.status = ProductionStatus.IN_PROGRESS
-        } else {
-          let shipping_task = new ShippingTask(ShippingTaskType.DELIVERING, t, production.ingredient)
-          city.shipping_tasks.push(shipping_task)
-          production.status = ProductionStatus.WAITING_DELIVERY
-        }
-      } else if (production.status == ProductionStatus.IN_PROGRESS) {
-        if (production.progress == 0) {
-          // First tick of a new cycle: consume active extras from local stockpile
-          production.boost_multiplier = 1.0
-          for (let es of activeExtras) {
-            let taken = TakeItems(production.storage, [new Item(es.resource, es.amount)])
-            if (taken && !es.required) {
-              production.boost_multiplier *= es.speed_multiplier
-            }
-          }
-        }
-        let techMult = this.getTechSpeedMultiplier(city, t.building!.type)
-        production.progress = Math.min(
-          production.progress + production.full_efficiency * production.worker / production.worker_needed * production.boost_multiplier * techMult * BALANCE.productionSpeed,
-          100.0
-        )
-        if (production.progress == 100.0) {
-          production.status = ProductionStatus.FINISHED
-        }
-      } else if (production.status == ProductionStatus.FINISHED) {
-        let shipping_task = new ShippingTask(ShippingTaskType.PICKING_UP, t, production.product)
-        city.shipping_tasks.push(shipping_task)
-        production.status = ProductionStatus.WAITING_PICK_UP
-      }
-    }
-  }
-
-  public UpdateHouses(city: City) {
-    for (let t of city.houses) {
-      let house = t.building!.house!
-      for (let n of house.resource_needs) {
-        let cnt = CountItem(house.storage, n.type)
-        // Only pull from city storage when nearly empty, and only a small top-up
-        // so city stock spreads evenly across many houses rather than first-come gets all.
-        if (cnt <= 0.1) {
-          Transfer(city.storage, house.storage, [new Item(n.type, 0.2)])
-        }
-        n.satisfied = TakeItems(house.storage, [new Item(n.type, 0.002)])
-      }
-    }
-  }
-  
-  public UpdateWarehouses(city: City) {
-    const idle_carts: Tile[] = []
-    for (let t of city.warehouses) {
-      for (let c of t.building!.warehouse!.carts) {
-        if (c.task == undefined) {
-          idle_carts.push(t)
-          continue
-        }
-        c.task.progress = Math.min(c.task.progress + c.speed, c.task.distance)
-        if (c.task.progress == c.task.distance) {
-          if (c.task.type == ShippingTaskType.DELIVERING) {
-            c.task.type = ShippingTaskType.RETURNING
-            c.task.progress = 0
-            c.task.cargo = []
-            c.task.dst.building!.production!.status = ProductionStatus.IN_PROGRESS
-          } else if (c.task.type == ShippingTaskType.STOCKING) {
-            // Deposit extra sources into the building's local stockpile buffer
-            AddItems(c.task.dst.building!.production!.storage, c.task.cargo)
-            c.task.dst.building!.production!.stocking_in_progress = false
-            c.task.type = ShippingTaskType.RETURNING
-            c.task.progress = 0
-            c.task.cargo = []
-          } else if (c.task.type == ShippingTaskType.PICKING_UP) {
-            c.task.type = ShippingTaskType.RETURNING
-            c.task.progress = 0
-            c.task.dst.building!.production!.status = ProductionStatus.READY
-            c.task.dst.building!.production!.progress = 0
-          } else {
-            AddItems(city.storage, c.task.cargo)
-            c.task = undefined
-          }
-        }
-      }
-    }
-    city.carts = idle_carts     
-  }
-
-  public UpdateShipyard(city: City) {
-    for (let t of city.shipyards) {
-      let shipyard = t.building!.shipyard!
-      let blueprint = shipyard.selected
-      // Only build while in progress with a chosen blueprint; nothing to do
-      // (and no blueprint to read) otherwise.
-      if (shipyard.status != ProductionStatus.IN_PROGRESS || !blueprint) continue
-      shipyard.progress = Math.min(1.0, shipyard.progress + 1.0 / blueprint.build_time)
-      if (shipyard.progress >= 1.0) {
-        shipyard.progress = 0
-        shipyard.status = ProductionStatus.READY
-        city.ships.push(new Ship(blueprint.type, blueprint.max_cargo, blueprint.speed))
-      }
-    }
-  }
-
-  public HandleShipTasks(city: City) {
-    if (city.carts.length === 0) return
-
-    // One road BFS per distinct destination per tick — a single building often
-    // queues several tasks (deliver / pick-up / stock) to the same tile.
-    const fieldCache = new Map<Tile, ReturnType<typeof RoadDistanceField>>()
-    const fieldFor = (dst: Tile) => {
-      let field = fieldCache.get(dst)
-      if (!field) {
-        field = RoadDistanceField(city, dst)
-        fieldCache.set(dst, field)
-      }
-      return field
-    }
-
-    // Assign each task to the nearest idle cart; tasks that can't be served this
-    // tick are carried over. Single rebuild of the list instead of O(n²) splices.
-    const remaining: ShippingTask[] = []
-    for (const task of city.shipping_tasks) {
-      // Drop tasks whose destination building has been removed.
-      if (!task.dst.building) continue
-      // Out of idle carts: carry this and every later task to the next tick.
-      if (city.carts.length === 0) { remaining.push(task); continue }
-
-      const field = fieldFor(task.dst)
-      let min_dist = Infinity
-      let min_idx = -1
-      for (let j = 0; j < city.carts.length; ++j) {
-        const dist = WarehouseRoadDistance(city, field, city.carts[j])
-        if (dist < min_dist) { min_dist = dist; min_idx = j }
-      }
-      // No road path to any warehouse yet: leave the task pending.
-      if (min_idx < 0 || min_dist === Infinity) { remaining.push(task); continue }
-
-      // Outbound tasks must pull their cargo from city storage first.
-      if (task.type === ShippingTaskType.DELIVERING || task.type === ShippingTaskType.STOCKING) {
-        if (!TakeItems(city.storage, task.cargo)) { remaining.push(task); continue }
-      }
-
-      const warehouse = city.carts[min_idx]
-      task.distance = min_dist
-      task.progress = 0
-      task.path = BuildRoadPath(city, field, warehouse, task.dst)
-      for (const c of warehouse.building!.warehouse!.carts) {
-        if (c.task === undefined) { c.task = task; break }
-      }
-      city.carts.splice(min_idx, 1)
-    }
-    city.shipping_tasks = remaining
-  }
-
-  public UpdatePopulation(city: City) {
-    for (let t of city.houses) {
-      let house = t.building!.house!
-      // Happiness comes purely from satisfied services + goods (see
-      // ComputeBaseHappiness in building.ts to tune the model). Tax rate no
-      // longer affects happiness.
-      house.happiness = Math.max(0, Math.min(1, ComputeBaseHappiness(house)))
-
-      house.current_max_occupant = GetCurrentMaxOccupant(house.tier, house.happiness)
-      if (house.occupant < house.current_max_occupant) {
-        house.occupant += 1
-      }
-    }
-  }
-
-  public UpdateEmploymentPerTier(has: number, needed: number, productions: Tile[]) {
-    let base_ratio = Math.min(1.0, has / needed)
-    let new_employed = 0
-    for (let t of productions) {
-      let b = t.building!
-      let worker_needed = b.production?.worker_needed ?? b.university?.scholar_slots ?? 0
-      let new_employee = Math.floor(worker_needed * base_ratio)
-      if (b.production) b.production.worker = new_employee
-      else if (b.university) b.university.scholars = new_employee
-      new_employed += new_employee
-    }
-    if (base_ratio == 1.0) return
-    let unemployed = has - new_employed
-    while (unemployed > 0) {
-      for (let t of productions) {
-        let b = t.building!
-        if (b.production) b.production.worker += 1
-        else if (b.university) b.university.scholars += 1
-        unemployed -= 1
-        if (unemployed == 0) break
-      }
-    }
-  }
-
- public AddUniversity(population: Population, tile: Tile) {
-    let slots = tile.building!.university!.scholar_slots
-    for (let t of population.tiers) {
-        if (t.tier === Resident.SCHOLAR) {
-            t.needed += slots
-            t.productions.push(tile)
-        }
-    }
-  }
-
- public AddProduction(population: Population, production: Tile) {
-    let tier = production.building!.production!.worker_type
-    let needed = production.building!.production!.worker_needed
-    for (let t of population.tiers) {
-        if (t.tier == tier) {
-            t.needed += needed
-            t.productions.push(production)
-        }
-    }
-}
-
-public AddHouse(population: Population, house: Tile) {
-    let tier = house.building!.house!.resident_type
-    let has = house.building!.house!.occupant
-    for (let t of population.tiers) {
-        if (t.tier == tier) {
-            t.has += has
-            t.houses.push(house)
-        }
-    }
-}
-
-public GetCity(cities: City[], city_name: CityName) {
-  for (let c of cities) {
-    if (c.name == city_name) {
-      return c
-    }
-  }
-  return undefined
-}
-
-
-
-  public UpdateEmployment(city: City) {
-    for (const tier of city.population.tiers) {
-      tier.has = 0; tier.needed = 0; tier.houses.length = 0; tier.productions.length = 0;
-    }
-    for (let t of city.productions) {
-      this.AddProduction(city.population, t)
-    }
-    for (let t of city.universities) {
-      this.AddUniversity(city.population, t)
-    }
-    for (let t of city.houses) {
-      this.AddHouse(city.population, t)
-    }
-    for (let tier of city.population.tiers) {
-      this.UpdateEmploymentPerTier(tier.has, tier.needed, tier.productions)
-    }
-  }
-
-
+  // Begin researching a technology at the given university tile. Delegates to
+  // the university system (which charges the gold cost up front).
   public StartResearch(city: City, tile: Tile, tech: Technology): boolean {
-    let univ = tile.building?.university
-    if (!univ) return false
-    let project = ALL_RESEARCH.find(p => p.tech === tech)
-    if (!project) return false
-    if (this.state.gold < project.gold_cost) return false
-    this.state.gold -= project.gold_cost
-    univ.selected_tech = tech
-    univ.progress = 0
-    return true
-  }
-
-  public UpdateUniversity(city: City) {
-    if (!city.unlocked_techs) city.unlocked_techs = []
-    for (let t of (city.universities ?? [])) {
-      let univ = t.building!.university!
-      if (!univ.selected_tech) continue
-      if (city.unlocked_techs.includes(univ.selected_tech)) {
-        univ.selected_tech = undefined
-        univ.progress = 0
-        continue
-      }
-      let project = ALL_RESEARCH.find(p => p.tech === univ.selected_tech)
-      if (!project || univ.scholars <= 0) continue
-      univ.progress += (univ.scholars / univ.scholar_slots) * (100 / project.research_time)
-      if (univ.progress >= 100) {
-        city.unlocked_techs.push(univ.selected_tech)
-        univ.progress = 0
-        univ.selected_tech = undefined
-      }
-    }
-  }
-
-  private getTechSpeedMultiplier(city: City, type: BuildingType): number {
-    const unlocked = city.unlocked_techs
-    let mult = 1.0
-    if (FARM_BUILDINGS.has(type) && type !== BuildingType.COMPOST_PIT &&
-        unlocked.includes(Technology.CROP_ROTATION)) {
-      mult *= 1.3
-    }
-    if (MINE_CAMP_BUILDINGS.has(type) && unlocked.includes(Technology.ADVANCED_MINING)) {
-      mult *= 1.3
-    }
-    return mult
-  }
-
-  // Collect residential tax. Each resident pays a tier-based amount scaled by
-  // the current tax rate; wealthier tiers contribute more.
-  public UpdateGold(city: City) {
-    this.state.gold += this.TaxIncome(city)
-  }
-
-  // Gold collected from all residents this tick at the current tax rate.
-  public TaxIncome(city: City): number {
-    let income = 0
-    for (let t of city.population.tiers) {
-      income += t.has * GetTaxPerResident(t.tier)
-    }
-    return income * this.state.tax_rate
+    return StartResearchSystem(this.state, tile, tech)
   }
 
   // Set the tax rate, clamped to [0, 1].
   public SetTaxRate(rate: number) {
     this.state.tax_rate = Math.min(1, Math.max(0, rate))
     this.bumpMap()
-  }
-
-  // Sea trade. Each route owns a ship that cycles:
-  //   READY       -> load `resource` from the origin city until full, then depart
-  //   DELIVERING -> sail to the destination; on arrival, unload into its storage
-  //   RETURNING   -> sail back empty; on arrival, become READY again
-  // Routes run for every city (not just the one on screen) so trade continues
-  // in the background while the player looks at another city.
-  public UpdateRoutes() {
-    for (let city of this.state.cities) {
-      for (let r of city.routes) {
-        if (!r.ship) {
-          continue
-        }
-        let ship = r.ship
-        let from = this.GetCity(this.state.cities, r.from)
-        let to = this.GetCity(this.state.cities, r.to)
-        if (!from || !to) {
-          continue
-        }
-
-        // How much this trip carries: the route amount, capped by ship capacity.
-        let capacity = Math.min(r.amount, ship.max_cargo)
-
-        if (ship.status == ShippingTaskType.READY) {
-          let loaded = CountItem(ship.cargo, r.resource)
-          if (loaded < capacity) {
-            let taken = TakeItemsAsPossible(from.storage, [new Item(r.resource, capacity - loaded)])
-            AddItems(ship.cargo, taken)
-            loaded = CountItem(ship.cargo, r.resource)
-          }
-          // Depart only once fully loaded (waits for the origin to produce more).
-          if (capacity > 0 && loaded >= capacity) {
-            ship.status = ShippingTaskType.DELIVERING
-            r.progress = 0.0
-          }
-        } else if (ship.status == ShippingTaskType.DELIVERING) {
-          r.progress = Math.min(1.0, r.progress + ship.speed / 100.0)
-          if (r.progress >= 1.0) {
-            r.progress = 0.0
-            ship.status = ShippingTaskType.RETURNING
-            AddItems(to.storage, StorageItems(ship.cargo))
-            ship.cargo = new Storage()
-          }
-        } else if (ship.status == ShippingTaskType.RETURNING) {
-          r.progress = Math.min(1.0, r.progress + ship.speed / 100.0)
-          if (r.progress >= 1.0) {
-            r.progress = 0.0
-            ship.status = ShippingTaskType.READY
-          }
-        }
-      }
-    }
   }
 }

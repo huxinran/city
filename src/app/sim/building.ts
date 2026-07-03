@@ -4,8 +4,8 @@ import { TakeItems } from "./utils"
 import { BALANCE } from "./balance"
 import { Resource, HouseType, Resident, ProductionStatus, ServiceType, ShippingTaskType, BuildingType, ShipType, CityName, Terrain, Feature } from "./types"
 import { Technology, ResearchProject, ALL_RESEARCH } from "./config/research.config"
-import { BuildingDef, Recipe, BUILDING_DEFS, BOOTSTRAP_MATERIAL } from "./config/buildings.config"
-import { UpgradeBasket, EMPTY_BASKET, CityProfile, CITY_PROFILES } from "./config/cities.config"
+import { BuildingDef, Recipe, BUILDING_DEFS, BOOTSTRAP_MATERIAL, BUILDING_TIER_OVERRIDE, FORCE_OTHER_BUILDINGS } from "./config/buildings.config"
+import { UpgradeBasket, EMPTY_BASKET, CityProfile, CITY_PROFILES, SERVICE_UNLOCK_TIER, SHIP_BLUEPRINTS } from "./config/cities.config"
 
 // Config tables live in ./config/*; re-exported here so existing importers
 // (components, state service) keep their `./sim/building` import paths.
@@ -212,14 +212,11 @@ export class ShipBlueprint {
     ) {}
 }
 
-// Ship blueprints offered at every shipyard. Build cost scales with cargo
-// capacity. Returns fresh instances so each shipyard owns its own objects.
+// Ship blueprints offered at every shipyard (data in SHIP_BLUEPRINTS). Returns
+// fresh instances so each shipyard owns its own objects.
 export function MakeShipBlueprints(): ShipBlueprint[] {
-    return [
-        new ShipBlueprint(ShipType.CARGO,   1.5, 100, [new Item(Resource.WOOD, 10)],  60),
-        new ShipBlueprint(ShipType.CLIPPER, 2.0,  60, [new Item(Resource.WOOD, 15)],  90),
-        new ShipBlueprint(ShipType.GRAND,   1.0, 300, [new Item(Resource.WOOD, 30)], 120),
-    ]
+    return SHIP_BLUEPRINTS.map(b =>
+        new ShipBlueprint(b.type, b.speed, b.max_cargo, cloneItems(b.cost), b.build_time))
 }
 
 export class Shipyard {
@@ -392,9 +389,14 @@ export const SEA_PRODUCTION_BUILDINGS = defsWhere(d => !!d.recipe && !!d.sea)
 export const WORKSHOP_BUILDINGS = defsWhere(d => !!d.recipe && !d.farm)
 const FOOD_WORKSHOP_OUTPUTS = new Set<Resource>([
     Resource.BREAD,
+    Resource.CIDER,
     Resource.SAUSAGE,
     Resource.CHEESE,
     Resource.JAM,
+    Resource.PICKLES,
+    Resource.DUMPLINGS,
+    Resource.SUSHI,
+    Resource.ICE_CREAM,
     Resource.TOFU,
     Resource.NOODLE,
     Resource.SMOKED_FISH,
@@ -491,7 +493,8 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
             } else if (def.recipe) {
                 const r = def.recipe
                 const p = new Production(r.workers, r.worker_type, r.efficiency, cloneItems(r.in), cloneItems(r.out))
-                if (r.coal) p.extra_sources = [new ExtraSource(Resource.COAL, 1, true)]
+                p.extra_sources = (def.extras ?? []).map(e =>
+                    new ExtraSource(e.resource, e.amount, e.required, e.speedMultiplier ?? 1.5, e.maxStockpile ?? 5, e.tech))
                 b = new Building({ type, material, production: p })
             } else {
                 b = new Building({ type, material })
@@ -501,9 +504,9 @@ export function MakeBuilding(type: BuildingType): Building | undefined {
     // All farms (except the compost pit) get an optional fertilizer boost,
     // gated behind the Fertilizer Application research.
     if (b.production && def.farm && type !== BuildingType.COMPOST_PIT) {
-        b.production.extra_sources = [
+        b.production.extra_sources.push(
             new ExtraSource(Resource.FERTILIZER, 1, false, 1.5, 5, Technology.FERTILIZER_APPLICATION),
-        ]
+        )
     }
     return b
 }
@@ -566,18 +569,7 @@ export function CreateBuilding(type: BuildingType, storage: Storage) {
 // Buildings whose output isn't a direct house need (raw materials, intermediate
 // goods, ship/port) return undefined and fall into an "Other" bucket.
 
-const SERVICE_UNLOCK_TIER: { [key in ServiceType]: number } = {
-    [ServiceType.WATER]:  1,
-    [ServiceType.MARKET]: 2,
-    [ServiceType.FIRE]:   3,
-    [ServiceType.POLICE]: 3,
-    [ServiceType.SCHOOL]: 4,
-    [ServiceType.TAVERN]: 5,
-    [ServiceType.CHURCH]: 6,
-    [ServiceType.HEALTH]:  3,
-    [ServiceType.JUSTICE]: 4,
-    [ServiceType.ENGINEER]: 5,
-}
+// SERVICE_UNLOCK_TIER now lives in ./config/cities.config (imported above).
 
 // Resource -> earliest tier that requires it. Seeded from the needs/upgrade
 // tables, then propagated backward through every recipe so that an ingredient is
@@ -612,7 +604,7 @@ function resourceTierMap(): { [key: string]: number } {
             recipes.push({
                 ingredients: [
                     ...def.recipe.in.map(i => i.type),
-                    ...(def.recipe.coal ? [Resource.COAL] : []),
+                    ...(def.extras ?? []).map(e => e.resource),
                 ],
                 products: def.recipe.out.map(p => p.type),
             })
@@ -638,77 +630,18 @@ function resourceTierMap(): { [key: string]: number } {
     return _resourceTier
 }
 
-// Palette grouping overrides: a few buildings are surfaced under an earlier
-// tier than their output resource would imply, so the basic materials show up
-// where the player first needs them. (Wood + timber sit with the Farmer tier.)
-const BUILDING_TIER_OVERRIDE: { [key: string]: number } = {
-    [BuildingType.LUMBER_HUT]: 1,   // wood   (Farmer)
-    [BuildingType.SAWMILL]:    1,   // timber (Farmer)
-    [BuildingType.BRICKYARD]:  3,   // brick  (Artisan; built from tier-2 stone blocks)
-    [BuildingType.STONE_QUARRY]: 2, // stone       (Worker)
-    [BuildingType.MASON_SHOP]:   2, // stone blocks (Worker)
-    [BuildingType.VINEYARD]:     4, // grape (Scholar)
-    [BuildingType.WINERY]:       4, // wine  (Scholar)
-    [BuildingType.FIRE_STATION]: 2, // fire service (Worker; default service-unlock tier is 3)
-    [BuildingType.MARKETPLACE]: 1,  // market service (Farmer; default service-unlock tier is 2)
-    [BuildingType.COTTON_FIELD]: 2, // cotton (Worker)
-    [BuildingType.SHIRT_SHOP]:  2,  // shirt  (Worker)
-    [BuildingType.CLINIC]:      2,  // health service (Worker; default service-unlock tier is 3)
-    [BuildingType.COAL_KILN]:   2,  // coal (Worker; coal feeds tier-3 build goods)
-    [BuildingType.SCHOOL]:      3,  // school service (Artisan; default service-unlock tier is 4)
-    [BuildingType.OLIVE_GROVE]: 3,  // olive (Artisan; oil is a tier-6 luxury good)
-    [BuildingType.OIL_PRESS]:   3,  // oil   (Artisan)
-    [BuildingType.TRAPLINE]:    3,  // fur  (Artisan)
-    [BuildingType.BOOT_SHOP]:   3,  // boot (Artisan)
-    [BuildingType.ENGINEER_STATION]: 3, // engineering service (Artisan; default service-unlock tier is 5)
-    [BuildingType.TOOLSMITH]:   3,  // tool (Artisan; refined iron goods, feeds the statue chain)
-    [BuildingType.WHEAT_FARM]: 3,   // wheat  (Artisan; bread is a tier-2 upgrade good, which would pull the chain to Worker)
-    [BuildingType.WIND_MILL]:  3,   // flour  (Artisan)
-    [BuildingType.BAKERY]:     3,   // bread  (Artisan)
-    [BuildingType.IRON_MINE]:  3,   // iron ore   (Artisan; steel is a tier-4 build good, which would pull the chain to Scholar)
-    [BuildingType.FORGE]:      3,   // iron ingot (Artisan)
-    [BuildingType.STEELWORK]:  3,   // steel      (Artisan)
-    // --- Jinlin buildings ---
-    [BuildingType.TEA_GARDEN]:  1,  // tea garden produces basic resource
-    [BuildingType.SILK_FARM]:   1,  // silk farm produces basic material
-    [BuildingType.TOFU_SHOP]:   1,  // tofu is a tier-1 food need in Jinlin
-    [BuildingType.KILN]:        2,  // porcelain is tier-2 daily need in Jinlin
-    [BuildingType.NOODLE_SHOP]: 2,  // noodles are tier-2 food in Jinlin
-    // --- Columbia buildings ---
-    [BuildingType.TANNERY]:           1,  // leather is tier-1 daily need
-    // --- Solara buildings ---
-    [BuildingType.COPPER_MINE]:     2,  // copper is tier-2 daily need
-    [BuildingType.INCENSE_GROVE]:   2,  // incense is tier-2 luxury
-    [BuildingType.IVORY_CAMP]:      3,  // ivory is a tier-3 luxury good
-    // --- Mintaka buildings ---
-    [BuildingType.REINDEER_FARM]:   2,  // deer is tier-2 food
-    [BuildingType.FUR_WORKSHOP]:    1,  // fur coat is tier-1 daily need
-    [BuildingType.SMOKEHOUSE]:      1,  // smoked fish is tier-1 food
-    [BuildingType.WHALING_POST]:    2,  // whale oil is tier-2 daily need
-    // --- Shared utility ---
-    [BuildingType.COMPOST_PIT]: 1,      // fertilizer boosts tier-1+ farms
-    [BuildingType.UNIVERSITY]:  4,      // unlocks after Scholars (tier 4)
-}
+// Palette grouping overrides (BUILDING_TIER_OVERRIDE / FORCE_OTHER_BUILDINGS)
+// now live in ./config/buildings.config, alongside the building registry.
 
-// Buildings forced out of the tier groups into the palette's "Other" bucket,
-// regardless of what their output resource would imply.
-const FORCE_OTHER_BUILDINGS = new Set<BuildingType>([
-    BuildingType.BANANA_PLANTATION,
-    BuildingType.CORN_FIELD,
-    BuildingType.SALTERN,
-    BuildingType.RICE_PADDY,
-    BuildingType.COCOA_PLANT,
-    BuildingType.RUM_DISTILLERY,
-    BuildingType.SOYBEAN_FARM,
-    BuildingType.SUGAR_CANE_PLANTATION,
-    BuildingType.GOLD_MINE,
-    BuildingType.GOLDSMITH,
-])
-
+// A building's build-palette tier, resolved in priority order:
+//   1. def.other / FORCE_OTHER_BUILDINGS  -> "Other" bucket (undefined)
+//   2. def.tier / BUILDING_TIER_OVERRIDE  -> explicit tier
+//   3. service unlock tier, or the earliest tier its output resource serves.
 export function GetBuildingTier(type: BuildingType): number | undefined {
-    if (FORCE_OTHER_BUILDINGS.has(type)) return undefined
-    if (type in BUILDING_TIER_OVERRIDE) return BUILDING_TIER_OVERRIDE[type]
     const def = BUILDING_DEFS[type]
+    if (def?.other || FORCE_OTHER_BUILDINGS.has(type)) return undefined
+    if (def?.tier !== undefined) return def.tier
+    if (type in BUILDING_TIER_OVERRIDE) return BUILDING_TIER_OVERRIDE[type]
     if (!def) return undefined
     if (def.service) return SERVICE_UNLOCK_TIER[def.service.need]
     if (def.recipe) {
@@ -780,7 +713,7 @@ export function ValidateConfig(): string[] {
     for (const [type, def] of DEF_ENTRIES) {
         const ins = [
             ...(def.recipe?.in ?? []).map(i => i.type),
-            ...(def.recipe?.coal ? [Resource.COAL] : []),
+            ...(def.extras ?? []).map(e => e.resource),
         ]
         for (const r of ins) {
             if (!produced.has(r)) problems.push(`${type}: ingredient "${r}" is produced by no building`)

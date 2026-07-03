@@ -10,6 +10,19 @@ export function CountItem(storage: Storage, type: string): number {
 export function AddItem(storage: Storage, item: Item) {
     storage.amounts[item.type] = (storage.amounts[item.type] ?? 0) + item.num
 }
+
+// Primitive (type, num) variants of AddItem/TakeItems for hot loops that would
+// otherwise allocate a throwaway Item[] every tick (house consumption, extra-
+// source burn). AddAmount always succeeds; TakeAmount deducts only if enough is
+// present and reports whether it did.
+export function AddAmount(storage: Storage, type: string, num: number) {
+    storage.amounts[type] = (storage.amounts[type] ?? 0) + num
+}
+export function TakeAmount(storage: Storage, type: string, num: number): boolean {
+    if ((storage.amounts[type] ?? 0) < num) return false
+    storage.amounts[type] -= num
+    return true
+}
 export function AddItems(storage: Storage, items: Item[]) {
   for (let i of items) {
     AddItem(storage, i)

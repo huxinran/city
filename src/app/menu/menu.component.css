@@ -27,16 +27,18 @@
     justify-content: center;
     width: 56px;
     height: 56px;
-    background: transparent;
-    border: none;
+    background: rgba(255, 250, 236, 0.30);
+    border: 1px solid rgba(98, 65, 31, 0.12);
     padding: 3px;
     cursor: pointer;
-    border-radius: var(--radius-sm);
+    border-radius: 10px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.48) inset;
     touch-action: manipulation;
 }
 
 .menu-btn:hover {
-    background: var(--elevated);
+    background: rgba(255, 250, 236, 0.62);
+    border-color: rgba(98, 65, 31, 0.24);
 }
 
 .menu-icon {
@@ -58,7 +60,10 @@
     right: 0;
     z-index: 112;
     padding: 5px 8px;
-    background: var(--panel-2);
+    background:
+        linear-gradient(180deg, rgba(255, 250, 239, 0.96), rgba(239, 222, 188, 0.96)),
+        url("/assets/used/ui/panel-parchment.png");
+    background-size: 100% 100%, cover;
     border: 1px solid var(--border-strong);
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow);
@@ -82,7 +87,10 @@
     z-index: 111;
     min-width: 160px;
     padding: 4px;
-    background: var(--panel-2);
+    background:
+        linear-gradient(180deg, rgba(255, 250, 239, 0.96), rgba(239, 222, 188, 0.96)),
+        url("/assets/used/ui/panel-parchment.png");
+    background-size: 100% 100%, cover;
     border: 1px solid var(--border-strong);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
@@ -132,7 +140,7 @@
 
 .menu-item:hover,
 .menu-item.active {
-    background: var(--elevated);
+    background: rgba(255, 255, 255, 0.34);
 }
 
 .menu-item:disabled {

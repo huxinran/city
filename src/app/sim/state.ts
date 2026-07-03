@@ -1,5 +1,6 @@
 import { City } from "./city"
-import { BuildingType, Terrain, Feature, CityName } from "./types"
+import { BuildingType, Terrain, Feature } from "./types"
+import { CITY_ROSTER, STARTING_GOLD } from "./config/cities.config"
 
 export class State {
        constructor(
@@ -13,15 +14,12 @@ export class State {
         // Residential tax rate (0..1). Higher rates earn more gold per resident
         // but lower happiness. Adjustable from the status panel.
         public tax_rate : number = 0.3,) {
-          // Five regions, themed by terrain/flavour. The build palette is the
-          // same full catalog in every city.
-          this.cities.push(new City(CityName.ANRELIA, 80, 80))   // CENTER — temperate capital, a balanced breadbasket.
-          this.cities.push(new City(CityName.MINTAKA, 80, 80))   // NORTH — cold frontier of hardy crops, herding, mining.
-          this.cities.push(new City(CityName.JINLIN, 80, 80))    // EAST — agrarian river delta of rice, soy, citrus.
-          this.cities.push(new City(CityName.COLUMBIA, 80, 80))  // WEST — frontier plains: corn, cotton, cattle, steel.
-          this.cities.push(new City(CityName.SOLARA, 80, 80))    // SOUTH — tropical plantations: banana, sugar, cocoa.
-
-          this.current_city = cities[0]
-          this.gold = 3000
+          // The regions that make up a new game come from CITY_ROSTER; the build
+          // palette is the same full catalog in every city.
+          for (const region of CITY_ROSTER) {
+            this.cities.push(new City(region.name, region.h, region.w))
+          }
+          this.current_city = this.cities[0]
+          this.gold = STARTING_GOLD
       }
 }
