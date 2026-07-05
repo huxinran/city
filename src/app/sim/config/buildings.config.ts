@@ -127,7 +127,7 @@ export const BUILDING_DEFS: Partial<Record<BuildingType, BuildingDef>> = {
     [BuildingType.PAPER_MILL]:  { size: 2, material: [I(Resource.STONE_BLOCKS, 10)], icon: '📄', productIcon: '📄', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.WOOD)], out: [I(Resource.PAPER)] } },
     [BuildingType.INK_WORKSHOP]:{ size: 2, material: [I(Resource.STONE_BLOCKS, 10)], icon: '🖋️', productIcon: '🖋️', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.COAL), I(Resource.OIL)], out: [I(Resource.INK)] } },
     [BuildingType.DYE_WORKSHOP]:{ size: 2, material: [I(Resource.STONE_BLOCKS, 10)], icon: '🎨', productIcon: '🎨', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.BERRY)], out: [I(Resource.DYE)] } },
-    [BuildingType.WIND_MILL]:   { size: 2, material: [I(Resource.BRICK, 10)], icon: '🌀', productIcon: '🥣', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.WHEAT)], out: [I(Resource.FLOUR)] } },
+    [BuildingType.WINDMILL]:   { size: 2, material: [I(Resource.BRICK, 10)], icon: '🌀', productIcon: '🥣', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.WHEAT)], out: [I(Resource.FLOUR)] } },
     [BuildingType.BAKERY]:      { size: 2, material: [I(Resource.BRICK, 10)], icon: '🫕', productIcon: '🥖', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.FLOUR)], out: [I(Resource.BREAD)] } },
     [BuildingType.PICKLERY]:    { size: 2, material: [I(Resource.STONE_BLOCKS, 10)], icon: '🥒', productIcon: '🥒', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.CABBAGE), I(Resource.SALT)], out: [I(Resource.PICKLES)] } },
     [BuildingType.DUMPLING_KITCHEN]:{ size: 2, material: [I(Resource.BRICK, 10)], icon: '🥟', productIcon: '🥟', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.FLOUR), I(Resource.PORK)], out: [I(Resource.DUMPLINGS)] } },
@@ -143,7 +143,7 @@ export const BUILDING_DEFS: Partial<Record<BuildingType, BuildingDef>> = {
     [BuildingType.CIGAR_FACTORY]:{ size: 2, material: [I(Resource.BRICK, 10)], icon: '🍃', productIcon: '🚬', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.TOBACCO)], out: [I(Resource.CIGAR)] } },
     [BuildingType.CANDLE_MANUFACTORY]:{ size: 2, material: [I(Resource.STONE_BLOCKS, 10)], icon: '🪔', productIcon: '🕯️', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.WAX)], out: [I(Resource.CANDLE)] } },
     [BuildingType.SOAP_WORKS]:  { size: 2, material: [I(Resource.BRICK, 10)], icon: '🧼', productIcon: '🧼', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.OIL), I(Resource.WAX)], out: [I(Resource.SOAP)] } },
-    [BuildingType.GLASSWORK]:   { size: 2, material: [I(Resource.BRICK, 20)], icon: '🫧', productIcon: '🪟', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.SAND)], out: [I(Resource.GLASS)] } },
+    [BuildingType.GLASSWORKS]:   { size: 2, material: [I(Resource.BRICK, 20)], icon: '🫧', productIcon: '🪟', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.SAND)], out: [I(Resource.GLASS)] } },
     [BuildingType.BOTTLEWORKS]: { size: 2, material: [I(Resource.BRICK, 20)], icon: '🍾', productIcon: '🍾', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.GLASS)], out: [I(Resource.GLASS_BOTTLE)] } },
     [BuildingType.GLAZIER]:     { size: 2, material: [I(Resource.BRICK, 20)], icon: '🪟', productIcon: '🪟', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.GLASS)], out: [I(Resource.WINDOW)] } },
     [BuildingType.APOTHECARY]:  { size: 2, material: [I(Resource.BRICK, 20)], icon: '⚕️', productIcon: '💊', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.GLASS_BOTTLE), I(Resource.WAX), I(Resource.OIL)], out: [I(Resource.MEDICINE)] } },
@@ -151,10 +151,10 @@ export const BUILDING_DEFS: Partial<Record<BuildingType, BuildingDef>> = {
     [BuildingType.MASON_SHOP]:  { size: 2, material: [I(Resource.TIMBER, 10)], icon: '🏛️', productIcon: '🪨', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.STONE)], out: [I(Resource.STONE_BLOCKS)] } },
     [BuildingType.CONCRETE_PLANT]:{ size: 2, material: [I(Resource.BRICK, 20)], icon: '🏗️', productIcon: '🧱', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.STONE), I(Resource.SAND)], out: [I(Resource.CONCRETE)] } },
     [BuildingType.SCULPTOR]:    { size: 2, material: [I(Resource.STEEL, 20)], icon: '🗿', productIcon: '🗿', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.STONE), I(Resource.TOOL)], out: [I(Resource.STATUE)] } },
-    [BuildingType.CANNERY]:     { size: 2, material: [I(Resource.STONE_BLOCKS, 10)], icon: '🍎', productIcon: '🫙', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.APPLE)], out: [I(Resource.JAM)] } },
+    [BuildingType.PRESERVE_SHOP]:     { size: 2, material: [I(Resource.STONE_BLOCKS, 10)], icon: '🍎', productIcon: '🫙', recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.APPLE)], out: [I(Resource.JAM)] } },
     [BuildingType.BRANDY_DISTILLERY]:{ size: 2, material: [I(Resource.BRICK, 20)], icon: '🧪', productIcon: '🍾', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.GRAPE)], out: [I(Resource.BRANDY)] } },
     [BuildingType.BRICKYARD]:   { size: 2, material: [I(Resource.STONE_BLOCKS, 20)], icon: '🏭', productIcon: '🧱', extras: COAL_FIRED, recipe: { workers: 10, worker_type: Resident.WORKER, efficiency: 10, in: [I(Resource.CLAY)], out: [I(Resource.BRICK)] } },
-    [BuildingType.STEELWORK]:   { size: 2, material: [I(Resource.BRICK, 20)], icon: '⚒️', productIcon: '⚙️', extras: COAL_FIRED, recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.IRON)], out: [I(Resource.STEEL)] } },
+    [BuildingType.STEELWORKS]:   { size: 2, material: [I(Resource.BRICK, 20)], icon: '⚒️', productIcon: '⚙️', extras: COAL_FIRED, recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.IRON)], out: [I(Resource.STEEL)] } },
     [BuildingType.FORGE]:       { size: 2, material: [I(Resource.STEEL, 20)], icon: '🔥', productIcon: '🔩', extras: COAL_FIRED, recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.IRON_ORE)], out: [I(Resource.IRON)] } },
     [BuildingType.TOOLSMITH]:   { size: 2, material: [I(Resource.STEEL, 20)], icon: '🔧', productIcon: '⚒️', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.IRON)], out: [I(Resource.TOOL)] } },
     [BuildingType.MACHINE_SHOP]:{ size: 2, material: [I(Resource.STEEL, 20)], icon: '⚙️', productIcon: '⚙️', recipe: { workers: 10, worker_type: Resident.ARTISAN, efficiency: 10, in: [I(Resource.STEEL), I(Resource.TOOL)], out: [I(Resource.MACHINE_PARTS)] } },
@@ -263,11 +263,11 @@ export const BUILDING_TIER_OVERRIDE: { [key: string]: number } = {
     [BuildingType.ENGINEER_STATION]: 3, // engineering service (Artisan; default service-unlock tier is 5)
     [BuildingType.TOOLSMITH]:   3,  // tool (Artisan; refined iron goods, feeds the statue chain)
     [BuildingType.WHEAT_FARM]: 3,   // wheat  (Artisan; bread is a tier-2 upgrade good, which would pull the chain to Worker)
-    [BuildingType.WIND_MILL]:  3,   // flour  (Artisan)
+    [BuildingType.WINDMILL]:  3,   // flour  (Artisan)
     [BuildingType.BAKERY]:     3,   // bread  (Artisan)
     [BuildingType.IRON_MINE]:  3,   // iron ore   (Artisan; steel is a tier-4 build good, which would pull the chain to Scholar)
     [BuildingType.FORGE]:      3,   // iron ingot (Artisan)
-    [BuildingType.STEELWORK]:  3,   // steel      (Artisan)
+    [BuildingType.STEELWORKS]:  3,   // steel      (Artisan)
     [BuildingType.BOTTLEWORKS]: 4,  // glass bottle (Scholar)
     [BuildingType.APOTHECARY]: 4,   // medicine (Scholar)
     [BuildingType.SOAP_WORKS]: 4,   // soap (Scholar)

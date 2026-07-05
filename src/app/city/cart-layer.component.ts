@@ -17,7 +17,7 @@ const TWEEN_MS = 200;
 // Ambient decoration: a single sailing ship that drifts back and forth along the
 // top ocean band (row ~1, always water for every generated map). Purely visual —
 // not a real game ship. The art faces left, so it's flipped when sailing right.
-const SHIP_ICON = 'assets/used/buildings/ship.png';
+const SHIP_ICON = 'assets/used/actors/ship.png';
 const SHIP_ROW = 1.6;          // world tile row (centre) — inside the 3-tile sea
 const SHIP_SIZE = TILE * 2.2;  // drawn footprint
 const SHIP_SPEED = 1.1;        // tiles per second
@@ -26,9 +26,9 @@ const SHIP_MARGIN = 2.5;       // tiles kept clear of the left/right map edges
 // A cart's visual state, derived from its current task.
 type CartVisual = { icon: string, emoji: string }
 const CART_VISUALS = {
-  fetching: { icon: 'assets/used/buildings/cart-fetching.png', emoji: '🛺' },
-  loaded:   { icon: 'assets/used/buildings/cart-loaded.png',   emoji: '📦' },
-  empty:    { icon: 'assets/used/buildings/cart-empty.png',    emoji: '🛒' },
+  fetching: { icon: 'assets/used/actors/cart-fetching.png', emoji: '🛺' },
+  loaded:   { icon: 'assets/used/actors/cart-loaded.png',   emoji: '📦' },
+  empty:    { icon: 'assets/used/actors/cart-empty.png',    emoji: '🛒' },
 } satisfies Record<string, CartVisual>
 const CART_SIZE = TILE * 0.72;
 const CART_Y_OFFSET = -TILE * 0.12;

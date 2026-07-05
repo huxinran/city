@@ -59,9 +59,9 @@ const PALETTE_ORDER: BuildingType[] = [
   // Artisan
   BuildingType.IRON_MINE,       // iron ore
   BuildingType.FORGE,           // iron ingot
-  BuildingType.STEELWORK,       // steel
+  BuildingType.STEELWORKS,       // steel
   BuildingType.WHEAT_FARM,      // wheat
-  BuildingType.WIND_MILL,       // flour
+  BuildingType.WINDMILL,       // flour
   BuildingType.BAKERY,          // bread
   BuildingType.PAPER_MILL,      // paper
   BuildingType.INK_WORKSHOP,    // ink

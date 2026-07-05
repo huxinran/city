@@ -61,14 +61,14 @@ const FOOD_WORKSHOP_ICON = 'assets/used/buildings/food-processing-workshop.png';
 const MINE_CAMP_ICON = 'assets/used/buildings/mine-camp.png';
 const FISHERMEN_WHARF_ICON = 'assets/used/buildings/fishermen-wharf.png';
 
-const DEFAULT_MAP_TILE_BASE = 'assets/used/map-tiles/';
-const CITY_MAP_TILE_BASE: Partial<Record<CityName, string>> = {
-  [CityName.MINTAKA]: DEFAULT_MAP_TILE_BASE + 'arctic-city/',
-  [CityName.SOLARA]: DEFAULT_MAP_TILE_BASE + 'africa-hot/',
-  [CityName.JINLIN]: DEFAULT_MAP_TILE_BASE + 'asian-mild/',
-  [CityName.COLUMBIA]: DEFAULT_MAP_TILE_BASE + 'america-mild/',
-};
-const TERRAIN_OBJECT_BASE = 'assets/used/terrain/';
+// Tile and terrain-object art is organized per city: assets/used/map-tiles/<city>/
+// and assets/used/terrain/<city>/, named after the CityName enum. Anrelia doubles
+// as the fallback for an unknown/missing city.
+const MAP_TILE_ROOT = 'assets/used/map-tiles/';
+const TERRAIN_OBJECT_ROOT = 'assets/used/terrain/';
+const FALLBACK_CITY_SLUG = 'anrelia';
+const citySlug = (name: CityName | undefined): string =>
+  name ? name.toLowerCase() : FALLBACK_CITY_SLUG;
 const TERRAIN_VARIANT_RATE = 0.35;
 const TERRAIN_FEATURE_DECORATION_RATE = 0.05;
 const TERRAIN_SURFACE_VARIANT_RATE = 0.14;
@@ -77,15 +77,15 @@ const MAP_GRID_STROKE = 'rgba(67, 82, 58, 0.16)';
 const TERRAIN_FEATURE_ART: Record<Feature, { main: TerrainObjectArt, alternates: TerrainObjectArt[] }> = {
   [Feature.TREE]: {
     main: { file: 'tree/main.png', width: 1.02, height: 2.68 },
-    alternates: terrainAlternates('tree', 10, 0.84, 2.42),
+    alternates: terrainAlternates('tree', 19, 0.84, 2.42),
   },
   [Feature.ROCK]: {
     main: { file: 'rock/main.png', width: 0.72, height: 1.7 },
-    alternates: terrainAlternates('rock', 6, 0.72, 1.7),
+    alternates: terrainAlternates('rock', 19, 0.72, 1.7),
   },
   [Feature.BUSH]: {
     main: { file: 'bush/main.png', width: 0.72, height: 1.7 },
-    alternates: terrainAlternates('bush', 10, 0.76, 1.72),
+    alternates: terrainAlternates('bush', 19, 0.76, 1.72),
   },
 };
 
@@ -308,7 +308,11 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   private worldSize() { return isoWorldSize(this.city.w, this.city.h); }
 
   private mapTileBase(): string {
-    return CITY_MAP_TILE_BASE[this.city?.name] ?? DEFAULT_MAP_TILE_BASE;
+    return MAP_TILE_ROOT + citySlug(this.city?.name) + '/';
+  }
+
+  private terrainObjectBase(): string {
+    return TERRAIN_OBJECT_ROOT + citySlug(this.city?.name) + '/';
   }
 
   private terrainColor(terrain: Terrain): string {
@@ -829,7 +833,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   }
 
   private drawTerrainObject(t: Tile, art: TerrainObjectArt) {
-    const im = this.img(TERRAIN_OBJECT_BASE + art.file);
+    const im = this.img(this.terrainObjectBase() + art.file);
     if (!ready(im)) return;
     const p = this.tileObjectBase(t.i, t.j, 1);
     const w = ISO_TILE_W * art.width, h = ISO_TILE_H * art.height;

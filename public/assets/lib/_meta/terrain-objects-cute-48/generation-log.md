@@ -1,5 +1,40 @@
 # Terrain Object Generation Log
 
+## 2026-07-05 - Themed city tree and bush sets
+
+- Request: generate four new themed sets of trees and bushes for the other cities, matching arctic, Africa, Asian, and America themes, with 20 different designs in each set.
+- Source cache: `C:\Users\Xinran\.codex\generated_images\019f3311-2a42-7fe2-9787-06e40b4e95ba\`
+- Themes and runtime folders:
+  - Arctic/cold frontier: `public/assets/used/terrain/mintaka/tree/` and `public/assets/used/terrain/mintaka/bush/`
+  - Africa/hot tropical savanna: `public/assets/used/terrain/solara/tree/` and `public/assets/used/terrain/solara/bush/`
+  - Asian river delta: `public/assets/used/terrain/jinlin/tree/` and `public/assets/used/terrain/jinlin/bush/`
+  - America/frontier plains: `public/assets/used/terrain/columbia/tree/` and `public/assets/used/terrain/columbia/bush/`
+- Library copies: `public/assets/lib/terrain/<city>/<tree|bush>/themed-20260705/`
+- Runtime count: each city/kind now has 20 designs, saved as `main.png` plus `alternative-1.png` through `alternative-19.png`.
+- Runtime dimensions: tree sprites are `96x160`; bush sprites are `96x96`.
+- App wiring: `src/app/city/map-canvas.component.ts` now samples 19 alternatives for both tree and bush features, so each set has 20 possible designs including `main.png`.
+- Review sheets:
+  - `tmp/asset-work/themed-terrain-overlays/generated-source-sheets-contact.png`
+  - `tmp/asset-work/themed-terrain-overlays/final-20-design-runtime-contact-sheet-clean-v2.png`
+
+## 2026-07-05 - Themed city rock sets
+
+- Request: also generate a new rock set for each setting.
+- Source cache: `C:\Users\Xinran\.codex\generated_images\019f3311-2a42-7fe2-9787-06e40b4e95ba\`
+- Themes and runtime folders:
+  - Temperate fallback: `public/assets/used/terrain/anrelia/rock/`
+  - Arctic/cold frontier: `public/assets/used/terrain/mintaka/rock/`
+  - Africa/hot tropical savanna: `public/assets/used/terrain/solara/rock/`
+  - Asian river delta: `public/assets/used/terrain/jinlin/rock/`
+  - America/frontier plains: `public/assets/used/terrain/columbia/rock/`
+- Library copies: `public/assets/lib/terrain/<city>/rock/themed-20260705/`
+- Runtime count: each city now has 20 rock designs, saved as `main.png` plus `alternative-1.png` through `alternative-19.png`.
+- Runtime dimensions: rock sprites are `96x96`.
+- App wiring: `src/app/city/map-canvas.component.ts` now samples 19 rock alternatives, so each rock set has 20 possible designs including `main.png`.
+- Review sheets:
+  - `tmp/asset-work/themed-terrain-overlays/generated-rock-source-sheets-contact.png`
+  - `tmp/asset-work/themed-terrain-overlays/final-20-design-rock-contact-sheet.png`
+
 ## 2026-06-28 - Rock runtime resolution normalization
 
 - Request: make rock alternatives similar to the main rock's resolution.
