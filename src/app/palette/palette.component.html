@@ -53,7 +53,12 @@
 @if (hovered && info(hovered); as inf) {
   <div class="build-tip" [style.left.px]="tipX" [style.top.px]="tipY">
     <div class="tip-name">{{hovered}}</div>
-    @if (inf.gold || inf.cost.length) {
+    @if (state.dev_mode) {
+      <div class="tip-row">
+        <span class="tip-label">Cost</span>
+        <span class="tip-val">Free (dev mode)</span>
+      </div>
+    } @else if (inf.gold || inf.cost.length) {
       <div class="tip-row">
         <span class="tip-label">Cost</span>
         <span class="tip-val">

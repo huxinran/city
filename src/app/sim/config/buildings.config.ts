@@ -111,6 +111,7 @@ export const BUILDING_DEFS: Partial<Record<BuildingType, BuildingDef>> = {
     [BuildingType.DAIRY_FARM]:        rawFarm('🐄', Resource.MILK,  { animal: true }),
     [BuildingType.SHEEP_FARM]:        rawFarm('🐑', Resource.WOOL,  { animal: true }),
     [BuildingType.CHICKEN_COOP]:      rawFarm('🐓', Resource.EGG,   { animal: true }),
+    [BuildingType.HORSE_FARM]:        rawFarm('🐴', Resource.HORSE, { animal: true }),
     // --- Raw extraction (mine-camp art) ---
     [BuildingType.LUMBER_HUT]:  { size: 2, mine: true, near: Feature.TREE, material: [I(Resource.TIMBER, 10)], icon: '🪵', recipe: { workers: 4, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(Resource.WOOD)] } },
     [BuildingType.STONE_QUARRY]:{ size: 2, mine: true, near: Feature.ROCK, material: [I(Resource.TIMBER, 10)], icon: '🪨', recipe: { workers: 10, worker_type: Resident.FARMER, efficiency: 10, in: [], out: [I(Resource.STONE)] } },

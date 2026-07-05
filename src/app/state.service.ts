@@ -2,7 +2,7 @@ import { Injectable, NgZone, inject, signal, isDevMode } from '@angular/core';
 import { State } from './sim/state';
 import { Item, Storage } from './sim/storage';
 import { FindNeighbours, TakeItems, ProvideService, Transfer, shuffle, AddItems, CountItem, TakeItemsAsPossible, StorageItems} from './sim/utils';
-import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, CreateBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, CanPlaceOnFeature, GetRequiredNearbyFeature, GetRequiredNearbyTerrain, Technology, ALL_RESEARCH, FARM_BUILDINGS, MINE_CAMP_BUILDINGS, ComputeBaseHappiness, ValidateConfig, CanUpgradeHouse, RefreshHouse, RefreshWarehouse } from './sim/building'
+import { GetCurrentMaxOccupant, GetTaxPerResident, Ship, ShippingTask, CreateBuilding, MakeBuilding, GetBuildingSize, GetBuildingGoldCost, GetRequiredTerrains, CanPlaceOnFeature, GetRequiredNearbyFeature, GetRequiredNearbyTerrain, Technology, ALL_RESEARCH, FARM_BUILDINGS, MINE_CAMP_BUILDINGS, ComputeBaseHappiness, ValidateConfig, CanUpgradeHouse, RefreshHouse, RefreshWarehouse } from './sim/building'
 import { BALANCE } from './sim/balance';
 import { City, GenerateCityMap } from './sim/city';
 import { Population,  } from './sim/population';
@@ -48,6 +48,11 @@ export class StateService {
   public move_mode = false
   // Click a building on the map to upgrade or downgrade it when possible.
   public upgrade_mode: 'upgrade' | 'downgrade' | undefined
+  // Dev mode: place any building anywhere for free — no terrain/feature/nearby
+  // requirements, no gold or material cost, and the palette shows every
+  // building (hidden + all city exclusives). Persisted separately from the
+  // save so it survives page reloads until toggled off.
+  public dev_mode = localStorage.getItem('dev_mode') === '1'
 
   // Render heartbeat: bumped every simulation tick so views showing live data
   // (carts, production progress, storage) re-check on an OnPush schedule.
@@ -565,13 +570,15 @@ export class StateService {
 
   // Try to place a multi-tile building anchored at `tile`. Fails (returns false,
   // no resources spent) if it goes out of bounds, overlaps another building, or
-  // any covered tile has the wrong terrain.
+  // any covered tile has the wrong terrain. Dev mode skips every requirement
+  // except bounds and overlap (those protect grid integrity) and builds free.
   public TryPlaceBuilding(tile: Tile, type: BuildingType): boolean {
     let city = this.state.current_city!
     let size = GetBuildingSize(type)
     if (tile.i + size > city.h || tile.j + size > city.w) {
       return false
     }
+    let dev = this.dev_mode
     let required = GetRequiredTerrains(type)
     let footprint: Tile[] = []
     for (let di = 0; di < size; ++di) {
@@ -580,25 +587,26 @@ export class StateService {
         if (t.building || t.covered) {
           return false
         }
-        if (!required.includes(t.terrain)) {
+        if (!dev && !required.includes(t.terrain)) {
           return false
         }
-        if (!CanPlaceOnFeature(t.feature)) {
+        if (!dev && !CanPlaceOnFeature(t.feature)) {
           return false
         }
         footprint.push(t)
       }
     }
-    if (!this.HasRequiredSurroundings(city, type, tile.i, tile.j, size)) {
+    if (!dev && !this.HasRequiredSurroundings(city, type, tile.i, tile.j, size)) {
       return false
     }
     // Check gold up front (no charge) so materials aren't spent if we can't
     // afford it; deduct only once the building is actually created.
-    let goldCost = GetBuildingGoldCost(type)
+    let goldCost = dev ? 0 : GetBuildingGoldCost(type)
     if (this.state.gold < goldCost) {
       return false
     }
-    let building = CreateBuilding(type, city.storage)
+    // Dev mode builds from the blueprint directly, charging no materials.
+    let building = dev ? MakeBuilding(type) : CreateBuilding(type, city.storage)
     if (!building) {
       return false
     }
@@ -676,6 +684,7 @@ export class StateService {
       }
     }
 
+    let dev = this.dev_mode
     let required = GetRequiredTerrains(type)
     let destFootprint: Tile[] = []
     for (let di = 0; di < size; ++di) {
@@ -683,13 +692,13 @@ export class StateService {
         let t = this.GetTile(city, to.i + di, to.j + dj)
         if (!srcKeys.has((to.i + di) * city.w + (to.j + dj))) {
           if (t.building || t.covered) return false
-          if (!required.includes(t.terrain)) return false
-          if (!CanPlaceOnFeature(t.feature)) return false
+          if (!dev && !required.includes(t.terrain)) return false
+          if (!dev && !CanPlaceOnFeature(t.feature)) return false
         }
         destFootprint.push(t)
       }
     }
-    if (!this.HasRequiredSurroundings(city, type, to.i, to.j, size)) return false
+    if (!dev && !this.HasRequiredSurroundings(city, type, to.i, to.j, size)) return false
 
     const isHouse = !!building.house
 
@@ -761,6 +770,13 @@ export class StateService {
   // the university system (which charges the gold cost up front).
   public StartResearch(city: City, tile: Tile, tech: Technology): boolean {
     return StartResearchSystem(this.state, tile, tech)
+  }
+
+  // Toggle dev mode (free, unrestricted building placement + full palette).
+  public ToggleDevMode() {
+    this.dev_mode = !this.dev_mode
+    localStorage.setItem('dev_mode', this.dev_mode ? '1' : '0')
+    this.bumpMap()
   }
 
   // Set the tax rate, clamped to [0, 1].

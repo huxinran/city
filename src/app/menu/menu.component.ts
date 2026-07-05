@@ -48,6 +48,11 @@ export class MenuComponent {
   }
   restart() { this.state.Restart(); this.flash('Restarted'); this.close() }
   actorWalking() { this.state.TogglePoodleMode(); this.close() }
+  devMode() {
+    this.state.ToggleDevMode()
+    this.flash(this.state.dev_mode ? 'Dev mode ON' : 'Dev mode OFF')
+    this.close()
+  }
   reset() { this.state.Reset(); this.close() }
 
   private flash(text: string) {

@@ -3,7 +3,7 @@ import { City } from '../sim/city';
 import { Tile } from '../sim/tile';
 import { Building } from '../sim/building';
 import { StateService } from '../state.service';
-import { BuildingType, Terrain, Feature, ProductionStatus } from '../sim/types';
+import { BuildingType, Terrain, Feature, ProductionStatus, CityName } from '../sim/types';
 import {
   GetBuildingSize, GetBuildingIcon, IsFarmBuilding, IsAnimalFarm,
   IsWorkshopBuilding, IsMineCampBuilding, IsSeaProductionBuilding,
@@ -41,6 +41,7 @@ type BuildingImageBox = {
   w: number;
   h: number;
   src?: string;
+  anchorBottomY?: number;
 };
 
 const terrainAlternates = (dir: string, count: number, width: number, height: number): TerrainObjectArt[] =>
@@ -60,11 +61,16 @@ const FOOD_WORKSHOP_ICON = 'assets/used/buildings/food-processing-workshop.png';
 const MINE_CAMP_ICON = 'assets/used/buildings/mine-camp.png';
 const FISHERMEN_WHARF_ICON = 'assets/used/buildings/fishermen-wharf.png';
 
-const MAP_TILE_BASE = 'assets/used/map-tiles/';
+const DEFAULT_MAP_TILE_BASE = 'assets/used/map-tiles/';
+const CITY_MAP_TILE_BASE: Partial<Record<CityName, string>> = {
+  [CityName.MINTAKA]: DEFAULT_MAP_TILE_BASE + 'arctic-city/',
+  [CityName.SOLARA]: DEFAULT_MAP_TILE_BASE + 'africa-hot/',
+  [CityName.JINLIN]: DEFAULT_MAP_TILE_BASE + 'asian-mild/',
+  [CityName.COLUMBIA]: DEFAULT_MAP_TILE_BASE + 'america-mild/',
+};
 const TERRAIN_OBJECT_BASE = 'assets/used/terrain/';
 const TERRAIN_VARIANT_RATE = 0.35;
 const TERRAIN_FEATURE_DECORATION_RATE = 0.05;
-const TERRAIN_SURFACE_BASE = MAP_TILE_BASE + 'surfaces/';
 const TERRAIN_SURFACE_VARIANT_RATE = 0.14;
 const MAP_GRID_STROKE = 'rgba(67, 82, 58, 0.16)';
 
@@ -113,22 +119,22 @@ const SHOVEL_CURSOR = `url("assets/used/cursors/shovel.png") 6 34, crosshair`;
 //   cross.png     connects N+E+S+W — four-way
 // Each sprite's road should reach the tile edge at the midpoint so neighbours
 // line up seamlessly. Square + transparent (e.g. 64x64, like the terrain set).
-const ROAD_BASE = 'assets/used/map-tiles/road/';
 const ROAD_SHAPES = {
-  isolated: ROAD_BASE + 'isolated.png',
-  end:      ROAD_BASE + 'end.png',
-  straight: ROAD_BASE + 'straight.png',
-  corner:   ROAD_BASE + 'corner.png',
-  tee:      ROAD_BASE + 'tee.png',
-  cross:    ROAD_BASE + 'cross.png',
-};
+  isolated: 'isolated.png',
+  end:      'end.png',
+  straight: 'straight.png',
+  corner:   'corner.png',
+  tee:      'tee.png',
+  cross:    'cross.png',
+} as const;
+type RoadShape = typeof ROAD_SHAPES[keyof typeof ROAD_SHAPES];
 
 // neighbour-mask -> { src, rot } where rot is the number of 90° CW rotations to
 // apply. Built once from the six canonical shapes; rotating a shape through its
 // distinct orientations covers all 16 masks.
-const ROAD_TILE_BY_MASK = ((): Map<number, { src: string, rot: number }> => {
+const ROAD_TILE_BY_MASK = ((): Map<number, { shape: RoadShape, rot: number }> => {
   const rotCW = (m: number) => ((m << 1) | (m >> 3)) & 0xF; // N->E->S->W->N
-  const bases: [number, string][] = [
+  const bases: [number, RoadShape][] = [
     [0b0000, ROAD_SHAPES.isolated], // -
     [0b0001, ROAD_SHAPES.end],      // N
     [0b0101, ROAD_SHAPES.straight], // N+S
@@ -136,11 +142,11 @@ const ROAD_TILE_BY_MASK = ((): Map<number, { src: string, rot: number }> => {
     [0b0111, ROAD_SHAPES.tee],      // N+E+S
     [0b1111, ROAD_SHAPES.cross],    // N+E+S+W
   ];
-  const table = new Map<number, { src: string, rot: number }>();
-  for (const [canon, src] of bases) {
+  const table = new Map<number, { shape: RoadShape, rot: number }>();
+  for (const [canon, shape] of bases) {
     let m = canon;
     for (let rot = 0; rot < 4; rot++) {
-      if (!table.has(m)) table.set(m, { src, rot });
+      if (!table.has(m)) table.set(m, { shape, rot });
       m = rotCW(m);
     }
   }
@@ -154,6 +160,33 @@ const TERRAIN_COLOR: { [key: string]: string } = {
   [Terrain.GRASS]: '#a9d86b',
   [Terrain.SAND]:  '#ffe48b',
   [Terrain.DIRT]:  '#c4956a',
+};
+const ARCTIC_TERRAIN_COLOR: { [key: string]: string } = {
+  [Terrain.WATER]: '#2c7fa3',
+  [Terrain.GRASS]: '#eef7f7',
+  [Terrain.SAND]:  '#c9eef5',
+  [Terrain.DIRT]:  '#7f9099',
+};
+const CITY_TERRAIN_COLOR: Partial<Record<CityName, { [key: string]: string }>> = {
+  [CityName.MINTAKA]: ARCTIC_TERRAIN_COLOR,
+  [CityName.SOLARA]: {
+    [Terrain.WATER]: '#14a9a2',
+    [Terrain.GRASS]: '#c7a33f',
+    [Terrain.SAND]:  '#e7b54b',
+    [Terrain.DIRT]:  '#b94c1f',
+  },
+  [CityName.JINLIN]: {
+    [Terrain.WATER]: '#47c9ff',
+    [Terrain.GRASS]: '#9ac85a',
+    [Terrain.SAND]:  '#d7c49a',
+    [Terrain.DIRT]:  '#7e8373',
+  },
+  [CityName.COLUMBIA]: {
+    [Terrain.WATER]: '#47c9ff',
+    [Terrain.GRASS]: '#b77932',
+    [Terrain.SAND]:  '#d5ad68',
+    [Terrain.DIRT]:  '#8f5532',
+  },
 };
 
 // Terrain blending via DUAL-GRID corner-Wang (marching-squares) tile sets, one
@@ -176,23 +209,12 @@ const TERRAIN_PRECEDENCE: { [key: string]: number } = {
 // `atLeast` collapses any terrain at/above that precedence to the bit-1 side, so
 // a dirt corner reads as grass at the grass/sand boundary, etc.
 // Each set lives in blend/<pair>/ as 0.png .. F.png (the hex corner mask).
-const TERRAIN_BLEND_BASE = MAP_TILE_BASE + 'blend/';
 const TERRAIN_SETS: { [higher: string]: { dir: string, bit1: 'low' | 'high', atLeast: number } } = {
   [Terrain.SAND]:  { dir: 'sand-sea/',   bit1: 'low',  atLeast: 1 },
   [Terrain.GRASS]: { dir: 'grass-sand/', bit1: 'high', atLeast: 2 },
   [Terrain.DIRT]:  { dir: 'dirt-grass/', bit1: 'high', atLeast: 3 },
 };
-// Resolved image path per set per mask, built once: TERRAIN_TILE_SRC[higher][0..15].
-// Avoids rebuilding the same 48 path strings every render tile, every repaint.
 const HEX = '0123456789ABCDEF';
-const TERRAIN_TILE_SRC: { [higher: string]: string[] } = (() => {
-  const table: { [higher: string]: string[] } = {};
-  for (const higher of Object.keys(TERRAIN_SETS)) {
-    table[higher] = [];
-    for (let m = 0; m < 16; m++) table[higher][m] = TERRAIN_BLEND_BASE + TERRAIN_SETS[higher].dir + HEX[m] + '.png';
-  }
-  return table;
-})();
 
 const TERRAIN_SURFACE_ART: { [terrain: string]: { main: string, alternates: string[] } } = {
   [Terrain.WATER]: { main: 'sea/main.png', alternates: ['sea/alternative-1.png'] },
@@ -284,6 +306,15 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   }
 
   private worldSize() { return isoWorldSize(this.city.w, this.city.h); }
+
+  private mapTileBase(): string {
+    return CITY_MAP_TILE_BASE[this.city?.name] ?? DEFAULT_MAP_TILE_BASE;
+  }
+
+  private terrainColor(terrain: Terrain): string {
+    const colors = CITY_TERRAIN_COLOR[this.city?.name] ?? TERRAIN_COLOR;
+    return colors[terrain] ?? colors[Terrain.GRASS];
+  }
 
   // Mouse-wheel zoom, anchored on the point under the cursor (it stays put).
   private onWheel(e: WheelEvent) {
@@ -396,8 +427,8 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       const building = tile.building;
       if (!building || building.type === BuildingType.ROAD) continue;
       const b = this.buildingImageBox(tile, building);
-      if (p.x < b.x || p.x > b.x + b.w || p.y < b.y || p.y > b.y + b.h) continue;
-      if (!this.imageBoxContainsOpaquePixel(b, p.x, p.y)) continue;
+      if (!b.src && (p.x < b.x || p.x > b.x + b.w || p.y < b.y || p.y > b.y + b.h)) continue;
+      if (b.src && !this.imageBoxContainsOpaquePixel(b, p.x, p.y)) continue;
       const depth = this.buildingDepth(tile, building);
       const order = tile.i * this.city.w + tile.j;
       if (!hit || depth > hit.depth || (depth === hit.depth && order > hit.order)) {
@@ -596,19 +627,20 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     const im = this.img(this.terrainTileSrc(higher, mask, ri, rj));
     if (ready(im)) { this.ctx.drawImage(im!, x, y, TILE, TILE); return; }
     // Solid placeholder (the anchor/SE tile's colour) until the sprite streams in.
-    this.ctx.fillStyle = TERRAIN_COLOR[se] ?? TERRAIN_COLOR[Terrain.GRASS];
+    this.ctx.fillStyle = this.terrainColor(se);
     this.ctx.fillRect(x, y, TILE, TILE);
   }
 
   private terrainTileSrc(higher: string, mask: number, ri: number, rj: number): string {
     const surface = this.homogeneousSurface(higher, mask);
-    if (!surface) return TERRAIN_TILE_SRC[higher][mask];
+    const base = this.mapTileBase();
+    if (!surface) return base + 'blend/' + TERRAIN_SETS[higher].dir + HEX[mask] + '.png';
     const art = TERRAIN_SURFACE_ART[surface];
-    if (!art?.alternates.length) return TERRAIN_SURFACE_BASE + art.main;
+    if (!art?.alternates.length) return base + 'surfaces/' + art.main;
     const roll = this.tileHash01(ri, rj, 31);
-    if (roll >= TERRAIN_SURFACE_VARIANT_RATE) return TERRAIN_SURFACE_BASE + art.main;
+    if (roll >= TERRAIN_SURFACE_VARIANT_RATE) return base + 'surfaces/' + art.main;
     const alt = art.alternates[Math.floor(this.tileHash01(ri, rj, 32) * art.alternates.length)];
-    return TERRAIN_SURFACE_BASE + alt;
+    return base + 'surfaces/' + alt;
   }
 
   private homogeneousSurface(higher: string, mask: number): Terrain | undefined {
@@ -703,6 +735,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
         w,
         h,
         src: this.artSrc(b) ?? (animal ? ANIMAL_FARM_ICON : grove ? GROVE_FARM_ICON : CROP_FARM_ICON),
+        anchorBottomY: base.y,
       };
     }
     if (IsSeaProductionBuilding(type)) {
@@ -713,14 +746,14 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       const overscan = 0.04;
       const x = wharfBase.x - w / 2;
       const y = wharfBase.y - h * 0.74;
-      return { x: x - w * overscan, y: y - h * overscan, w: w * (1 + 2 * overscan), h: h * (1 + 2 * overscan), src: this.artSrc(b) ?? FISHERMEN_WHARF_ICON };
+      return { x: x - w * overscan, y: y - h * overscan, w: w * (1 + 2 * overscan), h: h * (1 + 2 * overscan), src: this.artSrc(b) ?? FISHERMEN_WHARF_ICON, anchorBottomY: wharfBase.y };
     }
     if (IsMineCampBuilding(type) && size > 1) {
       const w = W * 0.91, h = H * 0.91;
       const overscan = 0.04;
       const bx = base.x - w / 2;
       const by = y + H * 0.20;
-      return { x: bx - w * overscan, y: by - h * overscan, w: w * (1 + 2 * overscan), h: h * (1 + 2 * overscan), src: this.artSrc(b) ?? MINE_CAMP_ICON };
+      return { x: bx - w * overscan, y: by - h * overscan, w: w * (1 + 2 * overscan), h: h * (1 + 2 * overscan), src: this.artSrc(b) ?? MINE_CAMP_ICON, anchorBottomY: base.y };
     }
     if (IsWorkshopBuilding(type) && size > 1) {
       const foodWorkshop = IsFoodWorkshopBuilding(type);
@@ -735,6 +768,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
         w: w * (1 + 2 * overscan),
         h: h * (1 + 2 * overscan),
         src: this.artSrc(b) ?? (foodWorkshop ? FOOD_WORKSHOP_ICON : WORKSHOP_ICON),
+        anchorBottomY: base.y,
       };
     }
     if (type === BuildingType.WAREHOUSE) {
@@ -742,21 +776,19 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       const warehouseH = H * 0.98;
       const warehouseX = base.x - warehouseW / 2;
       const lowerY = y + H * 0.16;
-      return { x: warehouseX + 1, y: lowerY + 1, w: warehouseW - 2, h: warehouseH - 2, src: this.artSrc(b) };
+      return { x: warehouseX + 1, y: lowerY + 1, w: warehouseW - 2, h: warehouseH - 2, src: this.artSrc(b), anchorBottomY: base.y };
     }
-    return { x: x + 1, y: y + 1, w: W - 2, h: H - 2, src: this.artSrc(b) };
+    return { x: x + 1, y: y + 1, w: W - 2, h: H - 2, src: this.artSrc(b), anchorBottomY: base.y };
   }
 
   private imageBoxContainsOpaquePixel(box: BuildingImageBox, worldX: number, worldY: number): boolean {
     if (!box.src) return true;
     const im = this.img(box.src);
-    if (!ready(im)) return true;
+    if (!ready(im)) {
+      return worldX >= box.x && worldX <= box.x + box.w && worldY >= box.y && worldY <= box.y + box.h;
+    }
 
-    const s = Math.min(box.w / im!.naturalWidth, box.h / im!.naturalHeight);
-    const w = im!.naturalWidth * s;
-    const h = im!.naturalHeight * s;
-    const ox = box.x + (box.w - w) / 2;
-    const oy = box.y + (box.h - h) / 2;
+    const { x: ox, y: oy, w, h, scale: s } = this.fittedImageRect(im!, box);
     if (worldX < ox || worldX > ox + w || worldY < oy || worldY > oy + h) return false;
 
     const sx = Math.min(im!.naturalWidth - 1, Math.max(0, Math.floor((worldX - ox) / s)));
@@ -846,7 +878,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       const generic = animal ? ANIMAL_FARM_ICON : grove ? GROVE_FARM_ICON : CROP_FARM_ICON;
       const dedicated = this.img(this.artSrc(b));
       this.drawComposite(b, ready(dedicated) ? dedicated : this.img(generic),
-                         farmX, farmY, farmW, farmH, animal ? 'animalFarm' : grove ? 'groveFarm' : 'cropFarm');
+                         farmX, farmY, farmW, farmH, animal ? 'animalFarm' : grove ? 'groveFarm' : 'cropFarm', base.y);
       return;
     }
     if (IsSeaProductionBuilding(type)) {
@@ -857,13 +889,13 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       const wharfX = wharfBase.x - wharfW / 2;
       const wharfY = wharfBase.y - wharfH * 0.74;
       const dedicated = this.img(this.artSrc(b));
-      this.drawComposite(b, ready(dedicated) ? dedicated : this.img(FISHERMEN_WHARF_ICON), wharfX, wharfY, wharfW, wharfH, 'seaProduction');
+      this.drawComposite(b, ready(dedicated) ? dedicated : this.img(FISHERMEN_WHARF_ICON), wharfX, wharfY, wharfW, wharfH, 'seaProduction', wharfBase.y);
       return;
     }
     if (IsMineCampBuilding(type) && size > 1) {
       const scaledW = W * 0.91, scaledH = H * 0.91;
       const dedicated = this.img(this.artSrc(b));
-      this.drawComposite(b, ready(dedicated) ? dedicated : this.img(MINE_CAMP_ICON), base.x - scaledW / 2, y + H * 0.20, scaledW, scaledH, 'workshop');
+      this.drawComposite(b, ready(dedicated) ? dedicated : this.img(MINE_CAMP_ICON), base.x - scaledW / 2, y + H * 0.20, scaledW, scaledH, 'workshop', base.y);
       return;
     }
     if (IsWorkshopBuilding(type) && size > 1) {
@@ -872,7 +904,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       const scaledW = W * scale, scaledH = H * scale;
       const icon = foodWorkshop ? FOOD_WORKSHOP_ICON : WORKSHOP_ICON;
       const dedicated = this.img(this.artSrc(b));
-      this.drawComposite(b, ready(dedicated) ? dedicated : this.img(icon), base.x - scaledW / 2, y + H * (foodWorkshop ? 0.25 : 0.23), scaledW, scaledH, 'workshop');
+      this.drawComposite(b, ready(dedicated) ? dedicated : this.img(icon), base.x - scaledW / 2, y + H * (foodWorkshop ? 0.25 : 0.23), scaledW, scaledH, 'workshop', base.y);
       return;
     }
     // Single icon filling the footprint (houses use tier art via artSrc).
@@ -882,11 +914,11 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       const warehouseH = H * 0.98;
       const warehouseX = base.x - warehouseW / 2;
       const lowerY = y + H * 0.16;
-      if (ready(im)) this.drawContain(im!, warehouseX + 1, lowerY + 1, warehouseW - 2, warehouseH - 2, true);
+      if (ready(im)) this.drawContain(im!, warehouseX + 1, lowerY + 1, warehouseW - 2, warehouseH - 2, true, base.y);
       else this.drawEmoji(GetBuildingIcon(type), base.x, lowerY + warehouseH / 2, size * 15);
       return;
     }
-    if (ready(im)) this.drawContain(im!, x + 1, y + 1, W - 2, H - 2, true);
+    if (ready(im)) this.drawContain(im!, x + 1, y + 1, W - 2, H - 2, true, base.y);
     else this.drawEmoji(GetBuildingIcon(type), x + W / 2, y + H / 2, size * 16);
   }
 
@@ -940,7 +972,7 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   // so the network connects (straights, corners, T-junctions, crossroads).
   private drawRoad(t: Tile, x: number, y: number) {
     const pick = ROAD_TILE_BY_MASK.get(this.roadMask(t.i, t.j))!;
-    this.drawRotated(this.img(pick.src), x, y, pick.rot); // terrain shows through until the sprite loads
+    this.drawRotated(this.img(this.mapTileBase() + 'road/' + pick.shape), x, y, pick.rot); // terrain shows through until the sprite loads
   }
 
   // Bitmask of which orthogonal neighbours are also roads: N=1, E=2, S=4, W=8.
@@ -958,11 +990,12 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
   // sprites from the live overlay canvas; workshops/mine camps show one product
   // pinned bottom-right.
   private drawComposite(b: Building, bg: HTMLImageElement | undefined,
-                        x: number, y: number, W: number, H: number, kind: 'cropFarm' | 'groveFarm' | 'animalFarm' | 'workshop' | 'seaProduction') {
+                        x: number, y: number, W: number, H: number, kind: 'cropFarm' | 'groveFarm' | 'animalFarm' | 'workshop' | 'seaProduction',
+                        anchorBottomY: number) {
     if (ready(bg)) {
       // Workshops overscan slightly (the old CSS inset:-4%); farms fill exactly.
       const o = kind === 'workshop' || kind === 'seaProduction' ? 0.04 : 0;
-      this.drawContain(bg!, x - W * o, y - H * o, W * (1 + 2 * o), H * (1 + 2 * o), true);
+      this.drawContain(bg!, x - W * o, y - H * o, W * (1 + 2 * o), H * (1 + 2 * o), true, anchorBottomY);
     }
     if (kind === 'animalFarm') return;
     const prod = this.img(this.productSrc(b));
@@ -1004,14 +1037,32 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
 
   // Draw an image "object-fit: contain" within a box, optionally with the
   // subtle sprite shadow the DOM used.
-  private drawContain(im: HTMLImageElement, dx: number, dy: number, dw: number, dh: number, shadow = false) {
+  private drawContain(
+    im: HTMLImageElement,
+    dx: number,
+    dy: number,
+    dw: number,
+    dh: number,
+    shadow = false,
+    anchorBottomY?: number,
+  ) {
     const s = Math.min(dw / im.naturalWidth, dh / im.naturalHeight);
     const w = im.naturalWidth * s, h = im.naturalHeight * s;
-    const ox = dx + (dw - w) / 2, oy = dy + (dh - h) / 2;
+    const ox = dx + (dw - w) / 2;
+    const oy = anchorBottomY === undefined ? dy + (dh - h) / 2 : anchorBottomY - h;
     const ctx = this.ctx;
     if (shadow) { ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = 1; ctx.shadowOffsetY = 1; }
     ctx.drawImage(im, ox, oy, w, h);
     if (shadow) { ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0; }
+  }
+
+  private fittedImageRect(im: HTMLImageElement, box: BuildingImageBox) {
+    const scale = Math.min(box.w / im.naturalWidth, box.h / im.naturalHeight);
+    const w = im.naturalWidth * scale;
+    const h = im.naturalHeight * scale;
+    const x = box.x + (box.w - w) / 2;
+    const y = box.anchorBottomY === undefined ? box.y + (box.h - h) / 2 : box.anchorBottomY - h;
+    return { x, y, w, h, scale };
   }
 
   private drawEmoji(text: string, cx: number, cy: number, fontPx: number) {
