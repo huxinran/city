@@ -54,6 +54,8 @@ The footprint is the first-pass acceptance gate. Reject and regenerate any beaut
 - Dark brown or olive outlines, warm highlights, deeper soft shadows.
 - Friendly readable silhouette at map size. Prefer fewer chunky props over dense noisy detail.
 - For farms and groves, align fields, tree rows, pens, fences, sheds, and paths to the footprint directions.
+- Crop-producing farm variants should read as one coherent farm set, not as isolated terrain/crop patches. Use a shared farm-chassis language across the set: the same clean diamond/parallelogram base proportion, comparable fence/border thickness, matching warm dirt/grass rim, aligned crop rows, and a small old-time farm identity element such as a shed, hut, tool rack, barrels, sacks, gate, well, scarecrow, trellis, or irrigation prop. The crop type provides the variation; the base, camera, border, scale, and farm-prop vocabulary provide the family consistency.
+- Do not accept a crop-specific building that is only a fenced field of plants unless the user explicitly asks for a plain empty/patch tile. If the subject is `wheat-farm`, `corn-field`, `cabbage-patch`, `rice-paddy`, `vineyard`, `orchard`, `plantation`, `garden`, `grove`, or similar, it is still a map building/farm and must carry the isometric farm-set identity.
 - For mines and extraction buildings, use small huts, rock piles, timber supports, ore bins, pits, carts, and hand tools while preserving the diamond yard.
 - For workshops and civic buildings, show the production identity through roof shapes, chimneys, awnings, signs without text, barrels, crates, workbenches, and visible materials.
 - No text, labels, watermark, UI frame, modern factory details, plastic, chrome, warning signs, digital screens, or logos.

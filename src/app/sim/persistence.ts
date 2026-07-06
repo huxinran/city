@@ -15,7 +15,7 @@ const VERSION_KEY = 'save_version'
 
 // Bumped whenever the saved data shape changes incompatibly. Saves from an
 // older version are discarded (a fresh game is generated) rather than migrated.
-const SAVE_VERSION = '6'
+const SAVE_VERSION = '7'
 
 // --- Compact save format ---
 // Tiles skip terrain/feature (stored in separate map keys) and i/j (derivable

@@ -40,6 +40,7 @@
 - Prefer simpler decoration if it makes the footprint easier to read.
 - For farm buildings and farm yards, align crop rows, furrows, tree rows, fences, walls, pens, troughs, shed bases, paths, and yard borders to the footprint's two isometric edge directions.
 - Farm details should be chunky and readable at map scale: use a few clear crop clusters, animals, trees, sheds, and old-time props instead of dense tiny noise that hides the footprint.
+- Crop-specific farms, fields, patches, paddies, orchards, groves, gardens, and plantations should form one consistent farm set, not standalone terrain patches. Keep the same isometric base proportion, camera angle, fence/border language, dirt/grass rim, outline weight, and crop-row alignment across the family. Vary the crop, tree, trellis, water, or planter details, but include at least one small farm-identity element such as a hut, shed, tool rack, barrels, sacks, gate, well, scarecrow, or irrigation prop unless the user explicitly requests a plain patch tile.
 
 ## Asset Library And Runtime Copies
 

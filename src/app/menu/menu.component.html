@@ -15,6 +15,7 @@
       <button class="menu-item" (click)="restart()"><ng-icon name="lucideRotateCcw"></ng-icon><span>Restart</span></button>
 
       <button class="menu-item" [class.active]="state.poodle.mode" (click)="actorWalking()"><ng-icon name="lucideFootprints"></ng-icon><span>Actor Walking</span></button>
+      <button class="menu-item" [class.active]="state.dev_mode" (click)="devMode()"><ng-icon name="lucideWrench"></ng-icon><span>Dev Mode</span></button>
       <button class="menu-item" (click)="imageDirectory()"><ng-icon name="lucideImages"></ng-icon><span>Image Directory</span></button>
 
       <button class="menu-item danger" [class.active]="submenu() === 'reset'" (click)="showSub('reset')"><ng-icon name="lucideTrash2"></ng-icon><span>Reset</span><ng-icon class="chevron" name="lucideChevronRight"></ng-icon></button>

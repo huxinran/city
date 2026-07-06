@@ -59,9 +59,9 @@ const PALETTE_ORDER: BuildingType[] = [
   // Artisan
   BuildingType.IRON_MINE,       // iron ore
   BuildingType.FORGE,           // iron ingot
-  BuildingType.STEELWORK,       // steel
+  BuildingType.STEELWORKS,       // steel
   BuildingType.WHEAT_FARM,      // wheat
-  BuildingType.WIND_MILL,       // flour
+  BuildingType.WINDMILL,       // flour
   BuildingType.BAKERY,          // bread
   BuildingType.PAPER_MILL,      // paper
   BuildingType.INK_WORKSHOP,    // ink
@@ -142,15 +142,20 @@ export class PaletteComponent {
 
   // Building groups re-computed on every render so city switches take effect.
   get groups(): PaletteGroup[] {
+    const dev = this.state.dev_mode
     const cityName = this.state.state.current_city?.name as CityName | undefined
-    const cityBuildings = cityName ? (CITY_EXCLUSIVE_BUILDINGS[cityName] ?? []) : []
+    // Dev mode offers every city's exclusive buildings, not just the current city's.
+    const cityBuildings = dev
+      ? [...ALL_CITY_EXCLUSIVE_BUILDINGS]
+      : cityName ? (CITY_EXCLUSIVE_BUILDINGS[cityName] ?? []) : []
 
     let groups: PaletteGroup[] = [
       { name: 'Basics', items: [...BASIC_BUILDINGS] },
     ]
-    // Exclude basics and ALL city-exclusive buildings from the shared tier buckets.
+    // Exclude basics and ALL city-exclusive buildings from the shared tier
+    // buckets. Dev mode also surfaces the normally hidden buildings.
     let all = (Object.values(BuildingType) as BuildingType[])
-      .filter(t => !BASIC_BUILDINGS.includes(t) && !ALL_CITY_EXCLUSIVE_BUILDINGS.has(t) && !HIDDEN_BUILDINGS.has(t))
+      .filter(t => !BASIC_BUILDINGS.includes(t) && !ALL_CITY_EXCLUSIVE_BUILDINGS.has(t) && (dev || !HIDDEN_BUILDINGS.has(t)))
     let tierNames = [Resident.FARMER, Resident.WORKER, Resident.ARTISAN, Resident.SCHOLAR, Resident.ENTREPRENEUR, Resident.MAGNATE]
     for (let i = 0; i < tierNames.length; i++) {
       let items = all.filter(t => GetBuildingTier(t) === i + 1)
@@ -159,9 +164,10 @@ export class PaletteComponent {
     }
     let other = all.filter(t => GetBuildingTier(t) === undefined)
     if (other.length) groups.push({ name: 'Other', items: other })
-    // Show the current city's exclusive buildings only if it has any.
+    // Show the current city's exclusive buildings only if it has any (all
+    // cities' exclusives under one group in dev mode).
     if (cityBuildings.length > 0) {
-      groups.push({ name: cityName!, items: cityBuildings })
+      groups.push({ name: dev ? 'Exclusive' : cityName!, items: cityBuildings })
     }
     if (!groups.some(g => g.name === this.openGroup && g.name !== 'Basics')) {
       this.openGroup = groups.find(g => g.name !== 'Basics')?.name ?? ''

@@ -154,18 +154,18 @@ export function GenerateTerrain(h: number, w: number): { terrain: Terrain[], fea
         }
     }
 
-    const rocks = Math.max(2, Math.round(area / 1300))
+    const rocks = Math.max(1, Math.round(area / 1900))
     for (let k = 0; k < rocks; ++k) {
-        blob(rand(lo, hiI), rand(lo, hiJ), rand(20, 45), Feature.ROCK)
+        blob(rand(lo, hiI), rand(lo, hiJ), rand(12, 28), Feature.ROCK)
     }
-    const forests = Math.max(3, Math.round(area / 400))
+    const forests = Math.max(2, Math.round(area / 700))
     for (let k = 0; k < forests; ++k) {
-        blob(rand(lo, hiI), rand(lo, hiJ), rand(20, 45), Feature.TREE)
+        blob(rand(lo, hiI), rand(lo, hiJ), rand(12, 30), Feature.TREE)
     }
     // Bushes: small scattered shrub patches, smaller and sparser than forests.
-    const bushes = Math.max(2, Math.round(area / 1100))
+    const bushes = Math.max(1, Math.round(area / 1700))
     for (let k = 0; k < bushes; ++k) {
-        blob(rand(lo, hiI), rand(lo, hiJ), rand(8, 20), Feature.BUSH)
+        blob(rand(lo, hiI), rand(lo, hiJ), rand(5, 12), Feature.BUSH)
     }
     // Strip any features that ended up on water tiles
     for (let i = 0; i < h * w; i++) {
