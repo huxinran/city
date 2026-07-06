@@ -1,5 +1,34 @@
 # Terrain Object Generation Log
 
+## 2026-07-06 - Image-generated tall tree sets
+
+- Request: redo the trees because many city tree sets were too short; tree sprites may render taller above their output tile.
+- Workflow: used the built-in `image_gen` tool, then removed the flat magenta chroma-key background with `C:\Users\Xinran\.codex\skills\.system\imagegen\scripts\remove_chroma_key.py`.
+- Source cache: `C:\Users\Xinran\.codex\generated_images\019f381e-adc1-78c3-8af1-176bd2459ec7\`
+- Library copies: `public/assets/lib/terrain/<minor-city>/tree/imagegen-tall-20260706/`
+- Previous runtime copies preserved under `public/assets/lib/terrain/<minor-city>/tree/pre-imagegen-tall-20260706-runtime/`
+- Runtime folders updated: `public/assets/used/terrain/<minor-city>/tree/`
+- Runtime count per minor city: `main.png` plus `alternative-1.png` through `alternative-19.png`.
+- Runtime dimensions: all tree sprites are `96x160` alpha PNGs.
+- Themes: Mintaka boreal snow conifers; Jinlin bamboo, willow, pine, and flowering river-delta trees; Columbia tall frontier cottonwood/oak/aspen trees; Solara tall but controlled-width acacia, baobab, palm, banana, and savanna trees.
+- App wiring: Anrelia was reverted to its prior main-city tree runtime and capped at its original 10 alternatives; Solara tree draw scale was increased vertically while keeping width controlled.
+- Review sheet: `tmp/asset-work/imagegen-tall-trees/final-runtime-contact-sheet-clean.png`
+- Validation: active minor-city tree files were checked for 20-file city sets, `96x160` dimensions, alpha content, and no opaque magenta residue.
+
+## 2026-07-06 - Image-generated themed decoration sets
+
+- Request: review and generate terrain assets for each map, matching continent and climate; give the four minor cities their own decoration sets.
+- Workflow: used the built-in `image_gen` tool, then removed the flat magenta chroma-key background with `C:\Users\Xinran\.codex\skills\.system\imagegen\scripts\remove_chroma_key.py`.
+- Source cache: `C:\Users\Xinran\.codex\generated_images\019f381e-adc1-78c3-8af1-176bd2459ec7\`
+- Library copies: `public/assets/lib/terrain/<city>/decoration/imagegen-20260706/`
+- Previous runtime copies preserved under `public/assets/lib/terrain/<city>/decoration/pre-imagegen-20260706-runtime/`
+- Runtime folders updated: `public/assets/used/terrain/<city>/decoration/`
+- Runtime count per city: `main.png` plus `alternative-1.png` through `alternative-16.png`.
+- Runtime dimensions: all decoration sprites are `96x96` alpha PNGs.
+- Themes: Anrelia temperate meadow; Mintaka arctic tundra; Jinlin East Asian river delta; Columbia North American frontier plains; Solara African hot tropical savanna.
+- Review sheet: `tmp/asset-work/imagegen-themed-decorations/final-runtime-contact-sheet-clean.png`
+- Validation: all active decoration files were checked for 17-file city sets, `96x96` dimensions, alpha content, and no opaque magenta residue.
+
 ## 2026-07-05 - Themed city tree and bush sets
 
 - Request: generate four new themed sets of trees and bushes for the other cities, matching arctic, Africa, Asian, and America themes, with 20 different designs in each set.

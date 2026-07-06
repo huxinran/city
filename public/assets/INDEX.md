@@ -2,7 +2,7 @@
 
 Auto-generated map of `public/assets/`. Two trees:
 
-- **`used/`** — stable app-facing symlinks (1017 image pointers). Repoint these to swap art.
+- **`used/`** — stable app-facing symlinks (1011 image pointers). Repoint these to swap art.
 - **`lib/`** — unified image library. Category/subject folders hold real files; filenames distinguish variants.
 
 > Regenerate: `node tools/gen-asset-index.mjs`
@@ -39,6 +39,10 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `cottage`, `estate`, `house`, `mansion`, `tenement`, `villa`
 
+### `map-tiles/anrelia/`  ·  1 files  ·  64×64
+
+`sea`
+
 ### `map-tiles/anrelia/blend/`  ·  10 files  ·  64×64
 
 `corner-mask`, `corner-ne`, `corner-nw`, `corner-se`, `corner-sw`, `edge-e`, `edge-mask`, `edge-n`, `edge-s`, `edge-w`
@@ -51,7 +55,7 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `A`, `B`, `C`, `D`, `E`, `F`, `_preview-4x4`, `_preview-sample-map`
 
-### `map-tiles/anrelia/blend/sand-sea/`  ·  18 files  ·  64×64, 266×266, 512×384
+### `map-tiles/anrelia/blend/sand-sea/`  ·  18 files  ·  64×64, 384×384, 512×512
 
 `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `A`, `B`, `C`, `D`, `E`, `F`, `_preview-4x4`, `_preview-sample-map`
 
@@ -87,7 +91,7 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `A`, `B`, `C`, `D`, `E`, `F`, `_preview-4x4`, `_preview-sample-map`
 
-### `map-tiles/columbia/blend/grass-sand/`  ·  18 files  ·  64×64, 384×384, 512×512
+### `map-tiles/columbia/blend/grass-sand/`  ·  18 files  ·  64×64, 266×266, 512×384
 
 `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `A`, `B`, `C`, `D`, `E`, `F`, `_preview-4x4`, `_preview-sample-map`
 
@@ -127,7 +131,7 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `A`, `B`, `C`, `D`, `E`, `F`, `_preview-4x4`, `_preview-sample-map`
 
-### `map-tiles/jinlin/blend/grass-sand/`  ·  18 files  ·  64×64, 384×384, 512×512
+### `map-tiles/jinlin/blend/grass-sand/`  ·  18 files  ·  64×64, 266×266, 512×384
 
 `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `A`, `B`, `C`, `D`, `E`, `F`, `_preview-4x4`, `_preview-sample-map`
 
@@ -239,9 +243,9 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `alternative-1`, `alternative-10`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `alternative-6`, `alternative-7`, `alternative-8`, `alternative-9`, `main`
 
-### `terrain/anrelia/decoration/`  ·  14 files  ·  96×96, 799×370, 554×412, 378×666, 563×325, 645×375, 785×512, 555×509, 540×761
+### `terrain/anrelia/decoration/`  ·  17 files  ·  96×96
 
-`alternative-1`, `alternative-11`, `alternative-12`, `alternative-15`, `alternative-16`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `alternative-6`, `alternative-7`, `alternative-8`, `alternative-9`, `main`
+`alternative-1`, `alternative-10`, `alternative-11`, `alternative-12`, `alternative-13`, `alternative-14`, `alternative-15`, `alternative-16`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `alternative-6`, `alternative-7`, `alternative-8`, `alternative-9`, `main`
 
 ### `terrain/anrelia/rock/`  ·  20 files  ·  96×96
 
@@ -255,9 +259,9 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `alternative-1`, `alternative-10`, `alternative-11`, `alternative-12`, `alternative-13`, `alternative-14`, `alternative-15`, `alternative-16`, `alternative-17`, `alternative-18`, `alternative-19`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `alternative-6`, `alternative-7`, `alternative-8`, `alternative-9`, `main`
 
-### `terrain/columbia/decoration/`  ·  14 files  ·  96×96, 799×370, 554×412, 378×666, 563×325, 645×375, 785×512, 555×509, 540×761
+### `terrain/columbia/decoration/`  ·  10 files  ·  96×96
 
-`alternative-1`, `alternative-11`, `alternative-12`, `alternative-15`, `alternative-16`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `alternative-6`, `alternative-7`, `alternative-8`, `alternative-9`, `main`
+`alternative-1`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `alternative-6`, `alternative-7`, `alternative-8`, `alternative-9`, `main`
 
 ### `terrain/columbia/rock/`  ·  20 files  ·  96×96
 
@@ -271,9 +275,9 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `alternative-1`, `alternative-10`, `alternative-11`, `alternative-12`, `alternative-13`, `alternative-14`, `alternative-15`, `alternative-16`, `alternative-17`, `alternative-18`, `alternative-19`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `alternative-6`, `alternative-7`, `alternative-8`, `alternative-9`, `main`
 
-### `terrain/jinlin/decoration/`  ·  14 files  ·  96×96, 799×370, 554×412, 378×666, 563×325, 645×375, 785×512, 555×509, 540×761
+### `terrain/jinlin/decoration/`  ·  13 files  ·  96×96
 
-`alternative-1`, `alternative-11`, `alternative-12`, `alternative-15`, `alternative-16`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `alternative-6`, `alternative-7`, `alternative-8`, `alternative-9`, `main`
+`alternative-1`, `alternative-10`, `alternative-11`, `alternative-12`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `alternative-6`, `alternative-7`, `alternative-8`, `alternative-9`, `main`
 
 ### `terrain/jinlin/rock/`  ·  20 files  ·  96×96
 
@@ -287,9 +291,9 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `alternative-1`, `alternative-10`, `alternative-11`, `alternative-12`, `alternative-13`, `alternative-14`, `alternative-15`, `alternative-16`, `alternative-17`, `alternative-18`, `alternative-19`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `alternative-6`, `alternative-7`, `alternative-8`, `alternative-9`, `main`
 
-### `terrain/mintaka/decoration/`  ·  14 files  ·  96×96, 799×370, 554×412, 378×666, 563×325, 645×375, 785×512, 555×509, 540×761
+### `terrain/mintaka/decoration/`  ·  12 files  ·  96×96
 
-`alternative-1`, `alternative-11`, `alternative-12`, `alternative-15`, `alternative-16`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `alternative-6`, `alternative-7`, `alternative-8`, `alternative-9`, `main`
+`alternative-1`, `alternative-10`, `alternative-11`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `alternative-6`, `alternative-7`, `alternative-8`, `alternative-9`, `main`
 
 ### `terrain/mintaka/rock/`  ·  20 files  ·  96×96
 
@@ -303,9 +307,9 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `alternative-1`, `alternative-10`, `alternative-11`, `alternative-12`, `alternative-13`, `alternative-14`, `alternative-15`, `alternative-16`, `alternative-17`, `alternative-18`, `alternative-19`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `alternative-6`, `alternative-7`, `alternative-8`, `alternative-9`, `main`
 
-### `terrain/solara/decoration/`  ·  14 files  ·  96×96, 799×370, 554×412, 378×666, 563×325, 645×375, 785×512, 555×509, 540×761
+### `terrain/solara/decoration/`  ·  11 files  ·  96×96
 
-`alternative-1`, `alternative-11`, `alternative-12`, `alternative-15`, `alternative-16`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `alternative-6`, `alternative-7`, `alternative-8`, `alternative-9`, `main`
+`alternative-1`, `alternative-10`, `alternative-2`, `alternative-3`, `alternative-4`, `alternative-5`, `alternative-6`, `alternative-7`, `alternative-8`, `alternative-9`, `main`
 
 ### `terrain/solara/rock/`  ·  20 files  ·  96×96
 

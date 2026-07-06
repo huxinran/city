@@ -94,6 +94,49 @@ const TERRAIN_OTHER_ART: TerrainObjectArt[] = [
   ...terrainAlternates('decoration', 16, 0.62, 1.12),
 ];
 
+// Decoration alternates available per city (files are contiguous
+// alternative-1..N; cities not listed have the full set of 16).
+const CITY_DECORATION_ALTERNATE_COUNTS: Partial<Record<CityName, number>> = {
+  [CityName.COLUMBIA]: 9,
+  [CityName.JINLIN]: 12,
+  [CityName.MINTAKA]: 11,
+  [CityName.SOLARA]: 10,
+};
+
+const CITY_TERRAIN_FEATURE_ALTERNATE_COUNTS: Partial<Record<CityName, Partial<Record<Feature, number>>>> = {
+  [CityName.ANRELIA]: {
+    [Feature.BUSH]: 10,
+    [Feature.TREE]: 10,
+  },
+};
+
+const CITY_TERRAIN_FEATURE_SCALE: Partial<Record<CityName, Partial<Record<Feature, { main: Pick<TerrainObjectArt, 'width' | 'height'>, alternate: Pick<TerrainObjectArt, 'width' | 'height'> }>>>> = {
+  [CityName.MINTAKA]: {
+    [Feature.TREE]: {
+      main: { width: 0.92, height: 3.08 },
+      alternate: { width: 0.78, height: 2.88 },
+    },
+  },
+  [CityName.JINLIN]: {
+    [Feature.TREE]: {
+      main: { width: 0.9, height: 3.0 },
+      alternate: { width: 0.76, height: 2.78 },
+    },
+  },
+  [CityName.COLUMBIA]: {
+    [Feature.TREE]: {
+      main: { width: 0.9, height: 2.86 },
+      alternate: { width: 0.76, height: 2.64 },
+    },
+  },
+  [CityName.SOLARA]: {
+    [Feature.TREE]: {
+      main: { width: 0.78, height: 3.0 },
+      alternate: { width: 0.72, height: 2.82 },
+    },
+  },
+};
+
 // Browser cursor images need to stay small; these 40px transparent PNGs are the
 // active runtime copies from public/assets/used/cursors.
 const HAND_CURSOR = `url("assets/used/cursors/white-glove-pointer.png") 6 2, pointer`;
@@ -830,14 +873,21 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
     if (!set) return undefined;
     const roll = this.tileHash01(t.i, t.j, 17);
     if (roll < TERRAIN_FEATURE_DECORATION_RATE) return this.decorationArt(t);
+    const scale = CITY_TERRAIN_FEATURE_SCALE[this.city?.name]?.[t.feature];
+    const main = scale ? { ...set.main, ...scale.main } : set.main;
+    const alternates = set.alternates
+      .slice(0, CITY_TERRAIN_FEATURE_ALTERNATE_COUNTS[this.city?.name]?.[t.feature] ?? set.alternates.length)
+      .map((art) => scale ? { ...art, ...scale.alternate } : art);
     const featureRoll = (roll - TERRAIN_FEATURE_DECORATION_RATE) / (1 - TERRAIN_FEATURE_DECORATION_RATE);
-    if (featureRoll >= TERRAIN_VARIANT_RATE || set.alternates.length === 0) return set.main;
-    return set.alternates[Math.floor(this.tileHash01(t.i, t.j, 18) * set.alternates.length)];
+    if (featureRoll >= TERRAIN_VARIANT_RATE || alternates.length === 0) return main;
+    return alternates[Math.floor(this.tileHash01(t.i, t.j, 18) * alternates.length)];
   }
 
   private decorationArt(t: Tile): TerrainObjectArt | undefined {
-    if (TERRAIN_OTHER_ART.length === 0) return undefined;
-    return TERRAIN_OTHER_ART[Math.floor(this.tileHash01(t.i, t.j, 20) * TERRAIN_OTHER_ART.length)];
+    const alternates = CITY_DECORATION_ALTERNATE_COUNTS[this.city?.name];
+    const art = alternates === undefined ? TERRAIN_OTHER_ART : TERRAIN_OTHER_ART.slice(0, 1 + alternates);
+    if (art.length === 0) return undefined;
+    return art[Math.floor(this.tileHash01(t.i, t.j, 20) * art.length)];
   }
 
   private tileHash01(i: number, j: number, salt: number): number {

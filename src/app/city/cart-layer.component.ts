@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, Input, NgZone, OnDestro
 import { City } from '../sim/city';
 import { Cart } from '../sim/building';
 import { GetBuildingSize, IsAnimalFarm } from '../sim/building';
-import { ShippingTaskType } from '../sim/types';
+import { CityName, ShippingTaskType, Terrain } from '../sim/types';
 import { StateService } from '../state.service';
 import { GetBuildingMapIconSrc } from '../building-icons';
 import { applyCameraTransform } from '../camera';
@@ -22,6 +22,39 @@ const SHIP_ROW = 1.6;          // world tile row (centre) — inside the 3-tile 
 const SHIP_SIZE = TILE * 2.2;  // drawn footprint
 const SHIP_SPEED = 1.1;        // tiles per second
 const SHIP_MARGIN = 2.5;       // tiles kept clear of the left/right map edges
+
+// Ambient flotsam: small climate-themed objects that drift slowly across open
+// water and respawn on a fresh water tile when they run aground or leave the
+// map. Art is grouped by climate — ice only in the cold north, coconuts only
+// in the warm south, driftwood/leaves elsewhere.
+const FLOTSAM_ROOT = 'assets/used/actors/flotsam/';
+type FlotsamArt = { file: string, size: number }  // size = drawn width in tiles
+const FLOTSAM_TEMPERATE: FlotsamArt[] = [
+  { file: 'driftwood-1.png', size: 0.55 },
+  { file: 'leaf-1.png', size: 0.34 },
+];
+const FLOTSAM_BY_CITY: Partial<Record<CityName, FlotsamArt[]>> = {
+  [CityName.MINTAKA]: [
+    { file: 'ice-1.png', size: 0.74 },
+    { file: 'ice-2.png', size: 0.62 },
+  ],
+  [CityName.SOLARA]: [
+    { file: 'coconut-1.png', size: 0.30 },
+    { file: 'coconut-2.png', size: 0.40 },
+  ],
+};
+const FLOTSAM_COUNT = 9;          // drifting items per map
+const FLOTSAM_MIN_SPEED = 0.04;   // tiles per second
+const FLOTSAM_MAX_SPEED = 0.10;
+const FLOTSAM_FADE_MS = 1600;     // fade-in after a respawn
+
+interface Flotsam {
+  x: number; y: number;    // world tile coords (fractional; x=j, y=i)
+  vx: number; vy: number;  // tiles per second
+  art: FlotsamArt;
+  phase: number;           // desyncs the bob/rock cycles
+  bornAt: number;
+}
 
 // A cart's visual state, derived from its current task.
 type CartVisual = { icon: string, emoji: string }
@@ -81,6 +114,11 @@ export class CartLayerComponent implements OnInit, OnDestroy {
   private shipDir = 1;
   private shipLast = 0;
 
+  // Ambient flotsam state, rebuilt whenever the displayed city changes.
+  private flotsam: Flotsam[] = [];
+  private flotsamCity?: City;
+  private flotsamLast = 0;
+
   ngOnInit() {
     this.canvas = document.createElement('canvas');
     // Inline sizing so the JS-created canvas fills the host regardless of view
@@ -135,8 +173,80 @@ export class CartLayerComponent implements OnInit, OnDestroy {
       if (!this.activeCarts.has(cart)) this.anims.delete(cart);
     }
 
-    // Ambient sailing ship, drawn on top of the sea.
+    // Ambient water decoration: drifting flotsam, then the sailing ship on top.
+    this.drawFlotsam(now);
     this.drawShip(now);
+  }
+
+  // Advance and draw the drifting flotsam. Items move in a fixed slow direction;
+  // one that drifts onto land, under a bridge/building, or off the map quietly
+  // respawns on a random open-water tile and fades back in.
+  private drawFlotsam(now: number) {
+    if (this.flotsamCity !== this.city) {
+      this.flotsamCity = this.city;
+      this.flotsamLast = now;
+      this.flotsam = [];
+      for (let k = 0; k < FLOTSAM_COUNT; k++) {
+        const f = this.spawnFlotsam(now);
+        if (!f) break;
+        f.bornAt = now - FLOTSAM_FADE_MS; // initial population needs no fade-in
+        this.flotsam.push(f);
+      }
+    }
+    const dt = Math.min(0.05, (now - this.flotsamLast) / 1000); // clamp tab-switch jumps
+    this.flotsamLast = now;
+
+    for (let k = 0; k < this.flotsam.length; k++) {
+      let f = this.flotsam[k];
+      f.x += f.vx * dt;
+      f.y += f.vy * dt;
+      if (!this.isOpenWater(Math.round(f.y), Math.round(f.x))) {
+        const next = this.spawnFlotsam(now);
+        if (!next) continue;
+        this.flotsam[k] = f = next;
+      }
+      const img = this.image(FLOTSAM_ROOT + f.art.file);
+      if (!img.complete || img.naturalWidth === 0) continue;
+      const p = gridToIso(this.city.h, (f.x + 0.5) * TILE, (f.y + 0.5) * TILE);
+      const w = f.art.size * TILE;
+      const h = w * img.naturalHeight / img.naturalWidth;
+      const bob = Math.sin(now / 700 + f.phase) * 1.6;
+      const ctx = this.ctx;
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, (now - f.bornAt) / FLOTSAM_FADE_MS);
+      ctx.translate(p.x, p.y + bob);
+      ctx.rotate(Math.sin(now / 1100 + f.phase) * 0.06); // gentle rock
+      ctx.drawImage(img, -w / 2, -h / 2, w, h);
+      ctx.restore();
+    }
+  }
+
+  // A fresh flotsam item on a random open-water tile, with climate-appropriate
+  // art. Undefined when no water tile is found (a map with next to no water).
+  private spawnFlotsam(now: number): Flotsam | undefined {
+    const arts = FLOTSAM_BY_CITY[this.city.name] ?? FLOTSAM_TEMPERATE;
+    for (let tries = 0; tries < 60; tries++) {
+      const i = Math.floor(Math.random() * this.city.h);
+      const j = Math.floor(Math.random() * this.city.w);
+      if (!this.isOpenWater(i, j)) continue;
+      const angle = Math.random() * Math.PI * 2;
+      const speed = FLOTSAM_MIN_SPEED + Math.random() * (FLOTSAM_MAX_SPEED - FLOTSAM_MIN_SPEED);
+      return {
+        x: j, y: i,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed * 0.6, // currents run mostly sideways
+        art: arts[Math.floor(Math.random() * arts.length)],
+        phase: Math.random() * Math.PI * 2,
+        bornAt: now,
+      };
+    }
+    return undefined;
+  }
+
+  private isOpenWater(i: number, j: number): boolean {
+    if (i < 0 || j < 0 || i >= this.city.h || j >= this.city.w) return false;
+    const t = this.state.GetTile(this.city, i, j);
+    return t.terrain === Terrain.WATER && !t.building && !t.covered;
   }
 
   // Advance and draw the decorative ship: it cruises along the top ocean band,
