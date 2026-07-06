@@ -1178,6 +1178,8 @@ export const LIB_TILES_ASSETS = [
   'assets/lib/tiles/grass/surface-icon-v1.png',
   'assets/lib/tiles/grass/surface-tile-48-uniform-v2.png',
   'assets/lib/tiles/grass/surface-tile-48-v1.png',
+  'assets/lib/tiles/sand/surface-icon-cold-v1.png',
+  'assets/lib/tiles/sand/surface-icon-hot-v1.png',
   'assets/lib/tiles/sand/surface-icon-v1.png',
   'assets/lib/tiles/sand/surface-tile-48-v1.png',
   'assets/lib/tiles/sea/surface-icon-cold-v1.png',

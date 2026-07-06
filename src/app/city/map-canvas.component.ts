@@ -155,72 +155,60 @@ const ROAD_TILE_BY_MASK = ((): Map<number, { shape: RoadShape, rot: number }> =>
 
 // Solid fallback colour per terrain, painted under a render tile only until its
 // blend sprite has streamed in.
+// DIRT has no key: terrainColor() falls back to the GRASS colour, matching the
+// render simplification where dirt terrain draws with the grass-slot art.
+// Jinlin/Columbia share Anrelia's (default) set, so they have no entry either.
 const TERRAIN_COLOR: { [key: string]: string } = {
   [Terrain.WATER]: '#47c9ff',
   [Terrain.GRASS]: '#a9d86b',
   [Terrain.SAND]:  '#ffe48b',
-  [Terrain.DIRT]:  '#c4956a',
-};
-const ARCTIC_TERRAIN_COLOR: { [key: string]: string } = {
-  [Terrain.WATER]: '#2c7fa3',
-  [Terrain.GRASS]: '#eef7f7',
-  [Terrain.SAND]:  '#c9eef5',
-  [Terrain.DIRT]:  '#7f9099',
 };
 const CITY_TERRAIN_COLOR: Partial<Record<CityName, { [key: string]: string }>> = {
-  [CityName.MINTAKA]: ARCTIC_TERRAIN_COLOR,
-  [CityName.SOLARA]: {
+  [CityName.MINTAKA]: { // arctic: blue sea, cold sand, snow
+    [Terrain.WATER]: '#2c7fa3',
+    [Terrain.GRASS]: '#eef7f7',
+    [Terrain.SAND]:  '#e6edf5',
+  },
+  [CityName.SOLARA]: { // africa: green sea, warm sand, dirt
     [Terrain.WATER]: '#14a9a2',
-    [Terrain.GRASS]: '#c7a33f',
-    [Terrain.SAND]:  '#e7b54b',
-    [Terrain.DIRT]:  '#b94c1f',
-  },
-  [CityName.JINLIN]: {
-    [Terrain.WATER]: '#47c9ff',
-    [Terrain.GRASS]: '#9ac85a',
-    [Terrain.SAND]:  '#d7c49a',
-    [Terrain.DIRT]:  '#7e8373',
-  },
-  [CityName.COLUMBIA]: {
-    [Terrain.WATER]: '#47c9ff',
-    [Terrain.GRASS]: '#b77932',
-    [Terrain.SAND]:  '#d5ad68',
-    [Terrain.DIRT]:  '#8f5532',
+    [Terrain.GRASS]: '#b98a52',
+    [Terrain.SAND]:  '#f5d7a0',
   },
 };
 
 // Terrain blending via DUAL-GRID corner-Wang (marching-squares) tile sets, one
-// per boundary in the layer stack sea → sand → grass → dirt. The render grid is
-// offset half a tile from the data grid, so each render tile sits on a shared
-// corner of four data tiles and is chosen by which of those four are the higher
-// terrain (NW=1, NE=2, SE=4, SW=8 → a 0..F hex mask matching the filenames).
+// per boundary in the simplified layer stack sea → sand → grass. The render
+// grid is offset half a tile from the data grid, so each render tile sits on a
+// shared corner of four data tiles and is chosen by which of those four are the
+// higher terrain (NW=1, NE=2, SE=4, SW=8 → a 0..F hex mask matching the
+// filenames). DIRT still exists in the data model (legacy saves); it shares
+// grass's precedence and art, so it renders as the city's grass-slot surface.
 const TERRAIN_PRECEDENCE: { [key: string]: number } = {
   [Terrain.WATER]: 0, // sea, the base
   [Terrain.SAND]:  1,
-  [Terrain.GRASS]: 2,
-  [Terrain.DIRT]:  3, // top
+  [Terrain.GRASS]: 2, // top: grass / snow (mintaka) / dirt (solara) art
+  [Terrain.DIRT]:  2, // legacy data, renders as grass
 };
 
 // One opaque 16-tile set per ADJACENT pair, keyed by the higher terrain of the
 // pair. `bit1` decides which corners set their mask bit; per each set's README:
 //   sand-sea   bit 1 = SEA  (the lower)  — a corner is "bit 1" when it is sea
 //   grass-sand bit 1 = GRASS (the higher)
-//   dirt-grass bit 1 = DIRT  (the higher)
-// `atLeast` collapses any terrain at/above that precedence to the bit-1 side, so
-// a dirt corner reads as grass at the grass/sand boundary, etc.
+// `atLeast` collapses any terrain at/above that precedence to the bit-1 side.
 // Each set lives in blend/<pair>/ as 0.png .. F.png (the hex corner mask).
 const TERRAIN_SETS: { [higher: string]: { dir: string, bit1: 'low' | 'high', atLeast: number } } = {
   [Terrain.SAND]:  { dir: 'sand-sea/',   bit1: 'low',  atLeast: 1 },
   [Terrain.GRASS]: { dir: 'grass-sand/', bit1: 'high', atLeast: 2 },
-  [Terrain.DIRT]:  { dir: 'dirt-grass/', bit1: 'high', atLeast: 3 },
+  [Terrain.DIRT]:  { dir: 'grass-sand/', bit1: 'high', atLeast: 2 },
 };
 const HEX = '0123456789ABCDEF';
 
+const GRASS_SURFACE_ART = { main: 'grass/main.png', alternates: ['grass/alternative-1.png'] };
 const TERRAIN_SURFACE_ART: { [terrain: string]: { main: string, alternates: string[] } } = {
   [Terrain.WATER]: { main: 'sea/main.png', alternates: ['sea/alternative-1.png'] },
   [Terrain.SAND]: { main: 'sand/main.png', alternates: ['sand/alternative-1.png'] },
-  [Terrain.GRASS]: { main: 'grass/main.png', alternates: ['grass/alternative-1.png'] },
-  [Terrain.DIRT]: { main: 'rock-grass/main.png', alternates: ['rock-grass/alternative-1.png'] },
+  [Terrain.GRASS]: GRASS_SURFACE_ART,
+  [Terrain.DIRT]: GRASS_SURFACE_ART,
 };
 
 const POINTED_TILE_FILL = 'rgba(255, 244, 180, 0.34)';
@@ -652,13 +640,9 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       if (mask === 0xF) return Terrain.WATER;
       if (mask === 0x0) return Terrain.SAND;
     }
-    if (higher === Terrain.GRASS) {
+    if (higher === Terrain.GRASS || higher === Terrain.DIRT) {
       if (mask === 0xF) return Terrain.GRASS;
       if (mask === 0x0) return Terrain.SAND;
-    }
-    if (higher === Terrain.DIRT) {
-      if (mask === 0xF) return Terrain.DIRT;
-      if (mask === 0x0) return Terrain.GRASS;
     }
     return undefined;
   }
