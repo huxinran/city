@@ -2,7 +2,7 @@
 
 Auto-generated map of `public/assets/`. Two trees:
 
-- **`used/`** — stable app-facing symlinks (1018 image pointers). Repoint these to swap art.
+- **`used/`** — stable app-facing symlinks (1017 image pointers). Repoint these to swap art.
 - **`lib/`** — unified image library. Category/subject folders hold real files; filenames distinguish variants.
 
 > Regenerate: `node tools/gen-asset-index.mjs`
@@ -11,9 +11,9 @@ Auto-generated map of `public/assets/`. Two trees:
 
 ## `used/` — live assets
 
-### `buildings/`  ·  119 files  ·  1094×757, 1508×899, 1199×1148, 1530×989, 1161×1100, 1524×1004, 1527×999, 1277×1019, 1184×1146, 1262×950, 1441×936, 1156×1017, 1499×941, 1155×1095, 1409×989, 896×1136, 1372×916, 1194×1028, 1322×923, 1510×897, 1211×1178, 1514×881, 1535×1001, 1238×931, 1420×934, 1226×984, 1505×946, 1467×914, 997×1142, 1172×1063, 1213×818, 1439×889, 882×1108, 1183×1035, 1216×1176, 1190×1086, 1228×1172, 1213×1155, 1212×1086, 1495×900, 1550×999, 1244×1012, 1250×1066, 1470×1002, 1158×1049, 519×317, 1451×948, 1200×1004, 1152×743, 1063×1063, 1224×1162, 1254×1039, 1142×1146, 1468×992, 1245×982, 1121×1096, 1239×1055, 1418×983, 1516×926, 1064×1029, 1349×952, 1514×924, 1297×835, 1232×1166, 1340×946, 1536×980, 1505×953, 1530×991, 1609×932, 1233×1039, 1234×1136, 1555×916, 1225×1144, 1329×833, 1184×1155, 1506×954, 1158×1061, 1372×1000, 1503×918, 1488×970, 1436×952, 1180×929, 1390×904, 1412×940, 1501×964, 1442×913, 1432×920, 857×1083, 1351×966, 1452×894, 1099×1063, 1326×1055, 1532×988, 1226×1166, 1246×1148, 1512×941, 1141×1010, 1457×998, 1368×906, 1382×1022, 1248×1088, 1115×1038, 1528×990, 1478×941, 1231×1115, 1522×973, 1163×962, 1500×915, 1508×1010, 1534×986, 1534×983, 1088×1067, 1426×955, 933×1161, 1246×1075, 1496×942, 1172×1113, 1438×1006, 1506×944
+### `buildings/`  ·  117 files  ·  1094×757, 1508×899, 1199×1148, 1530×989, 1161×1100, 1524×1004, 1527×999, 1277×1019, 1184×1146, 1262×950, 1441×936, 1156×1017, 1499×941, 1155×1095, 1409×989, 896×1136, 1372×916, 1194×1028, 1322×923, 1510×897, 1211×1178, 1514×881, 1535×1001, 1238×931, 1420×934, 1226×984, 1505×946, 1467×914, 997×1142, 1172×1063, 1213×818, 1439×889, 882×1108, 1183×1035, 1216×1176, 1190×1086, 1228×1172, 1213×1155, 1212×1086, 1495×900, 1550×999, 1244×1012, 1250×1066, 1470×1002, 1158×1049, 1451×948, 1200×1004, 1152×743, 1063×1063, 1224×1162, 1254×1039, 1142×1146, 1468×992, 1245×982, 1121×1096, 1239×1055, 1418×983, 1516×926, 1064×1029, 1349×952, 1514×924, 1297×835, 1232×1166, 1340×946, 1536×980, 1505×953, 1530×991, 1233×1039, 1234×1136, 1555×916, 1225×1144, 1329×833, 1184×1155, 1506×954, 1158×1061, 1372×1000, 1503×918, 1488×970, 1436×952, 1180×929, 1390×904, 1412×940, 1501×964, 1442×913, 1432×920, 857×1083, 1351×966, 1452×894, 1099×1063, 1326×1055, 1532×988, 1226×1166, 1246×1148, 1512×941, 1141×1010, 1457×998, 1368×906, 1382×1022, 1248×1088, 1115×1038, 1528×990, 1478×941, 1231×1115, 1522×973, 1163×962, 1500×915, 1508×1010, 1534×986, 1534×983, 1088×1067, 1426×955, 933×1161, 1246×1075, 1496×942, 1172×1113, 1438×1006, 1506×944
 
-`animal-farm`, `apiary`, `apothecary`, `apple-orchard`, `bakery`, `banana-plantation`, `berry-grove`, `boot-shop`, `bottleworks`, `brandy-distillery`, `brickyard`, `butchery`, `cabbage-patch`, `candle-manufactory`, `carpenter-shop`, `chapel`, `chicken-coop`, `cidery`, `cigar-factory`, `clay-pit`, `clinic`, `coal-kiln`, `cocoa-plant`, `compost-pit`, `concrete-plant`, `copper-mine`, `corn-field`, `cotton-field`, `courthouse`, `creamery`, `crop-farm`, `dairy-farm`, `delete`, `dock`, `dumpling-kitchen`, `dye-workshop`, `engineer-station`, `fire-station`, `fishermen-wharf`, `fishery`, `food-processing-workshop`, `forge`, `fur-workshop`, `gem-mine`, `glassworks`, `glazier`, `gold-mine`, `goldsmith`, `grove-farm`, `house`, `ice-creamery`, `incense-grove`, `ink-workshop`, `iron-mine`, `ivory-camp`, `jeweler`, `kiln`, `lumber-hut`, `machine-shop`, `marketplace`, `mason-shop`, `melon-garden`, `mine-camp`, `noodle-shop`, `oil-press`, `olive-grove`, `onion-field`, `orange-orchard`, `painter-studio`, `pant-shop`, `paper-mill`, `perfumery`, `picklery`, `pig-farm`, `police-station`, `potato-farm`, `pottery-shop`, `preserve-shop`, `pumpkin-patch`, `reindeer-farm`, `rice-paddy`, `road`, `rubber-plantation`, `rum-distillery`, `saltern`, `sand-pit`, `sawmill`, `school`, `sculptor`, `sheep-farm`, `shipyard`, `shirt-shop`, `silk-farm`, `smokehouse`, `soap-works`, `soybean-farm`, `steelworks`, `stone-quarry`, `sugar-cane-plantation`, `sushi-bar`, `tannery`, `tavern`, `tea-garden`, `tobacco-plantation`, `tofu-shop`, `tomato-field`, `toolsmith`, `trapline`, `university`, `vineyard`, `warehouse-map`, `warehouse`, `watchmaker`, `well`, `whaling-post`, `wheat-farm`, `windmill`, `winery`, `workshop`
+`animal-farm`, `apiary`, `apothecary`, `apple-orchard`, `bakery`, `banana-plantation`, `berry-grove`, `boot-shop`, `bottleworks`, `brandy-distillery`, `brickyard`, `butchery`, `cabbage-patch`, `candle-manufactory`, `carpenter-shop`, `chapel`, `chicken-coop`, `cidery`, `cigar-factory`, `clay-pit`, `clinic`, `coal-kiln`, `cocoa-plant`, `compost-pit`, `concrete-plant`, `copper-mine`, `corn-field`, `cotton-field`, `courthouse`, `creamery`, `crop-farm`, `dairy-farm`, `delete`, `dock`, `dumpling-kitchen`, `dye-workshop`, `engineer-station`, `fire-station`, `fishermen-wharf`, `fishery`, `food-processing-workshop`, `forge`, `fur-workshop`, `gem-mine`, `glassworks`, `gold-mine`, `goldsmith`, `grove-farm`, `house`, `ice-creamery`, `incense-grove`, `ink-workshop`, `iron-mine`, `ivory-camp`, `jeweler`, `kiln`, `lumber-hut`, `machine-shop`, `marketplace`, `mason-shop`, `melon-garden`, `mine-camp`, `noodle-shop`, `oil-press`, `olive-grove`, `onion-field`, `orange-orchard`, `pant-shop`, `paper-mill`, `perfumery`, `picklery`, `pig-farm`, `police-station`, `potato-farm`, `pottery-shop`, `preserve-shop`, `pumpkin-patch`, `reindeer-farm`, `rice-paddy`, `road`, `rubber-plantation`, `rum-distillery`, `saltern`, `sand-pit`, `sawmill`, `school`, `sculptor`, `sheep-farm`, `shipyard`, `shirt-shop`, `silk-farm`, `smokehouse`, `soap-works`, `soybean-farm`, `steelworks`, `stone-quarry`, `sugar-cane-plantation`, `sushi-bar`, `tannery`, `tavern`, `tea-garden`, `tobacco-plantation`, `tofu-shop`, `tomato-field`, `toolsmith`, `trapline`, `university`, `vineyard`, `warehouse-map`, `warehouse`, `watchmaker`, `well`, `whaling-post`, `wheat-farm`, `windmill`, `winery`, `workshop`
 
 ### `resources/`  ·  99 files  ·  1254×1254
 
@@ -27,15 +27,15 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `anrelia`, `columbia`, `jinlin`, `mintaka`, `solara`
 
-### `cursors/`  ·  6 files  ·  40×40
+### `cursors/`  ·  7 files  ·  40×40
 
-`build-hammer`, `downgrade-arrow`, `move-arrows`, `shovel`, `upgrade-arrow`, `white-glove-pointer`
+`build-hammer`, `cute-white-arrow`, `downgrade-arrow`, `move-arrows`, `shovel`, `upgrade-arrow`, `white-glove-pointer`
 
 ### `actors/`  ·  9 files  ·  1148×899, 1168×903, 1157×905, 96×96, 384×96, 1004×1054
 
 `cart-empty`, `cart-fetching`, `cart-loaded`, `poodle-se`, `poodle-walk-ne`, `poodle-walk-nw`, `poodle-walk-se`, `poodle-walk-sw`, `ship`
 
-### `houses/`  ·  6 files  ·  1063×1063, 1003×1160, 991×1154, 1027×1168, 1003×1057, 997×1142
+### `houses/`  ·  6 files  ·  1063×1063, 1039×1172, 991×1154, 980×1169, 1003×1057, 997×1142
 
 `cottage`, `estate`, `house`, `mansion`, `tenement`, `villa`
 
@@ -341,9 +341,9 @@ Real image files, grouped into 13 categories. For normal game assets, the folder
 
 </details>
 
-<details><summary><code>buildings/</code> · 122 items</summary>
+<details><summary><code>buildings/</code> · 123 items</summary>
 
-`animal-farm`, `apiary`, `apothecary`, `apple-orchard`, `bakery`, `banana-plantation`, `berry-grove`, `boot-shop`, `bottleworks`, `brandy-distillery`, `brickyard`, `butchery`, `cabbage-patch`, `candle-manufactory`, `carpenter-shop`, `chapel`, `chicken-coop`, `cidery`, `cigar-factory`, `clay-pit`, `clinic`, `coal-kiln`, `cocoa-plant`, `compost-pit`, `concrete-plant`, `copper-mine`, `corn-field`, `cotton-field`, `courthouse`, `creamery`, `crop-farm`, `dairy-farm`, `delete`, `dock`, `dumpling-kitchen`, `dye-workshop`, `engineer-station`, `farmer-hut`, `fire-station`, `fishermen-wharf`, `fishery`, `food-processing-workshop`, `food-workshop`, `forge`, `fur-workshop`, `gem-mine`, `glassworks`, `glazier`, `gold-mine`, `goldsmith`, `grove-farm`, `house`, `ice-creamery`, `incense-grove`, `ink-workshop`, `iron-mine`, `ivory-camp`, `jeweler`, `kiln`, `lumber-hut`, `machine-shop`, `marketplace`, `mason-shop`, `melon-garden`, `mine-camp`, `noodle-shop`, `oil-press`, `olive-grove`, `onion-field`, `orange-orchard`, `painter-studio`, `pant-shop`, `paper-mill`, `perfumery`, `picklery`, `pig-farm`, `police-station`, `potato-farm`, `pottery-shop`, `preserve-shop`, `pumpkin-patch`, `reindeer-farm`, `rice-paddy`, `road`, `rubber-plantation`, `rum-distillery`, `saltern`, `sand-pit`, `sawmill`, `school`, `sculptor`, `sheep-farm`, `shipyard`, `shirt-shop`, `silk-farm`, `smokehouse`, `soap-works`, `soybean-farm`, `steelworks`, `stone-quarry`, `sugar-cane-plantation`, `sushi-bar`, `tannery`, `tavern`, `tea-garden`, `tobacco-plantation`, `tofu-shop`, `tomato-field`, `toolsmith`, `town-objects-cute`, `trapline`, `university`, `vineyard`, `warehouse`, `warehouse-map`, `watchmaker`, `well`, `whaling-post`, `wheat-farm`, `windmill`, `winery`, `workshop`
+`animal-farm`, `apiary`, `apothecary`, `apple-orchard`, `bakery`, `banana-plantation`, `berry-grove`, `boot-shop`, `bottleworks`, `brandy-distillery`, `brickyard`, `butchery`, `cabbage-patch`, `candle-manufactory`, `carpenter-shop`, `chapel`, `chicken-coop`, `cidery`, `cigar-factory`, `clay-pit`, `clinic`, `coal-kiln`, `cocoa-plant`, `compost-pit`, `concrete-plant`, `copper-mine`, `corn-field`, `cotton-farm`, `cotton-field`, `courthouse`, `creamery`, `crop-farm`, `dairy-farm`, `delete`, `dock`, `dumpling-kitchen`, `dye-workshop`, `engineer-station`, `farmer-hut`, `fire-station`, `fishermen-wharf`, `fishery`, `food-processing-workshop`, `food-workshop`, `forge`, `fur-workshop`, `gem-mine`, `glassworks`, `glazier`, `gold-mine`, `goldsmith`, `grove-farm`, `house`, `ice-creamery`, `incense-grove`, `ink-workshop`, `iron-mine`, `ivory-camp`, `jeweler`, `kiln`, `lumber-hut`, `machine-shop`, `marketplace`, `mason-shop`, `melon-garden`, `mine-camp`, `noodle-shop`, `oil-press`, `olive-grove`, `onion-field`, `orange-orchard`, `painter-studio`, `pant-shop`, `paper-mill`, `perfumery`, `picklery`, `pig-farm`, `police-station`, `potato-farm`, `pottery-shop`, `preserve-shop`, `pumpkin-patch`, `reindeer-farm`, `rice-paddy`, `road`, `rubber-plantation`, `rum-distillery`, `saltern`, `sand-pit`, `sawmill`, `school`, `sculptor`, `sheep-farm`, `shipyard`, `shirt-shop`, `silk-farm`, `smokehouse`, `soap-works`, `soybean-farm`, `steelworks`, `stone-quarry`, `sugar-cane-plantation`, `sushi-bar`, `tannery`, `tavern`, `tea-garden`, `tobacco-plantation`, `tofu-shop`, `tomato-field`, `toolsmith`, `town-objects-cute`, `trapline`, `university`, `vineyard`, `warehouse`, `warehouse-map`, `watchmaker`, `well`, `whaling-post`, `wheat-farm`, `windmill`, `winery`, `workshop`
 
 </details>
 
@@ -353,9 +353,9 @@ Real image files, grouped into 13 categories. For normal game assets, the folder
 
 </details>
 
-<details><summary><code>cursors/</code> · 6 items</summary>
+<details><summary><code>cursors/</code> · 7 items</summary>
 
-`build-hammer`, `downgrade-arrow`, `move-arrows`, `shovel`, `upgrade-arrow`, `white-glove-pointer`
+`build-hammer`, `cute-white-arrow`, `downgrade-arrow`, `move-arrows`, `shovel`, `upgrade-arrow`, `white-glove-pointer`
 
 </details>
 

@@ -26,6 +26,8 @@
   --shadow:    0 8px 24px rgba(80, 50, 10, 0.14);
   --shadow-sm: 0 2px 8px rgba(80, 50, 10, 0.10);
 
+  --cursor-default: url("/assets/used/cursors/cute-white-arrow.png") 4 3, auto;
+
   /* Cute rounded display font, with a friendly fallback for legibility. */
   --font: "Fredoka", "Nunito", "Segoe UI", system-ui, sans-serif;
 }
@@ -40,6 +42,7 @@ body {
   overflow: hidden;
   overscroll-behavior: none;
   touch-action: manipulation;
+  cursor: var(--cursor-default);
 }
 
 * { scrollbar-width: thin; scrollbar-color: var(--elevated) transparent; }
@@ -152,8 +155,6 @@ body {
 .btn:hover { filter: brightness(0.94); }
 .btn:active { transform: translateY(1px); }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; filter: none; }
-.btn.cursor-upgrade:not(:disabled) { cursor: url("/assets/used/cursors/upgrade-arrow.png") 20 20, pointer; }
-.btn.cursor-downgrade:not(:disabled) { cursor: url("/assets/used/cursors/downgrade-arrow.png") 20 20, pointer; }
 
 .btn-primary { background: linear-gradient(180deg, #6ab845, #4e9030); border-color: #4e9030; color: #fff; }
 .btn-accent  { background: linear-gradient(180deg, #3a95d5, #2272aa); border-color: #2272aa; color: #fff; }

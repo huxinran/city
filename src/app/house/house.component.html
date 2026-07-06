@@ -43,8 +43,8 @@
     }
 }
 <div class="btn-row">
-    <button class="btn btn-sm btn-primary cursor-upgrade"
+    <button class="btn btn-sm btn-primary"
             [disabled]="!canUpgrade"
             (click)="Upgrade()">Upgrade</button>
-    <button class="btn btn-sm cursor-downgrade" [disabled]="tile.building!.house!.tier == 1" (click)="Downgrade()">Downgrade</button>
+    <button class="btn btn-sm" [disabled]="tile.building!.house!.tier == 1" (click)="Downgrade()">Downgrade</button>
 </div>

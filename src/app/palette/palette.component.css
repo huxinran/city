@@ -118,6 +118,18 @@
   cursor: url("/assets/used/cursors/move-arrows.png") 20 20, pointer;
 }
 
+/* Tool glyphs read smaller than building art at the same size; scale them up.
+   The delete glyph reads larger, so scale it down. */
+.pal-icon.move .pal-icon-slot img,
+.pal-icon.upgrade-tool .pal-icon-slot img,
+.pal-icon.downgrade-tool .pal-icon-slot img {
+  transform: scale(1.2);
+}
+
+.pal-icon.danger .pal-icon-slot img {
+  transform: scale(0.85);
+}
+
 .pal-icon.upgrade-tool {
   cursor: url("/assets/used/cursors/upgrade-arrow.png") 20 20, pointer;
 }

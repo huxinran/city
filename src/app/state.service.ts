@@ -761,7 +761,10 @@ export class StateService {
       }
     }
 
-    city.focus_tile = to
+    // Moving is a placement action, not an inspect action: don't pop the info
+    // menu on the destination. Clear focus too — a stale focus on the source
+    // tile would point at a now-empty tile.
+    city.focus_tile = undefined
     this.bumpMap()
     return true
   }

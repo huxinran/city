@@ -80,3 +80,11 @@ Follow-up: restored the active upgrade cursor to `public/assets/lib/cursors/upgr
 Follow-up: replaced the active downgrade cursor with `public/assets/lib/cursors/downgrade-arrow/v12-red-body-yellow-ring.png`, making the body deeper red and restoring a brighter yellow outer ring.
 
 Follow-up: replaced the active downgrade cursor with `public/assets/lib/cursors/downgrade-arrow/v13-up-ring-red-body.png`. This version is derived directly from the active upgrade arrow by flipping it vertically, keeping the upgrade arrow's gold outer ring and dark outline unchanged, and recoloring only the green body pixels to red.
+
+## 2026-07-06 - cute default white arrow cursor
+
+Added a normal-arrow-style default cursor with a softer rounded silhouette, white fill, warm dark outline, small blush marks, and tiny sparkle detail. The SVG source is archived for future edits, and the active runtime PNG keeps the project-standard 40x40 transparent cursor canvas.
+
+| Cursor | Library source | Library cursor | Runtime cursor | Hotspot | Note |
+|--------|----------------|----------------|----------------|---------|------|
+| cute-white-arrow | `public/assets/lib/cursors/cute-white-arrow/v1-source.svg` | `public/assets/lib/cursors/cute-white-arrow/v1.png` | `public/assets/used/cursors/cute-white-arrow.png` | `4 3` | inherited as the app default cursor via `--cursor-default` |
