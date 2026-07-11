@@ -1,11 +1,14 @@
 # Asset Index
 
-Auto-generated map of `public/assets/`. Two trees:
+Auto-generated map of the two managed asset trees under `public/assets/`:
 
-- **`used/`** — stable app-facing symlinks (1011 image pointers). Repoint these to swap art.
-- **`lib/`** — unified image library. Category/subject folders hold real files; filenames distinguish variants.
+- **`lib/`** — source-of-truth image library. Category/subject folders hold preserved, versioned candidates.
+- **`used/`** — stable app-facing runtime copies (979 images), promoted from exact files in `lib/`.
+- **`restore.recycle/`** — manual recovery area for retired runtime copies; intentionally excluded from this index.
 
-> Regenerate: `node tools/gen-asset-index.mjs`
+- **`active-assets.json`** — exact `used/` → `lib/` provenance for every live image.
+
+> Verify: `npm run assets:check` · Rebuild runtime copies: `npm run assets:sync` · Regenerate this index: `npm run assets:index`
 
 ---
 
@@ -34,6 +37,10 @@ Auto-generated map of `public/assets/`. Two trees:
 ### `actors/`  ·  9 files  ·  1148×899, 1168×903, 1157×905, 96×96, 384×96, 1004×1054
 
 `cart-empty`, `cart-fetching`, `cart-loaded`, `poodle-se`, `poodle-walk-ne`, `poodle-walk-nw`, `poodle-walk-se`, `poodle-walk-sw`, `ship`
+
+### `actors/flotsam/`  ·  6 files  ·  40×36, 48×34, 64×26, 64×40, 64×36, 40×24
+
+`coconut-1`, `coconut-2`, `driftwood-1`, `ice-1`, `ice-2`, `leaf-1`
 
 ### `houses/`  ·  6 files  ·  1063×1063, 1039×1172, 991×1154, 980×1169, 1003×1057, 997×1142
 
@@ -67,10 +74,6 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `alternative-1`, `main`
 
-### `map-tiles/anrelia/surfaces/rock-grass/`  ·  2 files  ·  64×64
-
-`alternative-1`, `main`
-
 ### `map-tiles/anrelia/surfaces/sand/`  ·  2 files  ·  64×64
 
 `alternative-1`, `main`
@@ -78,10 +81,6 @@ Auto-generated map of `public/assets/`. Two trees:
 ### `map-tiles/anrelia/surfaces/sea/`  ·  2 files  ·  64×64
 
 `alternative-1`, `main`
-
-### `map-tiles/columbia/`  ·  6 files  ·  900×780, 64×64, 1254×1254
-
-`_artifact`, `dirt`, `grass`, `imagegen-source-sheet`, `sand`, `sea`
 
 ### `map-tiles/columbia/blend/`  ·  10 files  ·  64×64
 
@@ -99,15 +98,7 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `A`, `B`, `C`, `D`, `E`, `F`, `_preview-4x4`, `_preview-sample-map`
 
-### `map-tiles/columbia/road/`  ·  6 files  ·  64×64
-
-`corner`, `cross`, `end`, `isolated`, `straight`, `tee`
-
 ### `map-tiles/columbia/surfaces/grass/`  ·  2 files  ·  64×64
-
-`alternative-1`, `main`
-
-### `map-tiles/columbia/surfaces/rock-grass/`  ·  2 files  ·  64×64
 
 `alternative-1`, `main`
 
@@ -159,14 +150,6 @@ Auto-generated map of `public/assets/`. Two trees:
 
 `alternative-1`, `main`
 
-### `map-tiles/mintaka/`  ·  6 files  ·  900×780, 64×64, 1448×1086
-
-`_artifact`, `dirt`, `grass`, `imagegen-source-sheet`, `sand`, `sea`
-
-### `map-tiles/mintaka/blend/`  ·  10 files  ·  64×64
-
-`corner-mask`, `corner-ne`, `corner-nw`, `corner-se`, `corner-sw`, `edge-e`, `edge-mask`, `edge-n`, `edge-s`, `edge-w`
-
 ### `map-tiles/mintaka/blend/dirt-grass/`  ·  18 files  ·  64×64, 384×384, 512×512
 
 `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `A`, `B`, `C`, `D`, `E`, `F`, `_preview-4x4`, `_preview-sample-map`
@@ -178,10 +161,6 @@ Auto-generated map of `public/assets/`. Two trees:
 ### `map-tiles/mintaka/blend/sand-sea/`  ·  18 files  ·  64×64, 384×384, 512×512
 
 `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `A`, `B`, `C`, `D`, `E`, `F`, `_preview-4x4`, `_preview-sample-map`
-
-### `map-tiles/mintaka/road/`  ·  6 files  ·  64×64
-
-`corner`, `cross`, `end`, `isolated`, `straight`, `tee`
 
 ### `map-tiles/mintaka/surfaces/grass/`  ·  2 files  ·  64×64
 
@@ -337,7 +316,7 @@ Three 16-tile sets, one per layer boundary. Files are `0.png`–`F.png` = the 4-
 
 ## `lib/` — image library
 
-Real image files, grouped into 13 categories. For normal game assets, the folder is the subject and the filename is the variant. Runtime code should keep referencing `used/` symlinks.
+Real image files, grouped into 13 categories. For normal game assets, the folder is the subject and the filename is the variant. Runtime code should keep referencing stable `used/` paths, never versioned `lib/` paths.
 
 <details><summary><code>actors/</code> · 4 items</summary>
 
@@ -345,9 +324,9 @@ Real image files, grouped into 13 categories. For normal game assets, the folder
 
 </details>
 
-<details><summary><code>buildings/</code> · 123 items</summary>
+<details><summary><code>buildings/</code> · 124 items</summary>
 
-`animal-farm`, `apiary`, `apothecary`, `apple-orchard`, `bakery`, `banana-plantation`, `berry-grove`, `boot-shop`, `bottleworks`, `brandy-distillery`, `brickyard`, `butchery`, `cabbage-patch`, `candle-manufactory`, `carpenter-shop`, `chapel`, `chicken-coop`, `cidery`, `cigar-factory`, `clay-pit`, `clinic`, `coal-kiln`, `cocoa-plant`, `compost-pit`, `concrete-plant`, `copper-mine`, `corn-field`, `cotton-farm`, `cotton-field`, `courthouse`, `creamery`, `crop-farm`, `dairy-farm`, `delete`, `dock`, `dumpling-kitchen`, `dye-workshop`, `engineer-station`, `farmer-hut`, `fire-station`, `fishermen-wharf`, `fishery`, `food-processing-workshop`, `food-workshop`, `forge`, `fur-workshop`, `gem-mine`, `glassworks`, `glazier`, `gold-mine`, `goldsmith`, `grove-farm`, `house`, `ice-creamery`, `incense-grove`, `ink-workshop`, `iron-mine`, `ivory-camp`, `jeweler`, `kiln`, `lumber-hut`, `machine-shop`, `marketplace`, `mason-shop`, `melon-garden`, `mine-camp`, `noodle-shop`, `oil-press`, `olive-grove`, `onion-field`, `orange-orchard`, `painter-studio`, `pant-shop`, `paper-mill`, `perfumery`, `picklery`, `pig-farm`, `police-station`, `potato-farm`, `pottery-shop`, `preserve-shop`, `pumpkin-patch`, `reindeer-farm`, `rice-paddy`, `road`, `rubber-plantation`, `rum-distillery`, `saltern`, `sand-pit`, `sawmill`, `school`, `sculptor`, `sheep-farm`, `shipyard`, `shirt-shop`, `silk-farm`, `smokehouse`, `soap-works`, `soybean-farm`, `steelworks`, `stone-quarry`, `sugar-cane-plantation`, `sushi-bar`, `tannery`, `tavern`, `tea-garden`, `tobacco-plantation`, `tofu-shop`, `tomato-field`, `toolsmith`, `town-objects-cute`, `trapline`, `university`, `vineyard`, `warehouse`, `warehouse-map`, `watchmaker`, `well`, `whaling-post`, `wheat-farm`, `windmill`, `winery`, `workshop`
+`animal-farm`, `apiary`, `apothecary`, `apple-orchard`, `bakery`, `banana-plantation`, `berry-grove`, `boot-shop`, `bottleworks`, `brandy-distillery`, `brickyard`, `butchery`, `cabbage-patch`, `candle-manufactory`, `carpenter-shop`, `chapel`, `chicken-coop`, `cidery`, `cigar-factory`, `clay-pit`, `clinic`, `coal-kiln`, `cocoa-plant`, `compost-pit`, `concrete-plant`, `copper-mine`, `corn-field`, `cotton-farm`, `cotton-field`, `courthouse`, `creamery`, `crop-farm`, `dairy-farm`, `delete`, `dock`, `dumpling-kitchen`, `dye-workshop`, `engineer-station`, `farmer-hut`, `fire-station`, `fishermen-wharf`, `fishery`, `food-processing-workshop`, `food-workshop`, `forge`, `fur-workshop`, `gem-mine`, `glassworks`, `glazier`, `gold-mine`, `goldsmith`, `grove-farm`, `house`, `ice-creamery`, `incense-grove`, `ink-workshop`, `iron-mine`, `ivory-camp`, `jeweler`, `kiln`, `lumber-hut`, `machine-shop`, `marketplace`, `mason-shop`, `melon-garden`, `mine-camp`, `noodle-shop`, `oil-press`, `olive-grove`, `onion-field`, `orange-orchard`, `painter-studio`, `pant-shop`, `paper-mill`, `perfumery`, `picklery`, `pig-farm`, `police-station`, `potato-farm`, `pottery-shop`, `preserve-shop`, `pumpkin-patch`, `reindeer-farm`, `rice-paddy`, `road`, `rubber-plantation`, `rum-distillery`, `saltern`, `sand-pit`, `sawmill`, `school`, `sculptor`, `shared-bases`, `sheep-farm`, `shipyard`, `shirt-shop`, `silk-farm`, `smokehouse`, `soap-works`, `soybean-farm`, `steelworks`, `stone-quarry`, `sugar-cane-plantation`, `sushi-bar`, `tannery`, `tavern`, `tea-garden`, `tobacco-plantation`, `tofu-shop`, `tomato-field`, `toolsmith`, `town-objects-cute`, `trapline`, `university`, `vineyard`, `warehouse`, `warehouse-map`, `watchmaker`, `well`, `whaling-post`, `wheat-farm`, `windmill`, `winery`, `workshop`
 
 </details>
 
@@ -369,9 +348,9 @@ Real image files, grouped into 13 categories. For normal game assets, the folder
 
 </details>
 
-<details><summary><code>houses/</code> · 6 items</summary>
+<details><summary><code>houses/</code> · 7 items</summary>
 
-`cottage`, `estate`, `house`, `mansion`, `tenement`, `villa`
+`cottage`, `estate`, `house`, `mansion`, `shared-bases`, `tenement`, `villa`
 
 </details>
 

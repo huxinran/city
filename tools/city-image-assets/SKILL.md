@@ -12,6 +12,16 @@ Create polished project image assets that match the saved game reference style. 
 
 Treat inventory icons as only one asset category, not the default assumption.
 
+## Asset Ownership Contract
+
+- Treat `public/assets/lib/` as the only source of truth. Preserve every candidate and revision there with a versioned or descriptive filename.
+- Treat `public/assets/used/` as a disposable runtime projection of `lib/`, never as an archive or the origin of an asset. Its stable filenames intentionally hide version details from application code.
+- Interpret **create**, **revise**, **new version**, or **save** as library-only unless the user also asks to activate the result.
+- Interpret **use**, **activate**, **promote**, **replace**, **swap**, **try**, or **roll back** as: ensure the requested version is saved in `lib/`, then copy that exact library file to its stable `used/` path.
+- Never modify a library candidate in place. Promotion may overwrite the corresponding runtime copy in `used/`; that is the only expected overwrite.
+- Do not infer that a newly generated version should become active merely because it was created successfully. When activation language is absent, leave `used/` unchanged.
+- During cleanup, never permanently delete a retired runtime image. Move it to `public/assets/restore.recycle/<original-used-relative-path>` unless the user explicitly asks for permanent deletion; the user manages that folder manually.
+
 ## Workflow
 
 1. Read `references/style.md` before writing prompts or judging results. When visual references are present in `assets/`, use them as anchors for intended style, detail level, realism level, and anime-ness; do not copy them pixel by pixel or treat them as exact templates for new subjects.
@@ -21,12 +31,12 @@ Treat inventory icons as only one asset category, not the default assumption.
 5. Before saving any final standalone game asset, remove the background and validate that the saved PNG/WebP has usable alpha. Keep intermediate source images in scratch/cache paths when useful, but do not treat a non-transparent or white-background output as final unless the background is intentionally part of the asset.
 6. Focus only on image generation, background removal for final standalone assets, saving, and bookkeeping. Do not crop, resize, or otherwise post-process generated images unless the user explicitly asks for that specific operation, except that building assets should be cropped to their alpha bounds before final saving.
 7. Do not integrate generated assets into the codebase. Do not update app mappings, imports, manifests used by runtime code, build files, or other source files.
-8. Save newly generated image assets into the library under `public/assets/lib/<category>/<asset-name>/...`, using the repo's category/subject/version convention when it is obvious. The library is the canonical archive for all candidate versions, whether or not they are currently used by the game.
-9. Treat `public/assets/used/...` as the runtime copy directory. Files there should have simple stable names such as `public/assets/used/resources/apple.png` or `public/assets/used/buildings/clinic.png`; avoid version numbers in `used/` unless the existing runtime naming already requires it.
+8. Save newly generated image assets into the library under `public/assets/lib/<category>/<asset-name>/...`, using the repo's category/subject/version convention when it is obvious. The library is the source of truth for all candidate versions, whether or not they are currently used by the game.
+9. Treat `public/assets/used/...` as a disposable runtime copy directory. Files there should have simple stable names such as `public/assets/used/resources/apple.png` or `public/assets/used/buildings/clinic.png`; avoid version numbers in `used/` unless the existing runtime naming already requires it.
 9a. When the user says to use, swap, replace, try, promote, or roll back to a particular library version, copy that library file into the matching `used/` path with `node tools/swap-asset.mjs <used-relative-path> <lib-relative-path>`. Example: `node tools/swap-asset.mjs resources/apple.png resources/apple/v3.png`. Do this directly when the target is clear.
 9b. Do not generate new art directly into `used/`. Generate and archive in `lib/` first, then copy into `used/` only when the user asks to make it active or clearly says the new version should be used in-game.
 10. Preserve generated originals under Codex's generated image cache; copy into the project instead of moving.
-11. Never delete or replace existing image assets anywhere in the project. When recreating, revising, or iterating on one asset, always save the new result in `public/assets/lib/<category>/<subject>/...` as a new version with a versioned/descriptive filename such as `<name>-v2.png` or `<name>-blue.png`; do not overwrite the old image.
+11. Never delete or replace an existing library candidate. When recreating, revising, or iterating on one asset, always save the new result in `public/assets/lib/<category>/<subject>/...` as a new version with a versioned/descriptive filename such as `<name>-v2.png` or `<name>-blue.png`; do not overwrite the old library image. Replacing the stable `used/` copy during an explicit promotion is allowed.
 12. When revising an existing generated asset, inspect the old version first and compare it against the user's feedback before writing the new prompt.
 13. When creating an asset that belongs to a family or tier set, inspect existing sibling assets first and keep the family coherent.
 14. Keep lightweight bookkeeping for generated batches, such as a local notes file or generation log that records asset names, saved lib paths, source-cache paths, prompts, feedback, family/tier notes, and version notes. This bookkeeping must not wire assets into runtime code.

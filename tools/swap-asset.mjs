@@ -4,6 +4,7 @@ import path from 'path';
 const ASSETS = 'public/assets';
 const USED = path.join(ASSETS, 'used');
 const LIB = path.join(ASSETS, 'lib');
+const MANIFEST = path.join(ASSETS, 'active-assets.json');
 
 const [usedRel, libRel] = process.argv.slice(2);
 
@@ -13,8 +14,18 @@ if (!usedRel || !libRel) {
   process.exit(1);
 }
 
-const usedPath = path.join(USED, usedRel);
-const libPath = path.join(LIB, libRel);
+const safePath = (root, relative, label) => {
+  if (path.isAbsolute(relative)) throw new Error(`${label} path must be relative: ${relative}`);
+  const resolvedRoot = path.resolve(root);
+  const resolved = path.resolve(root, ...relative.split('/'));
+  if (resolved !== resolvedRoot && !resolved.startsWith(`${resolvedRoot}${path.sep}`)) {
+    throw new Error(`${label} path escapes its root: ${relative}`);
+  }
+  return resolved;
+};
+
+const usedPath = safePath(USED, usedRel, 'used');
+const libPath = safePath(LIB, libRel, 'lib');
 
 if (!fs.existsSync(libPath)) {
   console.error(`Missing lib target: ${libPath}`);
@@ -23,4 +34,14 @@ if (!fs.existsSync(libPath)) {
 
 fs.mkdirSync(path.dirname(usedPath), { recursive: true });
 fs.copyFileSync(libPath, usedPath);
-console.log(`Copied ${libRel} -> ${usedRel}`);
+
+const manifest = fs.existsSync(MANIFEST)
+  ? JSON.parse(fs.readFileSync(MANIFEST, 'utf8'))
+  : { version: 1, description: 'Active runtime images. Keys are paths under used/; values are their source-of-truth paths under lib/.', assets: {} };
+manifest.assets[usedRel.split(path.sep).join('/')] = libRel.split(path.sep).join('/');
+manifest.assets = Object.fromEntries(Object.entries(manifest.assets).sort(([left], [right]) => left.localeCompare(right, undefined, { numeric: true })));
+
+const temporaryManifest = `${MANIFEST}.tmp`;
+fs.writeFileSync(temporaryManifest, `${JSON.stringify(manifest, null, 2)}\n`);
+fs.renameSync(temporaryManifest, MANIFEST);
+console.log(`Activated lib/${libRel} -> used/${usedRel} and updated active-assets.json`);

@@ -24,6 +24,26 @@ npm run install:codex-skills
 
 The installer links each `tools/*/SKILL.md` folder into `${CODEX_HOME:-~/.codex}/skills`, which lets Codex discover skills such as `$city-image-assets`. The default symlink install keeps the repo copy as the source of truth, so future Git updates are picked up automatically. If symlinks are not suitable on a machine, run `node scripts/install-codex-skills.mjs --copy` instead.
 
+## Image assets
+
+`public/assets/lib/` is the source of truth. `public/assets/used/` contains stable runtime copies, and `public/assets/restore.recycle/` is the manual recovery area for retired copies.
+
+The active source for every runtime image is recorded in `public/assets/active-assets.json`.
+
+```bash
+npm run assets:check     # verify every used image exactly matches its lib source
+npm run assets:sync      # rebuild missing or changed used copies from lib
+npm run assets:index     # refresh the human and TypeScript asset indexes
+```
+
+Activate a different saved version with:
+
+```bash
+node tools/swap-asset.mjs buildings/clinic.png buildings/clinic/shared-civic-base-v1.png
+```
+
+This updates both the stable runtime copy and its manifest entry. `npm run assets:manifest` is for initial migration or a deliberate full re-scan; unmatched runtime images are preserved under `lib/_runtime-source/`.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:

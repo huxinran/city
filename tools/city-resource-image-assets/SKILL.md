@@ -7,6 +7,15 @@ description: Generate, revise, and archive resource/inventory item icons for thi
 
 Create polished resource and inventory icons that match the saved game art style. This skill is for item icons only; use the isometric building skill for map-placed buildings, farms, mines, roads, docks, yards, and other footprint-based art.
 
+## Asset Ownership Contract
+
+- Treat `public/assets/lib/resources/` as the source of truth and preserve each candidate as a distinct version.
+- Treat `public/assets/used/resources/` as a disposable runtime copy with stable filenames, never as an archive or asset origin.
+- **Create**, **revise**, **new version**, and **save** mean save to `lib/` only unless the user also asks to activate it.
+- **Use**, **activate**, **promote**, **replace**, **swap**, **try**, and **roll back** mean save or select the exact `lib/` version, then copy it to the matching stable `used/` filename with `node tools/swap-asset.mjs resources/<asset-name>.png resources/<asset-name>/<version>.png`.
+- Never overwrite a `lib/` version. Overwrite `used/` only for an explicit activation, and do not activate a new result by default.
+- During cleanup, move retired runtime images to `public/assets/restore.recycle/<original-used-relative-path>` instead of deleting them; only the user permanently deletes that folder's contents.
+
 ## Required References
 
 Read `../city-image-assets/references/style.md` before writing prompts or judging results. Use the resource examples named there as style anchors, especially produce, prepared food, and crafted material icons.
@@ -18,8 +27,8 @@ Read `../city-image-assets/references/style.md` before writing prompts or judgin
 3. Ask for one clear centered subject on a transparent background. If transparency is not reliable, generate on a clean flat chroma-key or white background and remove it locally before saving the final.
 4. Keep the asset as a standalone item icon, not a scene, building, logo, UI badge, or collection of many tiny props.
 5. Save new candidates under `public/assets/lib/resources/<asset-name>/...` using the next obvious version filename, such as `v1.png`, `v2.png`, or a concise descriptive version name.
-6. Do not overwrite or delete existing assets. Do not generate directly into `public/assets/used`.
-7. Promote to `public/assets/used/resources/<asset-name>.png` only when the user explicitly asks to use, replace, swap, promote, or roll back the active game asset.
+6. Do not overwrite or delete existing library assets. Do not generate directly into `public/assets/used`.
+7. Promote to `public/assets/used/resources/<asset-name>.png` only when the user explicitly asks to use, activate, replace, swap, try, promote, or roll back the active game asset. Use `tools/swap-asset.mjs` so the promoted file always comes from `lib/`.
 8. Keep scratch files, masks, contact sheets, and generation notes under `tmp/asset-work/<task-name>/`.
 9. Record a lightweight log for each batch with asset names, saved paths, source-cache paths, prompts, and any user feedback.
 

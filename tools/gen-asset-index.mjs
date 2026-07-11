@@ -18,10 +18,12 @@ for (const f of usedFiles) {
 }
 
 let md = '# Asset Index\n\n';
-md += 'Auto-generated map of `public/assets/`. Two trees:\n\n';
-md += '- **`used/`** — stable app-facing symlinks (' + usedFiles.length + ' image pointers). Repoint these to swap art.\n';
-md += '- **`lib/`** — unified image library. Category/subject folders hold real files; filenames distinguish variants.\n\n';
-md += '> Regenerate: `node tools/gen-asset-index.mjs`\n\n';
+md += 'Auto-generated map of the two managed asset trees under `public/assets/`:\n\n';
+md += '- **`lib/`** — source-of-truth image library. Category/subject folders hold preserved, versioned candidates.\n';
+md += '- **`used/`** — stable app-facing runtime copies (' + usedFiles.length + ' images), promoted from exact files in `lib/`.\n';
+md += '- **`restore.recycle/`** — manual recovery area for retired runtime copies; intentionally excluded from this index.\n\n';
+md += '- **`active-assets.json`** — exact `used/` → `lib/` provenance for every live image.\n\n';
+md += '> Verify: `npm run assets:check` · Rebuild runtime copies: `npm run assets:sync` · Regenerate this index: `npm run assets:index`\n\n';
 md += '---\n\n## `used/` — live assets\n\n';
 
 const order = ['map-tiles', 'map-tiles/road', 'buildings', 'resources', 'terrain', 'population/busts', 'coat-of-arms', 'cursors'];
@@ -51,7 +53,7 @@ const libCats = fs.readdirSync('lib', { withFileTypes: true })
 md += '---\n\n## `lib/` — image library\n\n';
 md += 'Real image files, grouped into ' + libCats.length + ' categories. '
    + 'For normal game assets, the folder is the subject and the filename is the variant. '
-   + 'Runtime code should keep referencing `used/` symlinks.\n\n';
+   + 'Runtime code should keep referencing stable `used/` paths, never versioned `lib/` paths.\n\n';
 let libTotal = 0;
 for (const cat of libCats) {
   const items = fs.readdirSync('lib/' + cat, { withFileTypes: true })
@@ -63,4 +65,4 @@ for (const cat of libCats) {
 }
 
 fs.writeFileSync('INDEX.md', md);
-console.log('wrote ' + ROOT + '/INDEX.md (' + md.length + ' bytes, ' + usedFiles.length + ' used pointers, ' + libTotal + ' lib items in ' + libCats.length + ' categories)');
+console.log('wrote ' + ROOT + '/INDEX.md (' + md.length + ' bytes, ' + usedFiles.length + ' used images, ' + libTotal + ' lib items in ' + libCats.length + ' categories)');

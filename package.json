@@ -7,7 +7,11 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "install:codex-skills": "node scripts/install-codex-skills.mjs"
+    "install:codex-skills": "node scripts/install-codex-skills.mjs",
+    "assets:manifest": "node tools/gen-active-assets.mjs",
+    "assets:check": "node tools/sync-used-assets.mjs --check",
+    "assets:sync": "node tools/sync-used-assets.mjs --write",
+    "assets:index": "node tools/gen-ts-asset-index.mjs && node tools/gen-asset-index.mjs public/assets"
   },
   "private": true,
   "dependencies": {

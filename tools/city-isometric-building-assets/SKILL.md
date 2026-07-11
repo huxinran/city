@@ -7,6 +7,15 @@ description: Generate, revise, and archive standalone isometric building art for
 
 Create standalone map building assets that match the game style and sit cleanly on the isometric diamond grid. This skill is for map-placed art only; use the resource skill for inventory/resource icons.
 
+## Asset Ownership Contract
+
+- Treat `public/assets/lib/buildings/` as the source of truth and preserve each candidate as a distinct version.
+- Treat `public/assets/used/buildings/` as a disposable runtime copy with stable filenames, never as an archive or asset origin.
+- **Create**, **revise**, **new version**, and **save** mean save to `lib/` only unless the user also asks to activate it.
+- **Use**, **activate**, **promote**, **replace**, **swap**, **try**, and **roll back** mean save or select the exact `lib/` version, then copy it to the matching stable `used/` filename with `node tools/swap-asset.mjs buildings/<slug>.png buildings/<slug>/<version>.png`.
+- Never overwrite a `lib/` version. Overwrite `used/` only for an explicit activation, and do not activate a new result by default.
+- During cleanup, move retired runtime images to `public/assets/restore.recycle/<original-used-relative-path>` instead of deleting them; only the user permanently deletes that folder's contents.
+
 ## Required References
 
 Read `../city-image-assets/references/style.md` before writing prompts or judging results. Inspect relevant sibling assets in:
@@ -29,8 +38,8 @@ Use siblings as camera, footprint, palette, and detail-density anchors. Do not c
 4. Use a transparent background. If needed, generate on a removable flat chroma-key background, remove it locally, and validate the alpha.
 5. Crop final building assets to their non-transparent alpha bounds while preserving all visible structure, props, and the full ground footprint.
 6. Save candidates under `public/assets/lib/buildings/<slug>/...` using the next obvious version filename, such as `v1.png`, `v2.png`, or a concise descriptive version name.
-7. Do not overwrite or delete existing assets. Do not generate directly into `public/assets/used`.
-8. Promote to `public/assets/used/buildings/<slug>.png` only when the user explicitly asks to use, replace, swap, promote, or roll back the active game asset.
+7. Do not overwrite or delete existing library assets. Do not generate directly into `public/assets/used`.
+8. Promote to `public/assets/used/buildings/<slug>.png` only when the user explicitly asks to use, activate, replace, swap, try, promote, or roll back the active game asset. Use `tools/swap-asset.mjs` so the promoted file always comes from `lib/`.
 9. Keep scratch files, masks, contact sheets, and generation logs under `tmp/asset-work/<task-name>/`.
 10. Record asset name, building type, footprint assumption, saved path, source-cache path, prompt, and quality notes.
 
