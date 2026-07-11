@@ -10,6 +10,7 @@ import {
   IsFoodWorkshopBuilding,
 } from '../sim/building';
 import { GetBuildingMapIconSrc, GetBuildingProductIconSrc, GetHouseMapIconSrc } from '../building-icons';
+import { GetResourceIconSrc, GetResourceEmoji } from '../resource-icons';
 import { clampCamera, screenToWorld, applyCameraTransform } from '../camera';
 import {
   GRID_TILE, ISO_TILE_W, ISO_TILE_H, applyIsoGridCameraTransform,
@@ -1025,8 +1026,9 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
 
   // Background art filling the footprint, with product icon(s) overlaid:
   // crop farms show a row of three produce icons; animal farms get their moving
-  // sprites from the live overlay canvas; workshops/mine camps show one product
-  // pinned bottom-right.
+  // sprites from the live overlay canvas plus one output-resource icon;
+  // workshops/mine camps show one product pinned bottom-right. Icons appear only
+  // while a finished product is waiting for pick-up.
   private drawComposite(b: Building, bg: HTMLImageElement | undefined,
                         x: number, y: number, W: number, H: number, kind: 'cropFarm' | 'groveFarm' | 'animalFarm' | 'workshop' | 'seaProduction',
                         anchorBottomY: number) {
@@ -1035,12 +1037,25 @@ export class MapCanvasComponent implements OnInit, OnDestroy {
       const o = kind === 'workshop' || kind === 'seaProduction' ? 0.04 : 0;
       this.drawContain(bg!, x - W * o, y - H * o, W * (1 + 2 * o), H * (1 + 2 * o), true, anchorBottomY);
     }
-    if (kind === 'animalFarm') return;
+    // Progress sits at 100 from cycle completion until the pick-up cart arrives
+    // and resets it to 0, so this shows the icon exactly while goods are waiting.
+    const productReady = (b.production?.progress ?? 0) >= 100;
+    if (!productReady) return;
+    if (kind === 'animalFarm') {
+      // The building's product-icon art is the animal itself (used elsewhere for
+      // the moving sprites); the finished good is the recipe output (pork, milk, …).
+      const out = b.production?.product?.[0]?.type;
+      if (out === undefined) return;
+      const isz = W * 0.16;
+      const px = x + W * 0.78 - isz;
+      const py = y + H * 0.70 - isz;
+      const prodIm = this.img(GetResourceIconSrc(out));
+      if (ready(prodIm)) this.drawContain(prodIm!, px, py, isz, isz, true);
+      else this.drawEmoji(GetResourceEmoji(out), px + isz / 2, py + isz / 2, isz);
+      return;
+    }
     const prod = this.img(this.productSrc(b));
     const emoji = GetBuildingIcon(b.type);
-    const productReady = b.production?.status === ProductionStatus.FINISHED
-                      || b.production?.status === ProductionStatus.WAITING_PICK_UP;
-    if (!productReady) return;
     if (kind === 'cropFarm' || kind === 'groveFarm') {
       const isz = W * 0.16;
       const marks = [
